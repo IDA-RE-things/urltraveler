@@ -4,11 +4,6 @@
 
 #include "SndaBase.h"
 
-extern "C" 
-{
-	DLLEXPORT IModuleFactory*	GetModuleFactory();
-	DLLEXPORT void	ReleaseModuleFactory( IModuleFactory*);
-}
 
 namespace mainframe
 {

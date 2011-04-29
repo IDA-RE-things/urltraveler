@@ -45,8 +45,21 @@ int32 ModuleManagerImpl::CallService(const param lparam ,param rparam )
 
 static MODULELIST g_stInitList;
 
+std::wstring  GetModulePathW(HMODULE hModule=NULL)
+{
+	std::wstring str_path;
+	wchar_t temp[MAX_PATH+1];
+	::GetModuleFileNameW(hModule, temp, MAX_PATH);
+	str_path = temp;
+	std::wstring::size_type index = str_path.rfind('\\');
+	str_path = str_path.substr(0,index+1);
+	return str_path;
+}
+
 void	ModuleManagerImpl::LoadModules()
 {
+	wstring wstrPath = GetModulePathW();
+
 	ModuleList::DllModuleList::iterator itr = g_stInitList.m_stDllModuleList.begin();
 	for(; itr != g_stInitList.m_stDllModuleList.end(); ++itr)
 	{
@@ -109,12 +122,12 @@ void	ModuleManagerImpl::LoadModules()
 					m_mapModulePoint[itr->second[i]] = m_mapModuleInterface[itr->first].m_pModules[i];
 				}
 			}
-			
-			// 逐个加载各个模块
-			for(IModulePointMap::iterator it=m_mapModulePoint.begin(); it != m_mapModulePoint.end(); ++it)
-			{
-				it->second->Load(this);
-			}
+	}
+				
+	// 逐个加载各个模块
+	for(IModulePointMap::iterator it=m_mapModulePoint.begin(); it != m_mapModulePoint.end(); ++it)
+	{
+		it->second->Load(this);
 	}
 }
 
