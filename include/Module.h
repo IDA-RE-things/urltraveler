@@ -82,7 +82,6 @@ interface IModule
 	virtual void PaybackExtraInfo(uint32 valudId, void* pExtraInfo) PURE;
 };
 
-
 //----------------------------------------------------------------------------------------
 //名称: IModuleFactory
 //描述: 一个DLL中可以包含多个IModule，通过IModuleFactory，总线可以知晓当前Dll中的
