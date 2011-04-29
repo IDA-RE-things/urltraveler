@@ -1,26 +1,24 @@
-
 #pragma once
 
-// 以下宏定义要求的最低平台。要求的最低平台
-// 是具有运行应用程序所需功能的 Windows、Internet Explorer 等产品的
-// 最早版本。通过在指定版本及更低版本的平台上启用所有可用的功能，宏可以
-// 正常工作。
+// The following macros define the minimum required platform.  The minimum required platform
+// is the earliest version of Windows, Internet Explorer etc. that has the necessary features to run 
+// your application.  The macros work by enabling all features available on platform versions up to and 
+// including the version specified.
 
-// 如果必须要针对低于以下指定版本的平台，请修改下列定义。
-// 有关不同平台对应值的最新信息，请参考 MSDN。
-#ifndef WINVER                          // 指定要求的最低平台是 Windows Vista。
-#define WINVER 0x0600           // 将此值更改为相应的值，以适用于 Windows 的其他版本。
+// Modify the following defines if you have to target a platform prior to the ones specified below.
+// Refer to MSDN for the latest info on corresponding values for different platforms.
+#ifndef WINVER                          // Specifies that the minimum required platform is Windows Vista.
+#define WINVER 0x0600           // Change this to the appropriate value to target other versions of Windows.
 #endif
 
-#ifndef _WIN32_WINNT            // 指定要求的最低平台是 Windows Vista。
-#define _WIN32_WINNT 0x0600     // 将此值更改为相应的值，以适用于 Windows 的其他版本。
+#ifndef _WIN32_WINNT            // Specifies that the minimum required platform is Windows Vista.
+#define _WIN32_WINNT 0x0600     // Change this to the appropriate value to target other versions of Windows.
 #endif
 
-#ifndef _WIN32_WINDOWS          // 指定要求的最低平台是 Windows 98。
-#define _WIN32_WINDOWS 0x0410 // 将此值更改为适当的值，以适用于 Windows Me 或更高版本。
+#ifndef _WIN32_WINDOWS          // Specifies that the minimum required platform is Windows 98.
+#define _WIN32_WINDOWS 0x0410 // Change this to the appropriate value to target Windows Me or later.
 #endif
 
-#ifndef _WIN32_IE                       // 指定要求的最低平台是 Internet Explorer 7.0。
-#define _WIN32_IE 0x0700        // 将此值更改为相应的值，以适用于 IE 的其他版本。
+#ifndef _WIN32_IE                       // Specifies that the minimum required platform is Internet Explorer 7.0.
+#define _WIN32_IE 0x0700        // Change this to the appropriate value to target other versions of IE.
 #endif
-
