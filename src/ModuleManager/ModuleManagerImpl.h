@@ -15,20 +15,20 @@ typedef void  (*ReleaseModuleFactoryFunc)(IModuleFactory*);
 struct ModuleInterface
 {
 	ModuleInterface()
-		:m_GetModuleFactoryFunc(NULL),
-		m_ReleaseModuleFactoryFunc(NULL)
+		:m_pGetModuleFactoryFunc(NULL),
+		m_pReleaseModuleFactoryFunc(NULL)
 	{}
 
 	ModuleInterface(GetModuleFactoryFunc  p1,
 		ReleaseModuleFactoryFunc p2,std::size_t size)
-		:m_GetModuleFactoryFunc(p1),
-		m_ReleaseModuleFactoryFunc(p2),
+		:m_pGetModuleFactoryFunc(p1),
+		m_pReleaseModuleFactoryFunc(p2),
 		m_pModules(size),
 		m_pModuleFactory(NULL)
 	{}
 
-	GetModuleFactoryFunc m_GetModuleFactoryFunc;
-	ReleaseModuleFactoryFunc m_ReleaseModuleFactoryFunc;
+	GetModuleFactoryFunc m_pGetModuleFactoryFunc;
+	ReleaseModuleFactoryFunc m_pReleaseModuleFactoryFunc;
 
 	IModuleFactory * m_pModuleFactory;
 	std::vector<IModule*> m_pModules;
@@ -80,6 +80,6 @@ private:
 
 	// 模块ID与模块指针之间的映射关系
 	typedef std::map<ModuleId, IModule*> IModulePointMap;
-	IModulePointMap m_mapIModulePoint;
+	IModulePointMap m_mapModulePoint;
 
 };

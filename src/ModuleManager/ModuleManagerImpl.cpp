@@ -62,10 +62,82 @@ BOOL	ModuleManagerImpl::LoadModules()
 				continue ;
 			}
 
+			// 加载模块名与模块IModuleFactory之间的关系
+			GetModuleFactoryFunc pGetModuleFactoryFunc 
+				=  reinterpret_cast<GetModuleFactoryFunc >(GetProcAddress(exportmodule, "GetModuleFactory"));
+			ReleaseModuleFactoryFunc pReleaseModuleFactoryFunc 
+				= reinterpret_cast<ReleaseModuleFactoryFunc>(GetProcAddress(exportmodule, "ReleaseModuleFactory")); 
+			
+			m_mapModuleInterface[itr->first]
+				=	ModuleInterface(pGetModuleFactoryFunc,pReleaseModuleFactoryFunc,itr->second.size());
 
+			IModuleFactory *pIModuleFactory = m_mapModuleInterface[itr->first].m_pGetModuleFactoryFunc();
+			if(pIModuleFactory==NULL)
+			{
+				std::wstring wstrModuleName = itr->first;
+				wstrModuleName.append(L" 导出GetModuleFactory失败");
+				MessageBoxW(NULL, L"DLL加载失败", wstrModuleName.c_str(), MB_OK);
+				continue ;
+			}
 
+			// 得到模块的IModuleFactory指针，然后获取具体的内部的各个IModule指针
+			uint32 nCount = 0;
+			BOOL bRet =pIModuleFactory->QueryModuleCounter(nCount);
+			if( bRet == FALSE)
+			{
+				std::wstring wstrModuleName = itr->first;
+				wstrModuleName.append(L" QueryModuleCounter失败");
+				MessageBoxW(NULL, L"DLL加载失败", wstrModuleName.c_str(), MB_OK);
+				continue ;
+			}
+
+			m_mapModuleInterface[itr->first].m_pModuleFactory = pIModuleFactory;
+			if( nCount <= m_mapModuleInterface[itr->first].m_pModules.size())
+			{
+				bRet = pIModuleFactory->QueryModulePoint(nCount, m_mapModuleInterface[itr->first].m_pModules[0]);
+				if( bRet == FALSE)
+				{
+					std::wstring wstrModuleName = itr->first;
+					wstrModuleName.append(L" QueryModulePoint失败");
+					MessageBoxW(NULL, L"DLL加载失败", wstrModuleName.c_str(), MB_OK);
+					continue ;
+				}
+
+				// 设置模块ID和具体模块IModule指针的关联关系
+				for(size_t i=0; i<nCount; i++)
+				{
+					m_mapModulePoint[itr->second[i]] = m_mapModuleInterface[itr->first].m_pModules[i];
+				}
+			}
+			
+			// 逐个加载各个模块
+			for(IModulePointMap::iterator it=m_mapModulePoint.begin(); it != m_mapModulePoint.end(); ++it)
+			{
+				it->second->Load(this);
+			}
 	}
 
-	return TRUE;
 
+	// 在vista和win7下允许低等级进程向高等级进程发送消息
+#define MSGFLT_ADD	1
+#define MSGFLT_REMOVE	2
+
+	HMODULE hUserModule = LoadLibrary(L"user32.dll");
+	if( NULL == hUserModule)
+		return FALSE;
+
+	typedef BOOL (WINAPI *PChangeWindowMessageFilter)(UINT, DWORD);
+	PChangeWindowMessageFilter pMsgFilter = (PChangeWindowMessageFilter)GetProcAddress(
+	hUserModule, "ChangeWindowMessageFilter");
+
+	if( NULL == pMsgFilter)
+		return FALSE;
+
+	BOOL bResult = pMsgFilter(WM_COPYDATA, MSGFLT_ADD);
+	ASSERT(bResult == TRUE);
+
+	if( hUserModule != NULL)
+		FreeLibrary(hUserModule);
+
+	return TRUE;
 }
