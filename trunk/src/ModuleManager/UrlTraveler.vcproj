@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include"
+				AdditionalIncludeDirectories="..\..\include;..\..\thirdlib\duilib\DuiLib"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -68,9 +68,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="MainFramed.lib"
 				OutputFile="..\..\bin\$(ProjectName)d.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\lib"
+				AdditionalLibraryDirectories="..\..\lib; ..\..\bin\"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
@@ -152,6 +153,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="MainFrame.lib"
 				OutputFile="..\..\bin\$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib"
@@ -194,6 +196,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\ModuleImp.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -224,7 +230,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\include\Module.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\ModuleImp.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\SndaBase.h"
 				>
 			</File>
 			<File
