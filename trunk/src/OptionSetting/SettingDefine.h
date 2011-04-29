@@ -3,12 +3,6 @@
 // 设置界面的对外的头文件信息
 #include "SndaBase.h"
 
-extern "C" 
-{
-	DLLEXPORT IModuleFactory*	GetModuleFactory();
-	DLLEXPORT void	ReleaseModuleFactory( IModuleFactory*);
-}
-
 namespace setting
 {
 	// Setting对外公开的事件

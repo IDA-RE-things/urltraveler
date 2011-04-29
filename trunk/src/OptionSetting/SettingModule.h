@@ -4,6 +4,13 @@
 #include "Module.h"
 #include "ModuleImp.h"
 
+
+extern "C" 
+{
+	DLLEXPORT IModuleFactory*	GetModuleFactory();
+	DLLEXPORT void	ReleaseModuleFactory( IModuleFactory*);
+}
+
 class SettingModule : public ModuleImpl
 {
 public:
