@@ -14,7 +14,7 @@ using namespace boost::assign;
 
 // 当前需要加载的所有的模块列表
 
-#ifdef DEBUG
+#ifdef _DEBUG
 #define MODULE_NAME(X) L#X##L"d.dll"
 #else
 #define MODULE_NAME(X) L#X##L".dll"
