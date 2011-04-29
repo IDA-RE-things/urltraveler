@@ -3,11 +3,11 @@
 #include "SndaBase.h"
 #include "UrlTravelerHeader.h"
 
-class IModule;
-class IModuleFactory;
-class IModuleManager;
+interface IModule;
+interface IModuleFactory;
+interface IModuleManager;
 
-class IModule
+interface IModule
 {
 	//----------------------------------------------------------------------------------------
 	//名称: Load
@@ -68,7 +68,7 @@ class IModule
 	//		@param	lparam			参数1
 	//		@param	rparam			参数2
 	//----------------------------------------------------------------------------------------
-	virtual int32 CallDirect(const param lparam ,const param rparam) PURE;
+	virtual int32 CallDirect(const param lparam, param wparam) PURE;
 
  	//----------------------------------------------------------------------------------------
 	//名称: PaybackExtraInfo
@@ -88,7 +88,7 @@ class IModule
 //描述: 一个DLL中可以包含多个IModule，通过IModuleFactory，总线可以知晓当前Dll中的
 //	所有的模块。引入IModuleFactory的最主要的原因是为了避免Project过多。
 //----------------------------------------------------------------------------------------
-class IModuleFactory
+interface IModuleFactory
 {
 	//----------------------------------------------------------------------------------------
 	//名称: QueryIModuleCounter
@@ -122,16 +122,15 @@ class IModuleFactory
 //名称: IModuleManager
 //描述: 模块总线结构，用以对模块进行管理以及各个模块之间进行交互。
 //----------------------------------------------------------------------------------------
-class IModuleManager
+interface IModuleManager
 {
-public:
 	//----------------------------------------------------------------------------------------
 	//名称: PushEvent
 	//描述: Push给定的事件
 	//参数: 
 	//		@param	evt			需要处理的事件
 	//----------------------------------------------------------------------------------------
-	virtual bool PushEvent(const Event& evt ) PURE;
+	virtual BOOL PushEvent(const Event& evt ) PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: PushMessage
@@ -139,7 +138,7 @@ public:
 	//参数: 
 	//		@param	msg			需要处理的事件
 	//----------------------------------------------------------------------------------------
-	virtual bool PushMessage(const Message& msg) PURE;
+	virtual BOOL PushMessage(const Message& msg) PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: CallService

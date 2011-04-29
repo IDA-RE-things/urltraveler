@@ -7,12 +7,12 @@
 // 收藏夹中每一个收藏记录的数据
 struct FavoriteLineData
 {
-	int32	nCatId;				// 分类ID
-	int32	nParentCatId;	//	父类的ID
-	wchar_t	szUrl;		//	收藏的URL
-	wchar_t	szTitle;		//	描述信息
-	int32	nClickTimes;	//	点击次数
-	int32	nOrder;			//	顺序
+	wchar_t	szTitle;			//	描述文本，或者为分类名称，或者为URL的title
+	int32		nCatId;				// 分类ID
+	int32		nParentCatId;	//	父类的ID
+	wchar_t	szUrl;			//	收藏的URL
+	int32		nClickTimes;		//	点击次数
+	int32		nOrder;				//	顺序
 };
 typedef FavoriteLineData	FAVORITELINEDATA;
 typedef FAVORITELINEDATA* PFAVORITELINEDATA;
@@ -40,13 +40,13 @@ class IPlugIn
 	//名称: GetBrowserName
 	//描述: 获取该插件对应的浏览器的名称和版本
 	//----------------------------------------------------------------------------------------
-	virtual int32 GetBrowserName() PURE;
+	virtual const wchar_t* GetBrowserName() PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetInstallPath
 	//描述: 获取插件对应的浏览器的安装目录
 	//----------------------------------------------------------------------------------------
-	virtual int32 GetInstallPath() PURE;
+	virtual const wchar_t* GetInstallPath() PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetFavoriteDataPath
