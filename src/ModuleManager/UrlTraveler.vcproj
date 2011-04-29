@@ -238,6 +238,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\PlugIn.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource.h"
 				>
 			</File>
