@@ -1,6 +1,7 @@
 #pragma  once
 
 #include "SndaBase.h"
+#include "UrlTravelerHeader.h"
 
 class IModule;
 class IModuleFactory;
@@ -48,7 +49,7 @@ class IModule
 	//参数: 
 	//		@param	evt			需要处理的事件
 	//----------------------------------------------------------------------------------------
-	virtual void ProcessEvent(Event const& evt) PURE;
+	virtual void ProcessEvent(const Event& evt) PURE;
 
  	//----------------------------------------------------------------------------------------
 	//名称: ProcessMessage
@@ -57,7 +58,7 @@ class IModule
 	//参数: 
 	//		@param	msg			需要处理的广播消息
 	//----------------------------------------------------------------------------------------
-	virtual void ProcessMessage(Message const& msg) PURE;
+	virtual void ProcessMessage(const Message& msg) PURE;
 
  	//----------------------------------------------------------------------------------------
 	//名称: CallDirect

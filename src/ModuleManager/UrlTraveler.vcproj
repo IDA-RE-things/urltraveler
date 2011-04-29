@@ -257,6 +257,10 @@
 				RelativePath=".\UrlTraveler.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\include\UrlTravelerHeader.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

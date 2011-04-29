@@ -67,26 +67,6 @@ typedef unsigned char byte;
 typedef unsigned long ulong;
 
 
-#if defined(_WIN64)
-typedef uint64 uintptr;
-typedef uint32 EventValue;
-typedef uint32 MessageValue;
-typedef uint32 ServiceValue;
-typedef uint32 uin;
-typedef uint32 tid;
-typedef uint64 param;
-#else
-typedef uint32 uintptr;
-typedef uint32 EventValue;
-typedef uint32 MessageValue;
-typedef uint32 ServiceValue;
-typedef uint32 uin;
-typedef uint32 tid;
-typedef uint32 param;
-#endif
-
-typedef uint32 Cookie;
-
 #ifndef MAX_PATH
 #define MAX_PATH          260
 #endif
