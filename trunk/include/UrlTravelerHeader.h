@@ -25,6 +25,7 @@ typedef uint32 tid;
 typedef uint32 param;
 #endif
 
+typedef uintptr	HTIME;
 typedef uint16 ModuleIdentity;
 typedef uint32 Cookie;
 typedef uint32 Value;
@@ -258,4 +259,24 @@ struct Message
 	param param2;
 	param param3;
 	ExtraInfo* m_pstExtraInfo;//附加信息放这里	
+};
+
+template<ModuleIdentity id>
+struct MakeMessage
+{
+	Message operator ()(MessageValue  const messageValue,
+	param const param0=0,
+	param const param1=0,
+	param const param2=0,
+	param const param3=0,
+	ExtraInfo *extraInfo=NULL)
+	{
+		return Message(messageValue,
+			id,
+			param0,
+			param1,
+			param2,
+			param3,
+			extraInfo);
+	}
 };

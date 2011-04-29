@@ -3,13 +3,19 @@
 
 #include "stdafx.h"
 #include "ModuleManager.h"
+#include "ModuleManagerImpl.h"
 
 #define MAX_LOADSTRING 100
+#define CYCLE_TIMER		10010
+#define CYCLE_TIMER_LENGTH	100
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
+UINT32	hTime;			//	¾ä±ú
+ModuleManagerImpl module_manager;
+
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -107,17 +113,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    HWND hWnd;
 
    hInst = hInstance; // Store instance handle in our global variable
-
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
-
    if (!hWnd)
    {
       return FALSE;
    }
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+   // ÉèÖÃ¶¨Ê±Æ÷
+   hTime = ::SetTimer(hWnd, CYCLE_TIMER,  CYCLE_TIMER_LENGTH, NULL);
+
+//    ShowWindow(hWnd, nCmdShow);
+//    UpdateWindow(hWnd);
+
+   module_manager.Init();
 
    return TRUE;
 }
@@ -156,14 +165,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
+
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code here...
 		EndPaint(hWnd, &ps);
 		break;
+
+	case WM_TIMER:
+		{
+		   hTime = ::SetTimer(hWnd, CYCLE_TIMER,  CYCLE_TIMER_LENGTH, NULL);
+			break;
+		}
+
 	case WM_DESTROY:
-		PostQuitMessage(0);
+		{
+			KillTimer(hWnd,CYCLE_TIMER);
+			PostQuitMessage(0);
+		}
 		break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}

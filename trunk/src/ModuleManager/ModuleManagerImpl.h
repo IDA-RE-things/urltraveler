@@ -37,6 +37,8 @@ typedef ModuleInterface MODULEINTERFACE;
 typedef MODULEINTERFACE* PMODULEINTERFACE;
 
 
+#define CYCLE_TIME		10010				//	定时器的ID
+
 class ModuleManagerImpl : public IModuleManager
 {
 public:
@@ -67,10 +69,20 @@ public:
 	//----------------------------------------------------------------------------------------
 	virtual int32 CallService(const param lparam ,param rparam ) ;
 
+	//----------------------------------------------------------------------------------------
+	//名称: Init
+	//描述: 执行初始化
+	//参数: 
+	//		@param	msg			需要处理的事件
+	//----------------------------------------------------------------------------------------
+	BOOL	Init();
+
+
 protected:
 
 	// 加载每一个模块，获取到该模块的IModule指针，然后并保存起来
-	BOOL	LoadModules();
+	void		LoadModules();
+	BOOL	Exit();
 
 private:
 
@@ -82,4 +94,11 @@ private:
 	typedef std::map<ModuleId, IModule*> IModulePointMap;
 	IModulePointMap m_mapModulePoint;
 
+private:
+	
+	// 内部的隐藏窗口句柄，不可见
+	HANDLE	m_hInnerWnd;
+
+	// 定时器
+	HTIME		m_hTimers;		
 };

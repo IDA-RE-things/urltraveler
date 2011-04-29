@@ -45,7 +45,7 @@ int32 ModuleManagerImpl::CallService(const param lparam ,param rparam )
 
 static MODULELIST g_stInitList;
 
-BOOL	ModuleManagerImpl::LoadModules()
+void	ModuleManagerImpl::LoadModules()
 {
 	ModuleList::DllModuleList::iterator itr = g_stInitList.m_stDllModuleList.begin();
 	for(; itr != g_stInitList.m_stDllModuleList.end(); ++itr)
@@ -58,7 +58,7 @@ BOOL	ModuleManagerImpl::LoadModules()
 			{
 				std::wstring wstrModuleName = itr->first;
 				wstrModuleName.append(L" 加载失败");
-				MessageBoxW(NULL, L"DLL加载失败", wstrModuleName.c_str(), MB_OK);
+				MessageBoxW(NULL, wstrModuleName.c_str(), L"DLL加载失败", MB_OK);
 				continue ;
 			}
 
@@ -76,7 +76,7 @@ BOOL	ModuleManagerImpl::LoadModules()
 			{
 				std::wstring wstrModuleName = itr->first;
 				wstrModuleName.append(L" 导出GetModuleFactory失败");
-				MessageBoxW(NULL, L"DLL加载失败", wstrModuleName.c_str(), MB_OK);
+				MessageBoxW(NULL, wstrModuleName.c_str(), L"DLL加载失败", MB_OK);
 				continue ;
 			}
 
@@ -87,7 +87,7 @@ BOOL	ModuleManagerImpl::LoadModules()
 			{
 				std::wstring wstrModuleName = itr->first;
 				wstrModuleName.append(L" QueryModuleCounter失败");
-				MessageBoxW(NULL, L"DLL加载失败", wstrModuleName.c_str(), MB_OK);
+				MessageBoxW(NULL, wstrModuleName.c_str(), L"DLL加载失败", MB_OK);
 				continue ;
 			}
 
@@ -99,7 +99,7 @@ BOOL	ModuleManagerImpl::LoadModules()
 				{
 					std::wstring wstrModuleName = itr->first;
 					wstrModuleName.append(L" QueryModulePoint失败");
-					MessageBoxW(NULL, L"DLL加载失败", wstrModuleName.c_str(), MB_OK);
+					MessageBoxW(NULL, wstrModuleName.c_str(), L"DLL加载失败", MB_OK);
 					continue ;
 				}
 
@@ -116,7 +116,11 @@ BOOL	ModuleManagerImpl::LoadModules()
 				it->second->Load(this);
 			}
 	}
+}
 
+BOOL ModuleManagerImpl::Init()
+{
+	LoadModules();
 
 	// 在vista和win7下允许低等级进程向高等级进程发送消息
 #define MSGFLT_ADD	1
@@ -130,14 +134,19 @@ BOOL	ModuleManagerImpl::LoadModules()
 	PChangeWindowMessageFilter pMsgFilter = (PChangeWindowMessageFilter)GetProcAddress(
 	hUserModule, "ChangeWindowMessageFilter");
 
-	if( NULL == pMsgFilter)
-		return FALSE;
-
-	BOOL bResult = pMsgFilter(WM_COPYDATA, MSGFLT_ADD);
-	ASSERT(bResult == TRUE);
+	if( NULL != pMsgFilter)
+	{
+		BOOL bResult = pMsgFilter(WM_COPYDATA, MSGFLT_ADD);
+		ASSERT(bResult == TRUE);
+	}
 
 	if( hUserModule != NULL)
 		FreeLibrary(hUserModule);
 
+	return TRUE;
+}
+
+BOOL	ModuleManagerImpl::Exit()
+{
 	return TRUE;
 }
