@@ -1,12 +1,12 @@
 #include "MainFrameModule.h"
 
+using namespace mainframe;
+
 namespace mainframe
 {
 	MainFrameModule*	g_MainFrameModule = NULL;
 	CMainFrameModuleFactory*	g_MainFrameModuleFactory = NULL;
 }
-
-using namespace mainframe;
 
 // 导出借口实现
 IModuleFactory*	GetModuleFactory()
@@ -40,30 +40,6 @@ MainFrameModule::MainFrameModule()
 MainFrameModule::~MainFrameModule()
 {
 
-}
-
-//----------------------------------------------------------------------------------------
-//名称: Load
-//描述: 主程序通过该方法对模块进行加载
-//参数: 
-//		@param	pManager			主模块总线的指针	
-//返回: 
-//		如果加载成功，返回TRUE，否则返回FALSE
-//----------------------------------------------------------------------------------------
-BOOL MainFrameModule::Load(IModuleManager* pManager)
-{
-	return TRUE;
-}
-
-//----------------------------------------------------------------------------------------
-//名称: Unload
-//描述: 主程序通过该方法对模块进行卸载
-//返回: 
-//		如果卸载成功，返回TRUE，否则返回FALSE
-//----------------------------------------------------------------------------------------
-BOOL MainFrameModule::Unload() 
-{
-	return TRUE;
 }
 
 //----------------------------------------------------------------------------------------
