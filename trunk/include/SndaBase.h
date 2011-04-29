@@ -27,8 +27,9 @@
 #ifdef _USE_LINUX
 #define SNDADLLAPI 
 #else
-#define SNDADLLAPI _declspec(dllexport)
+#define SNDADLLAPI	_declspec(dllexport)
 #endif
+#define DLLEXPORT		SNDADLLAPI
 
 #ifndef PARRAYSIZE
 #define PARRAYSIZE(array) ((sizeof(array)/sizeof(array[0])))

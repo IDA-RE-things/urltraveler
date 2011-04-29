@@ -114,7 +114,7 @@ interface IModuleFactory
 	//		@param	nCount			参数表明后面buf的维度。如果是2，表明后面buf的维度是2
 	//		@param	ppModule		指向一个IModule数组的开始位置，buf的内容由实现者填充
 	//----------------------------------------------------------------------------------------
-	virtual void ReleaseIModulePoint(uint32 nCount, IModule* pModule ) PURE;
+	virtual void ReleaseModulePoint(uint32 nCount, IModule* pModule ) PURE;
 };
 
 
