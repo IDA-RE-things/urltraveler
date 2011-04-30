@@ -213,6 +213,29 @@ struct Event
 	ExtraInfo* m_pstExtraInfo;//附加信息放这里	
 };
 
+
+template<ModuleIdentity id>
+struct  MakeEvent
+{
+	Event operator()(EventValue  const eventValue,
+		ModuleIdentity const desMId,
+		param const param0=0,
+		param const param1=0,
+		param const param2=0,
+		param const param3=0,
+		ExtraInfo *extraInfo=NULL)
+	{
+		return Event(eventValue,
+			id,
+			desMId,
+			param0,
+			param1,
+			param2,
+			param3,
+			extraInfo);
+	}
+};
+
 // 额外的附加消息，由各个模块自行去实现对应的Event。释放由各个模块自行释放
 struct ExtraInfo : public Event
 {
