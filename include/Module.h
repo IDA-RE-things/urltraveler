@@ -145,5 +145,5 @@ interface IModuleManager
 	//参数: 
 	//		@param	msg			需要处理的事件
 	//----------------------------------------------------------------------------------------
-	virtual int32 CallService(const param lparam ,param rparam ) PURE;
+	virtual int32 CallService(const ServiceValue lServiceValue ,param rparam ) PURE;
 };
