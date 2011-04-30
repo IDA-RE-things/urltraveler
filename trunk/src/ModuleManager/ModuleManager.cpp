@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "ModuleManager.h"
 #include "ModuleManagerImpl.h"
+#include "MainFrameDefine.h"
 
 #define MAX_LOADSTRING 100
 #define CYCLE_TIMER		10010
@@ -120,13 +121,21 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
+   module_manager.Init();
+
+   // 通知MainFrame模块启动，打开主界面
+   module_manager.PushEvent(
+	   MakeEvent<MODULE_ID_MAINFRAME>()(mainframe::EVENT_VALUE_MAINFRAME_OPEN,
+	   MODULE_ID_MAINFRAME));
+
+
    // 设置定时器
    hTime = ::SetTimer(hWnd, CYCLE_TIMER,  CYCLE_TIMER_LENGTH, NULL);
 
 //    ShowWindow(hWnd, nCmdShow);
 //    UpdateWindow(hWnd);
 
-   module_manager.Init();
+
 
    return TRUE;
 }
