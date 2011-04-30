@@ -1,7 +1,19 @@
 #include "ModuleManagerImpl.h"
 #include "ModuleList.h"
+#include <sstream>
+#include "time.h"
+
+#define CYCLE_TIMER		10010
+#define CYCLE_TIMER_LENGTH	100
+
+using namespace core;
+
+#define 	EXIST_MODULE(Y,X) ((Y=m_mapModulePoint.find((ModuleId)(X))) != m_mapModulePoint.end())
+
 
 ModuleManagerImpl::ModuleManagerImpl()
+:m_eventMsgBuf(10240),
+m_bRun(FALSE)
 {
 }
 
@@ -17,7 +29,21 @@ ModuleManagerImpl::~ModuleManagerImpl()
 //----------------------------------------------------------------------------------------
 BOOL ModuleManagerImpl::PushEvent(const Event& evt )
 {
-	return true;
+	ASSERT(evt.srcMId != MODULE_ID_INVALID && evt.desMId != MODULE_ID_INVALID);
+	if( m_eventMsgBuf.size() > 10000)
+	{
+		ASSERT("ModuleManagerImpl::PushEvent: circle buffer is full, please wait a while");
+		return FALSE;
+	}
+
+	if(IsEventValue(evt.eventValue))
+	{
+		m_eventMsgBuf.push_back(evt);
+		return TRUE;
+	}
+
+	ASSERT("ModuleManagerImpl::PushEvent: evt is not a event");
+	return TRUE;
 }
 
 //----------------------------------------------------------------------------------------
@@ -28,6 +54,20 @@ BOOL ModuleManagerImpl::PushEvent(const Event& evt )
 //----------------------------------------------------------------------------------------
 BOOL ModuleManagerImpl::PushMessage(const Message& msg)
 {
+	ASSERT(msg.srcMId != MODULE_ID_INVALID);
+	if( m_eventMsgBuf.size() > 10000)
+	{
+		ASSERT("ModuleManagerImpl::PushMessage: circle buffer is full, please wait a while");
+		return FALSE;
+	}
+
+	if(IsMessageValue(msg.messageValue))
+	{
+		m_eventMsgBuf.push_back(msg);
+		return TRUE;
+	}
+
+	ASSERT("ModuleManagerImpl::PushMessage: msg is not a message");
 	return TRUE;
 }
 
@@ -37,29 +77,40 @@ BOOL ModuleManagerImpl::PushMessage(const Message& msg)
 //参数: 
 //		@param	msg			需要处理的事件
 //----------------------------------------------------------------------------------------
-int32 ModuleManagerImpl::CallService(const param lparam ,param rparam )
+int32 ModuleManagerImpl::CallService(const ServiceValue lServiceValue ,param rparam )
 {
+	int nRet = -1;
+	IModulePointMap::iterator itr;
+
+	if(IsServiceValue(lServiceValue))
+	{
+		if(EXIST_MODULE(itr,MODULIE_ID_FROM_SERVICE_VALUE(lServiceValue)) == FALSE)
+		{
+			ASSERT(0);
+			return -1;
+		}
+		return itr->second->CallDirect(lServiceValue,rparam);
+	}
+
+	//  CallService也支持通过Event的方式传递
+	if(IsEventValue(lServiceValue))
+	{
+		if(EXIST_MODULE(itr,MODULIE_ID_FROM_EVENT_VALUE(lServiceValue)) == FALSE)
+		{
+			ASSERT(0);
+			return -1;
+		}
+		return itr->second->CallDirect(lServiceValue,rparam);
+	}
+
 	return 0;
 }
 
 
 static MODULELIST g_stInitList;
 
-std::wstring  GetModulePathW(HMODULE hModule=NULL)
-{
-	std::wstring str_path;
-	wchar_t temp[MAX_PATH+1];
-	::GetModuleFileNameW(hModule, temp, MAX_PATH);
-	str_path = temp;
-	std::wstring::size_type index = str_path.rfind('\\');
-	str_path = str_path.substr(0,index+1);
-	return str_path;
-}
-
 void	ModuleManagerImpl::LoadModules()
 {
-	wstring wstrPath = GetModulePathW();
-
 	ModuleList::DllModuleList::iterator itr = g_stInitList.m_stDllModuleList.begin();
 	for(; itr != g_stInitList.m_stDllModuleList.end(); ++itr)
 	{
@@ -131,6 +182,69 @@ void	ModuleManagerImpl::LoadModules()
 	}
 }
 
+static LRESULT CALLBACK CycleProc(HWND inWindow, UINT inMsg, WPARAM inParam, LPARAM inOtherParam)
+{
+	ModuleManagerImpl * pModuleManagerImpl = (ModuleManagerImpl*)GetWindowLong(inWindow, GWL_USERDATA);
+	if(pModuleManagerImpl)
+	{
+		if(inMsg==WM_TIMER)
+		{
+			pModuleManagerImpl->OnCycleTrigger();
+			return 1 ;
+		}
+
+		return DefWindowProc(inWindow, inMsg, inParam, inOtherParam);
+	}
+
+	if(inMsg == WM_NCCREATE)
+		return 1;
+
+	return DefWindowProcW(inWindow, inMsg, inParam, inOtherParam);
+}
+
+static uint32 s_iWndAtom = (unsigned)time( NULL );
+
+// 创建和销毁内部窗口
+void ModuleManagerImpl::CreatCycleWnd()
+{
+	std::wstringstream os;
+	os<<L"CycleWnd"<<s_iWndAtom;
+	std::wstring className=os.str();
+
+	WNDCLASSEX theWndClass;
+	theWndClass.cbSize = sizeof(theWndClass);
+	theWndClass.style = 0;
+	theWndClass.lpfnWndProc = &CycleProc;
+	theWndClass.cbClsExtra = 0;
+	theWndClass.cbWndExtra = 0;
+	theWndClass.hInstance = NULL;
+	theWndClass.hIcon = NULL;
+	theWndClass.hCursor = NULL;
+	theWndClass.hbrBackground = NULL;
+	theWndClass.lpszMenuName = NULL;
+	theWndClass.lpszClassName = className.c_str();
+	theWndClass.hIconSm = NULL;
+	ATOM theWndAtom = ::RegisterClassEx(&theWndClass);
+	ASSERT(theWndAtom != NULL);
+
+	m_hInnerWnd = ::CreateWindow( className.c_str(), className.c_str(), 
+		WS_POPUP, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, NULL,
+		NULL, NULL, NULL);
+	ASSERT(m_hInnerWnd != NULL);
+
+	SetWindowLongW(m_hInnerWnd, GWL_USERDATA, (LONG)this);
+}
+
+void ModuleManagerImpl::DestroyCycleWnd()
+{
+	::DestroyWindow(m_hInnerWnd);
+
+	std::wstringstream os;
+	os<<L"CycleWnd"<<s_iWndAtom;
+	std::wstring className=os.str();
+	UnregisterClass(className.c_str(), NULL );
+}
+
 BOOL ModuleManagerImpl::Init()
 {
 	LoadModules();
@@ -159,7 +273,107 @@ BOOL ModuleManagerImpl::Init()
 	return TRUE;
 }
 
-BOOL	ModuleManagerImpl::Exit()
+BOOL ModuleManagerImpl::Exit()
 {
 	return TRUE;
+}
+
+void	ModuleManagerImpl::Run()
+{
+	// 创建内部窗口
+	CreatCycleWnd();
+
+	// 启动定时器
+	m_hTimers = ::SetTimer(m_hInnerWnd, CYCLE_TIMER,  CYCLE_TIMER_LENGTH, NULL);
+
+
+	m_bRun = TRUE;
+
+	OnCycleTrigger();
+
+	MSG msg;
+	while (GetMessage (&msg, NULL, 0, 0) 
+		&& ( m_bRun != FALSE))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+
+	while(PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)
+		&& m_eventMsgBuf.size() > 0 )
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	// 结束的时候终止定时器，同时销毁窗口
+	KillTimer(NULL,m_hTimers);
+	DestroyCycleWnd();
+}
+
+void ModuleManagerImpl::OnCycleTrigger()
+{
+	PushMessage(MakeMessage<MODULE_ID_CORE>()(MESSAGE_VALUE_SYS_CYCLE_TRIGGER));
+
+	while(m_eventMsgBuf.size() > 0)
+	{
+		IModulePointMap::iterator itr;
+
+		Event & eventRef=*reinterpret_cast<Event*>(m_eventMsgBuf[0].szBuffer);
+		Message & messageRef=*reinterpret_cast<Message*>(m_eventMsgBuf[0].szBuffer);
+
+		// 如果是Event，则找到目标模块
+		if(IsEventValue(eventRef.eventValue))
+		{
+			Event  evt = eventRef;
+
+			m_eventMsgBuf.pop_front();
+			if(evt.eventValue==EVENT_VALUE_CORE_MAIN_LOOP_EXIT)
+			{
+				Exit();
+				continue;
+			}
+
+			if(EXIST_MODULE(itr,evt.desMId))
+			{
+				itr->second->ProcessEvent(evt);
+
+				// ExtraInfo内容必须由源模块进行释放
+				if(evt.m_pstExtraInfo)
+				{
+					if(EXIST_MODULE(itr,evt.srcMId))
+						itr->second->PaybackExtraInfo(evt.eventValue,&evt);
+					else
+						ASSERT(L"找不到源模块，无法释放ExtraInfo");
+				}
+			}
+			else
+			{
+				ASSERT(L"找不到目标模块");
+			}
+		}
+
+		// 如果是消息，则调用所有模块的ProcessMessage
+		else if(IsMessageValue(messageRef.messageValue))
+		{
+			Message  message= messageRef;
+			m_eventMsgBuf.pop_front();
+
+			for(IModulePointMap::iterator it = m_mapModulePoint.begin(); it != m_mapModulePoint.end();++itr)
+			{
+				(*it).second->ProcessMessage(message);
+			}
+
+			if(message.m_pstExtraInfo)
+			{
+				if(EXIST_MODULE(itr,message.srcMId))
+					itr->second->PaybackExtraInfo(message.messageValue,&message);
+				else
+					ASSERT(L"找不到源模块，无法释放ExtraInfo");
+			}
+		}	
+
+	}
+
 }
