@@ -15,7 +15,7 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 UINT32	hTime;			//	¾ä±ú
-ModuleManagerImpl module_manager;
+core::ModuleManagerImpl module_manager;
 
 
 // Forward declarations of functions included in this code module:
@@ -47,8 +47,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		return FALSE;
 	}
 
-	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MODULEMANAGER));
+	// hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MODULEMANAGER));
 
+/*
 	// Main message loop:
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -61,6 +62,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 
 	return (int) msg.wParam;
+*/
+
+	return TRUE;
 }
 
 
@@ -111,6 +115,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
+/*
    HWND hWnd;
 
    hInst = hInstance; // Store instance handle in our global variable
@@ -120,6 +125,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+*/
 
    module_manager.Init();
 
@@ -128,14 +134,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	   MakeEvent<MODULE_ID_MAINFRAME>()(mainframe::EVENT_VALUE_MAINFRAME_OPEN,
 	   MODULE_ID_MAINFRAME));
 
-
-   // ÉèÖÃ¶¨Ê±Æ÷
-   hTime = ::SetTimer(hWnd, CYCLE_TIMER,  CYCLE_TIMER_LENGTH, NULL);
-
-//    ShowWindow(hWnd, nCmdShow);
-//    UpdateWindow(hWnd);
-
-
+   module_manager.Run();
 
    return TRUE;
 }
@@ -176,12 +175,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hdc = BeginPaint(hWnd, &ps);
 		EndPaint(hWnd, &ps);
 		break;
-
-	case WM_TIMER:
-		{
-		   hTime = ::SetTimer(hWnd, CYCLE_TIMER,  CYCLE_TIMER_LENGTH, NULL);
-			break;
-		}
 
 	case WM_DESTROY:
 		{
