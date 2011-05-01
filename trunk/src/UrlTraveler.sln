@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModuleManager", "ModuleMana
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OptionSetting", "OptionSetting\OptionSetting.vcproj", "{BF482DF9-AA3E-4B45-A6EF-88D7D6EBD8BD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "Utility\Utility.vcproj", "{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -59,6 +61,14 @@ Global
 		{BF482DF9-AA3E-4B45-A6EF-88D7D6EBD8BD}.UnicodeDebug|Win32.Build.0 = Debug|Win32
 		{BF482DF9-AA3E-4B45-A6EF-88D7D6EBD8BD}.UnicodeRelease|Win32.ActiveCfg = Release|Win32
 		{BF482DF9-AA3E-4B45-A6EF-88D7D6EBD8BD}.UnicodeRelease|Win32.Build.0 = Release|Win32
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}.Debug|Win32.Build.0 = Debug|Win32
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}.Release|Win32.ActiveCfg = Release|Win32
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}.Release|Win32.Build.0 = Release|Win32
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}.UnicodeDebug|Win32.ActiveCfg = Debug|Win32
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}.UnicodeDebug|Win32.Build.0 = Debug|Win32
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}.UnicodeRelease|Win32.ActiveCfg = Release|Win32
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}.UnicodeRelease|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "lockmgr.h"
 
 #include <boost/circular_buffer.hpp>
 #include <boost/bimap.hpp>
@@ -166,6 +167,12 @@ namespace core
 
 	private:
 
+		// 用来处理PutAnsycEvent和PutAnsycMessage
+		CCSWrapper	m_Lock;
+
+		typedef std::vector<BufUnit> BufUnitVec;
+		BufUnitVec m_vectorOut;
+		BufUnitVec m_vectorIn;
 
 
 		// 总线是否已经处于运行状态
