@@ -13,6 +13,8 @@ extern "C"
 
 class MainFrameModule : public ModuleImpl
 {
+	DECLEAR_EVENT_MAP();
+
 public:
 	MainFrameModule();
 	~MainFrameModule();
