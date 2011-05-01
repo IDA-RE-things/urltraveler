@@ -50,6 +50,7 @@ BEGIN_EVENT_MAP(MainFrameModule)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(MainFrameModule)
+	ON_MESSAGE(MESSAGE_VALUE_SYS_CYCLE_TRIGGER, OnMessage_CycleTrigged)
 	ON_MESSAGE(MESSAGE_VALUE_EXIT, OnMessage_Exit)
 END_MESSAGE_MAP()
 
@@ -87,6 +88,25 @@ uint32 const MainFrameModule::GetModuleId()
 //----------------------------------------------------------------------------------------
 void MainFrameModule::ProcessEvent(const Event& evt)
 {
+	EventValue ev = evt.eventValue;
+	ASSERT( ev != EVENT_VALUE_INVALID);
+
+/*
+	EventHandlerTableEntry* pEntry = &MainFrameModule::m_eventTableDriven[0];
+	while( pEntry)
+	{
+		if( pEntry->m_nEventValue == 0)
+			break;
+
+		if( pEntry->m_nEventValue == event_value
+			&& pEntry->m_hHandler != NULL)
+		{
+			return (*pEntry->m_hHandler)(this, pEvent);
+		}
+
+		++pEntry;
+	}
+*/
 
 }
 
@@ -166,6 +186,12 @@ void	MainFrameModule::OnMessage_Exit(Message* pMessage)
 {
 
 }
+
+void	MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
+{
+
+}
+
 
 void	MainFrameModule::OnService_Test(ServiceValue lServiceValue, param lParam)
 {
