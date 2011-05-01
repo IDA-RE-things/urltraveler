@@ -47,6 +47,18 @@ BOOL ModuleManagerImpl::PushEvent(const Event& evt )
 }
 
 //----------------------------------------------------------------------------------------
+//名称: PushAnsycEvent
+//描述: 如果源发送者不是位于主进程中，而是位于独立的线程中，此时它需要向总线发送
+//		事件，则必须通过异步发送模式。
+//参数: 
+//		@param	evt			需要处理的事件
+//----------------------------------------------------------------------------------------
+BOOL ModuleManagerImpl::PushAnsycEvent(const Event& evt )
+{
+	return TRUE;
+}
+
+//----------------------------------------------------------------------------------------
 //名称: PushMessage
 //描述: 需要广播的消息
 //参数: 
@@ -68,6 +80,18 @@ BOOL ModuleManagerImpl::PushMessage(const Message& msg)
 	}
 
 	ASSERT("ModuleManagerImpl::PushMessage: msg is not a message");
+	return TRUE;
+}
+
+//----------------------------------------------------------------------------------------
+//名称: PushAnsycMessage
+//描述: 如果源发送者不是位于主进程中，而是位于独立的线程中，此时它需要向总线发送
+//		事件，则必须通过异步发送模式。
+//参数: 
+//		@param	msg			需要处理的事件
+//----------------------------------------------------------------------------------------
+BOOL ModuleManagerImpl::PushAnsycMessage(const Message& msg)
+{
 	return TRUE;
 }
 
@@ -273,9 +297,26 @@ BOOL ModuleManagerImpl::Init()
 	return TRUE;
 }
 
-BOOL ModuleManagerImpl::Exit()
+void ModuleManagerImpl::Destroy()
 {
-	return TRUE;
+	// 释放IModule指针数组
+	for(IModulePointMap::iterator it = m_mapModulePoint.begin(); it!=m_mapModulePoint.end();++it)
+	{
+		it->second->Unload();
+	}
+	m_mapModulePoint.clear();
+
+	for(ModuleInterfaceMap::iterator it=m_mapModuleInterface.begin();it!=m_mapModuleInterface.end();++it)
+	{
+		it->second.m_pModuleFactory->ReleaseModulePoint(it->second.m_pModules.size(),it->second.m_pModules[0]);
+		it->second.m_pReleaseModuleFactoryFunc(it->second.m_pModuleFactory);
+	}
+	m_mapModuleInterface.clear();
+}
+
+void ModuleManagerImpl::Exit()
+{
+	m_bRun = TRUE;
 }
 
 void	ModuleManagerImpl::Run()
@@ -373,6 +414,31 @@ void ModuleManagerImpl::OnCycleTrigger()
 					ASSERT(L"找不到源模块，无法释放ExtraInfo");
 			}
 		}	
+
+		/** 内存占用优化 
+		下面为清理内存时最少保留的内存和其它几个级别的内存数值。
+		*/
+#define MINI_MEM_SIZE	8*1024*1024
+#define MEDIUM_MEM_SIZE 12*1024*1024
+		{
+			static unsigned int iFactor = 0;
+			if(iFactor<10*60)  //前一分钟，10s调用一次
+			{
+				if(0==(iFactor%(10*10)))
+				{
+					::SetProcessWorkingSetSize(::GetCurrentProcess(), MEDIUM_MEM_SIZE, MEDIUM_MEM_SIZE);
+				}
+			}
+			else
+			{
+				if (0==(iFactor%(10*60*5))) //100ms 5分钟
+				{
+					::SetProcessWorkingSetSize(::GetCurrentProcess(), MEDIUM_MEM_SIZE, MEDIUM_MEM_SIZE);
+				}
+			}
+
+			++iFactor;
+		}
 
 	}
 

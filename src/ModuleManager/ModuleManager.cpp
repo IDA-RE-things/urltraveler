@@ -64,6 +64,16 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	return (int) msg.wParam;
 */
 
+	module_manager.Init();
+
+	// 通知MainFrame模块启动，打开主界面
+	module_manager.PushEvent(
+		MakeEvent<MODULE_ID_MAINFRAME>()(mainframe::EVENT_VALUE_MAINFRAME_OPEN,
+		MODULE_ID_MAINFRAME));
+
+	module_manager.Run();
+	module_manager.Destroy();
+
 	return TRUE;
 }
 
@@ -127,14 +137,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
 */
 
-   module_manager.Init();
-
-   // 通知MainFrame模块启动，打开主界面
-   module_manager.PushEvent(
-	   MakeEvent<MODULE_ID_MAINFRAME>()(mainframe::EVENT_VALUE_MAINFRAME_OPEN,
-	   MODULE_ID_MAINFRAME));
-
-   module_manager.Run();
 
    return TRUE;
 }
