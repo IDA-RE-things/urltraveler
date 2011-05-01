@@ -92,16 +92,15 @@ interface IModule
 #define	DECLEAR_EVENT_MAP()  \
 private:   \
 	typedef void (HANDLER_CALL IModule::*PEventHandler)(Event* pEvent );     \
-	typedef struct _EventHanderTable   \
+	typedef struct _EventHanderMapEntries   \
 	{   \
 		EventValue		nEventValue;   \
 		PEventHandler		pfEventHandler;   \
-	} EventHandlerTableEntry;   \
-	\
-	static EventHandlerTableEntry m_eventTableDriven[];
+	} EventHandlerMapEntries;   \
+	static EventHandlerMapEntries m_eventMap[]; 
 
 #define	BEGIN_EVENT_MAP( ModuleClass ) \
-	ModuleClass##::EventHandlerTableEntry ModuleClass##::m_eventTableDriven[] ={ \
+	ModuleClass##::EventHandlerMapEntries ModuleClass##::m_eventMap[] ={ \
 
 #define	ON_EVENT( event_value, event_handler)  \
 	{ event_value,  (PEventHandler)&event_handler },
@@ -114,16 +113,16 @@ private:   \
 #define	DECLEAR_MESSAGE_MAP()  \
 private:   \
 	typedef void (HANDLER_CALL IModule::*PMessageHandler)(Message* pMessage );     \
-	typedef struct _MessageHanderTable   \
+	typedef struct _MessageHanderMapEntries   \
 	{   \
 		MessageValue		nMessageValue;   \
 		PMessageHandler	pfMessageHandler;   \
-	} MessageHandlerTableEntry;   \
+	} MessageHandlerMapEntries;   \
 	\
-	static MessageHandlerTableEntry m_messageTableDriven[];
+	static MessageHandlerMapEntries m_messageMap[];
 
 #define	BEGIN_MESSAGE_MAP( ModuleClass ) \
-	ModuleClass##::MessageHandlerTableEntry ModuleClass##::m_messageTableDriven[] ={ \
+	ModuleClass##::MessageHandlerMapEntries ModuleClass##::m_messageMap[] ={ \
 
 #define	ON_MESSAGE( message_value, message_handler)  \
 	{ message_value,  (PMessageHandler)&message_handler },
@@ -137,15 +136,15 @@ private:   \
 #define	DECLEAR_SERVICE_MAP()  \
 private:   \
 	typedef void (HANDLER_CALL IModule::*PServiceHandler)( ServiceValue value, param wparam );    \
-	typedef struct _ServiceHanderTable    \
+	typedef struct _ServiceHanderMapEntries    \
 	{    \
 		ServiceValue		nServiceValue;		    \
 		PServiceHandler	pfServiceHandler;	\
-	} ServiceHandlerTableEntry;    \
-	static ServiceHandlerTableEntry m_serviceTableDriven[];
+	} ServiceHandlerMapEntries;    \
+	static ServiceHandlerMapEntries m_serviceMap[];
 
 #define	BEGIN_SERVICE_MAP( ModuleClass ) \
-	ModuleClass##::ServiceHandlerTableEntry ModuleClass##::m_serviceTableDriven[] ={ \
+	ModuleClass##::ServiceHandlerMapEntries ModuleClass##::m_serviceMap[] ={ \
 
 #define	ON_SERVICE( service_value, service_handler)  \
 	{ service_value, (PServiceHandler)&service_handler },
