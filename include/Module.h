@@ -82,6 +82,17 @@ interface IModule
 	virtual void PaybackExtraInfo(uint32 valudId, void* pExtraInfo) PURE;
 };
 
+#define	DECLEAR_EVENT_MAP()  \
+private:   \
+typedef uint32 (*CallHandler)( IModule* pParser, Event* pEvent );    \
+typedef struct _HanderTable    \
+{    \
+EventValue		m_nEventValue;		    \
+CallHandler		m_hHandler;			    \
+} HandlerTableEntry;    \
+static HandlerTableEntry m_tableDriven[];
+
+
 //----------------------------------------------------------------------------------------
 //名称: IModuleFactory
 //描述: 一个DLL中可以包含多个IModule，通过IModuleFactory，总线可以知晓当前Dll中的
