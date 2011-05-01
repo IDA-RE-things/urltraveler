@@ -55,7 +55,15 @@ BOOL ModuleManagerImpl::PushEvent(const Event& evt )
 //----------------------------------------------------------------------------------------
 BOOL ModuleManagerImpl::PushAnsycEvent(const Event& evt )
 {
-	return TRUE;
+	CLockMgr<CCSWrapper> guard(m_Lock, TRUE);
+	if(IsEventValue(evt.eventValue))
+	{
+		m_vectorOut.push_back(evt);
+		return TRUE;
+	}
+
+	ASSERT(0);
+	return FALSE;
 }
 
 //----------------------------------------------------------------------------------------
@@ -92,7 +100,15 @@ BOOL ModuleManagerImpl::PushMessage(const Message& msg)
 //----------------------------------------------------------------------------------------
 BOOL ModuleManagerImpl::PushAnsycMessage(const Message& msg)
 {
-	return TRUE;
+	CLockMgr<CCSWrapper> guard(m_Lock, TRUE);
+	if(	IsMessageValue(msg.messageValue))
+	{
+		m_vectorOut.push_back(msg);
+		return TRUE;
+	}
+
+	ASSERT(0);
+	return FALSE;
 }
 
 //----------------------------------------------------------------------------------------
@@ -357,6 +373,17 @@ void ModuleManagerImpl::OnCycleTrigger()
 {
 	PushMessage(MakeMessage<MODULE_ID_CORE>()(MESSAGE_VALUE_SYS_CYCLE_TRIGGER));
 
+	// 将异步Push的Event和Message放入事件循环Buffer中
+	ASSERT(m_vectorIn.size()==0);
+	if(m_vectorOut.size()!=0)
+	{
+		CLockMgr<CCSWrapper> guard(m_Lock, TRUE);
+		std::swap(m_vectorOut, m_vectorIn);
+	}
+	for(BufUnitVec::iterator it=m_vectorIn.begin();it!=m_vectorIn.end();++it)
+		m_eventMsgBuf.push_back(*it);
+	m_vectorIn.clear();
+
 	while(m_eventMsgBuf.size() > 0)
 	{
 		IModulePointMap::iterator itr;
@@ -418,7 +445,7 @@ void ModuleManagerImpl::OnCycleTrigger()
 		/** 内存占用优化 
 		下面为清理内存时最少保留的内存和其它几个级别的内存数值。
 		*/
-#define MINI_MEM_SIZE	8*1024*1024
+#define MINI_MEM_SIZEq	8*1024*1024
 #define MEDIUM_MEM_SIZE 12*1024*1024
 		{
 			static unsigned int iFactor = 0;
