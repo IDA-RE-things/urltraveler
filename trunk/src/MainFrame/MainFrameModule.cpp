@@ -1,4 +1,5 @@
 #include "MainFrameModule.h"
+#include "MainFrameDefine.h"
 
 using namespace mainframe;
 
@@ -42,6 +43,16 @@ MainFrameModule::~MainFrameModule()
 
 }
 
+BEGIN_EVENT_MAP(MainFrameModule)
+	ON_EVENT(EVENT_VALUE_MAINFRAME_OPEN, OnEvent_OpenMainDlg)
+	ON_EVENT(EVENT_VALUE_MAINFRAME_CLOSE, OnEvent_CloseMainDlg)
+	ON_EVENT(EVENT_VALUE_MAINFRAME_HIDE, OnEvent_HideMainDlg)
+END_EVENT_MAP()
+
+BEGIN_MESSAGE_MAP(MainFrameModule)
+	ON_MESSAGE(MESSAGE_VALUE_EXIT, OnMessage_Exit)
+END_MESSAGE_MAP()
+
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
 //描述: 主程序通过该方法获取当前模块的名字，每一个模块都有一个唯一的名字
@@ -72,6 +83,7 @@ uint32 const MainFrameModule::GetModuleId()
 //----------------------------------------------------------------------------------------
 void MainFrameModule::ProcessEvent(const Event& evt)
 {
+
 }
 
 //----------------------------------------------------------------------------------------
@@ -90,12 +102,32 @@ void MainFrameModule::ProcessMessage(const Message& msg)
 //描述: 与Event和Message需要通过总线中转不同，某个模块可以直接调用另外一个模块中的
 //			方法而不需要通过总线。
 //参数: 
-//		@param	lparam			参数1
+//		@param	lServiceValue		参数1
 //		@param	rparam			参数2
 //----------------------------------------------------------------------------------------
-int32 MainFrameModule::CallDirect(const param lparam, param wparam) 
+int32 MainFrameModule::CallDirect(const ServiceValue lServiceValue, param rparam) 
 {
-	return -1;
+	ServiceValue event_value = (ServiceValue)lServiceValue;
+	
+/*
+	EventHandlerTableEntry* pEntry = &MainFrameModule::m_eventTableDriven[0];
+	while( pEntry)
+	{
+		if( pEntry->m_nEventValue == 0)
+			break;
+
+		if( pEntry->m_nEventValue == event_value
+			&& pEntry->m_hHandler != NULL)
+		{
+			return (*pEntry->m_hHandler)(this, pEvent);
+		}
+
+		++pEntry;
+	}
+	
+*/
+
+	return -1;	
 }
 
 //----------------------------------------------------------------------------------------
@@ -110,4 +142,23 @@ int32 MainFrameModule::CallDirect(const param lparam, param wparam)
 void MainFrameModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
 {
 	return;
+}
+
+void	MainFrameModule::OnEvent_OpenMainDlg(Event* pEvent)
+{
+}
+
+void	MainFrameModule::OnEvent_CloseMainDlg(Event* pEvent)
+{
+
+}
+
+void	MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
+{
+
+}
+
+void	MainFrameModule::OnMessage_Exit(Message* pMessage)
+{
+
 }

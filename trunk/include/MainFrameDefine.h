@@ -20,7 +20,7 @@ namespace mainframe
 	// MainFrame能够可能对外发送的广播消息
 	enum E_MainFrameMessageValue
 	{
-
+		MESSAGE_VALUE_EXIT	=	MESSAGE_VALUE_MAINFRAME_BEGIN,
 	};
 
 	// MainFrame能够处理的直接调用
