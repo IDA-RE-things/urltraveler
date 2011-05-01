@@ -15,6 +15,7 @@ class MainFrameModule : public ModuleImpl
 {
 	DECLEAR_EVENT_MAP()
 	DECLEAR_MESSAGE_MAP()
+	DECLEAR_SERVICE_MAP()
 
 public:
 	MainFrameModule();
@@ -85,6 +86,10 @@ protected:
 protected:
 
 	void	OnMessage_Exit(Message* pMessage);	// 程序退出的广播消息，主界面处理该消息，为退出做准备	
+
+protected:
+
+	void	OnService_Test(ServiceValue lServiceValue, param lParam);
 
 };
 

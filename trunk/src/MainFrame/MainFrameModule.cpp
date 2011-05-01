@@ -53,6 +53,10 @@ BEGIN_MESSAGE_MAP(MainFrameModule)
 	ON_MESSAGE(MESSAGE_VALUE_EXIT, OnMessage_Exit)
 END_MESSAGE_MAP()
 
+BEGIN_SERVICE_MAP(MainFrameModule)
+	ON_SERVICE(SERVICE_VALUE_TEST, OnService_Test)
+END_SERVICE_MAP();
+
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
 //描述: 主程序通过该方法获取当前模块的名字，每一个模块都有一个唯一的名字
@@ -159,6 +163,11 @@ void	MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
 }
 
 void	MainFrameModule::OnMessage_Exit(Message* pMessage)
+{
+
+}
+
+void	MainFrameModule::OnService_Test(ServiceValue lServiceValue, param lParam)
 {
 
 }

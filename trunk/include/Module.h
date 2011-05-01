@@ -107,7 +107,7 @@ private:   \
 	{ event_value,  (PEventHandler)&event_handler },
 
 #define	END_EVENT_MAP() \
-	{ 0, NULL}};
+	{ 0, (PEventHandler)NULL}};
 
 
 // 消息处理映射函数
@@ -129,29 +129,29 @@ private:   \
 	{ message_value,  (PMessageHandler)&message_handler },
 
 #define	END_MESSAGE_MAP() \
-	{ 0, NULL}};
+	{ 0, (PMessageHandler)NULL}};
 
 
 
 // 直接调用处理映射函数
 #define	DECLEAR_SERVICE_MAP()  \
 private:   \
-	typedef uint32 (*ServiceHandler)( IModule* pModule, ServiceValue value, param wparam );    \
+	typedef void (HANDLER_CALL IModule::*PServiceHandler)( ServiceValue value, param wparam );    \
 	typedef struct _ServiceHanderTable    \
 	{    \
-		ServiceValue		m_nServiceValue;		    \
-		ServiceHandler		m_pfServiceHandler;			    \
+		ServiceValue		nServiceValue;		    \
+		PServiceHandler	pfServiceHandler;	\
 	} ServiceHandlerTableEntry;    \
 	static ServiceHandlerTableEntry m_serviceTableDriven[];
 
 #define	BEGIN_SERVICE_MAP( ModuleClass ) \
 	ModuleClass##::ServiceHandlerTableEntry ModuleClass##::m_serviceTableDriven[] ={ \
 
-#define	SERVICE_MAP_ENTRY( service_value, service_handler)  \
-	{ service_value, service_handler },
+#define	ON_SERVICE( service_value, service_handler)  \
+	{ service_value, (PServiceHandler)&service_handler },
 
 #define	END_SERVICE_MAP() \
-	{ 0, NULL}};
+	{ 0, (PServiceHandler)NULL}};
 
 
 #define DECLARE_HANDLER_MAP()  \

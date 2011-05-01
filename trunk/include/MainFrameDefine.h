@@ -26,6 +26,7 @@ namespace mainframe
 	// MainFrame能够处理的直接调用
 	enum E_MainFrameServiceValue
 	{
+		SERVICE_VALUE_TEST	=	SERVICE_VALUE_MAINFRAME_BEGIN,
 	};
 
 	//===========================================//
