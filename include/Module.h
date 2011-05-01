@@ -65,10 +65,10 @@ interface IModule
 	//描述: 与Event和Message需要通过总线中转不同，某个模块可以直接调用另外一个模块中的
 	//			方法而不需要通过总线。
 	//参数: 
-	//		@param	lparam			参数1
+	//		@param	lServiceValue		参数1
 	//		@param	rparam			参数2
 	//----------------------------------------------------------------------------------------
-	virtual int32 CallDirect(const param lparam, param wparam) PURE;
+	virtual int32 CallDirect(const ServiceValue lServiceValue, param rparam) PURE;
 
  	//----------------------------------------------------------------------------------------
 	//名称: PaybackExtraInfo
@@ -82,27 +82,56 @@ interface IModule
 	virtual void PaybackExtraInfo(uint32 valudId, void* pExtraInfo) PURE;
 };
 
+
+#ifndef HANDLER_CALL
+#define HANDLER_CALL
+#endif
+
+
 // Event处理映射函数
 #define	DECLEAR_EVENT_MAP()  \
 private:   \
-	typedef uint32 (*EventHandler)( IModule* pModule, Event* pEvent );    \
-	typedef struct _EventHanderTable    \
-	{    \
-		EventValue		m_nEventValue;		    \
-		EventHandler		m_pfEventHandler;			    \
-	} EventHandlerTableEntry;    \
+	typedef void (HANDLER_CALL IModule::*PEventHandler)(Event* pEvent );     \
+	typedef struct _EventHanderTable   \
+	{   \
+		EventValue		nEventValue;   \
+		PEventHandler		pfEventHandler;   \
+	} EventHandlerTableEntry;   \
+	\
 	static EventHandlerTableEntry m_eventTableDriven[];
+
+#define	BEGIN_EVENT_MAP( ModuleClass ) \
+	ModuleClass##::EventHandlerTableEntry ModuleClass##::m_eventTableDriven[] ={ \
+
+#define	ON_EVENT( event_value, event_handler)  \
+	{ event_value,  (PEventHandler)&event_handler },
+
+#define	END_EVENT_MAP() \
+	{ 0, NULL}};
+
 
 // 消息处理映射函数
 #define	DECLEAR_MESSAGE_MAP()  \
 private:   \
-	typedef uint32 (*MessageHandler)( IModule* pModule, Message* pMessage );    \
-	typedef struct _MessageHanderTable    \
-	{    \
-		MessageValue		m_nMessageValue;		    \
-		MessageHandler	m_pfMessageHandler;			    \
-	} MessageHandlerTableEntry;    \
+	typedef void (HANDLER_CALL IModule::*PMessageHandler)(Message* pMessage );     \
+	typedef struct _MessageHanderTable   \
+	{   \
+		MessageValue		nMessageValue;   \
+		PMessageHandler	pfMessageHandler;   \
+	} MessageHandlerTableEntry;   \
+	\
 	static MessageHandlerTableEntry m_messageTableDriven[];
+
+#define	BEGIN_MESSAGE_MAP( ModuleClass ) \
+	ModuleClass##::MessageHandlerTableEntry ModuleClass##::m_messageTableDriven[] ={ \
+
+#define	ON_MESSAGE( message_value, message_handler)  \
+	{ message_value,  (PMessageHandler)&message_handler },
+
+#define	END_MESSAGE_MAP() \
+	{ 0, NULL}};
+
+
 
 // 直接调用处理映射函数
 #define	DECLEAR_SERVICE_MAP()  \
@@ -114,6 +143,16 @@ private:   \
 		ServiceHandler		m_pfServiceHandler;			    \
 	} ServiceHandlerTableEntry;    \
 	static ServiceHandlerTableEntry m_serviceTableDriven[];
+
+#define	BEGIN_SERVICE_MAP( ModuleClass ) \
+	ModuleClass##::ServiceHandlerTableEntry ModuleClass##::m_serviceTableDriven[] ={ \
+
+#define	SERVICE_MAP_ENTRY( service_value, service_handler)  \
+	{ service_value, service_handler },
+
+#define	END_SERVICE_MAP() \
+	{ 0, NULL}};
+
 
 #define DECLARE_HANDLER_MAP()  \
 	DECLEAR_EVENT_MAP()  \

@@ -13,7 +13,8 @@ extern "C"
 
 class MainFrameModule : public ModuleImpl
 {
-	DECLARE_HANDLER_MAP();
+	DECLEAR_EVENT_MAP()
+	DECLEAR_MESSAGE_MAP()
 
 public:
 	MainFrameModule();
@@ -57,10 +58,10 @@ public:
 	//描述: 与Event和Message需要通过总线中转不同，某个模块可以直接调用另外一个模块中的
 	//			方法而不需要通过总线。
 	//参数: 
-	//		@param	lparam			参数1
+	//		@param	lServiceValue		参数1
 	//		@param	rparam			参数2
 	//----------------------------------------------------------------------------------------
-	int32 CallDirect(const param lparam, param wparam);
+	int32 CallDirect(const ServiceValue lServiceValue, param rparam);
 
  	//----------------------------------------------------------------------------------------
 	//名称: PaybackExtraInfo
@@ -72,6 +73,19 @@ public:
 	//		@param	pExtraInfo	需要释放的ExtraInfo数据
 	//----------------------------------------------------------------------------------------
 	void PaybackExtraInfo(uint32 valudId, void* pExtraInfo);
+
+	// Event处理函数
+protected:
+
+	void	OnEvent_OpenMainDlg(Event* pEvent);	// 响应EVENT_VALUE_MAINFRAME_OPEN事件，打开主界面	
+	void	OnEvent_CloseMainDlg(Event* pEvent);	// 响应EVENT_VALUE_MAINFRAME_CLOSE事件，打开主界面
+	void	OnEvent_HideMainDlg(Event* pEvent);	// 响应EVENT_VALUE_MAINFRAME_HIDE事件，打开主界面										
+
+	// Message处理函数
+protected:
+
+	void	OnMessage_Exit(Message* pMessage);	// 程序退出的广播消息，主界面处理该消息，为退出做准备	
+
 };
 
 class CMainFrameModuleFactory : public ModuleFactoryImpl<MainFrameModule>{};
