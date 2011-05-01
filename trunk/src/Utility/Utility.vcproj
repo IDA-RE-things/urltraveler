@@ -225,10 +225,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\String.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Utility.cpp"
 				>
 			</File>
@@ -244,10 +240,6 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\String.h"
 				>
 			</File>
 			<File

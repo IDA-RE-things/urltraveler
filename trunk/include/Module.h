@@ -82,16 +82,43 @@ interface IModule
 	virtual void PaybackExtraInfo(uint32 valudId, void* pExtraInfo) PURE;
 };
 
+// Event处理映射函数
 #define	DECLEAR_EVENT_MAP()  \
 private:   \
-typedef uint32 (*CallHandler)( IModule* pParser, Event* pEvent );    \
-typedef struct _HanderTable    \
-{    \
-EventValue		m_nEventValue;		    \
-CallHandler		m_hHandler;			    \
-} HandlerTableEntry;    \
-static HandlerTableEntry m_tableDriven[];
+	typedef uint32 (*EventHandler)( IModule* pModule, Event* pEvent );    \
+	typedef struct _EventHanderTable    \
+	{    \
+		EventValue		m_nEventValue;		    \
+		EventHandler		m_pfEventHandler;			    \
+	} EventHandlerTableEntry;    \
+	static EventHandlerTableEntry m_eventTableDriven[];
 
+// 消息处理映射函数
+#define	DECLEAR_MESSAGE_MAP()  \
+private:   \
+	typedef uint32 (*MessageHandler)( IModule* pModule, Message* pMessage );    \
+	typedef struct _MessageHanderTable    \
+	{    \
+		MessageValue		m_nMessageValue;		    \
+		MessageHandler	m_pfMessageHandler;			    \
+	} MessageHandlerTableEntry;    \
+	static MessageHandlerTableEntry m_messageTableDriven[];
+
+// 直接调用处理映射函数
+#define	DECLEAR_SERVICE_MAP()  \
+private:   \
+	typedef uint32 (*ServiceHandler)( IModule* pModule, ServiceValue value, param wparam );    \
+	typedef struct _ServiceHanderTable    \
+	{    \
+		ServiceValue		m_nServiceValue;		    \
+		ServiceHandler		m_pfServiceHandler;			    \
+	} ServiceHandlerTableEntry;    \
+	static ServiceHandlerTableEntry m_serviceTableDriven[];
+
+#define DECLARE_HANDLER_MAP()  \
+	DECLEAR_EVENT_MAP()  \
+	DECLEAR_MESSAGE_MAP()  \
+	DECLEAR_SERVICE_MAP()
 
 //----------------------------------------------------------------------------------------
 //名称: IModuleFactory
