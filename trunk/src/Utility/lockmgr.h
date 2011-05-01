@@ -21,18 +21,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <winbase.h>  
-
+#include <winbase.h>
 #include "stdafx.h"
 
-
-//---------------------------------------------------------------------------
-//
-// class CCSWrapper 
-//
-// Win32 CRTICIAL_SECTION user object wrapper
-//
-//---------------------------------------------------------------------------
 class UTILITY_API CCSWrapper
 {
 public:
