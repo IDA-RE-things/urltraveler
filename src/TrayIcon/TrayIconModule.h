@@ -13,9 +13,9 @@ extern "C"
 	DLLEXPORT void	ReleaseModuleFactory( IModuleFactory*);
 }
 
-class TrayIconModule : public ModuleImpl
+class TrayIconModule : public ModuleImpl, public ITrayEvent
 {
-	DECLEAR_EVENT_MAP()
+	DECLEAR_EVENT_MAP(TrayIconModule)
 
 public:
 	TrayIconModule();
@@ -75,6 +75,9 @@ public:
 	//----------------------------------------------------------------------------------------
 	void PaybackExtraInfo(uint32 valudId, void* pExtraInfo);
 
+	virtual void OnTrayEvent(WPARAM w, LPARAM l);
+	virtual void OnFlashStart(DWORD dwParam);
+	virtual void OnFlashEnd(DWORD dwParam);
 
 	// Event´¦Àíº¯Êý
 protected:

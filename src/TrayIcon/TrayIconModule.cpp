@@ -122,6 +122,21 @@ void TrayIconModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
 	return;
 }
 
+void TrayIconModule::OnTrayEvent(WPARAM w, LPARAM l)
+{
+
+}
+
+void TrayIconModule::OnFlashStart(DWORD dwParam)
+{
+
+}
+
+void TrayIconModule::OnFlashEnd(DWORD dwParam)
+{
+
+}
+
 void	TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
 {
 	m_TrayMgr.Init();
