@@ -1,62 +1,46 @@
-#include "MainFrameModule.h"
-#include "MainFrameDefine.h"
+#include "TrayIconModule.h"
 
-using namespace mainframe;
+using namespace trayicon;
 
-namespace mainframe
+namespace trayicon
 {
-	MainFrameModule*	g_MainFrameModule = NULL;
-	CMainFrameModuleFactory*	g_MainFrameModuleFactory = NULL;
+	TrayIconModule*	g_TrayIconModule = NULL;
+	CTrayIconModuleFactory*	g_TrayIconModuleFactory = NULL;
 }
 
 // 导出借口实现
 IModuleFactory*	GetModuleFactory()
 {
-	if( g_MainFrameModuleFactory == NULL)
+	if( g_TrayIconModuleFactory == NULL)
 	{
-		g_MainFrameModuleFactory = new CMainFrameModuleFactory();
-		g_MainFrameModuleFactory->QueryModulePoint(1, (IModule*&)g_MainFrameModule);
-		
-		ASSERT( g_MainFrameModule != NULL);
+		g_TrayIconModuleFactory = new CTrayIconModuleFactory();
+		g_TrayIconModuleFactory->QueryModulePoint(1, (IModule*&)g_TrayIconModule);
+
+		ASSERT( g_TrayIconModule != NULL);
 	}
 
-	return g_MainFrameModuleFactory;
+	return g_TrayIconModuleFactory;
 }
 
 void	ReleaseModuleFactory( IModuleFactory* p)
 {
-	ASSERT( g_MainFrameModuleFactory == p);
-	if( g_MainFrameModuleFactory  != NULL)
+	ASSERT( g_TrayIconModuleFactory == p);
+	if( g_TrayIconModuleFactory  != NULL)
 	{
-		delete g_MainFrameModuleFactory;
-		g_MainFrameModuleFactory = NULL;
+		delete g_TrayIconModuleFactory;
+		g_TrayIconModuleFactory = NULL;
 	}
 }
 
-MainFrameModule::MainFrameModule()
+TrayIconModule::TrayIconModule()
 {
 
 }
 
-MainFrameModule::~MainFrameModule()
+TrayIconModule::~TrayIconModule()
 {
 
 }
-
-BEGIN_EVENT_MAP(MainFrameModule)
-	ON_EVENT(EVENT_VALUE_MAINFRAME_OPEN, OnEvent_OpenMainDlg)
-	ON_EVENT(EVENT_VALUE_MAINFRAME_CLOSE, OnEvent_CloseMainDlg)
-	ON_EVENT(EVENT_VALUE_MAINFRAME_HIDE, OnEvent_HideMainDlg)
-END_EVENT_MAP()
-
-BEGIN_MESSAGE_MAP(MainFrameModule)
-	ON_MESSAGE(MESSAGE_VALUE_SYS_CYCLE_TRIGGER, OnMessage_CycleTrigged)
-	ON_MESSAGE(MESSAGE_VALUE_EXIT, OnMessage_Exit)
-END_MESSAGE_MAP()
-
-BEGIN_SERVICE_MAP(MainFrameModule)
-	ON_SERVICE(SERVICE_VALUE_TEST, OnService_Test)
-END_SERVICE_MAP();
 
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
@@ -64,9 +48,9 @@ END_SERVICE_MAP();
 //返回: 
 //		如果卸载成功，返回TRUE，否则返回FALSE
 //----------------------------------------------------------------------------------------
-const wchar_t* MainFrameModule::GetModuleName() 
+const wchar_t* TrayIconModule::GetModuleName() 
 {
-	return L"MainFrameModule";
+	return L"TrayIconModule";
 }
 
 //----------------------------------------------------------------------------------------
@@ -75,7 +59,7 @@ const wchar_t* MainFrameModule::GetModuleName()
 //返回: 
 //		返回该模块的唯一的ID
 //----------------------------------------------------------------------------------------
-uint32 const MainFrameModule::GetModuleId()
+uint32 const TrayIconModule::GetModuleId()
 {
 	return MODULE_ID_MAINFRAME;
 }
@@ -86,9 +70,8 @@ uint32 const MainFrameModule::GetModuleId()
 //参数: 
 //		@param	evt			需要处理的事件
 //----------------------------------------------------------------------------------------
-void MainFrameModule::ProcessEvent(const Event& evt)
+void TrayIconModule::ProcessEvent(const Event& evt)
 {
-	PROCESS_EVENT(evt);
 }
 
 //----------------------------------------------------------------------------------------
@@ -98,9 +81,8 @@ void MainFrameModule::ProcessEvent(const Event& evt)
 //参数: 
 //		@param	msg			需要处理的广播消息
 //----------------------------------------------------------------------------------------
-void MainFrameModule::ProcessMessage(const Message& msg) 
+void TrayIconModule::ProcessMessage(const Message& msg) 
 {
-	PROCESS_MESSAGE(msg);
 }
 
 //----------------------------------------------------------------------------------------
@@ -108,12 +90,12 @@ void MainFrameModule::ProcessMessage(const Message& msg)
 //描述: 与Event和Message需要通过总线中转不同，某个模块可以直接调用另外一个模块中的
 //			方法而不需要通过总线。
 //参数: 
-//		@param	lServiceValue		参数1
+//		@param	lparam			参数1
 //		@param	rparam			参数2
 //----------------------------------------------------------------------------------------
-int32 MainFrameModule::CallDirect(const ServiceValue lServiceValue, param rparam) 
-{	
-	CALL_DIRECT(lServiceValue, rparam);
+int32 TrayIconModule::CallDirect(const param lparam, param wparam) 
+{
+	return -1;
 }
 
 //----------------------------------------------------------------------------------------
@@ -125,35 +107,7 @@ int32 MainFrameModule::CallDirect(const ServiceValue lServiceValue, param rparam
 //		@param	valudId			对应的pExtraInfo的值，内部根据该值进行对应的释放，该值只有模块自己理解
 //		@param	pExtraInfo	需要释放的ExtraInfo数据
 //----------------------------------------------------------------------------------------
-void MainFrameModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
+void TrayIconModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
 {
 	return;
-}
-
-void	MainFrameModule::OnEvent_OpenMainDlg(Event* pEvent)
-{
-}
-
-void	MainFrameModule::OnEvent_CloseMainDlg(Event* pEvent)
-{
-
-}
-
-void	MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
-{
-
-}
-
-void	MainFrameModule::OnMessage_Exit(Message* pMessage)
-{
-
-}
-
-void	MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
-{
-}
-
-int32 MainFrameModule::OnService_Test(ServiceValue lServiceValue, param lParam)
-{
-	return -1;
 }
