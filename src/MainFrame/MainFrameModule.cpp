@@ -118,6 +118,26 @@ void MainFrameModule::ProcessEvent(const Event& evt)
 //----------------------------------------------------------------------------------------
 void MainFrameModule::ProcessMessage(const Message& msg) 
 {
+	MessageValue mv = msg.messageValue;
+	ASSERT( mv != MESSAGE_VALUE_INVALID);
+
+	const MessageHandlerMapEntries* pEntry = GetThisMessageMap();
+	while( pEntry)
+	{
+		if( pEntry->nMessageValue == MESSAGE_VALUE_INVALID
+			|| pEntry->nMessageValue == 0)
+			break;
+
+		if( pEntry->nMessageValue == mv
+			&& pEntry->pfMessageHandler != NULL)
+		{
+			(this->*pEntry->pfMessageHandler)(&msg);
+			return;
+		}
+
+		++pEntry;
+	}
+
 }
 
 //----------------------------------------------------------------------------------------
