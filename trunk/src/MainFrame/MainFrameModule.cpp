@@ -151,7 +151,8 @@ void	MainFrameModule::OnMessage_Exit(Message* pMessage)
 
 void	MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
 {
-
+	int n = 0;
+	n++;
 }
 
 
