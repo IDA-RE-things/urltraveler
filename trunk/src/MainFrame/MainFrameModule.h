@@ -91,7 +91,7 @@ protected:
 
 protected:
 
-	void	OnService_Test(ServiceValue lServiceValue, param lParam);
+	int32 OnService_Test(ServiceValue lServiceValue, param lParam);
 
 };
 

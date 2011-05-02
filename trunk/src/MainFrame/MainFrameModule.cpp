@@ -88,26 +88,7 @@ uint32 const MainFrameModule::GetModuleId()
 //----------------------------------------------------------------------------------------
 void MainFrameModule::ProcessEvent(const Event& evt)
 {
-	EventValue ev = evt.eventValue;
-	ASSERT( ev != EVENT_VALUE_INVALID);
-
-	const EventHandlerMapEntries* pEntry = GetThisEventMap();
-	while( pEntry)
-	{
-		if(  pEntry->nEventValue != EVENT_VALUE_INVALID ||
-			pEntry->nEventValue == 0)
-			break;
-
-		if( pEntry->nEventValue == ev
-			&& pEntry->pfEventHandler != NULL)
-		{
-			(this->*pEntry->pfEventHandler)(&evt);
-			return;
-		}
-
-		++pEntry;
-	}
-
+	PROCESS_EVENT(evt);
 }
 
 //----------------------------------------------------------------------------------------
@@ -119,26 +100,7 @@ void MainFrameModule::ProcessEvent(const Event& evt)
 //----------------------------------------------------------------------------------------
 void MainFrameModule::ProcessMessage(const Message& msg) 
 {
-	MessageValue mv = msg.messageValue;
-	ASSERT( mv != MESSAGE_VALUE_INVALID);
-
-	const MessageHandlerMapEntries* pEntry = GetThisMessageMap();
-	while( pEntry)
-	{
-		if( pEntry->nMessageValue == MESSAGE_VALUE_INVALID
-			|| pEntry->nMessageValue == 0)
-			break;
-
-		if( pEntry->nMessageValue == mv
-			&& pEntry->pfMessageHandler != NULL)
-		{
-			(this->*pEntry->pfMessageHandler)(&msg);
-			return;
-		}
-
-		++pEntry;
-	}
-
+	PROCESS_MESSAGE(msg);
 }
 
 //----------------------------------------------------------------------------------------
@@ -150,28 +112,8 @@ void MainFrameModule::ProcessMessage(const Message& msg)
 //		@param	rparam			²ÎÊý2
 //----------------------------------------------------------------------------------------
 int32 MainFrameModule::CallDirect(const ServiceValue lServiceValue, param rparam) 
-{
-	ServiceValue event_value = (ServiceValue)lServiceValue;
-	
-/*
-	EventHandlerTableEntry* pEntry = &MainFrameModule::m_eventTableDriven[0];
-	while( pEntry)
-	{
-		if( pEntry->m_nEventValue == 0)
-			break;
-
-		if( pEntry->m_nEventValue == event_value
-			&& pEntry->m_hHandler != NULL)
-		{
-			return (*pEntry->m_hHandler)(this, pEvent);
-		}
-
-		++pEntry;
-	}
-	
-*/
-
-	return -1;	
+{	
+	CALL_DIRECT(lServiceValue, rparam);
 }
 
 //----------------------------------------------------------------------------------------
@@ -213,7 +155,7 @@ void	MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
 }
 
 
-void	MainFrameModule::OnService_Test(ServiceValue lServiceValue, param lParam)
+int32 MainFrameModule::OnService_Test(ServiceValue lServiceValue, param lParam)
 {
-
+	return -1;
 }
