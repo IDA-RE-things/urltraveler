@@ -144,7 +144,7 @@ private:   \
 // 直接调用处理映射函数
 #define	DECLEAR_SERVICE_MAP()  \
 private:   \
-	typedef void (HANDLER_CALL IModule::*PServiceHandler)( ServiceValue value, const param wparam );    \
+	typedef int32 (HANDLER_CALL IModule::*PServiceHandler)( ServiceValue value, param wparam );    \
 	typedef struct _ServiceHanderMapEntries    \
 	{    \
 		ServiceValue		nServiceValue;		    \
@@ -172,6 +172,67 @@ private:   \
 	DECLEAR_EVENT_MAP()  \
 	DECLEAR_MESSAGE_MAP()  \
 	DECLEAR_SERVICE_MAP()
+
+
+#define PROCESS_EVENT(evt) \
+	EventValue ev = evt.eventValue;   \
+	ASSERT( ev != EVENT_VALUE_INVALID);    \
+	\
+	const EventHandlerMapEntries* pEntry = GetThisEventMap();   \
+	while( pEntry)   \
+	{   \
+		if(  pEntry->nEventValue != EVENT_VALUE_INVALID ||   \
+			pEntry->nEventValue == 0)   \
+			break;   \
+			\
+		if( pEntry->nEventValue == ev   \
+			&& pEntry->pfEventHandler != NULL)   \
+		{   \
+			(this->*pEntry->pfEventHandler)(&evt);   \
+			return;   \
+		}   \
+		++pEntry;   \
+	}
+
+#define PROCESS_MESSAGE(evt)  \
+	MessageValue mv = msg.messageValue;  \
+	ASSERT( mv != MESSAGE_VALUE_INVALID);  \
+	\
+	const MessageHandlerMapEntries* pEntry = GetThisMessageMap();  \
+	while( pEntry)  \
+	{  \
+		if( pEntry->nMessageValue == MESSAGE_VALUE_INVALID  \
+			|| pEntry->nMessageValue == 0)  \
+			break;  \
+		\
+		if( pEntry->nMessageValue == mv  \
+			&& pEntry->pfMessageHandler != NULL)  \
+		{  \
+			(this->*pEntry->pfMessageHandler)(&msg);  \
+			return;  \
+		}  \
+		++pEntry;  \
+	}
+
+#define CALL_DIRECT(lServiceValue, rparam)  \
+	ServiceValue service_value = (ServiceValue)lServiceValue;  \
+	if( service_value == SERVICE_VALUE_INVALID || service_value == 0 )  \
+		return -1;  \
+	  \
+	const ServiceHandlerMapEntries* pEntry = GetThisServiceMap();  \
+	while( pEntry)  \
+	{  \
+		if( pEntry->nServiceValue == 0 || pEntry->nServiceValue == SERVICE_VALUE_INVALID)  \
+			break;  \
+		  \
+		if( pEntry->nServiceValue == service_value  \
+			&& pEntry->pfServiceHandler != NULL)  \
+		{  \
+			return (this->*pEntry->pfServiceHandler)(lServiceValue, rparam);  \
+		}  \
+		++pEntry;  \
+	}  \
+	return -1; 
 
 //----------------------------------------------------------------------------------------
 //名称: IModuleFactory
