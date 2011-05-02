@@ -91,22 +91,21 @@ void MainFrameModule::ProcessEvent(const Event& evt)
 	EventValue ev = evt.eventValue;
 	ASSERT( ev != EVENT_VALUE_INVALID);
 
-/*
-	EventHandlerTableEntry* pEntry = &MainFrameModule::m_eventTableDriven[0];
+	const EventHandlerMapEntries* pEntry = GetThisEventMap();
 	while( pEntry)
 	{
-		if( pEntry->m_nEventValue == 0)
+		if( pEntry->nEventValue == 0)
 			break;
 
-		if( pEntry->m_nEventValue == event_value
-			&& pEntry->m_hHandler != NULL)
+		if( pEntry->nEventValue == ev
+			&& pEntry->pfEventHandler != NULL)
 		{
-			return (*pEntry->m_hHandler)(this, pEvent);
+			(this->*pEntry->pfEventHandler)(&evt);
+			return;
 		}
 
 		++pEntry;
 	}
-*/
 
 }
 

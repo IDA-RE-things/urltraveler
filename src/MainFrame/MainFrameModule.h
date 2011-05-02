@@ -14,6 +14,7 @@ extern "C"
 class MainFrameModule : public ModuleImpl
 {
 	DECLEAR_EVENT_MAP()
+
 	DECLEAR_MESSAGE_MAP()
 	DECLEAR_SERVICE_MAP()
 

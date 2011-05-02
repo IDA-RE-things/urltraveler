@@ -91,13 +91,18 @@ interface IModule
 // Event处理映射函数
 #define	DECLEAR_EVENT_MAP()  \
 private:   \
-	typedef void (HANDLER_CALL IModule::*PEventHandler)(Event* pEvent );     \
+	typedef void (HANDLER_CALL IModule::*PEventHandler)(const Event* pEvent );     \
 	typedef struct _EventHanderMapEntries   \
 	{   \
 		EventValue		nEventValue;   \
 		PEventHandler		pfEventHandler;   \
 	} EventHandlerMapEntries;   \
-	static EventHandlerMapEntries m_eventMap[]; 
+	static EventHandlerMapEntries m_eventMap[];  \
+	\
+	static const EventHandlerMapEntries* GetThisEventMap()  \
+	{   \
+		return &m_eventMap[0];  \
+	};
 
 #define	BEGIN_EVENT_MAP( ModuleClass ) \
 	ModuleClass##::EventHandlerMapEntries ModuleClass##::m_eventMap[] ={ \
@@ -112,14 +117,18 @@ private:   \
 // 消息处理映射函数
 #define	DECLEAR_MESSAGE_MAP()  \
 private:   \
-	typedef void (HANDLER_CALL IModule::*PMessageHandler)(Message* pMessage );     \
+	typedef void (HANDLER_CALL IModule::*PMessageHandler)(const Message* pMessage );     \
 	typedef struct _MessageHanderMapEntries   \
 	{   \
 		MessageValue		nMessageValue;   \
 		PMessageHandler	pfMessageHandler;   \
 	} MessageHandlerMapEntries;   \
+	static MessageHandlerMapEntries m_messageMap[]; \
 	\
-	static MessageHandlerMapEntries m_messageMap[];
+	static const MessageHandlerMapEntries* GetThisMessageMap()  \
+	{   \
+		return &m_messageMap[0];  \
+	};
 
 #define	BEGIN_MESSAGE_MAP( ModuleClass ) \
 	ModuleClass##::MessageHandlerMapEntries ModuleClass##::m_messageMap[] ={ \
@@ -135,13 +144,19 @@ private:   \
 // 直接调用处理映射函数
 #define	DECLEAR_SERVICE_MAP()  \
 private:   \
-	typedef void (HANDLER_CALL IModule::*PServiceHandler)( ServiceValue value, param wparam );    \
+	typedef void (HANDLER_CALL IModule::*PServiceHandler)( ServiceValue value, const param wparam );    \
 	typedef struct _ServiceHanderMapEntries    \
 	{    \
 		ServiceValue		nServiceValue;		    \
 		PServiceHandler	pfServiceHandler;	\
 	} ServiceHandlerMapEntries;    \
-	static ServiceHandlerMapEntries m_serviceMap[];
+	static ServiceHandlerMapEntries m_serviceMap[];  \
+	\
+	static const ServiceHandlerMapEntries* GetThisServiceMap()  \
+	{   \
+		return &m_serviceMap[0];  \
+	};
+
 
 #define	BEGIN_SERVICE_MAP( ModuleClass ) \
 	ModuleClass##::ServiceHandlerMapEntries ModuleClass##::m_serviceMap[] ={ \
