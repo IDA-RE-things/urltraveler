@@ -428,9 +428,11 @@ void ModuleManagerImpl::OnCycleTrigger()
 			Message  message= messageRef;
 			m_eventMsgBuf.pop_front();
 
-			for(IModulePointMap::iterator it = m_mapModulePoint.begin(); it != m_mapModulePoint.end();++itr)
+
+			for(IModulePointMap::iterator module_it = m_mapModulePoint.begin(); 
+				module_it != m_mapModulePoint.end();++module_it)
 			{
-				(*it).second->ProcessMessage(message);
+				(*module_it).second->ProcessMessage(message);
 			}
 
 			if(message.m_pstExtraInfo)
