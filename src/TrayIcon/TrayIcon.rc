@@ -57,6 +57,21 @@ END
 IDI_URLUPLOAD           ICON                    "res\\earth_download16.ico"
 IDI_URLDOWNLOAD         ICON                    "res\\earth_upload16.ico"
 IDI_URLTRAVELER         ICON                    "res\\earth16.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU 
+BEGIN
+    POPUP "POP_MENU"
+    BEGIN
+        MENUITEM "关于URLTraveler",               ID_MENU_ABOUT
+        MENUITEM "退出",                          ID_MENU_EXIT
+    END
+END
+
 #endif    // 中文(中华人民共和国) resources
 /////////////////////////////////////////////////////////////////////////////
 
