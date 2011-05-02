@@ -4,6 +4,7 @@
 #include "Module.h"
 #include "ModuleImp.h"
 #include "TrayMgr.h"
+#include "TrayEvent.h"
 
 
 extern "C" 
@@ -18,7 +19,7 @@ class TrayIconModule : public ModuleImpl
 
 public:
 	TrayIconModule();
-	~TrayIconModule();
+	virtual ~TrayIconModule();
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetModuleName
@@ -74,11 +75,11 @@ public:
 	//----------------------------------------------------------------------------------------
 	void PaybackExtraInfo(uint32 valudId, void* pExtraInfo);
 
+
 	// Event处理函数
 protected:
 
 	void	OnEvent_ShowTrayIcon(Event* pEvent);	
-
 
 private:
 

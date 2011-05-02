@@ -221,6 +221,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\TrayEvent.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TrayIcon.cpp"
 				>
 			</File>
@@ -248,6 +252,10 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TrayEvent.h"
 				>
 			</File>
 			<File

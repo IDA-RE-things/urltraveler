@@ -155,6 +155,7 @@ protected:
 	static ATOM RegisterClassForTrayWnd(/*HINSTANCE hInstance*/);
 	static HICON m_hTrayBlank;
 
-	BOOL InnerChange(HICON hicon = Use_Current_HICON, LPCTSTR szTip = Use_Current_SZ, UINT uCallbackMsgId = Use_Current);
+	BOOL InnerChange(HICON hicon = Use_Current_HICON, LPCTSTR szTip = Use_Current_SZ, 
+		UINT uCallbackMsgId = Use_Current);
 	void Sort();
 };
