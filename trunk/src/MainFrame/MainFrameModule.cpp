@@ -94,7 +94,8 @@ void MainFrameModule::ProcessEvent(const Event& evt)
 	const EventHandlerMapEntries* pEntry = GetThisEventMap();
 	while( pEntry)
 	{
-		if( pEntry->nEventValue == 0)
+		if(  pEntry->nEventValue != EVENT_VALUE_INVALID ||
+			pEntry->nEventValue == 0)
 			break;
 
 		if( pEntry->nEventValue == ev
