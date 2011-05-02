@@ -1,5 +1,6 @@
 #include "MainFrameModule.h"
 #include "MainFrameDefine.h"
+#include "TrayIconDefine.h"
 
 using namespace mainframe;
 
@@ -16,7 +17,7 @@ IModuleFactory*	GetModuleFactory()
 	{
 		g_MainFrameModuleFactory = new CMainFrameModuleFactory();
 		g_MainFrameModuleFactory->QueryModulePoint(1, (IModule*&)g_MainFrameModule);
-		
+
 		ASSERT( g_MainFrameModule != NULL);
 	}
 
@@ -132,6 +133,12 @@ void MainFrameModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
 
 void	MainFrameModule::OnEvent_OpenMainDlg(Event* pEvent)
 {
+	// 在主面板启动的时候通知任务栏图标启动
+	trayicon::TrayIcon_ShowEvent e;
+	e.srcMId = MODULE_ID_MAINFRAME;
+	m_pModuleManager->PushEvent(e);
+
+	return;
 }
 
 void	MainFrameModule::OnEvent_CloseMainDlg(Event* pEvent)

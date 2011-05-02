@@ -55,6 +55,7 @@ namespace mainframe
 		MainFrame_OpenEvent()
 		{
 			eventValue	=	 EVENT_VALUE_MAINFRAME_OPEN;
+			eTabType		=	TAB_FAVORITE;
 		}
 
 		E_MainFrameTab	eTabType;			//	指定打开后显示哪一个Tab页面

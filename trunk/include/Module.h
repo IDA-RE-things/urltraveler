@@ -181,7 +181,7 @@ private:   \
 	const EventHandlerMapEntries* pEntry = GetThisEventMap();   \
 	while( pEntry)   \
 	{   \
-		if(  pEntry->nEventValue != EVENT_VALUE_INVALID ||   \
+		if(  pEntry->nEventValue == EVENT_VALUE_INVALID ||   \
 			pEntry->nEventValue == 0)   \
 			break;   \
 			\

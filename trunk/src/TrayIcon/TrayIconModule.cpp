@@ -81,6 +81,7 @@ uint32 const TrayIconModule::GetModuleId()
 //----------------------------------------------------------------------------------------
 void TrayIconModule::ProcessEvent(const Event& evt)
 {
+	PROCESS_EVENT(evt);
 }
 
 //----------------------------------------------------------------------------------------

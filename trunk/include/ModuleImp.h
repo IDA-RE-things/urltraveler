@@ -19,7 +19,7 @@ public:
 	virtual int32 CallDirect(const param lparam, param wparam);
 	virtual void PaybackExtraInfo(uint32 valueId ,void * pExtraInfo );
 
-private:
+protected:
 	IModuleManager*	m_pModuleManager;
 };
 

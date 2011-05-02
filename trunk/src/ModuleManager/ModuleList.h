@@ -27,7 +27,7 @@ struct ModuleList
 		boost::assign::insert( m_stDllModuleList )
 			( MODULE_NAME(MainFrame), list_of(MODULE_ID_MAINFRAME) )
 			( MODULE_NAME(Setting), list_of(MODULE_ID_SETTING) )
-			//( MODULE_NAME(Setting), list_of(MODULE_ID_TEMPTRIBE)(MODULE_ID_TEMPTRIBEUI))
+			( MODULE_NAME(TrayIcon), list_of(MODULE_ID_TRAYICON) )
 			;
 	}
 
