@@ -2,6 +2,7 @@
 #include "ModuleList.h"
 #include <sstream>
 #include "time.h"
+#include "MainFrameDefine.h"
 
 #define CYCLE_TIMER		10010
 #define CYCLE_TIMER_LENGTH	100
@@ -343,8 +344,12 @@ void	ModuleManagerImpl::Run()
 	// 启动定时器
 	m_hTimers = ::SetTimer(m_hInnerWnd, CYCLE_TIMER,  CYCLE_TIMER_LENGTH, NULL);
 
-
 	m_bRun = TRUE;
+
+	// 通知主面板模块启动
+	mainframe::MainFrame_OpenEvent e;
+	e.srcMId = MODULE_ID_CORE;
+	PushEvent(e);
 
 	OnCycleTrigger();
 
