@@ -1,4 +1,9 @@
 #include "TrayIconModule.h"
+#include "TrayIconDefine.h"
+#include "resource.h"
+
+HMODULE	g_hModule = NULL;
+
 
 using namespace trayicon;
 
@@ -41,6 +46,10 @@ TrayIconModule::~TrayIconModule()
 {
 
 }
+
+BEGIN_EVENT_MAP(TrayIconModule)
+	ON_EVENT(EVENT_VALUE_TRAYICON_SHOW,OnEvent_ShowTrayIcon)
+END_EVENT_MAP()
 
 //----------------------------------------------------------------------------------------
 //Ãû³Æ: GetModuleName
@@ -110,4 +119,12 @@ int32 TrayIconModule::CallDirect(const param lparam, param wparam)
 void TrayIconModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
 {
 	return;
+}
+
+void	TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
+{
+	m_TrayMgr.Init();
+	
+	HICON hIcon = LoadIconW(g_hModule, MAKEINTRESOURCE(IDI_URLTRAVELER));
+	m_TrayMgr.Add(hIcon, L"UrlTraveler");
 }

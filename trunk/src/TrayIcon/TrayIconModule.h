@@ -3,6 +3,7 @@
 #include "SndaBase.h"
 #include "Module.h"
 #include "ModuleImp.h"
+#include "TrayMgr.h"
 
 
 extern "C" 
@@ -13,6 +14,8 @@ extern "C"
 
 class TrayIconModule : public ModuleImpl
 {
+	DECLEAR_EVENT_MAP()
+
 public:
 	TrayIconModule();
 	~TrayIconModule();
@@ -70,6 +73,16 @@ public:
 	//		@param	pExtraInfo	需要释放的ExtraInfo数据
 	//----------------------------------------------------------------------------------------
 	void PaybackExtraInfo(uint32 valudId, void* pExtraInfo);
+
+	// Event处理函数
+protected:
+
+	void	OnEvent_ShowTrayIcon(Event* pEvent);	
+
+
+private:
+
+	CTrayMgr		m_TrayMgr;
 };
 
 class CTrayIconModuleFactory : public ModuleFactoryImpl<TrayIconModule>{};

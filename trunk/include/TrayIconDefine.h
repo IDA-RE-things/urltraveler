@@ -43,5 +43,5 @@ namespace trayicon
 		{
 			eventValue	=	 EVENT_VALUE_TRAYICON_SHOW;
 		}
-	}
+	};
 };
