@@ -89,9 +89,9 @@ interface IModule
 
 
 // Event处理映射函数
-#define	DECLEAR_EVENT_MAP()  \
+#define	DECLEAR_EVENT_MAP(ModuleClass)  \
 private:   \
-	typedef void (HANDLER_CALL IModule::*PEventHandler)(const Event* pEvent );     \
+	typedef void (HANDLER_CALL ModuleClass##::*PEventHandler)(const Event* pEvent );     \
 	typedef struct _EventHanderMapEntries   \
 	{   \
 		EventValue		nEventValue;   \
@@ -115,9 +115,9 @@ private:   \
 
 
 // 消息处理映射函数
-#define	DECLEAR_MESSAGE_MAP()  \
+#define	DECLEAR_MESSAGE_MAP(ModuleClass)  \
 private:   \
-	typedef void (HANDLER_CALL IModule::*PMessageHandler)(const Message* pMessage );     \
+	typedef void (HANDLER_CALL ModuleClass##::*PMessageHandler)(const Message* pMessage );     \
 	typedef struct _MessageHanderMapEntries   \
 	{   \
 		MessageValue		nMessageValue;   \
@@ -142,9 +142,9 @@ private:   \
 
 
 // 直接调用处理映射函数
-#define	DECLEAR_SERVICE_MAP()  \
+#define	DECLEAR_SERVICE_MAP(ModuleClass)  \
 private:   \
-	typedef int32 (HANDLER_CALL IModule::*PServiceHandler)( ServiceValue value, param wparam );    \
+	typedef int32 (HANDLER_CALL ModuleClass##::*PServiceHandler)( ServiceValue value, param wparam );    \
 	typedef struct _ServiceHanderMapEntries    \
 	{    \
 		ServiceValue		nServiceValue;		    \
