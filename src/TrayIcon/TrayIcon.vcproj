@@ -64,7 +64,9 @@
 				OutputFile="..\..\bin\TrayIcond.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
+				ImportLibrary="..\..\lib\$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -138,9 +140,11 @@
 				OutputFile="..\..\bin\TrayIcon.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				ImportLibrary="..\..\lib\$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -224,12 +228,20 @@
 				RelativePath=".\TrayIconModule.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\TrayMgr.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="头文件"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
 			<File
 				RelativePath=".\stdafx.h"
 				>
@@ -246,12 +258,32 @@
 				RelativePath=".\TrayIconModule.h"
 				>
 			</File>
+			<File
+				RelativePath=".\TrayMgr.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="资源文件"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\res\earth16.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\earth_download16.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\earth_upload16.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\TrayIcon.rc"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
