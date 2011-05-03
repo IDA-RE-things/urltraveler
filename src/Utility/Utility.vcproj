@@ -46,7 +46,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -61,8 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="sqlite3_lib.lib"
 				OutputFile="..\..\bin\Utilityd.dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="../../lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
@@ -137,8 +139,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="sqlite3_libd.lib"
 				OutputFile="..\..\bin\Utility.dll"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="../../lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
@@ -225,6 +229,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\StringHelper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Utility.cpp"
 				>
 			</File>
@@ -247,6 +255,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\StringHelper.h"
+				>
+			</File>
+			<File
 				RelativePath=".\targetver.h"
 				>
 			</File>
@@ -260,6 +272,26 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+		</Filter>
+		<Filter
+			Name="Sqlite"
+			>
+			<File
+				RelativePath=".\CppSQLite3\CppSQLite3.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CppSQLite3\CppSQLite3.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CppSQLite3\sqlite3.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CppSQLite3\sqlite_compile_macros.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
