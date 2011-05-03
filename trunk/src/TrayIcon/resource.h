@@ -12,13 +12,15 @@
 #define ID_POP_40003                    40003
 #define ID_MENU_ABOUT                   40004
 #define ID_MENU_EXIT                    40005
+#define IDM_APP_ABOUT                   40006
+#define IDM_APP_EXIT                    40007
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        105
-#define _APS_NEXT_COMMAND_VALUE         40006
+#define _APS_NEXT_COMMAND_VALUE         40008
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
