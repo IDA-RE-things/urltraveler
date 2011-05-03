@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 中文(中华人民共和国) resources
+// Chinese (P.R.C.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 #ifdef _WIN32
@@ -63,7 +63,7 @@ IDI_URLTRAVELER         ICON                    "res\\earth16.ico"
 // Menu
 //
 
-IDR_MENU1 MENU 
+IDR_APPMENU MENU 
 BEGIN
     POPUP "POP_MENU"
     BEGIN
@@ -72,7 +72,7 @@ BEGIN
     END
 END
 
-#endif    // 中文(中华人民共和国) resources
+#endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

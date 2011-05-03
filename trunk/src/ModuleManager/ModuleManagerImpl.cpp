@@ -348,9 +348,10 @@ void	ModuleManagerImpl::Run()
 	m_bRun = TRUE;
 
 	// 通知主面板模块启动
-	mainframe::MainFrame_OpenEvent e;
-	e.srcMId = MODULE_ID_CORE;
-	PushEvent(e);
+	mainframe::MainFrame_OpenEvent* pMainFrameOpenEvent = new mainframe::MainFrame_OpenEvent();
+	pMainFrameOpenEvent->srcMId = MODULE_ID_CORE;
+	pMainFrameOpenEvent->m_pstExtraInfo = pMainFrameOpenEvent;
+	PushEvent(*pMainFrameOpenEvent);
 
 	OnCycleTrigger();
 

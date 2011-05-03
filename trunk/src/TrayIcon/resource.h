@@ -6,6 +6,7 @@
 #define IDI_URLDOWNLOAD                 102
 #define IDI_URLTRAVELER                 103
 #define IDR_MENU1                       104
+#define IDR_APPMENU                     104
 #define ID_POP_40001                    40001
 #define ID_Menu                         40002
 #define ID_POP_40003                    40003

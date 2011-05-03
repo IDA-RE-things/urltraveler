@@ -15,7 +15,6 @@ using namespace std;
 
 namespace core
 {
-
 	enum
 	{
 		MAXER = (sizeof(Event) >sizeof(Message)  ? sizeof(Event) : sizeof(Message))
@@ -38,9 +37,6 @@ namespace core
 
 		char szBuffer[MAXER];
 	};
-
-
-
 
 	typedef IModuleFactory *  (*GetModuleFactoryFunc)();
 	typedef void  (*ReleaseModuleFactoryFunc)(IModuleFactory*);
@@ -137,8 +133,6 @@ namespace core
 		//----------------------------------------------------------------------------------------
 		void		OnCycleTrigger();
 
-
-
 	protected:
 
 		// 加载每一个模块，获取到该模块的IModule指针，然后并保存起来
@@ -151,9 +145,6 @@ namespace core
 		// 创建和销毁内部窗口
 		void CreatCycleWnd();
 		void DestroyCycleWnd();
-
-
-
 
 	private:
 

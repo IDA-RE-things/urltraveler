@@ -20,6 +20,24 @@ public:
 	virtual ~TrayIconModule();
 
 	//----------------------------------------------------------------------------------------
+	//名称: Load
+	//描述: 主程序通过该方法对模块进行加载
+	//参数: 
+	//		@param	pManager			主模块总线的指针	
+	//返回: 
+	//		如果加载成功，返回TRUE，否则返回FALSE
+	//----------------------------------------------------------------------------------------
+	BOOL Load(IModuleManager* pManager) ;
+
+	//----------------------------------------------------------------------------------------
+	//名称: Unload
+	//描述: 主程序通过该方法对模块进行卸载
+	//返回: 
+	//		如果卸载成功，返回TRUE，否则返回FALSE
+	//----------------------------------------------------------------------------------------
+	BOOL Unload() ;
+
+	//----------------------------------------------------------------------------------------
 	//名称: GetModuleName
 	//描述: 主程序通过该方法获取当前模块的名字，每一个模块都有一个唯一的名字
 	//返回: 
@@ -88,8 +106,13 @@ protected:
 	void	OnEvent_ShowTrayIcon(Event* pEvent);	
 
 private:
+	void	CreatTrayIconMsgWnd();
+	void DestroyTrayIconMsgWnd();
+
+private:
 
 	CTrayMgr		m_TrayMgr;
+	HWND			m_hMsgWnd;		 //	内部的隐藏窗口，用来接收菜单的消息
 };
 
 class CTrayIconModuleFactory : public ModuleFactoryImpl<TrayIconModule>{};
