@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SettingModule.h"
 
 using namespace setting;

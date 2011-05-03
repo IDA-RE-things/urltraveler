@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "XString.h"
 #include "tchar.h"
 #include "assert.h"

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ModuleManagerImpl.h"
 #include "ModuleList.h"
 #include <sstream>

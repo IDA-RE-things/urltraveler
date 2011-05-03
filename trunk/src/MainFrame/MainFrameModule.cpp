@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "MainFrameModule.h"
 #include "MainFrameDefine.h"
 #include "TrayIconDefine.h"
