@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\thirdlib\boost_1350_vc80\include;..\utility\"
+				AdditionalIncludeDirectories="..\..\include;..\..\thirdlib\boost_1350_vc80\include;..\utility\;include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Utilityd.lib"
+				AdditionalDependencies="Utilityd.lib vldmtdll.lib"
 				OutputFile="..\..\bin\UrlTravelerd.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../lib"
