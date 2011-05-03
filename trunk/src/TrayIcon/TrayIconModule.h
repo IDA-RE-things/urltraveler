@@ -75,8 +75,13 @@ public:
 	//----------------------------------------------------------------------------------------
 	void PaybackExtraInfo(uint32 valudId, void* pExtraInfo);
 
+	// 响应任务栏图标上的事件
 	virtual void OnTrayEvent(WPARAM w, LPARAM l);
+
+	// 任务栏图标开始闪烁
 	virtual void OnFlashStart(DWORD dwParam);
+
+	// 任务栏图标结束闪烁
 	virtual void OnFlashEnd(DWORD dwParam);
 
 	// Event处理函数

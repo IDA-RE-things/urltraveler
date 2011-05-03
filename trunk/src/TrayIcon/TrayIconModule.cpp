@@ -124,7 +124,18 @@ void TrayIconModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
 
 void TrayIconModule::OnTrayEvent(WPARAM w, LPARAM l)
 {
+	uint32 uMsgId = l;
+	switch (uMsgId)
+	{
+	case WM_RBUTTONUP:
+		{
+			HMENU	hPopMenu;
+			hPopMenu = ::LoadMenuW(g_hModule, L"POP_MENU"); 
+			::TrackPopupMenu(hPopMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, 100,100,0, NULL, NULL);
+		}
+		break;
 
+	}
 }
 
 void TrayIconModule::OnFlashStart(DWORD dwParam)
