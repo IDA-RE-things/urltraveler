@@ -228,6 +228,10 @@
 				RelativePath=".\Utility.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\XString.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
@@ -244,6 +248,10 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XString.h"
 				>
 			</File>
 		</Filter>
