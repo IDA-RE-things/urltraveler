@@ -4,8 +4,6 @@
 #include "Module.h"
 #include "ModuleImp.h"
 #include "TrayMgr.h"
-#include "TrayEvent.h"
-
 
 extern "C" 
 {
