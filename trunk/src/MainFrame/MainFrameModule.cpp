@@ -52,8 +52,8 @@ BEGIN_EVENT_MAP(MainFrameModule)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(MainFrameModule)
-	ON_MESSAGE(MESSAGE_VALUE_SYS_CYCLE_TRIGGER, OnMessage_CycleTrigged)
-	ON_MESSAGE(MESSAGE_VALUE_EXIT, OnMessage_Exit)
+	ON_MESSAGE(MESSAGE_VALUE_CORE_CYCLE_TRIGGER, OnMessage_CycleTrigged)
+	ON_MESSAGE(MESSAGE_VALUE_CORE_PRE_APP_EXIT, OnMessage_PreExit)
 END_MESSAGE_MAP()
 
 BEGIN_SERVICE_MAP(MainFrameModule)
@@ -158,7 +158,7 @@ void	MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
 
 }
 
-void	MainFrameModule::OnMessage_Exit(Message* pMessage)
+void	MainFrameModule::OnMessage_PreExit(Message* pMessage)
 {
 
 }

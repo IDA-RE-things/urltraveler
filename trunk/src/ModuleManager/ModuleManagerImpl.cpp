@@ -334,7 +334,7 @@ void ModuleManagerImpl::Destroy()
 
 void ModuleManagerImpl::Exit()
 {
-	m_bRun = TRUE;
+	m_bRun = FALSE;
 }
 
 void	ModuleManagerImpl::Run()
@@ -377,10 +377,10 @@ void	ModuleManagerImpl::Run()
 
 void ModuleManagerImpl::OnCycleTrigger()
 {
-	PushMessage(MakeMessage<MODULE_ID_CORE>()(MESSAGE_VALUE_SYS_CYCLE_TRIGGER));
+	PushMessage(MakeMessage<MODULE_ID_CORE>()(MESSAGE_VALUE_CORE_CYCLE_TRIGGER));
 
 	// 将异步Push的Event和Message放入事件循环Buffer中
-	ASSERT(m_vectorIn.size()==0);
+	ASSERT(m_vectorIn.size() == 0);
 	if(m_vectorOut.size()!=0)
 	{
 		CLockMgr<CCSWrapper> guard(m_Lock, TRUE);

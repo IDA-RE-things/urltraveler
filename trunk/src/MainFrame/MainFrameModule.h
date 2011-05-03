@@ -86,7 +86,7 @@ protected:
 protected:
 
 	void	OnMessage_CycleTrigged(Message* pMessage);
-	void	OnMessage_Exit(Message* pMessage);	// 程序退出的广播消息，主界面处理该消息，为退出做准备	
+	void	OnMessage_PreExit(Message* pMessage);	// 程序退出的广播消息，主界面处理该消息，为退出做准备	
 
 protected:
 
