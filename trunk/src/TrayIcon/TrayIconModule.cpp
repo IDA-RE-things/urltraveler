@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "TrayIconModule.h"
 #include "TrayIconDefine.h"
 #include "resource.h"
