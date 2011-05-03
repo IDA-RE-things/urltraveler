@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Chinese (P.R.C.) resources
+// 中文(中华人民共和国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 #ifdef _WIN32
@@ -67,12 +67,21 @@ IDR_APPMENU MENU
 BEGIN
     POPUP "POP_MENU"
     BEGIN
-        MENUITEM "关于URLTraveler",               IDM_APP_ABOUT
+        MENUITEM "设置",                          IDM_SETTING
+        MENUITEM "登录",                          IDM_LOGIN
+        MENUITEM "打开主界面",                       IDM_OPEN_MAIN
+        MENUITEM SEPARATOR
+        POPUP "帮助"
+        BEGIN
+            MENUITEM "意见反馈",                        IDM_FEEDBACK
+            MENUITEM "帮助",                          IDM_HELP
+            MENUITEM "关于 URLTraveler",              IDM_APP_ABOUT
+        END
         MENUITEM "退出",                          IDM_APP_EXIT
     END
 END
 
-#endif    // Chinese (P.R.C.) resources
+#endif    // 中文(中华人民共和国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
