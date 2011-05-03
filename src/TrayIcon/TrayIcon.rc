@@ -67,8 +67,8 @@ IDR_APPMENU MENU
 BEGIN
     POPUP "POP_MENU"
     BEGIN
-        MENUITEM "关于URLTraveler",               ID_MENU_ABOUT
-        MENUITEM "退出",                          ID_MENU_EXIT
+        MENUITEM "关于URLTraveler",               IDM_APP_ABOUT
+        MENUITEM "退出",                          IDM_APP_EXIT
     END
 END
 

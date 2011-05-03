@@ -54,23 +54,40 @@ BEGIN_EVENT_MAP(TrayIconModule)
 	ON_EVENT(EVENT_VALUE_TRAYICON_SHOW,OnEvent_ShowTrayIcon)
 END_EVENT_MAP()
 
-static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM inParam, LPARAM inOtherParam)
+static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM wParam, LPARAM lParam)
 {
 	TrayIconModule * pTrayIconModule = (TrayIconModule*)GetWindowLong(inWindow, GWL_USERDATA);
 	if(pTrayIconModule)
 	{
-		if(inMsg==WM_TIMER)
+		if(inMsg == WM_COMMAND)
 		{
+			int wmId    = LOWORD(wParam);
+			int wmEvent = HIWORD(wParam);
+
+			switch (wmId)
+			{
+			case IDM_APP_ABOUT:
+				MessageBox(NULL, L"About", L"About", MB_OK);
+				break;
+
+			case IDM_APP_EXIT:
+				{
+					pTrayIconModule->GetModuleManager()->PushMessage(
+						MakeMessage<MODULE_ID_TRAYICON>()(MESSAGE_VALUE_APP_EXIT));
+					break;
+				}
+
+			default:
+				return DefWindowProc(inWindow, inMsg, wParam, lParam);
+			}
+
 			return 1 ;
 		}
 
-		return DefWindowProc(inWindow, inMsg, inParam, inOtherParam);
+		return DefWindowProc(inWindow, inMsg, wParam, lParam);
 	}
 
-	if(inMsg == WM_NCCREATE)
-		return 1;
-
-	return DefWindowProcW(inWindow, inMsg, inParam, inOtherParam);
+	return DefWindowProcW(inWindow, inMsg, wParam, lParam);
 }
 
 // 创建和销毁内部窗口

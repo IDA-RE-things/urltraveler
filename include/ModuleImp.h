@@ -19,6 +19,8 @@ public:
 	virtual int32 CallDirect(const param lparam, param wparam);
 	virtual void PaybackExtraInfo(uint32 valueId ,void * pExtraInfo );
 
+	virtual IModuleManager*	GetModuleManager() { return m_pModuleManager;}
+
 protected:
 	IModuleManager*	m_pModuleManager;
 };
