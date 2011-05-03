@@ -5,7 +5,7 @@
 #include "ModuleManager.h"
 #include "ModuleManagerImpl.h"
 #include "MainFrameDefine.h"
-#include <vld/vld.h>
+#include "vld/vld.h"
 
 #define MAX_LOADSTRING 100
 
