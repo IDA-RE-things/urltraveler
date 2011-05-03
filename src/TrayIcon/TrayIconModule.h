@@ -14,6 +14,7 @@ extern "C"
 class TrayIconModule : public ModuleImpl, public ITrayEvent
 {
 	DECLEAR_EVENT_MAP(TrayIconModule)
+	DECLEAR_MESSAGE_MAP(TrayIconModule)
 
 public:
 	TrayIconModule();
@@ -104,6 +105,12 @@ public:
 protected:
 
 	void	OnEvent_ShowTrayIcon(Event* pEvent);	
+
+protected:
+
+	// 程序退出的广播消息，主界面处理该消息，为退出做准备
+	void	OnMessage_PreExit(Message* pMessage);		
+
 
 private:
 	void	CreatTrayIconMsgWnd();

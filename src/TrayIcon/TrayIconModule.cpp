@@ -54,6 +54,10 @@ BEGIN_EVENT_MAP(TrayIconModule)
 	ON_EVENT(EVENT_VALUE_TRAYICON_SHOW,OnEvent_ShowTrayIcon)
 END_EVENT_MAP()
 
+BEGIN_MESSAGE_MAP(TrayIconModule)
+	ON_MESSAGE(MESSAGE_VALUE_CORE_PRE_APP_EXIT, OnMessage_PreExit)
+END_MESSAGE_MAP()
+
 static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM wParam, LPARAM lParam)
 {
 	TrayIconModule * pTrayIconModule = (TrayIconModule*)GetWindowLong(inWindow, GWL_USERDATA);
@@ -72,8 +76,17 @@ static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM wParam, L
 
 			case IDM_APP_EXIT:
 				{
+					// 通知各个模块退出之前进行必要的准备工作
 					pTrayIconModule->GetModuleManager()->PushMessage(
-						MakeMessage<MODULE_ID_TRAYICON>()(MESSAGE_VALUE_APP_EXIT));
+						MakeMessage<MODULE_ID_TRAYICON>()(MESSAGE_VALUE_CORE_PRE_APP_EXIT));
+
+					// 通知正式退出
+					Event e;
+					e.eventValue = EVENT_VALUE_CORE_MAIN_LOOP_EXIT;
+					e.srcMId = MODULE_ID_TRAYICON;
+					e.desMId = MODULE_ID_CORE;
+					pTrayIconModule->GetModuleManager()->PushEvent(e);
+
 					break;
 				}
 
@@ -264,4 +277,9 @@ void	TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
 	HICON hIcon = LoadIconW(g_hModule, MAKEINTRESOURCE(IDI_URLTRAVELER));
 	m_TrayMgr.Add(hIcon, L"UrlTraveler");
 	m_TrayMgr.AddEventHandler(this);
+}
+
+void	TrayIconModule::OnMessage_PreExit(Message* pMessage)
+{
+
 }
