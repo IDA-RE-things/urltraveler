@@ -174,7 +174,7 @@ void	ModuleManagerImpl::LoadModules()
 			= reinterpret_cast<ReleaseModuleFactoryFunc>(GetProcAddress(exportmodule, "ReleaseModuleFactory")); 
 
 		m_mapModuleInterface[itr->first]
-		=	ModuleInterface(pGetModuleFactoryFunc,pReleaseModuleFactoryFunc,itr->second.size());
+			=	ModuleInterface(pGetModuleFactoryFunc,pReleaseModuleFactoryFunc,itr->second.size());
 
 		IModuleFactory *pIModuleFactory = m_mapModuleInterface[itr->first].m_pGetModuleFactoryFunc();
 		if(pIModuleFactory==NULL)
@@ -360,7 +360,6 @@ void	ModuleManagerImpl::Run()
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-
 
 	while(PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)
 		&& m_eventMsgBuf.size() > 0 )
