@@ -73,7 +73,7 @@ public:
 	//		@param	valudId			对应的pExtraInfo的值，内部根据该值进行对应的释放，该值只有模块自己理解
 	//		@param	pExtraInfo	需要释放的ExtraInfo数据
 	//----------------------------------------------------------------------------------------
-	void PaybackExtraInfo(uint32 valudId, void* pExtraInfo);
+	void PaybackExtraInfo(uint32 valueId, void* pExtraInfo);
 
 	// Event处理函数
 protected:

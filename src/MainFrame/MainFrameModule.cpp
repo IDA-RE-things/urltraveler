@@ -127,18 +127,24 @@ int32 MainFrameModule::CallDirect(const ServiceValue lServiceValue, param rparam
 //		@param	valudId			对应的pExtraInfo的值，内部根据该值进行对应的释放，该值只有模块自己理解
 //		@param	pExtraInfo	需要释放的ExtraInfo数据
 //----------------------------------------------------------------------------------------
-void MainFrameModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
+void MainFrameModule::PaybackExtraInfo(uint32 valueId, void* pExtraInfo)
 {
+	if( valueId == EVENT_VALUE_MAINFRAME_OPEN)
+	{
+		delete (MainFrame_OpenEvent*)pExtraInfo;
+	}
+
 	return;
 }
 
 void	MainFrameModule::OnEvent_OpenMainDlg(Event* pEvent)
 {
 	// 在主面板启动的时候通知任务栏图标启动
-	trayicon::TrayIcon_ShowEvent e;
-	e.srcMId = MODULE_ID_MAINFRAME;
-	m_pModuleManager->PushEvent(e);
+	Event v;
+	v =	MakeEvent<MODULE_ID_MAINFRAME>()(trayicon::EVENT_VALUE_TRAYICON_SHOW, MODULE_ID_TRAYICON);
+	m_pModuleManager->PushEvent(v);
 
+	MainFrame_OpenEvent* pE = (MainFrame_OpenEvent*)pEvent->m_pstExtraInfo;
 	return;
 }
 

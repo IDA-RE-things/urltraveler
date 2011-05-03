@@ -2,6 +2,8 @@
 #include "TrayIconModule.h"
 #include "TrayIconDefine.h"
 #include "resource.h"
+#include <sstream>
+
 
 HMODULE	g_hModule = NULL;
 
@@ -51,6 +53,90 @@ TrayIconModule::~TrayIconModule()
 BEGIN_EVENT_MAP(TrayIconModule)
 	ON_EVENT(EVENT_VALUE_TRAYICON_SHOW,OnEvent_ShowTrayIcon)
 END_EVENT_MAP()
+
+static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM inParam, LPARAM inOtherParam)
+{
+	TrayIconModule * pTrayIconModule = (TrayIconModule*)GetWindowLong(inWindow, GWL_USERDATA);
+	if(pTrayIconModule)
+	{
+		if(inMsg==WM_TIMER)
+		{
+			return 1 ;
+		}
+
+		return DefWindowProc(inWindow, inMsg, inParam, inOtherParam);
+	}
+
+	if(inMsg == WM_NCCREATE)
+		return 1;
+
+	return DefWindowProcW(inWindow, inMsg, inParam, inOtherParam);
+}
+
+// 创建和销毁内部窗口
+void TrayIconModule::CreatTrayIconMsgWnd()
+{
+	std::wstring className = L"UrlTravelerApp";
+
+	WNDCLASSEX theWndClass;
+	theWndClass.cbSize = sizeof(theWndClass);
+	theWndClass.style = 0;
+	theWndClass.lpfnWndProc = &AppCycleProc;
+	theWndClass.cbClsExtra = 0;
+	theWndClass.cbWndExtra = 0;
+	theWndClass.hInstance = NULL;
+	theWndClass.hIcon = NULL;
+	theWndClass.hCursor = NULL;
+	theWndClass.hbrBackground = NULL;
+	theWndClass.lpszMenuName = NULL;
+	theWndClass.lpszClassName = className.c_str();
+	theWndClass.hIconSm = NULL;
+	ATOM theWndAtom = ::RegisterClassEx(&theWndClass);
+	ASSERT(theWndAtom != NULL);
+
+	m_hMsgWnd = ::CreateWindow( className.c_str(), className.c_str(), 
+		WS_POPUP, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, NULL,
+		NULL, NULL, NULL);
+	ASSERT(m_hMsgWnd != NULL);
+
+	SetWindowLongW(m_hMsgWnd, GWL_USERDATA, (LONG)this);
+}
+
+void TrayIconModule::DestroyTrayIconMsgWnd()
+{
+	::DestroyWindow(m_hMsgWnd);
+
+	std::wstring className = L"UrlTravelerApp";
+	UnregisterClass(className.c_str(), NULL );
+}
+
+//----------------------------------------------------------------------------------------
+//名称: Load
+//描述: 主程序通过该方法对模块进行加载
+//参数: 
+//		@param	pManager			主模块总线的指针	
+//返回: 
+//		如果加载成功，返回TRUE，否则返回FALSE
+//----------------------------------------------------------------------------------------
+BOOL TrayIconModule::Load(IModuleManager* pManager)
+{
+	__super::Load(pManager);
+	
+	CreatTrayIconMsgWnd();
+	return TRUE;
+}
+
+//----------------------------------------------------------------------------------------
+//名称: Unload
+//描述: 主程序通过该方法对模块进行卸载
+//返回: 
+//		如果卸载成功，返回TRUE，否则返回FALSE
+//----------------------------------------------------------------------------------------
+BOOL TrayIconModule::Unload()
+{
+	DestroyTrayIconMsgWnd();
+	return TRUE;
+}
 
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
@@ -120,6 +206,7 @@ int32 TrayIconModule::CallDirect(const param lparam, param wparam)
 //----------------------------------------------------------------------------------------
 void TrayIconModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
 {
+
 	return;
 }
 
@@ -131,8 +218,12 @@ void TrayIconModule::OnTrayEvent(WPARAM w, LPARAM l)
 	case WM_RBUTTONUP:
 		{
 			HMENU	hPopMenu;
-			hPopMenu = ::LoadMenuW(g_hModule, L"POP_MENU"); 
-			::TrackPopupMenu(hPopMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, 100,100,0, NULL, NULL);
+			hPopMenu = ::LoadMenuW(g_hModule, MAKEINTRESOURCE(IDR_APPMENU)); 
+			hPopMenu = ::GetSubMenu(hPopMenu, 0);
+
+			POINT pt;
+			GetCursorPos(&pt);
+			::TrackPopupMenu(hPopMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x,pt.y,0, m_hMsgWnd, NULL);
 		}
 		break;
 
@@ -155,4 +246,5 @@ void	TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
 	
 	HICON hIcon = LoadIconW(g_hModule, MAKEINTRESOURCE(IDI_URLTRAVELER));
 	m_TrayMgr.Add(hIcon, L"UrlTraveler");
+	m_TrayMgr.AddEventHandler(this);
 }
