@@ -15,6 +15,7 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 UINT32	hTime;			//	¾ä±ú
+
 core::ModuleManagerImpl module_manager;
 
 
@@ -46,23 +47,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	{
 		return FALSE;
 	}
-
-	// hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MODULEMANAGER));
-
-/*
-	// Main message loop:
-	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
-
-	return (int) msg.wParam;
-*/
 
 	module_manager.Init();
 	module_manager.Run();

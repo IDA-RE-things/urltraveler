@@ -61,7 +61,7 @@ const wchar_t* SettingModule::GetModuleName()
 //----------------------------------------------------------------------------------------
 uint32 const SettingModule::GetModuleId()
 {
-	return MODULE_ID_MAINFRAME;
+	return MODULE_ID_SETTING;
 }
 
 //----------------------------------------------------------------------------------------
