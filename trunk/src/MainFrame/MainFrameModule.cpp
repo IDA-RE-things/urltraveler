@@ -52,6 +52,7 @@ BEGIN_EVENT_MAP(MainFrameModule)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(MainFrameModule)
+	ON_MESSAGE(MESSAGE_VALUE_CORE_BEGIN_SHOW, OnMessage_Show)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_CYCLE_TRIGGER, OnMessage_CycleTrigged)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_PRE_APP_EXIT, OnMessage_PreExit)
 END_MESSAGE_MAP()
@@ -139,11 +140,6 @@ void MainFrameModule::PaybackExtraInfo(uint32 valueId, void* pExtraInfo)
 
 void	MainFrameModule::OnEvent_OpenMainDlg(Event* pEvent)
 {
-	// 在主面板启动的时候通知任务栏图标启动
-	Event v;
-	v =	MakeEvent<MODULE_ID_MAINFRAME>()(trayicon::EVENT_VALUE_TRAYICON_SHOW, MODULE_ID_TRAYICON);
-	m_pModuleManager->PushEvent(v);
-
 	MainFrame_OpenEvent* pE = (MainFrame_OpenEvent*)pEvent->m_pstExtraInfo;
 	return;
 }
@@ -156,6 +152,10 @@ void	MainFrameModule::OnEvent_CloseMainDlg(Event* pEvent)
 void	MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
 {
 
+}
+
+void MainFrameModule::OnMessage_Show(Message* pMessage)
+{
 }
 
 void	MainFrameModule::OnMessage_PreExit(Message* pMessage)

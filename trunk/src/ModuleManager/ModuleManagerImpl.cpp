@@ -346,12 +346,7 @@ void	ModuleManagerImpl::Run()
 	m_hTimers = ::SetTimer(m_hInnerWnd, CYCLE_TIMER,  CYCLE_TIMER_LENGTH, NULL);
 
 	m_bRun = TRUE;
-
-	// 通知主面板模块启动
-	mainframe::MainFrame_OpenEvent* pMainFrameOpenEvent = new mainframe::MainFrame_OpenEvent();
-	pMainFrameOpenEvent->srcMId = MODULE_ID_CORE;
-	pMainFrameOpenEvent->m_pstExtraInfo = pMainFrameOpenEvent;
-	PushEvent(*pMainFrameOpenEvent);
+	PushMessage(MakeMessage<MODULE_ID_CORE>()(MESSAGE_VALUE_CORE_BEGIN_SHOW));
 
 	OnCycleTrigger();
 
