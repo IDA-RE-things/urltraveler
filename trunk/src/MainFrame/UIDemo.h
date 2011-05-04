@@ -21,7 +21,12 @@ public:
 
     void Notify(TNotifyUI& msg)
     {
-       
+		if( msg.sType == _T("click") ) {
+			if( msg.pSender->GetName() == _T("closebtn") || msg.pSender->GetName() == _T("closebtn2") ) {
+				PostQuitMessage(0); 
+				return; 
+			}
+		}
     }
 
     LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
