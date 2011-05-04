@@ -83,16 +83,15 @@ m_pParentResourcePM(NULL)
     m_dwDefalutSelectedBkColor = 0xFFBAE4FF;
     LOGFONT lf = { 0 };
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
-    //lf.lfHeight = -12;
+    lf.lfCharSet = DEFAULT_CHARSET;
     HFONT hDefaultFont = ::CreateFontIndirect(&lf);
     m_DefaultFontInfo.hFont = hDefaultFont;
     m_DefaultFontInfo.sFontName = lf.lfFaceName;
     m_DefaultFontInfo.iSize = -lf.lfHeight;
-    m_DefaultFontInfo.bBold = false;
-    m_DefaultFontInfo.bUnderline = false;
-    m_DefaultFontInfo.bItalic = false;
+    m_DefaultFontInfo.bBold = (lf.lfWeight >= FW_BOLD);
+    m_DefaultFontInfo.bUnderline = (lf.lfUnderline == TRUE);
+    m_DefaultFontInfo.bItalic = (lf.lfItalic == TRUE);
     ::ZeroMemory(&m_DefaultFontInfo.tm, sizeof(m_DefaultFontInfo.tm));
-
 
     if( m_hUpdateRectPen == NULL ) {
         m_hUpdateRectPen = ::CreatePen(PS_SOLID, 1, RGB(220, 0, 0));
@@ -103,6 +102,8 @@ m_pParentResourcePM(NULL)
 
     m_szMinWindow.cx = 0;
     m_szMinWindow.cy = 0;
+    m_szMaxWindow.cx = 0;
+    m_szMaxWindow.cy = 0;
     m_szInitWindowSize.cx = 0;
     m_szInitWindowSize.cy = 0;
     m_szRoundCorner.cx = m_szRoundCorner.cy = 0;
@@ -218,6 +219,11 @@ HWND CPaintManagerUI::GetPaintWindow() const
     return m_hWndPaint;
 }
 
+HWND CPaintManagerUI::GetTooltipWindow() const
+{
+    return m_hwndTooltip;
+}
+
 HDC CPaintManagerUI::GetPaintDC() const
 {
     return m_hDcPaint;
@@ -245,7 +251,7 @@ void CPaintManagerUI::SetInitSize(int cx, int cy)
     m_szInitWindowSize.cx = cx;
     m_szInitWindowSize.cy = cy;
     if( m_pRoot == NULL && m_hWndPaint != NULL ) {
-        ::SetWindowPos(m_hWndPaint, NULL, 0, 0, cx, cy, SWP_NOZORDER | SWP_NOMOVE);
+        ::SetWindowPos(m_hWndPaint, NULL, 0, 0, cx, cy, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
     }
 }
 
@@ -280,16 +286,28 @@ void CPaintManagerUI::SetRoundCorner(int cx, int cy)
     m_szRoundCorner.cy = cy;
 }
 
-SIZE CPaintManagerUI::GetMinMaxInfo() const
+SIZE CPaintManagerUI::GetMinInfo() const
 {
 	return m_szMinWindow;
 }
 
-void CPaintManagerUI::SetMinMaxInfo(int cx, int cy)
+void CPaintManagerUI::SetMinInfo(int cx, int cy)
 {
     ASSERT(cx>=0 && cy>=0);
     m_szMinWindow.cx = cx;
     m_szMinWindow.cy = cy;
+}
+
+SIZE CPaintManagerUI::GetMaxInfo() const
+{
+    return m_szMaxWindow;
+}
+
+void CPaintManagerUI::SetMaxInfo(int cx, int cy)
+{
+    ASSERT(cx>=0 && cy>=0);
+    m_szMaxWindow.cx = cx;
+    m_szMaxWindow.cy = cy;
 }
 
 void CPaintManagerUI::SetTransparent(int nOpacity)
@@ -591,26 +609,20 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
     case WM_GETMINMAXINFO:
         {
             LPMINMAXINFO lpMMI = (LPMINMAXINFO) lParam;
-            lpMMI->ptMinTrackSize.x = m_szMinWindow.cx;
-            lpMMI->ptMinTrackSize.y = m_szMinWindow.cy;
+            if( m_szMinWindow.cx > 0 ) lpMMI->ptMinTrackSize.x = m_szMinWindow.cx;
+            if( m_szMinWindow.cy > 0 ) lpMMI->ptMinTrackSize.y = m_szMinWindow.cy;
+            if( m_szMaxWindow.cx > 0 ) lpMMI->ptMaxTrackSize.x = m_szMaxWindow.cx;
+            if( m_szMaxWindow.cy > 0 ) lpMMI->ptMaxTrackSize.y = m_szMaxWindow.cy;
         }
         break;
     case WM_SIZE:
         {
             if( m_pFocus != NULL ) {
-                CControlUI* pFocus = m_pFocus;
                 TEventUI event = { 0 };
                 event.Type = UIEVENT_WINDOWSIZE;
                 event.dwTimestamp = ::GetTickCount();
                 m_pFocus->Event(event);
-                if( m_pFocus == NULL ) {
-                    FINDTABINFO info = { 0 };
-                    info.pFocus = pFocus;
-                    info.bForward = false;
-                    m_pFocus = m_pRoot->FindControl(__FindControlFromTab, &info, UIFIND_VISIBLE | UIFIND_ENABLED | UIFIND_ME_FIRST);
-                }
             }
-
             if( m_pRoot != NULL ) m_pRoot->NeedUpdate();
         }
         return true;
@@ -729,7 +741,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             m_pEventClick = pControl;
             pControl->SetFocus();
             SetCapture();
-            m_bMouseCapture = true;
             TEventUI event = { 0 };
             event.Type = UIEVENT_BUTTONDOWN;
             event.wParam = wParam;
@@ -748,8 +759,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             CControlUI* pControl = FindControl(pt);
             if( pControl == NULL ) break;
             if( pControl->GetManager() != this ) break;
-            ::SetCapture(m_hWndPaint);
-            m_bMouseCapture = true;
+            SetCapture();
             TEventUI event = { 0 };
             event.Type = UIEVENT_DBLCLICK;
             event.ptMouse = pt;
@@ -765,7 +775,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             m_ptLastMousePos = pt;
             if( m_pEventClick == NULL ) break;
             ReleaseCapture();
-            m_bMouseCapture = false;
             TEventUI event = { 0 };
             event.Type = UIEVENT_BUTTONUP;
             event.wParam = wParam;
@@ -787,7 +796,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             if( pControl->GetManager() != this ) break;
             pControl->SetFocus();
             SetCapture();
-            m_bMouseCapture = true;
             TEventUI event = { 0 };
             event.Type = UIEVENT_RBUTTONDOWN;
             event.wParam = wParam;
@@ -806,7 +814,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             m_ptLastMousePos = pt;
             if( m_pEventClick == NULL ) break;
             ReleaseCapture();
-            m_bMouseCapture = false;
             TEventUI event = { 0 };
             event.Type = UIEVENT_CONTEXTMENU;
             event.ptMouse = pt;
@@ -907,7 +914,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             return true;
         }
         break;
-    case  WM_CTLCOLOREDIT:
+    case WM_CTLCOLOREDIT:
         {
             if( lParam == 0 ) break;
             HWND hWndChild = (HWND) lParam;
@@ -974,7 +981,9 @@ void CPaintManagerUI::ReapObjects(CControlUI* pControl)
     if( pControl == m_pFocus ) m_pFocus = NULL;
     
     const CStdString& sName = pControl->GetName();
-    if( !sName.IsEmpty() ) m_mNameHash.Remove(sName);
+    if( !sName.IsEmpty() ) {
+        if( pControl == FindControl(sName) ) m_mNameHash.Remove(sName);
+    }
 }
 
 bool CPaintManagerUI::AddOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl)
@@ -1010,8 +1019,7 @@ void CPaintManagerUI::RemoveOptionGroup(LPCTSTR pStrGroupName, CControlUI* pCont
 	if( lp ) {
 		CStdPtrArray* aOptionGroup = static_cast<CStdPtrArray*>(lp);
 		if( aOptionGroup == NULL ) return;
-		int i = 0;
-		for( i = 0; i < aOptionGroup->GetSize(); i++ ) {
+		for( int i = 0; i < aOptionGroup->GetSize(); i++ ) {
 			if( static_cast<CControlUI*>(aOptionGroup->GetAt(i)) == pControl ) {
 				aOptionGroup->Remove(i);
 				break;
@@ -1020,11 +1028,6 @@ void CPaintManagerUI::RemoveOptionGroup(LPCTSTR pStrGroupName, CControlUI* pCont
 		if( aOptionGroup->IsEmpty() ) {
 			delete aOptionGroup;
 			m_mOptionGroup.Remove(pStrGroupName);
-		}
-		else {
-			pControl = static_cast<CControlUI*>(aOptionGroup->GetAt(i));
-			if( pControl ) pControl->Activate();
-			else static_cast<CControlUI*>(aOptionGroup->GetAt(0))->Activate();
 		}
 	}
 }
@@ -1079,11 +1082,7 @@ void CPaintManagerUI::SetFocus(CControlUI* pControl)
 {
     // Paint manager window has focus?
     HWND hFocusWnd = ::GetFocus();
-    if( hFocusWnd != m_hWndPaint ) {
-        HWND hwndParent = ::GetParent(hFocusWnd);
-        UINT uStyle = GetWindowStyle(hFocusWnd);
-        if( !(hwndParent == m_hWndPaint && ((uStyle & WS_CHILD) != 0)) ) ::SetFocus(m_hWndPaint);
-    }
+    if( hFocusWnd != m_hWndPaint && pControl != m_pFocus ) ::SetFocus(m_hWndPaint);
     // Already has focus?
     if( pControl == m_pFocus ) return;
     // Remove focus from old control
@@ -1112,6 +1111,27 @@ void CPaintManagerUI::SetFocus(CControlUI* pControl)
         m_pFocus->Event(event);
         SendNotify(m_pFocus, _T("setfocus"));
     }
+}
+
+void CPaintManagerUI::SetFocusNeeded(CControlUI* pControl)
+{
+    ::SetFocus(m_hWndPaint);
+    if( pControl == NULL ) return;
+    if( m_pFocus != NULL ) {
+        TEventUI event = { 0 };
+        event.Type = UIEVENT_KILLFOCUS;
+        event.pSender = pControl;
+        event.dwTimestamp = ::GetTickCount();
+        m_pFocus->Event(event);
+        SendNotify(m_pFocus, _T("killfocus"));
+        m_pFocus = NULL;
+    }
+    FINDTABINFO info = { 0 };
+    info.pFocus = pControl;
+    info.bForward = false;
+    m_pFocus = m_pRoot->FindControl(__FindControlFromTab, &info, UIFIND_VISIBLE | UIFIND_ENABLED | UIFIND_ME_FIRST);
+    m_bFocusNeeded = true;
+    if( m_pRoot != NULL ) m_pRoot->NeedUpdate();
 }
 
 bool CPaintManagerUI::SetTimer(CControlUI* pControl, UINT nTimerID, UINT uElapse)
@@ -1309,6 +1329,7 @@ bool CPaintManagerUI::SetPostPaintIndex(CControlUI* pControl, int iIndex)
 
 void CPaintManagerUI::AddDelayedCleanup(CControlUI* pControl)
 {
+    pControl->SetManager(this, NULL, false);
     m_aDelayedCleanup.Add(pControl);
     ::PostMessage(m_hWndPaint, WM_APP + 1, 0, 0L);
 }
@@ -1427,6 +1448,7 @@ void CPaintManagerUI::SetDefaultFont(LPCTSTR pStrFontName, int nSize, bool bBold
     LOGFONT lf = { 0 };
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
     _tcscpy(lf.lfFaceName, pStrFontName);
+    lf.lfCharSet = DEFAULT_CHARSET;
     lf.lfHeight = -nSize;
     if( bBold ) lf.lfWeight += FW_BOLD;
     if( bUnderline ) lf.lfUnderline = TRUE;
@@ -1459,6 +1481,7 @@ HFONT CPaintManagerUI::AddFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool
     LOGFONT lf = { 0 };
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
     _tcscpy(lf.lfFaceName, pStrFontName);
+    lf.lfCharSet = DEFAULT_CHARSET;
     lf.lfHeight = -nSize;
     if( bBold ) lf.lfWeight += FW_BOLD;
     if( bUnderline ) lf.lfUnderline = TRUE;
@@ -1494,9 +1517,11 @@ HFONT CPaintManagerUI::AddFontAt(int index, LPCTSTR pStrFontName, int nSize, boo
     LOGFONT lf = { 0 };
     ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
     _tcscpy(lf.lfFaceName, pStrFontName);
+    lf.lfCharSet = DEFAULT_CHARSET;
     lf.lfHeight = -nSize;
     if( bBold ) lf.lfWeight += FW_BOLD;
     if( bUnderline ) lf.lfUnderline = TRUE;
+    if( bItalic ) lf.lfItalic = TRUE;
     HFONT hFont = ::CreateFontIndirect(&lf);
     if( hFont == NULL ) return NULL;
 
@@ -1759,7 +1784,7 @@ CControlUI* CPaintManagerUI::FindControl(LPCTSTR pstrName)
 CControlUI* CPaintManagerUI::FindControl(CControlUI* pParent, LPCTSTR pstrName)
 {
 	ASSERT(pParent);
-	return pParent->FindControl(__FindControlFromNameByParent, (LPVOID)pstrName, UIFIND_ALL);
+	return pParent->FindControl(__FindControlFromName, (LPVOID)pstrName, UIFIND_ALL);
 }
 
 CControlUI* CPaintManagerUI::FindControl(POINT pt) const
@@ -1804,7 +1829,7 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlFromNameHash(CControlUI* pThi
     return NULL; // Attempt to add all controls
 }
 
-CControlUI* CALLBACK CPaintManagerUI::__FindControlFromNameByParent(CControlUI* pThis, LPVOID pData)
+CControlUI* CALLBACK CPaintManagerUI::__FindControlFromName(CControlUI* pThis, LPVOID pData)
 {
     LPCTSTR pstrName = static_cast<LPCTSTR>(pData);
 	const CStdString& sName = pThis->GetName();
