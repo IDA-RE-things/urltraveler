@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "Utility\Utility.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrayIcon", "TrayIcon\TrayIcon.vcproj", "{9D1B70E9-0BEE-437C-8EB5-CD5295688421}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UIDesigner", "..\thirdlib\duilib\UIDesigner\UIDesigner.vcproj", "{8CC28A8B-CD88-44A7-8994-066CCD8938CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -85,6 +87,14 @@ Global
 		{9D1B70E9-0BEE-437C-8EB5-CD5295688421}.UnicodeDebug|Win32.Build.0 = Debug|Win32
 		{9D1B70E9-0BEE-437C-8EB5-CD5295688421}.UnicodeRelease|Win32.ActiveCfg = Release|Win32
 		{9D1B70E9-0BEE-437C-8EB5-CD5295688421}.UnicodeRelease|Win32.Build.0 = Release|Win32
+		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.Debug|Win32.Build.0 = Debug|Win32
+		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.Release|Win32.ActiveCfg = Release|Win32
+		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.Release|Win32.Build.0 = Release|Win32
+		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.UnicodeDebug|Win32.ActiveCfg = Debug|Win32
+		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.UnicodeDebug|Win32.Build.0 = Debug|Win32
+		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.UnicodeRelease|Win32.ActiveCfg = Release|Win32
+		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.UnicodeRelease|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
