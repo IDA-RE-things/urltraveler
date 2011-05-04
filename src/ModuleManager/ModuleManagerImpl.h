@@ -177,9 +177,6 @@ namespace core
 
 		// ¶¨Ê±Æ÷
 		HTIME		m_hTimers;
-
-
 	};
-
 }
 
