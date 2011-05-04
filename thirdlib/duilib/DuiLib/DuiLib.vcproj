@@ -74,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Riched20.lib"
-				OutputFile="../bin/DuiLib_u.dll"
+				OutputFile="../bin/DuiLib.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
@@ -110,6 +110,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy ..\bin\*.dll ..\..\..\bin\"
 			/>
 		</Configuration>
 		<Configuration
@@ -120,7 +121,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -176,7 +177,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Riched20.lib"
-				OutputFile="../bin/DuiLib_ud.dll"
+				OutputFile="../bin/DuiLib_d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
@@ -213,6 +214,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy ..\bin\*.dll ..\..\..\bin\"
 			/>
 		</Configuration>
 		<Configuration
@@ -315,6 +317,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy ..\bin\*.dll ..\..\..\bin\"
 			/>
 		</Configuration>
 		<Configuration
@@ -413,6 +416,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy ..\bin\*.dll ..\..\..\bin\"
 			/>
 		</Configuration>
 	</Configurations>
