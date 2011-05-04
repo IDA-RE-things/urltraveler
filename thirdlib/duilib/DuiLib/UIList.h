@@ -32,7 +32,6 @@ typedef struct tagTListInfoUI
     CStdString sDisabledImage;
     DWORD dwLineColor;
     bool bShowHtml;
-    bool bExpandable;
     bool bMultiExpandable;
 } TListInfoUI;
 
@@ -91,6 +90,8 @@ class UILIB_API CListUI : public CVerticalLayoutUI, public IListUI
 {
 public:
     CListUI();
+	//CListUI(CListUI &src);
+	~CListUI();
 
     LPCTSTR GetClass() const;
     UINT GetControlFlags() const;
@@ -107,6 +108,8 @@ public:
     int GetItemIndex(CControlUI* pControl) const;
     bool SetItemIndex(CControlUI* pControl, int iIndex);
     int GetCount() const;
+	// get num of rows of list [5/1/2011 linjinming]
+	int GetRowCount() const;
     bool Add(CControlUI* pControl);
     bool AddAt(CControlUI* pControl, int iIndex);
     bool Remove(CControlUI* pControl);
@@ -140,6 +143,7 @@ public:
 	RECT GetItemTextPadding() const;
 	DWORD GetItemTextColor() const;
 	DWORD GetItemBkColor() const;
+	DWORD GetItemTextStyle() const;
 	LPCTSTR GetItemImage() const;
 	DWORD GetSelectedItemTextColor() const;
 	DWORD GetSelectedItemBkColor() const;
@@ -152,7 +156,6 @@ public:
 	LPCTSTR GetDisabledItemImage() const;
 	DWORD GetItemLineColor() const;
 
-    void SetExpanding(bool bExpandable);
     void SetMultiExpanding(bool bMultiExpandable); 
     int GetExpandedItem() const;
     bool ExpandItem(int iIndex, bool bExpand = true);
@@ -199,6 +202,8 @@ class UILIB_API CListBodyUI : public CVerticalLayoutUI
 {
 public:
     CListBodyUI(CListUI* pOwner);
+	LPCTSTR GetClass() const;
+	LPVOID GetInterface(LPCTSTR pstrName);
 
     void SetScrollPos(SIZE szPos);
     void SetPos(RECT rc);
@@ -230,6 +235,7 @@ class UILIB_API CListHeaderItemUI : public CControlUI
 {
 public:
     CListHeaderItemUI();
+	~CListHeaderItemUI();
 
     LPCTSTR GetClass() const;
     LPVOID GetInterface(LPCTSTR pstrName);

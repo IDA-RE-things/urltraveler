@@ -171,6 +171,7 @@ public:
 
     HDC GetPaintDC() const;
     HWND GetPaintWindow() const;
+    HWND GetTooltipWindow() const;
 
     POINT GetMousePos() const;
     SIZE GetClientSize() const;
@@ -182,8 +183,10 @@ public:
     void SetCaptionRect(RECT& rcCaption);
     SIZE GetRoundCorner() const;
     void SetRoundCorner(int cx, int cy);
-	SIZE GetMinMaxInfo() const;
-    void SetMinMaxInfo(int cx, int cy);
+	SIZE GetMinInfo() const;
+    void SetMinInfo(int cx, int cy);
+    SIZE GetMaxInfo() const;
+    void SetMaxInfo(int cx, int cy);
     void SetTransparent(int nOpacity);
     void SetBackgroundTransparent(bool bTrans);
 	bool IsShowUpdateRect() const;
@@ -252,6 +255,7 @@ public:
 
     CControlUI* GetFocus() const;
     void SetFocus(CControlUI* pControl);
+    void SetFocusNeeded(CControlUI* pControl);
 
     bool SetNextTabControl(bool bForward = true);
 
@@ -300,7 +304,7 @@ private:
     static CControlUI* CALLBACK __FindControlFromTab(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromShortcut(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromUpdate(CControlUI* pThis, LPVOID pData);
-	static CControlUI* CALLBACK __FindControlFromNameByParent(CControlUI* pThis, LPVOID pData);
+	static CControlUI* CALLBACK __FindControlFromName(CControlUI* pThis, LPVOID pData);
 
 private:
     HWND m_hWndPaint;
@@ -321,6 +325,7 @@ private:
     //
     POINT m_ptLastMousePos;
     SIZE m_szMinWindow;
+    SIZE m_szMaxWindow;
     SIZE m_szInitWindowSize;
     RECT m_rcSizeBox;
     SIZE m_szRoundCorner;
