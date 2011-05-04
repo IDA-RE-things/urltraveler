@@ -27,10 +27,15 @@ CListUI::CListUI() : m_pCallback(NULL), m_iCurSel(-1), m_iExpandedItem(-1)
     m_ListInfo.dwDisabledBkColor = 0xFFFFFFFF;
     m_ListInfo.dwLineColor = 0;
     m_ListInfo.bShowHtml = false;
-    m_ListInfo.bExpandable = false;
     m_ListInfo.bMultiExpandable = false;
     ::ZeroMemory(&m_ListInfo.rcTextPadding, sizeof(m_ListInfo.rcTextPadding));
     ::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
+}
+
+CListUI::~CListUI()
+{
+	int i = 0;
+
 }
 
 LPCTSTR CListUI::GetClass() const
@@ -53,7 +58,8 @@ LPVOID CListUI::GetInterface(LPCTSTR pstrName)
 
 CControlUI* CListUI::GetItemAt(int iIndex) const
 {
-    return m_pList->GetItemAt(iIndex);
+	// 获取子控件 [5/1/2011 linjinming]
+	return CVerticalLayoutUI::GetItemAt(iIndex);
 }
 
 int CListUI::GetItemIndex(CControlUI* pControl) const
@@ -79,7 +85,7 @@ bool CListUI::SetItemIndex(CControlUI* pControl, int iIndex)
     // The list items should know about us
     IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
     if( pListItem != NULL ) {
-        pListItem->SetIndex(GetCount()); // 本来是GetCount() - 1的，不过后面有减一
+        pListItem->SetIndex(GetRowCount()); // 本来是GetCount() - 1的，不过后面有减一
     }
 
     for(int i = iOrginIndex; i < m_pList->GetCount(); ++i)
@@ -92,14 +98,18 @@ bool CListUI::SetItemIndex(CControlUI* pControl, int iIndex)
     }
 
     SelectItem(FindSelectable(m_iCurSel, false));
-    EnsureVisible(m_iCurSel);
 
     return true;
 }
 
 int CListUI::GetCount() const
 {
-    return m_pList->GetCount();
+	return CVerticalLayoutUI::GetCount();
+}
+
+int CListUI::GetRowCount() const
+{
+	return m_pList->GetCount();
 }
 
 bool CListUI::Add(CControlUI* pControl)
@@ -115,6 +125,15 @@ bool CListUI::Add(CControlUI* pControl)
         m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
         return CVerticalLayoutUI::AddAt(pControl, 0);
     }
+
+	if( pControl->GetInterface(_T("ListBody")) != NULL ) {
+		if (m_pList != pControl)
+		{
+			CVerticalLayoutUI::Remove(m_pList);
+			m_pList = static_cast<CListBodyUI*>(pControl);
+			return CVerticalLayoutUI::Add(pControl);
+		}
+	}
     // We also need to recognize header sub-items
     if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) {
         bool ret = m_pHeader->Add(pControl);
@@ -125,7 +144,7 @@ bool CListUI::Add(CControlUI* pControl)
     IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
     if( pListItem != NULL ) {
         pListItem->SetOwner(this);
-        pListItem->SetIndex(GetCount());
+        pListItem->SetIndex(GetRowCount());
     }
     return m_pList->Add(pControl);
 }
@@ -190,7 +209,6 @@ bool CListUI::Remove(CControlUI* pControl)
     }
 
     SelectItem(FindSelectable(m_iCurSel, false));
-    EnsureVisible(m_iCurSel);
     return true;
 }
 
@@ -208,7 +226,6 @@ bool CListUI::RemoveAt(int iIndex)
     }
 
     SelectItem(FindSelectable(m_iCurSel, false));
-    EnsureVisible(m_iCurSel);
     return true;
 }
 
@@ -216,7 +233,9 @@ void CListUI::RemoveAll()
 {
     m_iCurSel = -1;
     m_iExpandedItem = -1;
-    m_pList->RemoveAll();
+    //m_pList->RemoveAll();
+	CVerticalLayoutUI::RemoveAll();
+	//m_pHeader->RemoveAll();
 }
 
 void CListUI::SetPos(RECT rc)
@@ -275,11 +294,9 @@ void CListUI::DoEvent(TEventUI& event)
         switch( event.chKey ) {
         case VK_UP:
             SelectItem(FindSelectable(m_iCurSel - 1, false));
-            EnsureVisible(m_iCurSel);
             return;
         case VK_DOWN:
             SelectItem(FindSelectable(m_iCurSel + 1, true));
-            EnsureVisible(m_iCurSel);
             return;
         case VK_PRIOR:
             PageUp();
@@ -289,11 +306,9 @@ void CListUI::DoEvent(TEventUI& event)
             return;
         case VK_HOME:
             SelectItem(FindSelectable(0, false));
-            EnsureVisible(m_iCurSel);
             return;
         case VK_END:
-            SelectItem(FindSelectable(GetCount() - 1, true));
-            EnsureVisible(m_iCurSel);
+            SelectItem(FindSelectable(GetRowCount() - 1, true));
             return;
         case VK_RETURN:
             if( m_iCurSel != -1 ) GetItemAt(m_iCurSel)->Activate();
@@ -305,11 +320,9 @@ void CListUI::DoEvent(TEventUI& event)
             switch( LOWORD(event.wParam) ) {
             case SB_LINEUP:
                 SelectItem(FindSelectable(m_iCurSel - 1, false));
-                EnsureVisible(m_iCurSel);
                 return;
             case SB_LINEDOWN:
                 SelectItem(FindSelectable(m_iCurSel + 1, true));
-                EnsureVisible(m_iCurSel);
                 return;
             }
         }
@@ -361,6 +374,7 @@ bool CListUI::SelectItem(int iIndex)
         m_iCurSel = -1;
         return false;
     }
+    EnsureVisible(m_iCurSel);
     pControl->SetFocus();
     if( m_pManager != NULL ) {
         m_pManager->SendNotify(this, _T("itemselect"));
@@ -433,6 +447,11 @@ DWORD CListUI::GetItemTextColor() const
 DWORD CListUI::GetItemBkColor() const
 {
 	return m_ListInfo.dwBkColor;
+}
+
+DWORD CListUI::GetItemTextStyle() const
+{
+	return m_ListInfo.uTextStyle;
 }
 
 LPCTSTR CListUI::GetItemImage() const
@@ -562,11 +581,6 @@ void CListUI::SetItemShowHtml(bool bShowHtml)
     NeedUpdate();
 }
 
-void CListUI::SetExpanding(bool bExpandable)
-{
-    m_ListInfo.bExpandable = bExpandable;
-}
-
 void CListUI::SetMultiExpanding(bool bMultiExpandable)
 {
     m_ListInfo.bMultiExpandable = bMultiExpandable;
@@ -574,7 +588,6 @@ void CListUI::SetMultiExpanding(bool bMultiExpandable)
 
 bool CListUI::ExpandItem(int iIndex, bool bExpand /*= true*/)
 {
-    if( !m_ListInfo.bExpandable ) return false;
     if( m_iExpandedItem >= 0 && !m_ListInfo.bMultiExpandable) {
         CControlUI* pControl = GetItemAt(m_iExpandedItem);
         if( pControl != NULL ) {
@@ -638,7 +651,6 @@ void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
     if( _tcscmp(pstrName, _T("header")) == 0 ) GetHeader()->SetVisible(_tcscmp(pstrValue, _T("hidden")) != 0);
     if( _tcscmp(pstrName, _T("headerbkimage")) == 0 ) GetHeader()->SetBkImage(pstrValue);
-    else if( _tcscmp(pstrName, _T("expanding")) == 0 ) SetExpanding(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("multiexpanding")) == 0 ) SetMultiExpanding(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.nFont = _ttoi(pstrValue);
     else if( _tcscmp(pstrName, _T("itemalign")) == 0 ) {
@@ -835,6 +847,12 @@ CListBodyUI::CListBodyUI(CListUI* pOwner) : m_pOwner(pOwner)
 {
     ASSERT(m_pOwner);
     SetInset(CRect(0,0,0,0));
+}
+
+LPCTSTR CListBodyUI::GetClass() const
+{
+	return _T("ListBodyUI");
+
 }
 
 void CListBodyUI::SetScrollPos(SIZE szPos)
@@ -1039,6 +1057,12 @@ void CListBodyUI::DoEvent(TEventUI& event)
     if( m_pOwner != NULL ) m_pOwner->DoEvent(event); else CControlUI::DoEvent(event);
 }
 
+LPVOID CListBodyUI::GetInterface(LPCTSTR pstrName)
+{
+	if( _tcscmp(pstrName, _T("ListBody")) == 0 ) return this;
+	return CVerticalLayoutUI::GetInterface(pstrName);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 //
 //
@@ -1086,6 +1110,11 @@ m_uTextStyle(DT_VCENTER | DT_CENTER | DT_SINGLELINE), m_dwTextColor(0), m_iFont(
 	SetTextPadding(CRect(2, 0, 2, 0));
     ptLastMouse.x = ptLastMouse.y = 0;
     SetMinWidth(16);
+}
+
+CListHeaderItemUI::~CListHeaderItemUI()
+{
+
 }
 
 LPCTSTR CListHeaderItemUI::GetClass() const
@@ -2114,7 +2143,7 @@ void CListExpandElementUI::DoEvent(TEventUI& event)
         TListInfoUI* pInfo = m_pOwner->GetListInfo();
         RECT rcExpander = { m_rcItem.left + m_rcExpander.left, m_rcItem.top + m_rcExpander.top, 
             m_rcItem.left + m_rcExpander.right, m_rcItem.top + m_rcExpander.bottom };
-        if( pInfo->bExpandable && ::PtInRect(&rcExpander, event.ptMouse) ) Expand(!m_bExpanded);
+        if( ::PtInRect(&rcExpander, event.ptMouse) ) Expand(!m_bExpanded);
         return;
     }
     if( event.Type == UIEVENT_KEYDOWN )

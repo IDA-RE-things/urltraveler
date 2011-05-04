@@ -1131,6 +1131,7 @@ void CRichEditUI::SetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnd
         LOGFONT lf = { 0 };
         ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
         _tcscpy(lf.lfFaceName, pStrFontName);
+        lf.lfCharSet = DEFAULT_CHARSET;
         lf.lfHeight = -nSize;
         if( bBold ) lf.lfWeight += FW_BOLD;
         if( bUnderline ) lf.lfUnderline = TRUE;
@@ -1632,6 +1633,7 @@ void CRichEditUI::DoInit()
     CreateHost(this, &cs, &m_pTwh);
     if( m_pTwh ) {
         m_pTwh->SetTransparent(TRUE);
+        if( m_bReadOnly ) m_pTwh->OnTxInPlaceActivate(NULL);
         m_pManager->AddMessageFilter(this);
     }
 }
@@ -1806,7 +1808,6 @@ void CRichEditUI::DoEvent(TEventUI& event)
     }
     if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK ) 
     {
-        GetManager()->ReleaseCapture();
         return;
     }
     if( event.Type == UIEVENT_MOUSEMOVE ) 
@@ -2107,7 +2108,7 @@ LRESULT CRichEditUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, boo
         if( dwHitResult != HITRESULT_HIT ) return 0;
         if( uMsg == WM_SETCURSOR ) bWasHandled = false;
     }
-    else if( (uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST) || uMsg == WM_CHAR || uMsg == WM_IME_CHAR )
+    else if(uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST)
     {
         // Keyboard messages just go when we have focus
         if( !IsFocused() ) return 0;
