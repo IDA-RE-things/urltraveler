@@ -272,7 +272,7 @@ void TrayIconModule::OnFlashEnd(DWORD dwParam)
 
 }
 
-void	TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
+void TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
 {
 	m_TrayMgr.Init();
 	
@@ -290,7 +290,7 @@ void TrayIconModule::OnMessage_Show(Message* pMessage)
 	m_TrayMgr.AddEventHandler(this);
 }
 
-void	TrayIconModule::OnMessage_PreExit(Message* pMessage)
+void TrayIconModule::OnMessage_PreExit(Message* pMessage)
 {
 
 }

@@ -34,14 +34,4 @@ namespace trayicon
 			desMId	=	MODULE_ID_TRAYICON;
 		}
 	};
-
-	// 通知显示任务栏图标
-	struct TrayIcon_ShowEvent	:	public	TrayIconEvent
-	{
-	public:
-		TrayIcon_ShowEvent()
-		{
-			eventValue	=	 EVENT_VALUE_TRAYICON_SHOW;
-		}
-	};
 };

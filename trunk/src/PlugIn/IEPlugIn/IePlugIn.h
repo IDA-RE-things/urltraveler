@@ -4,11 +4,11 @@
 #include "PlugIn.h"
 
 
-class CIePlugIn : public IPlugIn
+class CIEPlugIn : public IPlugIn
 {
 public:
-	CIePlugIn(void);
-	~CIePlugIn(void);
+	CIEPlugIn(void);
+	~CIEPlugIn(void);
 
 	//----------------------------------------------------------------------------------------
 	//名称: IsWorked
@@ -50,11 +50,28 @@ public:
 	virtual const wchar_t* GetHistoryDataPath() ;
 
 	//----------------------------------------------------------------------------------------
-	//名称: ImportFavoriteData
+	//名称: ExportFavoriteData
 	//描述: 导出当前浏览器的所有的收藏夹数据
 	//参数: 
-	//		@param	pData			到处的收藏夹数据数组
-	//		@param	nDataNum	收藏夹条目的条数
+	//		@param	pData			导出的收藏夹数据数组
+	//		@param	nDataNum		导出的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL		ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum) ;
+	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum);
+
+	//----------------------------------------------------------------------------------------
+	//名称: ImportFavoriteData
+	//描述: 将当前的记录导入到浏览器中
+	//参数: 
+	//		@param	pData			需要导入的的收藏夹数据数组
+	//		@param	nDataNum		需要导入的收藏夹条目的条数
+	//----------------------------------------------------------------------------------------
+	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum);
+
+	//----------------------------------------------------------------------------------------
+	//名称: ImportFavoriteData
+	//描述: 将一条记录导入到浏览器中
+	//参数: 
+	//		@param	stData			需要导入的的收藏夹记录
+	//----------------------------------------------------------------------------------------
+	virtual BOOL ImportFavoriteData(FAVORITELINEDATA stData);
 };

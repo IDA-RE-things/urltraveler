@@ -150,7 +150,7 @@ enum MessageValueRanges
 	MESSAGE_VALUE_CORE_BEGIN_SHOW,		//	程序启动后通知模块进行展现。如果模块需要展现，比如主界面，则响应该消息
 	MESSAGE_VALUE_CORE_PRELOGOUT,
 	MESSAGE_VALUE_CORE_LOGOUT,
-	MESSAGE_VALUE_CORE_PRE_APP_EXIT,		//	程序在退出前通知各个模块进行必要的清理工作
+	MESSAGE_VALUE_CORE_PRE_APP_EXIT,	//	程序在退出前通知各个模块进行必要的清理工作
 	MESSAGE_VALUE_CORE_END=MESSAGE_VALUE_END(MODULE_ID_CORE),
 	
 	//MainFrame模块
