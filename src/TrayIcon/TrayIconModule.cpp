@@ -55,6 +55,7 @@ BEGIN_EVENT_MAP(TrayIconModule)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(TrayIconModule)
+	ON_MESSAGE(MESSAGE_VALUE_CORE_BEGIN_SHOW, OnMessage_Show)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_PRE_APP_EXIT, OnMessage_PreExit)
 END_MESSAGE_MAP()
 
@@ -210,6 +211,7 @@ void TrayIconModule::ProcessEvent(const Event& evt)
 //----------------------------------------------------------------------------------------
 void TrayIconModule::ProcessMessage(const Message& msg) 
 {
+	PROCESS_MESSAGE(msg);
 }
 
 //----------------------------------------------------------------------------------------
@@ -271,6 +273,15 @@ void TrayIconModule::OnFlashEnd(DWORD dwParam)
 }
 
 void	TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
+{
+	m_TrayMgr.Init();
+	
+	HICON hIcon = LoadIconW(g_hModule, MAKEINTRESOURCE(IDI_URLTRAVELER));
+	m_TrayMgr.Add(hIcon, L"UrlTraveler");
+	m_TrayMgr.AddEventHandler(this);
+}
+
+void TrayIconModule::OnMessage_Show(Message* pMessage)
 {
 	m_TrayMgr.Init();
 	

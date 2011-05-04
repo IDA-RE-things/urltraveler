@@ -276,22 +276,6 @@
 		<Filter
 			Name="Sqlite"
 			>
-			<File
-				RelativePath=".\CppSQLite3\CppSQLite3.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CppSQLite3\CppSQLite3.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CppSQLite3\sqlite3.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CppSQLite3\sqlite_compile_macros.h"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
