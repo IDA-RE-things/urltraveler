@@ -43,7 +43,7 @@ MainFrameModule::MainFrameModule()
 
 MainFrameModule::~MainFrameModule()
 {
-
+	::CoUninitialize();
 }
 
 BEGIN_EVENT_MAP(MainFrameModule)
@@ -172,12 +172,10 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 	pFrame->ShowWindow(true);
 	//CPaintManagerUI::MessageLoop();
 
-	::CoUninitialize();
 }
 
 void	MainFrameModule::OnMessage_PreExit(Message* pMessage)
 {
-
 }
 
 void	MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
