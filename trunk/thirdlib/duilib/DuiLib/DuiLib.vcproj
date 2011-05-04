@@ -74,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Riched20.lib"
-				OutputFile="../bin/DuiLib.dll"
+				OutputFile="../bin/DuiLib_u.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
@@ -84,7 +84,7 @@
 				BaseAddress="0x11000000"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="../bin/DuiLib.lib"
+				ImportLibrary="../bin/DuiLib_u.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -176,7 +176,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Riched20.lib"
-				OutputFile="../bin/DuiLib_d.dll"
+				OutputFile="../bin/DuiLib_ud.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
@@ -187,7 +187,7 @@
 				BaseAddress="0x11000000"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="../bin/DuiLib_d.lib"
+				ImportLibrary="../bin/DuiLib_ud.lib"
 				TargetMachine="1"
 			/>
 			<Tool

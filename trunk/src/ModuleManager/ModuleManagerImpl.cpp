@@ -4,6 +4,7 @@
 #include <sstream>
 #include "time.h"
 #include "MainFrameDefine.h"
+#include "ole2.h"
 
 #define CYCLE_TIMER		10010
 #define CYCLE_TIMER_LENGTH	100
@@ -14,9 +15,9 @@ using namespace core;
 
 
 ModuleManagerImpl::ModuleManagerImpl()
-:m_eventMsgBuf(10240),
-m_bRun(FALSE)
+:m_eventMsgBuf(10240)
 {
+	m_bRun = FALSE;
 }
 
 ModuleManagerImpl::~ModuleManagerImpl()
@@ -289,6 +290,8 @@ void ModuleManagerImpl::DestroyCycleWnd()
 
 BOOL ModuleManagerImpl::Init()
 {
+	OleInitialize(NULL);
+
 	LoadModules();
 
 	// 在vista和win7下允许低等级进程向高等级进程发送消息
@@ -330,6 +333,8 @@ void ModuleManagerImpl::Destroy()
 		it->second.m_pReleaseModuleFactoryFunc(it->second.m_pModuleFactory);
 	}
 	m_mapModuleInterface.clear();
+
+	OleUninitialize();
 }
 
 void ModuleManagerImpl::Exit()

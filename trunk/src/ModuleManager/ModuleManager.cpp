@@ -5,7 +5,7 @@
 #include "ModuleManager.h"
 #include "ModuleManagerImpl.h"
 #include "MainFrameDefine.h"
-#include "vld/vld.h"
+//#include "vld/vld.h"
 
 #define MAX_LOADSTRING 100
 
@@ -13,8 +13,8 @@
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
-core::ModuleManagerImpl module_manager;
 
+core::ModuleManagerImpl module_manager;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
