@@ -2,6 +2,7 @@
 #include "MainFrameModule.h"
 #include "MainFrameDefine.h"
 #include "TrayIconDefine.h"
+#include "UIDemo.h"
 
 using namespace mainframe;
 
@@ -141,6 +142,21 @@ void MainFrameModule::PaybackExtraInfo(uint32 valueId, void* pExtraInfo)
 void	MainFrameModule::OnEvent_OpenMainDlg(Event* pEvent)
 {
 	MainFrame_OpenEvent* pE = (MainFrame_OpenEvent*)pEvent->m_pstExtraInfo;
+
+    CPaintManagerUI::SetInstance(GetModuleHandle(NULL));
+    CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\FlashRes"));
+
+    HRESULT Hr = ::CoInitialize(NULL);
+    if( FAILED(Hr) ) return;
+
+    CFrameWnd* pFrame = new CFrameWnd();
+    if( pFrame == NULL ) return;
+    pFrame->Create(NULL, NULL, UI_WNDSTYLE_DIALOG, 0);
+    pFrame->CenterWindow();
+    pFrame->ShowWindow(true);
+    //CPaintManagerUI::MessageLoop();
+
+    ::CoUninitialize();
 	return;
 }
 
