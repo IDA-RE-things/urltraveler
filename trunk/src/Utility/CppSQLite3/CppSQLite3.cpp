@@ -32,7 +32,9 @@
 #include <tchar.h>
 #include <fstream>
 #include <string>
+/*
 #include "atltime.h"
+*/
 #include <assert.h>
 #include "../StringHelper.h"
 #include "../XString.h"
@@ -1188,12 +1190,13 @@ void CppSQLite3DB::open(const char* szFile,const char * szKey )
 
 		ptrStrFileName = (pTchar+1);
 
-		CTime curTime = CTime::GetCurrentTime();
+		SYSTEMTIME curTime;
+		GetLocalTime(&curTime);
 
 		String strNewFileName;
 		strNewFileName.Format(L"%s.%d%d%d%d%d%d", 
-			ptrStrFileName, curTime.GetYear(), curTime.GetMonth(), curTime.GetDay(), 
-			curTime.GetHour(), curTime.GetMinute(), curTime.GetSecond());
+			StringHelper::ANSIToUnicode(ptrStrFileName).c_str(), curTime.wYear, curTime.wMonth,
+			curTime.wDay, curTime.wHour, curTime.wMinute, curTime.wSecond);
 
 		rename(ptrStrFileName, StringHelper::UnicodeToANSI(LPCTSTR(strNewFileName)).c_str());
 
@@ -1677,11 +1680,13 @@ void CppSQLite3DB::open(const WCHAR* szFile, const char * szKey )
 
 		ptrStrFileName = (pTchar+1);
 
-		CTime curTime = CTime::GetCurrentTime();
+		SYSTEMTIME curTime;
+		GetLocalTime(&curTime);
+
 		String strNewFileName;
 		strNewFileName.Format(L"%s.%d%d%d%d%d%d", 
-			StringHelper::UnicodeToUtf8(ptrStrFileName).c_str(), curTime.GetYear(), curTime.GetMonth(),
-			curTime.GetDay(), curTime.GetHour(), curTime.GetMinute(), curTime.GetSecond());
+			StringHelper::UnicodeToUtf8(ptrStrFileName).c_str(), curTime.wYear, curTime.wMonth,
+			curTime.wDay, curTime.wHour, curTime.wMinute, curTime.wSecond);
 		
 		rename(StringHelper::UnicodeToUtf8(ptrStrFileName).c_str(), 
 			StringHelper::UnicodeToUtf8(strNewFileName.GetData()).c_str());
