@@ -105,6 +105,8 @@ public:
 protected:
 
 	void	OnEvent_ShowTrayIcon(Event* pEvent);	
+public:
+	void    OnEvent_ShowAboutDialog(Event *pEvent);
 
 protected:
 
