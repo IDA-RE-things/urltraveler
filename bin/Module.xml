@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ModuleManager>
+	<Module Name="MainFramed.dll">
+		<IModule Id="2" desc="MODULE_ID_MAINFRAME"/>
+	</Module>
+	<Module Name="Settingd.dll">
+		<IModule Id="3" desc="MODULE_ID_SETTING"/>
+	</Module>
+	<Module Name="TrayIcond.dll">
+		<IModule Id="5" desc="MODULE_ID_TRAYICON"/>
+	</Module>
+</ModuleManager>
