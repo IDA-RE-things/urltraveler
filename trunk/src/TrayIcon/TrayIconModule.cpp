@@ -288,12 +288,13 @@ void TrayIconModule::OnEvent_ShowAboutDialog( Event *pEvent )
 	mainframe::MainFrame_GetWndService stGetWnd;
 	m_pModuleManager->CallService(mainframe::SERVICE_VALUE_GET_MAINWND, (param)&stGetWnd);
 
-	BOOL b = ::IsWindow(stGetWnd.hMainWnd);
+	CWindowWnd* pParentWnd = reinterpret_cast<CWindowWnd*>(stGetWnd.pBaseWnd);
+	ASSERT(pParentWnd != NULL);
 
 	CAboutDlg dlg;
-	dlg.Create(stGetWnd.hMainWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);	
+	dlg.Create(*pParentWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);	
 	dlg.CenterWindow();
-	dlg.ShowModal(stGetWnd.hMainWnd);
+	pParentWnd->ShowModal(dlg);
 }
 
 void TrayIconModule::OnMessage_Show(Message* pMessage)

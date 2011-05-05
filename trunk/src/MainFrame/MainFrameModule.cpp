@@ -196,7 +196,7 @@ int32 MainFrameModule::OnService_Test(ServiceValue lServiceValue, param lParam)
 int32	MainFrameModule::OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam)
 {
 	MainFrame_GetWndService* pService = (MainFrame_GetWndService*)lParam;
-	pService->hMainWnd =	 m_pMainFrame->GetHWND();
+	pService->pBaseWnd =	 static_cast<CWindowWnd*>(m_pMainFrame);
 
 	return -1;
 }
