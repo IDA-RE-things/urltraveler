@@ -9,4 +9,7 @@
 	<Module Name="TrayIcond.dll">
 		<IModule Id="5" desc="MODULE_ID_TRAYICON"/>
 	</Module>
+	<Module Name="DataCenterd.dll">
+		<IModule Id="6" desc="MODULE_ID_DATACENTER"/>
+	</Module>
 </ModuleManager>
