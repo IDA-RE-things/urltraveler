@@ -13,6 +13,7 @@ namespace mainframe
 		EVENT_VALUE_MAINFRAME_OPEN = EVENT_VALUE_MAINFRAME_BEGIN,		//打开主界面
 		EVENT_VALUE_MAINFRAME_HIDE,							//	隐藏当前主界面
 		EVENT_VALUE_MAINFRAME_CLOSE,						//	关闭当前主界面
+		EVENT_VALUE_MAINFRAME_OPENLOGIN,				//	打开登录对话框
 
 		EVENT_VALUE_MAINFRAME_END = EVENT_VALUE_MAINFRAME_END ,			//所有的事件结束
 	};
@@ -26,6 +27,8 @@ namespace mainframe
 	enum E_MainFrameServiceValue
 	{
 		SERVICE_VALUE_TEST	=	SERVICE_VALUE_MAINFRAME_BEGIN,
+
+		SERVICE_VALUE_GET_MAINWND,				//	获取主窗口的句柄，一些模块需要指定主窗口为父窗口
 	};
 
 	//===========================================//
@@ -69,5 +72,14 @@ namespace mainframe
 			eventValue	=	 EVENT_VALUE_MAINFRAME_HIDE;
 		}
 	};
+
+	//===========================================//
+	//                   MainFrame中所使用到的Service							 	  //
+	//===========================================//
+	struct MainFrame_GetWndService
+	{
+		HWND	hMainWnd;			//	当前主窗口的句柄
+	};
+
 
 };

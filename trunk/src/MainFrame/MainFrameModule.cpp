@@ -2,7 +2,6 @@
 #include "MainFrameModule.h"
 #include "MainFrameDefine.h"
 #include "TrayIconDefine.h"
-#include "UIDemo.h"
 
 using namespace mainframe;
 
@@ -38,7 +37,7 @@ void	ReleaseModuleFactory( IModuleFactory* p)
 
 MainFrameModule::MainFrameModule()
 {
-
+	m_pMainFrame	=	NULL;
 }
 
 MainFrameModule::~MainFrameModule()
@@ -60,6 +59,7 @@ END_MESSAGE_MAP()
 
 BEGIN_SERVICE_MAP(MainFrameModule)
 	ON_SERVICE(SERVICE_VALUE_TEST, OnService_Test)
+	ON_SERVICE(SERVICE_VALUE_GET_MAINWND, OnService_GetMainWnd)
 END_SERVICE_MAP();
 
 //----------------------------------------------------------------------------------------
@@ -165,13 +165,19 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 	HRESULT Hr = ::CoInitialize(NULL);
 	if( FAILED(Hr) ) return;
 
-	CFrameWnd* pFrame = new CFrameWnd();
-	if( pFrame == NULL ) return;
-	pFrame->Create(NULL, L"ÍøÖ·ÂþÓÎ", UI_WNDSTYLE_DIALOG, 0);
-	pFrame->CenterWindow();
-	pFrame->ShowWindow(true);
-	//CPaintManagerUI::MessageLoop();
+	ASSERT(m_pMainFrame == NULL);
 
+	if( m_pMainFrame != NULL)
+	{
+		m_pMainFrame->ShowWindow(true);
+		return;
+	}
+
+	m_pMainFrame = new CFrameWnd();
+	if( m_pMainFrame == NULL ) return;
+	m_pMainFrame->Create(NULL, L"ÍøÖ·ÂþÓÎ", UI_WNDSTYLE_DIALOG, 0);
+	m_pMainFrame->CenterWindow();
+	m_pMainFrame->ShowWindow(true);
 }
 
 void	MainFrameModule::OnMessage_PreExit(Message* pMessage)
@@ -184,5 +190,13 @@ void	MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
 
 int32 MainFrameModule::OnService_Test(ServiceValue lServiceValue, param lParam)
 {
+	return -1;
+}
+
+int32	MainFrameModule::OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam)
+{
+	MainFrame_GetWndService* pService = (MainFrame_GetWndService*)lParam;
+	pService->hMainWnd =	 m_pMainFrame->GetHWND();
+
 	return -1;
 }

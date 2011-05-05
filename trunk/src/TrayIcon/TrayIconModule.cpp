@@ -4,6 +4,7 @@
 #include "resource.h"
 #include <sstream>
 #include "AboutDlg.h"
+#include "MainFrameDefine.h"
 
 
 HMODULE	g_hModule = NULL;
@@ -74,7 +75,6 @@ static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM wParam, L
 			{
 			case IDM_APP_ABOUT:
 				pTrayIconModule->OnEvent_ShowAboutDialog(NULL);
-				//MessageBox(NULL, L"About", L"About", MB_OK);
 				break;
 
 			case IDM_APP_EXIT:
@@ -285,13 +285,15 @@ void TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
 
 void TrayIconModule::OnEvent_ShowAboutDialog( Event *pEvent )
 {
+	mainframe::MainFrame_GetWndService stGetWnd;
+	m_pModuleManager->CallService(mainframe::SERVICE_VALUE_GET_MAINWND, (param)&stGetWnd);
+
+	BOOL b = ::IsWindow(stGetWnd.hMainWnd);
+
 	CAboutDlg dlg;
-
-	dlg.Create(NULL, _T(""), UI_WNDSTYLE_DIALOG, 0, 0, 0, 0, 0, NULL);
-	
+	dlg.Create(stGetWnd.hMainWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);	
 	dlg.CenterWindow();
-
-	dlg.ShowModal(NULL);
+	dlg.ShowModal(stGetWnd.hMainWnd);
 }
 
 void TrayIconModule::OnMessage_Show(Message* pMessage)
