@@ -38,7 +38,6 @@ struct ModuleList
 		TiXmlElement* pXmlElementIModule = NULL;
 
 		bool bRet = xmlDoc.LoadFile("Module.xml");
-
 		if (bRet)
 		{
 			pXmlNode = xmlDoc.FirstChild("ModuleManager");

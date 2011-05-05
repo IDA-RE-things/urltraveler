@@ -167,7 +167,7 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 
 	CFrameWnd* pFrame = new CFrameWnd();
 	if( pFrame == NULL ) return;
-	pFrame->Create(NULL, NULL, UI_WNDSTYLE_DIALOG, 0);
+	pFrame->Create(NULL, L"ÍøÖ·ÂþÓÎ", UI_WNDSTYLE_DIALOG, 0);
 	pFrame->CenterWindow();
 	pFrame->ShowWindow(true);
 	//CPaintManagerUI::MessageLoop();
