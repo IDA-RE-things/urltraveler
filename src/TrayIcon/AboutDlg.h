@@ -13,7 +13,7 @@ public:
     CAboutDlg() { };
     LPCTSTR GetWindowClassName() const { return _T("UIFrame"); };
     UINT GetClassStyle() const { return UI_CLASSSTYLE_DIALOG; };
-    void OnFinalMessage(HWND /*hWnd*/) { delete this; };
+    void OnFinalMessage(HWND /*hWnd*/) {};
 
     void Init() 
     {
@@ -21,7 +21,9 @@ public:
 
     void Notify(TNotifyUI& msg)
     {
-		
+		if( msg.sType == _T("click") ) {
+			if( msg.pSender->GetName() == _T("CloseButton") ) { Close(); return; }
+		}
     }
 
     LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -43,7 +45,7 @@ public:
 
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
-        ::PostQuitMessage(0L);
+        //::PostQuitMessage(0L);
 
         bHandled = FALSE;
         return 0;
