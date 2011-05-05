@@ -3,6 +3,7 @@
 #include "SndaBase.h"
 #include "Module.h"
 #include "ModuleImp.h"
+#include "UIDemo.h"
 
 extern "C" 
 {
@@ -92,7 +93,11 @@ protected:
 protected:
 
 	int32 OnService_Test(ServiceValue lServiceValue, param lParam);
+	int32	OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam);
 
+
+private:
+	CFrameWnd* m_pMainFrame;
 };
 
 class CMainFrameModuleFactory : public ModuleFactoryImpl<MainFrameModule>{};

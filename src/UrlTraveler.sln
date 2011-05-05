@@ -26,6 +26,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrayIcon", "TrayIcon\TrayIc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UIDesigner", "..\thirdlib\duilib\UIDesigner\UIDesigner.vcproj", "{8CC28A8B-CD88-44A7-8994-066CCD8938CB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataCenter", "DataCenter\DataCenter.vcproj", "{ABE57414-A0F6-407B-B276-4DE706BC0169}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Login", "Login\Login.vcproj", "{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -64,6 +68,14 @@ Global
 		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.Debug|Win32.Build.0 = Debug|Win32
 		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.Release|Win32.ActiveCfg = Release|Win32
 		{8CC28A8B-CD88-44A7-8994-066CCD8938CB}.Release|Win32.Build.0 = Release|Win32
+		{ABE57414-A0F6-407B-B276-4DE706BC0169}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ABE57414-A0F6-407B-B276-4DE706BC0169}.Debug|Win32.Build.0 = Debug|Win32
+		{ABE57414-A0F6-407B-B276-4DE706BC0169}.Release|Win32.ActiveCfg = Release|Win32
+		{ABE57414-A0F6-407B-B276-4DE706BC0169}.Release|Win32.Build.0 = Release|Win32
+		{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}.Debug|Win32.Build.0 = Debug|Win32
+		{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}.Release|Win32.ActiveCfg = Release|Win32
+		{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
