@@ -209,6 +209,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PathHelper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -248,6 +252,10 @@
 			>
 			<File
 				RelativePath=".\lockmgr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PathHelper.h"
 				>
 			</File>
 			<File
