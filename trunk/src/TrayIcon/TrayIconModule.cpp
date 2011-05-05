@@ -3,6 +3,7 @@
 #include "TrayIconDefine.h"
 #include "resource.h"
 #include <sstream>
+#include "AboutDlg.h"
 
 
 HMODULE	g_hModule = NULL;
@@ -72,7 +73,8 @@ static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM wParam, L
 			switch (wmId)
 			{
 			case IDM_APP_ABOUT:
-				MessageBox(NULL, L"About", L"About", MB_OK);
+				pTrayIconModule->OnEvent_ShowAboutDialog(NULL);
+				//MessageBox(NULL, L"About", L"About", MB_OK);
 				break;
 
 			case IDM_APP_EXIT:
@@ -281,6 +283,17 @@ void TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
 	m_TrayMgr.AddEventHandler(this);
 }
 
+void TrayIconModule::OnEvent_ShowAboutDialog( Event *pEvent )
+{
+	CAboutDlg dlg;
+
+	dlg.Create(NULL, _T(""), UI_WNDSTYLE_DIALOG, 0, 0, 0, 0, 0, NULL);
+	
+	dlg.CenterWindow();
+
+	dlg.ShowModal(NULL);
+}
+
 void TrayIconModule::OnMessage_Show(Message* pMessage)
 {
 	m_TrayMgr.Init();
@@ -294,3 +307,5 @@ void TrayIconModule::OnMessage_PreExit(Message* pMessage)
 {
 
 }
+
+
