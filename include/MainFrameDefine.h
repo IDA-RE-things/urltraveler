@@ -78,7 +78,7 @@ namespace mainframe
 	//===========================================//
 	struct MainFrame_GetWndService
 	{
-		HWND	hMainWnd;			//	当前主窗口的句柄
+		void*		pBaseWnd;			//	当前主窗口的句柄
 	};
 
 
