@@ -537,7 +537,7 @@ BYTE __5B3E18[0x400] =
 	0x3A, 0x16, 0x16, 0x2C	
 };
 
-__declspec(naked) VOID GetEncodePage(BYTE abyEncodePage[])
+__declspec(naked) VOID gen_encode_page(BYTE abyEncodePage[])
 {
 	__asm
 	{
@@ -868,7 +868,7 @@ __declspec(naked) VOID GetEncodePage(BYTE abyEncodePage[])
 }
 
 
-void Test(BYTE Array1[], BYTE Encode[])
+void calc_encode_page(BYTE Array1[], BYTE Encode[])
 {
 	BYTE InitArray2[] = 
 	{
@@ -900,7 +900,7 @@ void Test(BYTE Array1[], BYTE Encode[])
 		lea eax, dword ptr[InitArray2]
 		mov edi, Encode
 		push edi 
-		call GetEncodePage
+		call gen_encode_page
 		add esp, 4
 		pop edi
 		pop ecx
@@ -931,50 +931,52 @@ int main(int argc, _TCHAR* argv[])
 	fread(file_buffer, 1, file_size, data_file);
 	fclose(data_file);
 
-	BYTE code_page[0x800] = {0};
-	BYTE *pt = code_page;
+	BYTE encode_page[0x800] = {0};
+	BYTE *pt = encode_page;
 
 	for (int page_index = 0; page_index < 56; page_index++)
 	{
-		BYTE *pPage = &file_buffer[page_index * 1024];
+		BYTE *page_content = &file_buffer[page_index * 1024];
 
-		memset(code_page, 0, 0x800);
+		memset(encode_page, 0, 0x800);
 
 
 		*(DWORD *)&init_array[0] = page_index + 1;
 		//memcpy(&InitArray[4], &pPage[0x3F4], 0xC);
 		memset(&init_array[4], 0, 0xC);
-		pt = code_page;
+		pt = encode_page;
 
 		for (int i = 0; i < 64; i++)
 		{
-			Test(init_array, pt);
+			//计算密码表
+			calc_encode_page(init_array, pt);
 
 			memcpy(init_array, pt, 16);
 			pt += 16;
 		}
 
+		//原文和密码表进行异或
 		for (int m = 0; m < 1024; m++)
 		{
-			pPage[m] ^= code_page[m];
+			page_content[m] ^= encode_page[m];
 		}
 
 		if (page_index == 0)
 		{
-			pPage[16] ^= code_page[16];
-			pPage[17] ^= code_page[17];
-			pPage[18] ^= code_page[18];
-			pPage[19] ^= code_page[19];
-			pPage[20] ^= code_page[20];
-			pPage[21] ^= code_page[21];
-			pPage[22] ^= code_page[22];
-			pPage[23] ^= code_page[23];
+			page_content[16] ^= encode_page[16];
+			page_content[17] ^= encode_page[17];
+			page_content[18] ^= encode_page[18];
+			page_content[19] ^= encode_page[19];
+			page_content[20] ^= encode_page[20];
+			page_content[21] ^= encode_page[21];
+			page_content[22] ^= encode_page[22];
+			page_content[23] ^= encode_page[23];
 		}
 	}
 
 	FILE *fOut = fopen("a.db", "wb");
 
-	fwrite(file_buffer, 1, 57344, fOut);
+	fwrite(file_buffer, 1, file_size, fOut);
 
 	fclose(fOut);
 
