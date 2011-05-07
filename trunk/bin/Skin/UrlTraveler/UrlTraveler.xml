@@ -20,7 +20,15 @@
                         <Label name="LabelUI1" float="true" pos="20,5,99,87" bkimage="log.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                     </HorizontalLayout>
                     <HorizontalLayout name="HorizontalLayoutUI31" pos="1,91,519,99" width="518" height="8" padding="1,0,0,0" bkimage="aaaa.png" />
-                    <HorizontalLayout name="HorizontalLayoutUI32" pos="0,99,519,482" width="519" height="383" />
+                    <HorizontalLayout name="HorizontalLayoutUI32" pos="0,99,519,482" width="519" height="383">
+			<List name="domainlist" padding="1,-1,-1,-2" bkcolor="#FFFFFFFF" inset="0,0,0,0" itemshowhtml="true" vscrollbar="true" hscrollbar="true" headerbkimage="file='list_header_bg.png'" itemalign="center" hscrollbar="false" menu="true">
+			<ListHeader height="24" menu="true">
+				<ListHeaderItem text="No" font="1" width="30" hotimage="file='list_header_hot.png'" pushedimage="file='list_header_pushed.png'" sepimage="file='list_header_sep.png'" sepwidth="1"/>
+				<ListHeaderItem text="Domain" font="1" width="260" hotimage="file='list_header_hot.png'" pushedimage="file='list_header_pushed.png'" sepimage="file='list_header_sep.png'" sepwidth="1"/>
+				<ListHeaderItem text="Description" font="1" width="240" hotimage="file='list_header_hot.png'" pushedimage="file='list_header_pushed.png'" sepimage="file='list_header_sep.png'" sepwidth="1"/>
+			</ListHeader>
+			</List>
+		    </HorizontalLayout>
                 </VerticalLayout>
                 <HorizontalLayout name="HorizontalLayoutUI28" pos="200,1,201,480" width="1" height="479" padding="0,1,0,0" bordercolor="#00D3D3D3" />
                 <HorizontalLayout name="HorizontalLayoutUI29" pos="519,0,786,482" width="267" height="482" />
