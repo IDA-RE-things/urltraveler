@@ -5,8 +5,12 @@
 
 #pragma comment(lib, "shlwapi.lib")
 
+CSogouPlugIn aa;
+
 CSogouPlugIn::CSogouPlugIn()
 {
+	GetInstallPath();
+	GetPluginVersion();
 }
 
 CSogouPlugIn::~CSogouPlugIn()
@@ -73,6 +77,7 @@ const wchar_t* CSogouPlugIn::GetInstallPath()
 	{
 		if (PathRemoveFileSpec(szPath))
 		{
+			MessageBox(NULL, szPath, szPath, NULL);
 			return szPath;
 		}
 	}
