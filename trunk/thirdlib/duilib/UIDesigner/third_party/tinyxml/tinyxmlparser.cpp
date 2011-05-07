@@ -22,7 +22,6 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-#include "SndaBase.h"
 #include <ctype.h>
 #include <stddef.h>
 
