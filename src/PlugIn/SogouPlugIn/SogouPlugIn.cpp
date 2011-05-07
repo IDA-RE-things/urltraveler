@@ -2,6 +2,7 @@
 #include "SogouPlugIn.h"
 #include <shlwapi.h>
 #include "StringHelper.h"
+#include "PathHelper.h"
 
 #pragma comment(lib, "shlwapi.lib")
 
@@ -11,6 +12,9 @@ CSogouPlugIn::CSogouPlugIn()
 {
 	GetInstallPath();
 	GetPluginVersion();
+	const wchar_t *p = GetFavoriteDataPath();
+
+	int i = 0;
 }
 
 CSogouPlugIn::~CSogouPlugIn()
@@ -87,7 +91,11 @@ const wchar_t* CSogouPlugIn::GetInstallPath()
 
 const wchar_t* CSogouPlugIn::GetFavoriteDataPath()
 {
-	return NULL;
+	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer";
+
+	//需要复制一份，由调用者进行释放，不然strPath被析构时，返回野指针
+
+	return _tcsdup(strPath.c_str());
 }
 
 const wchar_t* CSogouPlugIn::GetHistoryDataPath()
