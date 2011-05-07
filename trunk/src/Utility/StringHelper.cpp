@@ -134,3 +134,30 @@ string	StringHelper::Replace( string strSrc,
 
 	return strResult;
 }
+
+std::vector<std::string> StringHelper::Split(std::string strOri, char _Ch)
+{
+	int i = 0;
+	int nLastPos = 0;
+	std::vector<std::string> vecResutl;
+	std::string strSub;
+
+	i = strOri.find(_Ch);
+
+	while (i != -1)
+	{
+		strSub = strOri.substr(nLastPos, i - nLastPos);
+		nLastPos = i + 1;
+		i = strOri.find(_Ch, nLastPos);
+
+		vecResutl.push_back(strSub);
+	}
+
+	if (nLastPos != 0)
+	{
+		strSub = strOri.substr(nLastPos, strOri.length() - nLastPos);
+		vecResutl.push_back(strSub);
+	}
+
+	return vecResutl;
+}
