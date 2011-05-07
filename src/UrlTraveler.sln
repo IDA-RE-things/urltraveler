@@ -30,6 +30,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataCenter", "DataCenter\Da
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Login", "Login\Login.vcproj", "{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SogouPlugIn", "PlugIn\SogouPlugIn\SogouPlugIn.vcproj", "{5978BFFE-B3AF-41B0-8C43-BFB79812250F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -76,6 +78,10 @@ Global
 		{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}.Debug|Win32.Build.0 = Debug|Win32
 		{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}.Release|Win32.ActiveCfg = Release|Win32
 		{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}.Release|Win32.Build.0 = Release|Win32
+		{5978BFFE-B3AF-41B0-8C43-BFB79812250F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5978BFFE-B3AF-41B0-8C43-BFB79812250F}.Debug|Win32.Build.0 = Debug|Win32
+		{5978BFFE-B3AF-41B0-8C43-BFB79812250F}.Release|Win32.ActiveCfg = Release|Win32
+		{5978BFFE-B3AF-41B0-8C43-BFB79812250F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
