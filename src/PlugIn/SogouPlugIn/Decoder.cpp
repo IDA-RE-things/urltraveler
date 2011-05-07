@@ -2,6 +2,8 @@
 #include "Decoder.h"
 #include <stdio.h>
 
+#define PAGE_SIZE 1024
+
 BYTE __5B4E18[0x400] = 
 {
 	0x63, 0x63, 0x63, 0x63, 0x7C, 0x7C, 0x7C, 0x7C, 0x77, 0x77, 
@@ -916,34 +918,52 @@ size_t get_file_size(FILE *pFile)
 
 	size_t file_size = ftell(pFile);
 
-	fseek(pFile, old_pos, SEEK_END, SEEK_SET);
+	fseek(pFile, old_pos, SEEK_SET);
 
 	return file_size;
 }
 
-int main(int argc, _TCHAR* argv[])
+int decode(std::string file_path, std::string &decoder_content)
 {
 	BYTE init_array[16] = {0}; 
-	FILE *data_file = fopen("C:\\Users\\linjinming.SNDA\\Desktop\\Favorite2.dat", "rb");
+	FILE *data_file = fopen(file_path.c_str(), "rb");
+
+	if (data_file == NULL)
+	{
+		return -1;
+	}
 
 	size_t file_size = get_file_size(data_file);
-	BYTE file_buffer = new BYTE[file_size];
+	BYTE *file_buffer = new BYTE[file_size];
 	fread(file_buffer, 1, file_size, data_file);
 	fclose(data_file);
 
 	BYTE encode_page[0x800] = {0};
 	BYTE *pt = encode_page;
+	size_t key_size = file_buffer[20];
 
-	for (int page_index = 0; page_index < 56; page_index++)
+	for (int page_index = 0; page_index < file_size / PAGE_SIZE; page_index++)
 	{
-		BYTE *page_content = &file_buffer[page_index * 1024];
+		BYTE *page_content = &file_buffer[page_index * PAGE_SIZE];
 
 		memset(encode_page, 0, 0x800);
 
-
 		*(DWORD *)&init_array[0] = page_index + 1;
-		//memcpy(&InitArray[4], &pPage[0x3F4], 0xC);
-		memset(&init_array[4], 0, 0xC);
+
+		if (key_size == 0)
+		{
+			memset(&init_array[4], 0, 0xC);
+		}
+		else
+		{
+			memcpy(&init_array[4], &page_content[PAGE_SIZE - key_size], key_size);
+
+			if (key_size < 0xC)
+			{
+				memset(&init_array[4 + key_size], 0, 0xC - key_size);
+			}
+		}
+
 		pt = encode_page;
 
 		for (int i = 0; i < 64; i++)
@@ -956,7 +976,7 @@ int main(int argc, _TCHAR* argv[])
 		}
 
 		//原文和密码表进行异或
-		for (int m = 0; m < 1024; m++)
+		for (int m = 0; m < PAGE_SIZE - key_size; m++)
 		{
 			page_content[m] ^= encode_page[m];
 		}
@@ -977,6 +997,8 @@ int main(int argc, _TCHAR* argv[])
 	FILE *fOut = fopen("a.db", "wb");
 
 	fwrite(file_buffer, 1, file_size, fOut);
+
+	decoder_content.assign((char *)file_buffer, file_size);
 
 	fclose(fOut);
 

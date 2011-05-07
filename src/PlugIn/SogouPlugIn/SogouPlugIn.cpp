@@ -3,6 +3,7 @@
 #include <shlwapi.h>
 #include "StringHelper.h"
 #include "PathHelper.h"
+#include "Decoder.h"
 
 #pragma comment(lib, "shlwapi.lib")
 
@@ -13,6 +14,9 @@ CSogouPlugIn::CSogouPlugIn()
 	GetInstallPath();
 	GetPluginVersion();
 	const wchar_t *p = GetFavoriteDataPath();
+	std::string strDecodeContent;
+
+	decode("C:\\Users\\linjinming.SNDA\\AppData\\Roaming\\SogouExplorer\\Favorite2.dat", strDecodeContent);
 
 	//调用者自己进行释放
 	free((void *)p);
