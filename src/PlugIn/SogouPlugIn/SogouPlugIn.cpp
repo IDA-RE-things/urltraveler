@@ -41,8 +41,13 @@ int32 CSogouPlugIn::GetPluginVersion()
 			return 0;
 		}
 
+		BYTE nMajaor = atol(vecResutl[0].c_str());
+		BYTE nMinor  = atol(vecResutl[1].c_str());
+		WORD nBuilderNum = atol(vecResutl[3].c_str());
 
-		return nVersion;
+		nVersion = MAKELONG(MAKEWORD(nMajaor, nMinor), nBuilderNum);
+
+		return nVersion ;
 	}
 
 	return 0;
