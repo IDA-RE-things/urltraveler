@@ -160,7 +160,7 @@ void	MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
 void MainFrameModule::OnMessage_Show(Message* pMessage)
 {
 	CPaintManagerUI::SetInstance(GetModuleHandle(NULL));
-	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\FlashRes"));
+	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\UrlTraveler"));
 
 	HRESULT Hr = ::CoInitialize(NULL);
 	if( FAILED(Hr) ) return;
