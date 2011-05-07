@@ -101,7 +101,7 @@ const wchar_t* CSogouPlugIn::GetFavoriteDataPath()
 
 const wchar_t* CSogouPlugIn::GetHistoryDataPath()
 {
-	return NULL;
+	return GetFavoriteDataPath();
 }
 
 BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
