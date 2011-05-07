@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="800,600" sizebox="4,4,6,6" caption="0,0,0,30">
+    <VerticalLayout name="MainFrameLayout" pos="0,0,607,572" width="607" height="572" bkcolor="#FF95C262" bordercolor="#005D8F12">
+        <HorizontalLayout name="TitlebarLayout" pos="0,0,800,30" width="800" height="30" bordercolor="#005D8F12">
+            <Label name="TitleLabel" text="NetTrafficControl" float="true" pos="8,3,113,28" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+            <Button name="MinButton" float="true" pos="719,4,746,22" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="min00.png" hotimage="min01.png" pushedimage="C:\Users\linjinming.SNDA\Desktop\NetTrafficControl\min02.png" />
+            <Button name="CloseButton" float="true" pos="746,4,790,22" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="close00.png" hotimage="close01.png" focusedimage="close02.png" />
+        </HorizontalLayout>
+        <HorizontalLayout name="OptionsLayout" pos="1,30,799,96" width="798" height="66" padding="1,0,1,0" bkcolor="#FFCAE780" bkcolor2="#0096C623">
+            <Option name="TrafficManagerOption" float="true" pos="9,3,111,63" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="bt1_00.png" hotimage="bt1_01.png" focusedimage="bt1_01.png" group="Switch" selectedimage="bt1_01.png" />
+            <Option name="RegisterSoftOption" float="true" pos="117,3,219,63" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="bt2_00.png" hotimage="bt2_01.png" focusedimage="bt2_01.png" group="Switch" selectedimage="bt2_01.png" />
+            <Progress name="ProgressUI1" float="true" pos="250,19,647,48" bordercolor="#00728BA9" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" fgimage="jdt_top_middle.png" min="0" max="100" value="50" hor="true" />
+            <Button name="ButtonUI1" text="SpeedTest" float="true" pos="658,19,782,45" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="SpeedTest_push.png" pushedimage="SpeedTest_down.png" />
+        </HorizontalLayout>
+        <HorizontalLayout name="HorizontalLayoutUI22" pos="0,103,800,104" width="800" height="1" bordercolor="#005D8F12" />
+        <TabLayout name="TabLayoutUI2" pos="1,94,799,576" width="798" height="482" padding="1,0,1,0">
+            <HorizontalLayout name="TrafficManagerTab" pos="4,4,794,482" width="790" height="478" padding="4,4,0,0" bordercolor="#005D8F12">
+                <VerticalLayout name="VerticalLayoutUI14" pos="0,0,519,482" width="519" height="482">
+                    <HorizontalLayout name="HorizontalLayoutUI30" pos="0,0,519,91" width="519" height="91" padding="1,1,0,0" bkimage="sss.png">
+                        <Label name="LabelUI1" float="true" pos="20,5,99,87" bkimage="log.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    </HorizontalLayout>
+                    <HorizontalLayout name="HorizontalLayoutUI31" pos="1,91,519,99" width="518" height="8" padding="1,0,0,0" bkimage="aaaa.png" />
+                    <HorizontalLayout name="HorizontalLayoutUI32" pos="0,99,519,482" width="519" height="383" />
+                </VerticalLayout>
+                <HorizontalLayout name="HorizontalLayoutUI28" pos="200,1,201,480" width="1" height="479" padding="0,1,0,0" bordercolor="#00D3D3D3" />
+                <HorizontalLayout name="HorizontalLayoutUI29" pos="519,0,786,482" width="267" height="482" />
+            </HorizontalLayout>
+            <HorizontalLayout name="RegisterSoftTab" pos="0,0,795,475" width="795" height="475" />
+        </TabLayout>
+        <HorizontalLayout name="StatusBarLayout" pos="0,576,800,600" width="800" height="24">
+            <Text name="TextUI1" text="Version:1.0.0.22" float="true" pos="8,6,109,19" textpadding="2,0,2,0" textcolor="#00FFFFFF" disabledtextcolor="#FFA7A6AA" align="wrap" />
+        </HorizontalLayout>
+    </VerticalLayout>
+</Window>
