@@ -22,7 +22,7 @@ public:
     void Notify(TNotifyUI& msg)
     {
 		if( msg.sType == _T("click") ) {
-			if( msg.pSender->GetName() == _T("closebtn") || msg.pSender->GetName() == _T("closebtn2") ) {
+			if( msg.pSender->GetName() == _T("CloseButton") || msg.pSender->GetName() == _T("closebtn2") ) {
 				PostQuitMessage(0); 
 				return; 
 			}
@@ -37,7 +37,7 @@ public:
 
         m_pm.Init(m_hWnd);
         CDialogBuilder builder;
-        CControlUI* pRoot = builder.Create(_T("ui.xml"), (UINT)0, NULL, &m_pm);
+        CControlUI* pRoot = builder.Create(_T("UrlTraveler.xml"), (UINT)0, NULL, &m_pm);
         ASSERT(pRoot && "Failed to parse XML");
         m_pm.AttachDialog(pRoot);
         m_pm.AddNotifier(this);
