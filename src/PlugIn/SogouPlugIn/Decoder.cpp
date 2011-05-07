@@ -919,14 +919,14 @@ int main(int argc, _TCHAR* argv[])
 	BYTE abyEncodePage[0x800] = {0};
 	BYTE *pt = abyEncodePage;
 
-	for (int j = 0; j < 56; j++)
+	for (int nPageIndex = 0; nPageIndex < 56; nPageIndex++)
 	{
-		BYTE *pPage = &abyBuffer[j * 1024];
+		BYTE *pPage = &abyBuffer[nPageIndex * 1024];
 
 		memset(abyEncodePage, 0, 0x800);
 
 
-		*(DWORD *)&InitArray[0] = j + 1;
+		*(DWORD *)&InitArray[0] = nPageIndex + 1;
 		//memcpy(&InitArray[4], &pPage[0x3F4], 0xC);
 		memset(&InitArray[4], 0, 0xC);
 		pt = abyEncodePage;
@@ -944,7 +944,7 @@ int main(int argc, _TCHAR* argv[])
 			pPage[m] ^= abyEncodePage[m];
 		}
 
-		if (j == 0)
+		if (nPageIndex == 0)
 		{
 			pPage[16] ^= abyEncodePage[16];
 			pPage[17] ^= abyEncodePage[17];
