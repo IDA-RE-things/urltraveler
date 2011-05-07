@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SogouPlugIn.h"
 #include <shlwapi.h>
+#include "StringHelper.h"
 
 #pragma comment(lib, "shlwapi.lib")
 
@@ -32,6 +33,15 @@ int32 CSogouPlugIn::GetPluginVersion()
 		szVersion, 
 		&dwSize))
 	{
+		std::string strVersion = StringHelper::UnicodeToANSI(szVersion);
+		std::vector<std::string> vecResutl = StringHelper::Split(strVersion, '.');
+
+		if (vecResutl.size() < 4)
+		{
+			return 0;
+		}
+
+
 		return nVersion;
 	}
 
