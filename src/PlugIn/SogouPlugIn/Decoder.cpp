@@ -908,58 +908,73 @@ void Test(BYTE Array1[], BYTE Encode[])
 	}
 }
 
+size_t get_file_size(FILE *pFile)
+{
+	long old_pos = ftell(pFile);
+
+	fseek(pFile, 0, SEEK_END);
+
+	size_t file_size = ftell(pFile);
+
+	fseek(pFile, old_pos, SEEK_END, SEEK_SET);
+
+	return file_size;
+}
+
 int main(int argc, _TCHAR* argv[])
 {
-	BYTE InitArray[16] = {0}; 
-	FILE *pIn = fopen("C:\\Users\\linjinming.SNDA\\Desktop\\Favorite2.dat", "rb");
-	BYTE abyBuffer[57344] = {0};
-	fread(abyBuffer, 1, 57344, pIn);
-	fclose(pIn);
+	BYTE init_array[16] = {0}; 
+	FILE *data_file = fopen("C:\\Users\\linjinming.SNDA\\Desktop\\Favorite2.dat", "rb");
 
-	BYTE abyEncodePage[0x800] = {0};
-	BYTE *pt = abyEncodePage;
+	size_t file_size = get_file_size(data_file);
+	BYTE file_buffer = new BYTE[file_size];
+	fread(file_buffer, 1, file_size, data_file);
+	fclose(data_file);
 
-	for (int nPageIndex = 0; nPageIndex < 56; nPageIndex++)
+	BYTE code_page[0x800] = {0};
+	BYTE *pt = code_page;
+
+	for (int page_index = 0; page_index < 56; page_index++)
 	{
-		BYTE *pPage = &abyBuffer[nPageIndex * 1024];
+		BYTE *pPage = &file_buffer[page_index * 1024];
 
-		memset(abyEncodePage, 0, 0x800);
+		memset(code_page, 0, 0x800);
 
 
-		*(DWORD *)&InitArray[0] = nPageIndex + 1;
+		*(DWORD *)&init_array[0] = page_index + 1;
 		//memcpy(&InitArray[4], &pPage[0x3F4], 0xC);
-		memset(&InitArray[4], 0, 0xC);
-		pt = abyEncodePage;
+		memset(&init_array[4], 0, 0xC);
+		pt = code_page;
 
 		for (int i = 0; i < 64; i++)
 		{
-			Test(InitArray, pt);
+			Test(init_array, pt);
 
-			memcpy(InitArray, pt, 16);
+			memcpy(init_array, pt, 16);
 			pt += 16;
 		}
 
 		for (int m = 0; m < 1024; m++)
 		{
-			pPage[m] ^= abyEncodePage[m];
+			pPage[m] ^= code_page[m];
 		}
 
-		if (nPageIndex == 0)
+		if (page_index == 0)
 		{
-			pPage[16] ^= abyEncodePage[16];
-			pPage[17] ^= abyEncodePage[17];
-			pPage[18] ^= abyEncodePage[18];
-			pPage[19] ^= abyEncodePage[19];
-			pPage[20] ^= abyEncodePage[20];
-			pPage[21] ^= abyEncodePage[21];
-			pPage[22] ^= abyEncodePage[22];
-			pPage[23] ^= abyEncodePage[23];
+			pPage[16] ^= code_page[16];
+			pPage[17] ^= code_page[17];
+			pPage[18] ^= code_page[18];
+			pPage[19] ^= code_page[19];
+			pPage[20] ^= code_page[20];
+			pPage[21] ^= code_page[21];
+			pPage[22] ^= code_page[22];
+			pPage[23] ^= code_page[23];
 		}
 	}
 
 	FILE *fOut = fopen("a.db", "wb");
 
-	fwrite(abyBuffer, 1, 57344, fOut);
+	fwrite(file_buffer, 1, 57344, fOut);
 
 	fclose(fOut);
 
