@@ -14,7 +14,8 @@ CSogouPlugIn::CSogouPlugIn()
 	GetPluginVersion();
 	const wchar_t *p = GetFavoriteDataPath();
 
-	int i = 0;
+	//调用者自己进行释放
+	free((void *)p);
 }
 
 CSogouPlugIn::~CSogouPlugIn()
