@@ -30,7 +30,7 @@ public:
 	static string	TrimAll( string src_str);
 
 	// 增加分割字串函数 [5/7/2011 linjinming]
-	std::vector<std::string> Split(std::string strOri, char _Ch);
+	static std::vector<std::string> Split(std::string strOri, char _Ch);
 
 	// srcStr为源字符串，将对它里面的子串进行替换
 	// replacedStr为替换字符串
