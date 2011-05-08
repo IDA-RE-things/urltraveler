@@ -41,8 +41,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		return FALSE;
 	}
 
-	LoadLibrary(L"D:\\svn\\urltraveler\\bin\\PlugIn\\SogouPlugInd.dll");
-
 	module_manager.Init();
 	module_manager.Run();
 	module_manager.Destroy();
