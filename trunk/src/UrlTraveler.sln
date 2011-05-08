@@ -38,6 +38,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Login", "Login\Login.vcproj", "{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SogouPlugIn", "PlugIn\SogouPlugIn\SogouPlugIn.vcproj", "{5978BFFE-B3AF-41B0-8C43-BFB79812250F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{106D4DC1-0E2B-4C5B-A013-DA48656584BD} = {106D4DC1-0E2B-4C5B-A013-DA48656584BD}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlugInManager", "PlugIn\PlugIn.vcproj", "{D4F3F13E-4CAD-4038-A5B2-D1212174C3BF}"
 EndProject
