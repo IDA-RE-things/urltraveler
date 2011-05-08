@@ -1171,7 +1171,7 @@ void CppSQLite3DB::open(const char* szFile,const char * szKey)
 			return;
 		}
 
-		char* pTchar = strchr(szFileTmp,'\\');
+		char* pTchar = strrchr(szFileTmp,_T('\\'));
 		if (pTchar == NULL)
 		{
 			delete[] szFileTmp;
@@ -1385,7 +1385,7 @@ int CppSQLite3DB::InternalOpen(const char* szFile, const char * szKey)
 		return iReturn;
 	}
 
-	char* pTchar = strchr(szFileTmp,'\\');
+	char* pTchar = strrchr(szFileTmp,'\\');
 	if (pTchar == NULL)
 	{
 		delete[] szFileTmp;
