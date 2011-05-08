@@ -48,6 +48,7 @@ MainFrameModule::~MainFrameModule()
 BEGIN_EVENT_MAP(MainFrameModule)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_OPEN, OnEvent_OpenMainDlg)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_CLOSE, OnEvent_CloseMainDlg)
+	ON_EVENT(EVENT_VALUE_MAINFRAME_SHOW, OnEvent_ShowMainDlg)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_HIDE, OnEvent_HideMainDlg)
 END_EVENT_MAP()
 
@@ -142,8 +143,6 @@ void MainFrameModule::PaybackExtraInfo(uint32 valueId, void* pExtraInfo)
 void	MainFrameModule::OnEvent_OpenMainDlg(Event* pEvent)
 {
 	MainFrame_OpenEvent* pE = (MainFrame_OpenEvent*)pEvent->m_pstExtraInfo;
-
-   
 	return;
 }
 
@@ -152,9 +151,14 @@ void	MainFrameModule::OnEvent_CloseMainDlg(Event* pEvent)
 
 }
 
+void	MainFrameModule::OnEvent_ShowMainDlg(Event* pEvent)
+{
+	m_pMainFrame->ShowWindow(TRUE);
+}
+
 void	MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
 {
-
+	m_pMainFrame->ShowWindow(FALSE);
 }
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)
@@ -178,8 +182,6 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 	m_pMainFrame->Create(NULL, L"ÍøÖ·ÂþÓÎ", UI_WNDSTYLE_DIALOG, 0);
 	m_pMainFrame->CenterWindow();
 	m_pMainFrame->ShowWindow(true);
-
-
 }
 
 void	MainFrameModule::OnMessage_PreExit(Message* pMessage)

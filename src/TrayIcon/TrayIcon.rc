@@ -69,7 +69,7 @@ BEGIN
     BEGIN
         MENUITEM "设置",                          IDM_SETTING
         MENUITEM "登录",                          IDM_LOGIN
-        MENUITEM "打开主界面",                       IDM_OPEN_MAIN
+        MENUITEM "打开主界面",                       IDM_SHOW_MAIN
         MENUITEM SEPARATOR
         POPUP "帮助"
         BEGIN

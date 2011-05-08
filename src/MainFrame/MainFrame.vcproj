@@ -247,15 +247,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MainFrameWnd.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>
 			<File
 				RelativePath=".\targetver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UIDemo.h"
 				>
 			</File>
 		</Filter>

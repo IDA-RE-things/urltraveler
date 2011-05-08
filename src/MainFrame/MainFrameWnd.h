@@ -22,9 +22,12 @@ public:
     void Notify(TNotifyUI& msg)
     {
 		if( msg.sType == _T("click") ) {
-			if( msg.pSender->GetName() == _T("CloseButton") || msg.pSender->GetName() == _T("closebtn2") ) {
+			if( msg.pSender->GetName() == _T("CloseButton")) {
 				PostQuitMessage(0); 
 				return; 
+			}
+			else if( msg.pSender->GetName() == _T("MinButton")) {
+				SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0);
 			}
 		}
     }

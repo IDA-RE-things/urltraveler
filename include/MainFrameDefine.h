@@ -11,9 +11,10 @@ namespace mainframe
 	enum E_MainFrameEventValue
 	{
 		EVENT_VALUE_MAINFRAME_OPEN = EVENT_VALUE_MAINFRAME_BEGIN,		//打开主界面
-		EVENT_VALUE_MAINFRAME_HIDE,							//	隐藏当前主界面
 		EVENT_VALUE_MAINFRAME_CLOSE,						//	关闭当前主界面
-		EVENT_VALUE_MAINFRAME_OPENLOGIN,				//	打开登录对话框
+		EVENT_VALUE_MAINFRAME_SHOW,						//	显示主对话框
+		EVENT_VALUE_MAINFRAME_HIDE,							//	隐藏当前主界面
+		EVENT_VALUE_MAINFRAME_OPENLOGIN,					//	打开登录对话框
 
 		EVENT_VALUE_MAINFRAME_END = EVENT_VALUE_MAINFRAME_END ,			//所有的事件结束
 	};
@@ -61,16 +62,6 @@ namespace mainframe
 		}
 
 		E_MainFrameTab	eTabType;			//	指定打开后显示哪一个Tab页面
-	};
-
-	//	隐藏主界面需要的对应的Event
-	struct MainFrame_HideEvent	:	public	MainFrameEvent
-	{
-	public:
-		MainFrame_HideEvent()
-		{
-			eventValue	=	 EVENT_VALUE_MAINFRAME_HIDE;
-		}
 	};
 
 	//===========================================//
