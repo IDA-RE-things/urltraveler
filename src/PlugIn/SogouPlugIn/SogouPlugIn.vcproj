@@ -118,7 +118,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\..\include;../../Utility"
+				AdditionalIncludeDirectories="..\..\..\include;../../Utility;../../Utility/CppSQLite3"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SOGOUPLUGIN_EXPORTS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
