@@ -39,45 +39,45 @@ void	ReleasePlugIn( IPlugIn* p)
 
 CSogouPlugIn::CSogouPlugIn()
 {
-	GetInstallPath();
-	GetPluginVersion();
-	const wchar_t *p = GetFavoriteDataPath();
-	std::string strDecodeContent;
+	//GetInstallPath();
+	//GetPluginVersion();
+	//const wchar_t *p = GetFavoriteDataPath();
+	//std::string strDecodeContent;
 
-	typedef struct _winFileMem 
-	{
-		unsigned char *pMemPointer;
-		unsigned long  ulMemSize;
-	}winFileMem;
+	//typedef struct _winFileMem 
+	//{
+	//	unsigned char *pMemPointer;
+	//	unsigned long  ulMemSize;
+	//}winFileMem;
 
-	decode("C:\\Users\\linjinming.SNDA\\AppData\\Roaming\\SogouExplorer\\Favorite2.dat", strDecodeContent);
+	//decode("C:\\Users\\linjinming.SNDA\\AppData\\Roaming\\SogouExplorer\\Favorite2.dat", strDecodeContent);
 
-	CppSQLite3DB  m_SqliteDatabase;
+	//CppSQLite3DB  m_SqliteDatabase;
 
-	winFileMem stFileMem;
+	//winFileMem stFileMem;
 
-	stFileMem.ulMemSize = strDecodeContent.length();
-	stFileMem.pMemPointer = new unsigned char[strDecodeContent.length()];
-	memcpy(stFileMem.pMemPointer, strDecodeContent.c_str(), stFileMem.ulMemSize);
+	//stFileMem.ulMemSize = strDecodeContent.length();
+	//stFileMem.pMemPointer = new unsigned char[strDecodeContent.length()];
+	//memcpy(stFileMem.pMemPointer, strDecodeContent.c_str(), stFileMem.ulMemSize);
 
-	m_SqliteDatabase.openmem((char *)&stFileMem, "");
+	//m_SqliteDatabase.openmem((char *)&stFileMem, "");
 
-	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from dbInfo");
+	//CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from dbInfo");
 
-	int dbVer = Query.getIntField("value");
+	//int dbVer = Query.getIntField("value");
 
-	m_SqliteDatabase.execDML("insert into dbInfo(id, value, reserved) values('hello world', '4', 0)");
+	//m_SqliteDatabase.execDML("insert into dbInfo(id, value, reserved) values('hello world', '4', 0)");
 
-	m_SqliteDatabase.close();
+	//m_SqliteDatabase.close();
 
-	FILE *fOut = fopen("b.db", "wb");
+	//FILE *fOut = fopen("b.db", "wb");
 
-	fwrite(stFileMem.pMemPointer, 1, stFileMem.ulMemSize, fOut);
+	//fwrite(stFileMem.pMemPointer, 1, stFileMem.ulMemSize, fOut);
 
-	fclose(fOut);
+	//fclose(fOut);
 
-	//调用者自己进行释放
-	free((void *)p);
+	////调用者自己进行释放
+	//free((void *)p);
 }
 
 CSogouPlugIn::~CSogouPlugIn()
