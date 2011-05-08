@@ -420,12 +420,17 @@ int	String::Find(const TCHAR* pszToFind,  uint16 nOffset )
 //描述: 从当前的字符串尾部的给定偏移nOffset开始反向查找子串pszToFind第一次出现的位置。
 //参数: 
 //	@param	pszToFind	需要查找的子字符串
-//	@param	nOffset	查找的起始偏移，默认是0，即从头开始查找
+//	@param	nOffset	查找的起始偏移，默认是-1，即从尾部开始查找
 //返回: 目标字符的索引，如果没有找到，则返回-1；
 //----------------------------------------------------------------------------------------
-int	String::ReverseFind(const TCHAR* pszToFind,  uint16 nOffset)
+int	String::ReverseFind(const TCHAR* pszToFind,  int16 nOffset)
 {
-	size_t nIndex = m_strString.rfind(pszToFind, nOffset);
+	size_t nIndex = -1;
+	if( nOffset == -1)
+		nIndex = m_strString.rfind(pszToFind);
+	else
+		nIndex = m_strString.rfind(pszToFind, nOffset);
+
 	if( nIndex == 0xffffffff)
 		return -1;
 
