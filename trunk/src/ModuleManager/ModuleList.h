@@ -11,6 +11,7 @@
 #include <boost/assert.hpp>
 #include "tinyxml/tinyxml.h"
 #include "StringHelper.h"
+#include "PathHelper.h"
 
 using namespace boost::assign;
 
@@ -37,7 +38,7 @@ struct ModuleList
 		TiXmlElement* pXmlElementModule = NULL;
 		TiXmlElement* pXmlElementIModule = NULL;
 
-		bool bRet = xmlDoc.LoadFile("Module.xml");
+		bool bRet = xmlDoc.LoadFile(StringHelper::UnicodeToANSI(PathHelper::GetModuleDir()) + "Module.xml");
 		if (bRet)
 		{
 			pXmlNode = xmlDoc.FirstChild("ModuleManager");
