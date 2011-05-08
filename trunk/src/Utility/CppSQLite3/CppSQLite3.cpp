@@ -1378,7 +1378,7 @@ int CppSQLite3DB::InternalOpen(const char* szFile, const char * szKey)
 
 	///存起当前目录
 	memcpy(szFileTmp, szFile, (strlen(szFile)+1)*sizeof(char));
-	DWORD dwRet = SetCurrentDirectoryA(strOriginDir);
+	DWORD dwRet = GetCurrentDirectoryA(512, strOriginDir);
 	if (dwRet == 0)
 	{
 		delete[] szFileTmp;
