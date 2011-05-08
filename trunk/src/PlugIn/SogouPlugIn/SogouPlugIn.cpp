@@ -78,15 +78,6 @@ CSogouPlugIn::CSogouPlugIn()
 
 	fclose(fOut);
 
-	CppSQLite3DB  m_SqliteDatabase1;
-
-	m_SqliteDatabase1.open("c:\\a.db", "");
-
-	bool b = m_SqliteDatabase1.tableExists("dbInfo");
-
-	m_SqliteDatabase1.execDML("insert into dbInfo(id, value, reserved) values('sss', '5', 0)");
-
-
 	//调用者自己进行释放
 	free((void *)p);
 }
