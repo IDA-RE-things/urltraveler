@@ -12,4 +12,7 @@
 	<Module Name="DataCenterd.dll">
 		<IModule Id="6" desc="MODULE_ID_DATACENTER"/>
 	</Module>
+	<Module Name="PlugInd.dll">
+		<IModule Id="8" desc="MODULE_ID_PLUGIN"/>
+	</Module>
 </ModuleManager>
