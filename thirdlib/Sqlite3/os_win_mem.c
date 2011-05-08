@@ -318,30 +318,22 @@ static int winWriteMem(
 ){
   LONG upperBits = (offset>>32) & 0x7fffffff;
   LONG lowerBits = offset & 0xffffffff;
-  DWORD rc;
-  DWORD wrote;
   winFile *pFile = (winFile*)id;
-  assert( id!=0 );
-  SimulateIOError(return SQLITE_IOERR_WRITE);
-  SimulateDiskfullError(return SQLITE_FULL);
-  OSTRACE3("WRITE %d lock=%d\n", pFile->h, pFile->locktype);
-  rc = SetFilePointer(pFile->h, lowerBits, &upperBits, FILE_BEGIN);
-  if( rc==INVALID_SET_FILE_POINTER && GetLastError()!=NO_ERROR ){
-    return SQLITE_FULL;
+  winFileMem *pMem = (winFileMem *)pFile->h;
+
+  unsigned long ulRemain = pMem->ulMemSize - lowerBits;
+
+  if (ulRemain < amt)
+  {
+	  memcpy(&pMem->pMemPointer[lowerBits], pBuf, ulRemain);
+
+	  return SQLITE_FULL;
   }
-  assert( amt>0 );
-  while(
-     amt>0
-     && (rc = WriteFile(pFile->h, pBuf, amt, &wrote, 0))!=0
-     && wrote>0
-  ){
-    amt -= wrote;
-    pBuf = &((char*)pBuf)[wrote];
+  else
+  {
+	  memcpy(&pMem->pMemPointer[lowerBits], pBuf, amt);
+	  return SQLITE_OK;
   }
-  if( !rc || amt>(int)wrote ){
-    return SQLITE_FULL;
-  }
-  return SQLITE_OK;
 }
 
 /*
@@ -388,34 +380,14 @@ static int winFileSizeMem(sqlite3_file *id, sqlite3_int64 *pSize){
 ** is Win95 or WinNT.
 */
 static int getReadLockMem(winFile *pFile){
-  int res;
-  if( isNT() ){
-    OVERLAPPED ovlp;
-    ovlp.Offset = SHARED_FIRST;
-    ovlp.OffsetHigh = 0;
-    ovlp.hEvent = 0;
-    res = LockFileEx(pFile->h, LOCKFILE_FAIL_IMMEDIATELY,
-                     0, SHARED_SIZE, 0, &ovlp);
-  }else{
-    int lk;
-    sqlite3_randomness(sizeof(lk), &lk);
-    pFile->sharedLockByte = (lk & 0x7fffffff)%(SHARED_SIZE - 1);
-    res = LockFile(pFile->h, SHARED_FIRST+pFile->sharedLockByte, 0, 1, 0);
-  }
-  return res;
+  return 1;
 }
 
 /*
 ** Undo a readlock
 */
 static int unlockReadLockMem(winFile *pFile){
-  int res;
-  if( isNT() ){
-    res = UnlockFile(pFile->h, SHARED_FIRST, 0, SHARED_SIZE, 0);
-  }else{
-    res = UnlockFile(pFile->h, SHARED_FIRST + pFile->sharedLockByte, 0, 1, 0);
-  }
-  return res;
+  return 1;
 }
 
 /*
@@ -549,7 +521,19 @@ static int winOpenMem(
   winFile *pFile = (winFile*)id;
   memset(pFile, 0, sizeof(*pFile));
   pFile->pMethod = &winIoMethod;
-  sscanf(zName, "%08X", &pFile->h);
+
+  if (strstr(zName, "journal"))
+  {
+	  winFileMem *pJournal = (winFileMem *)malloc(sizeof(winFileMem));
+
+	  pJournal->pMemPointer = (unsigned char *)malloc(0x2000);
+	  pJournal->ulMemSize = 0x2000;
+	  pFile->h = (HANDLE)pJournal;
+  }
+  else
+  {
+	  sscanf(zName, "c:\\%08X", &pFile->h);
+  }
   return SQLITE_OK;
 }
 
@@ -648,7 +632,7 @@ static int winFullPathnameMem(
   int nFull,                    /* Size of output buffer in bytes */
   char *zFull                   /* Output buffer */
 ){
-	sprintf(zFull, "%08X", zRelative);
+	sprintf(zFull, "c:\\%08X", zRelative);
     return SQLITE_OK;
 }
 
