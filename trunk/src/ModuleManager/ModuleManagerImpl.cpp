@@ -325,6 +325,7 @@ void ModuleManagerImpl::Destroy()
 	{
 		it->second->Unload();
 	}
+
 	m_mapModulePoint.clear();
 
 	for(ModuleInterfaceMap::iterator it=m_mapModuleInterface.begin();it!=m_mapModuleInterface.end();++it)

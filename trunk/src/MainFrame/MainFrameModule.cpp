@@ -2,8 +2,10 @@
 #include "MainFrameModule.h"
 #include "MainFrameDefine.h"
 #include "TrayIconDefine.h"
+#include "PlugInDefine.h"
 
 using namespace mainframe;
+using namespace plugin;
 
 namespace mainframe
 {
@@ -59,7 +61,6 @@ BEGIN_MESSAGE_MAP(MainFrameModule)
 END_MESSAGE_MAP()
 
 BEGIN_SERVICE_MAP(MainFrameModule)
-	ON_SERVICE(SERVICE_VALUE_TEST, OnService_Test)
 	ON_SERVICE(SERVICE_VALUE_GET_MAINWND, OnService_GetMainWnd)
 END_SERVICE_MAP();
 
@@ -182,6 +183,11 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 	m_pMainFrame->Create(NULL, L"网址漫游", UI_WNDSTYLE_DIALOG, 0);
 	m_pMainFrame->CenterWindow();
 	m_pMainFrame->ShowWindow(true);
+
+	// 通知各个模块退出之前进行必要的准备工作
+	m_pModuleManager->PushEvent(
+		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_PLUGIN_LOAD_ALL,
+		MODULE_ID_PLUGIN));
 }
 
 void	MainFrameModule::OnMessage_PreExit(Message* pMessage)
@@ -190,11 +196,6 @@ void	MainFrameModule::OnMessage_PreExit(Message* pMessage)
 
 void	MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
 {
-}
-
-int32 MainFrameModule::OnService_Test(ServiceValue lServiceValue, param lParam)
-{
-	return -1;
 }
 
 int32	MainFrameModule::OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam)

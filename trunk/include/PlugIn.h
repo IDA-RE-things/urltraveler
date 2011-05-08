@@ -2,6 +2,8 @@
 
 #include "SndaBase.h"
 
+
+
 // 定义收藏夹数据结构
 
 // 收藏夹中每一个收藏记录的数据
@@ -19,7 +21,7 @@ typedef FAVORITELINEDATA* PFAVORITELINEDATA;
 
 // 浏览器插件接口，每一个浏览器都必须实现该接口
 // 上层应用程序通过该插件了解对应的浏览器的相关信息
-class IPlugIn
+interface IPlugIn
 {
 	//----------------------------------------------------------------------------------------
 	//名称: IsWorked
@@ -86,3 +88,16 @@ class IPlugIn
 	//----------------------------------------------------------------------------------------
 	virtual BOOL ImportFavoriteData(FAVORITELINEDATA stData) PURE;
 };
+
+typedef IPlugIn *  (*GetPlugInFunc)();
+typedef void  (*ReleasePlugInFunc)(IPlugIn*);
+
+typedef struct _PlugInInfo
+{
+	wchar_t		wszPlugInName[MAX_PATH];
+	HMODULE	hModule;
+	IPlugIn*		pPlugIn;
+	GetPlugInFunc	pGetPlugInFunc;
+	ReleasePlugInFunc	pReleasePlugInFunc;
+
+}PLUGININFO, *PPLUGININFO;

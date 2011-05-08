@@ -1,11 +1,40 @@
 #include "StdAfx.h"
 #include "IePlugIn.h"
 
-CIEPlugIn::CIEPlugIn(void)
+using namespace ieplugin;
+
+namespace ieplugin
+{
+	IEPlugIn*	g_IEPlugIn	=	NULL;
+}
+
+// 导出借口实现
+IPlugIn*	GetPlugIn()
+{
+	if( g_IEPlugIn == NULL)
+	{
+		g_IEPlugIn = new IEPlugIn();
+		ASSERT( g_IEPlugIn != NULL);
+	}
+
+	return g_IEPlugIn;
+}
+
+void	ReleasePlugIn( IPlugIn* p)
+{
+	ASSERT( g_IEPlugIn == p);
+	if( g_IEPlugIn  != NULL)
+	{
+		delete g_IEPlugIn;
+		g_IEPlugIn = NULL;
+	}
+}
+
+IEPlugIn::IEPlugIn(void)
 {
 }
 
-CIEPlugIn::~CIEPlugIn(void)
+IEPlugIn::~IEPlugIn(void)
 {
 }
 
@@ -16,7 +45,7 @@ CIEPlugIn::~CIEPlugIn(void)
 //	处理，只需要返回FALSE即可。否则它将会被调用。
 //返回: 插件的版本号，通常为一整数。
 //----------------------------------------------------------------------------------------
-BOOL CIEPlugIn::IsWorked()
+BOOL IEPlugIn::IsWorked()
 {
 	return TRUE;
 }
@@ -26,7 +55,7 @@ BOOL CIEPlugIn::IsWorked()
 //描述: 获取当前插件的版本号
 //返回: 插件的版本号，通常为一整数。
 //----------------------------------------------------------------------------------------
-int32 CIEPlugIn::GetPluginVersion() 
+int32 IEPlugIn::GetPluginVersion() 
 {
 	return 0;
 }
@@ -35,7 +64,7 @@ int32 CIEPlugIn::GetPluginVersion()
 //名称: GetBrowserName
 //描述: 获取该插件对应的浏览器的名称和版本
 //----------------------------------------------------------------------------------------
-const wchar_t* CIEPlugIn::GetBrowserName() 
+const wchar_t* IEPlugIn::GetBrowserName() 
 {
 	return NULL;
 }
@@ -44,7 +73,7 @@ const wchar_t* CIEPlugIn::GetBrowserName()
 //名称: GetInstallPath
 //描述: 获取插件对应的浏览器的安装目录
 //----------------------------------------------------------------------------------------
-const wchar_t* CIEPlugIn::GetInstallPath() 
+const wchar_t* IEPlugIn::GetInstallPath() 
 {
 	return NULL;
 }
@@ -53,7 +82,7 @@ const wchar_t* CIEPlugIn::GetInstallPath()
 //名称: GetFavoriteDataPath
 //描述: 获取浏览器收藏夹对应的文件或者文件夹的路径
 //----------------------------------------------------------------------------------------
-const wchar_t* CIEPlugIn::GetFavoriteDataPath() 
+const wchar_t* IEPlugIn::GetFavoriteDataPath() 
 {
 	return NULL;
 }
@@ -62,7 +91,7 @@ const wchar_t* CIEPlugIn::GetFavoriteDataPath()
 //名称: GetHistoryDataPath
 //描述: 获取浏览器收藏夹的历史数据对应的文件或者文件夹
 //----------------------------------------------------------------------------------------
-const wchar_t* CIEPlugIn::GetHistoryDataPath() 
+const wchar_t* IEPlugIn::GetHistoryDataPath() 
 {
 	return NULL;
 }
@@ -74,7 +103,7 @@ const wchar_t* CIEPlugIn::GetHistoryDataPath()
 //		@param	pData			导出的收藏夹数据数组
 //		@param	nDataNum		导出的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL CIEPlugIn::ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum)
+BOOL IEPlugIn::ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum)
 {
 	return TRUE;
 }
@@ -86,7 +115,7 @@ BOOL CIEPlugIn::ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum)
 //		@param	pData			需要导入的的收藏夹数据数组
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL CIEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
+BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 {
 	return TRUE;
 }
@@ -97,7 +126,7 @@ BOOL CIEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 //参数: 
 //		@param	stData			需要导入的的收藏夹记录
 //----------------------------------------------------------------------------------------
-BOOL CIEPlugIn::ImportFavoriteData(FAVORITELINEDATA stData) 
+BOOL IEPlugIn::ImportFavoriteData(FAVORITELINEDATA stData) 
 {
 	return TRUE;
 }
