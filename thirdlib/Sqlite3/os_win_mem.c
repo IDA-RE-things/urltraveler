@@ -267,17 +267,30 @@ static int isNT(void){
 ** many as MX_CLOSE_ATTEMPT attempts to close the handle are made before
 ** giving up and returning an error.
 */
-#define MX_CLOSE_ATTEMPT 3
-static int winCloseMem(sqlite3_file *id){
-  OpenCounter(-1);
-  return SQLITE_OK;
-}
-
 typedef struct _winFileMem 
 {
 	unsigned char *pMemPointer;
 	unsigned long  ulMemSize;
 }winFileMem;
+
+#define MX_CLOSE_ATTEMPT 3
+static int winCloseMem(sqlite3_file *id){
+	winFile *pFile = (winFile*)id;
+	winFileMem *pMem = (winFileMem *)pFile->h;
+
+	if (strstr(pMem->pMemPointer, "SQLite") == NULL)
+	{
+		free(pMem->pMemPointer);
+		free(pMem);
+	}
+	else
+	{
+		int i = 0;
+	}
+
+  OpenCounter(-1);
+  return SQLITE_OK;
+}
 
 static int winReadMem(
   sqlite3_file *id,          /* File to read from */
@@ -325,15 +338,18 @@ static int winWriteMem(
 
   if (ulRemain < amt)
   {
-	  memcpy(&pMem->pMemPointer[lowerBits], pBuf, ulRemain);
+	  void *pTemp;
 
-	  return SQLITE_FULL;
+	  pTemp = malloc(pMem->ulMemSize + amt - ulRemain);
+	  assert(pTemp != NULL);
+	  memmove(pTemp, pMem->pMemPointer, pMem->ulMemSize);
+	  free(pMem->pMemPointer);
+	  pMem->pMemPointer = pTemp;
+	  pMem->ulMemSize = pMem->ulMemSize + amt - ulRemain;
   }
-  else
-  {
-	  memcpy(&pMem->pMemPointer[lowerBits], pBuf, amt);
-	  return SQLITE_OK;
-  }
+
+  memcpy(&pMem->pMemPointer[lowerBits], pBuf, amt);
+  return SQLITE_OK;
 }
 
 /*
