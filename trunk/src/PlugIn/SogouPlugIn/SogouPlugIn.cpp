@@ -68,6 +68,25 @@ CSogouPlugIn::CSogouPlugIn()
 
 	int dbVer = Query.getIntField("value");
 
+	m_SqliteDatabase.execDML("insert into dbInfo(id, value, reserved) values('hello world', '4', 0)");
+
+	m_SqliteDatabase.close();
+
+	FILE *fOut = fopen("b.db", "wb");
+
+	fwrite(stFileMem.pMemPointer, 1, stFileMem.ulMemSize, fOut);
+
+	fclose(fOut);
+
+	CppSQLite3DB  m_SqliteDatabase1;
+
+	m_SqliteDatabase1.open("c:\\a.db", "");
+
+	bool b = m_SqliteDatabase1.tableExists("dbInfo");
+
+	m_SqliteDatabase1.execDML("insert into dbInfo(id, value, reserved) values('sss', '5', 0)");
+
+
 	//调用者自己进行释放
 	free((void *)p);
 }
