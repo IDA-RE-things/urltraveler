@@ -47,32 +47,32 @@ CSogouPlugIn::CSogouPlugIn()
 		unsigned long  ulMemSize;
 	}winFileMem;
 
-	decode("C:\\Users\\linjinming.SNDA\\AppData\\Roaming\\SogouExplorer\\Favorite2.dat", strDecodeContent);
+	if (decode(StringHelper::UnicodeToANSI(GetFavoriteDataPath()), strDecodeContent) == 0)
+	{
+		CppSQLite3DB  m_SqliteDatabase;
 
-	CppSQLite3DB  m_SqliteDatabase;
+		winFileMem stFileMem;
 
-	winFileMem stFileMem;
+		stFileMem.ulMemSize = strDecodeContent.length();
+		stFileMem.pMemPointer = new unsigned char[strDecodeContent.length()];
+		memcpy(stFileMem.pMemPointer, strDecodeContent.c_str(), stFileMem.ulMemSize);
 
-	stFileMem.ulMemSize = strDecodeContent.length();
-	stFileMem.pMemPointer = new unsigned char[strDecodeContent.length()];
-	memcpy(stFileMem.pMemPointer, strDecodeContent.c_str(), stFileMem.ulMemSize);
+		m_SqliteDatabase.openmem((char *)&stFileMem, "");
 
-	m_SqliteDatabase.openmem((char *)&stFileMem, "");
+		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from dbInfo");
 
-	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from dbInfo");
+		int dbVer = Query.getIntField("value");
 
-	int dbVer = Query.getIntField("value");
+		m_SqliteDatabase.execDML("insert into dbInfo(id, value, reserved) values('hello world', '4', 0)");
 
-	m_SqliteDatabase.execDML("insert into dbInfo(id, value, reserved) values('hello world', '4', 0)");
+		m_SqliteDatabase.close();
 
-	m_SqliteDatabase.close();
+		FILE *fOut = fopen("b.db", "wb");
 
-	FILE *fOut = fopen("b.db", "wb");
+		fwrite(stFileMem.pMemPointer, 1, stFileMem.ulMemSize, fOut);
 
-	fwrite(stFileMem.pMemPointer, 1, stFileMem.ulMemSize, fOut);
-
-	fclose(fOut);
-
+		fclose(fOut);
+	}
 }
 
 CSogouPlugIn::~CSogouPlugIn()
@@ -149,7 +149,7 @@ const wchar_t* CSogouPlugIn::GetInstallPath()
 
 const wchar_t* CSogouPlugIn::GetFavoriteDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer";
+	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer\\Favorite2.dat";
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 
@@ -158,7 +158,11 @@ const wchar_t* CSogouPlugIn::GetFavoriteDataPath()
 
 const wchar_t* CSogouPlugIn::GetHistoryDataPath()
 {
-	return GetFavoriteDataPath();
+	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer\\HistoryUrl.db";
+
+	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
+
+	return _tcsdup(strPath.c_str());
 }
 
 BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
