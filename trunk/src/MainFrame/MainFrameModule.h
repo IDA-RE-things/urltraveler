@@ -3,7 +3,7 @@
 #include "SndaBase.h"
 #include "Module.h"
 #include "ModuleImp.h"
-#include "UIDemo.h"
+#include "MainFrameWnd.h"
 
 extern "C" 
 {
@@ -80,8 +80,9 @@ public:
 protected:
 
 	void	OnEvent_OpenMainDlg(Event* pEvent);	// 响应EVENT_VALUE_MAINFRAME_OPEN事件，打开主界面	
-	void	OnEvent_CloseMainDlg(Event* pEvent);	// 响应EVENT_VALUE_MAINFRAME_CLOSE事件，打开主界面
-	void	OnEvent_HideMainDlg(Event* pEvent);	// 响应EVENT_VALUE_MAINFRAME_HIDE事件，打开主界面										
+	void	OnEvent_CloseMainDlg(Event* pEvent);	// 响应EVENT_VALUE_MAINFRAME_CLOSE事件，关闭主界面
+	void	OnEvent_ShowMainDlg(Event* pEvent);	// 响应EVENT_VALUE_MAINFRAME_SHOW事件，显示主界面										
+	void	OnEvent_HideMainDlg(Event* pEvent);	// 响应EVENT_VALUE_MAINFRAME_HIDE事件，隐藏主界面										
 
 	// Message处理函数
 protected:
@@ -93,7 +94,7 @@ protected:
 protected:
 
 	int32 OnService_Test(ServiceValue lServiceValue, param lParam);
-	int32	OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam);
+	int32 OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam);
 
 
 private:

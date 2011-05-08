@@ -93,6 +93,16 @@ static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM wParam, L
 					break;
 				}
 
+			case IDM_SHOW_MAIN:
+				{
+					// 通知各个模块退出之前进行必要的准备工作
+					pTrayIconModule->GetModuleManager()->PushEvent(
+						MakeEvent<MODULE_ID_TRAYICON>()(mainframe::EVENT_VALUE_MAINFRAME_SHOW, 
+							MODULE_ID_MAINFRAME));
+
+					break;
+				}
+
 			default:
 				return DefWindowProc(inWindow, inMsg, wParam, lParam);
 			}
