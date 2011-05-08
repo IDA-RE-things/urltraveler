@@ -248,6 +248,7 @@ public:
 	virtual ~CppSQLite3DB();
 
 	void open(const char* szFile,const char* p);
+	void openmem(void *h, const char *szKey);
 	void close();
 	int  Rekey(const void *pKey, int nKey);
 	bool tableExists(const char* szTable);
@@ -267,9 +268,9 @@ public:
 	@return int.0:³É¹¦,·Ç0:Ê§°Ü.
 	@author:wenhm date:2008.10.22
 	*/
-	int InternalOpen(const char* szFile, const char * szKey );
-	void open(const WCHAR* szFile, const char * szKey );
-	int InternalOpen(const WCHAR* szFile, const char * szKey );
+	int InternalOpen(const char* szFile, const char * szKey);
+	void open(const WCHAR* szFile, const char * szKey);
+	int InternalOpen(const WCHAR* szFile, const char * szKey);
 
 private:
 

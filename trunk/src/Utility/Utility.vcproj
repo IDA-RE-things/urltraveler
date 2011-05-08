@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="sqlite3_lib.lib"
+				AdditionalDependencies="sqlite3_libd.lib"
 				OutputFile="..\..\bin\Utilityd.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../lib"
