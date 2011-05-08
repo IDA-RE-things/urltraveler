@@ -4,6 +4,7 @@
 #include "StringHelper.h"
 #include "PathHelper.h"
 #include "Decoder.h"
+#include "CppSQLite3.h"
 
 #pragma comment(lib, "shlwapi.lib")
 
@@ -16,7 +17,27 @@ CSogouPlugIn::CSogouPlugIn()
 	const wchar_t *p = GetFavoriteDataPath();
 	std::string strDecodeContent;
 
+	typedef struct _winFileMem 
+	{
+		unsigned char *pMemPointer;
+		unsigned long  ulMemSize;
+	}winFileMem;
+
 	decode("C:\\Users\\linjinming.SNDA\\AppData\\Roaming\\SogouExplorer\\Favorite2.dat", strDecodeContent);
+
+	CppSQLite3DB  m_SqliteDatabase;
+
+	winFileMem stFileMem;
+
+	stFileMem.ulMemSize = strDecodeContent.length();
+	stFileMem.pMemPointer = new unsigned char[strDecodeContent.length()];
+	memcpy(stFileMem.pMemPointer, strDecodeContent.c_str(), stFileMem.ulMemSize);
+
+	m_SqliteDatabase.openmem((char *)&stFileMem, "");
+
+	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from dbInfo");
+
+	int dbVer = Query.getIntField("value");
 
 	//调用者自己进行释放
 	free((void *)p);
