@@ -32,6 +32,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Login", "Login\Login.vcproj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SogouPlugIn", "PlugIn\SogouPlugIn\SogouPlugIn.vcproj", "{5978BFFE-B3AF-41B0-8C43-BFB79812250F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3_lib", "..\thirdlib\Sqlite3\msvc\sqlite3_dll\sqlite3_lib.vcproj", "{106D4DC1-0E2B-4C5B-A013-DA48656584BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -82,6 +84,10 @@ Global
 		{5978BFFE-B3AF-41B0-8C43-BFB79812250F}.Debug|Win32.Build.0 = Debug|Win32
 		{5978BFFE-B3AF-41B0-8C43-BFB79812250F}.Release|Win32.ActiveCfg = Release|Win32
 		{5978BFFE-B3AF-41B0-8C43-BFB79812250F}.Release|Win32.Build.0 = Release|Win32
+		{106D4DC1-0E2B-4C5B-A013-DA48656584BD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{106D4DC1-0E2B-4C5B-A013-DA48656584BD}.Debug|Win32.Build.0 = Debug|Win32
+		{106D4DC1-0E2B-4C5B-A013-DA48656584BD}.Release|Win32.ActiveCfg = Release|Win32
+		{106D4DC1-0E2B-4C5B-A013-DA48656584BD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
