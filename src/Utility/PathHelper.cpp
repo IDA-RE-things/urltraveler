@@ -16,34 +16,36 @@
 
 //////////////////////////////////////////////////////////////////////////
 ///#if 1 ... #else 范围内的下面函数全部为Unicode版本的函数
-/**获取当前模块的路径*/
-std::wstring PathHelper::GetModulePath()
+/**获取当前模块所在的目录*/
+std::wstring PathHelper::GetModuleDir(HINSTANCE hInstance)
 {
-	static wstring strModulePath = L"";
-	if(strModulePath.empty())
+	WCHAR szModulePath[MAX_PATH  + 1];
+	::GetModuleFileName(hInstance, szModulePath, MAX_PATH);
+
+	String	strPath = szModulePath;
+	int index = strPath.ReverseFind((const WCHAR*)L"\\");
+	if(index > 0)
 	{
-		WCHAR szModulePath[MAX_PATH  + 1];
-		::GetModuleFileName(NULL, szModulePath, MAX_PATH);
-
-		String	strPath = szModulePath;
-		int index = strPath.ReverseFind((const WCHAR*)L'\\');
-		if(index > 0)
-		{
-			strPath = strPath.Left(index + 1);
-		}
-		else
-		{
-			ASSERT(FALSE);
-			strPath = L"\\";
-		}
-
-		strPath.Replace((const WCHAR*)L'\\',(const WCHAR*)L'/');
-		strModulePath = strPath.GetData();
+		strPath = strPath.Left(index + 1);
+	}
+	else
+	{
+		ASSERT(FALSE);
+		strPath += L"\\";
 	}
 
-	return strModulePath;
+	strPath.Replace((const WCHAR*)L"/",(const WCHAR*)L"\\");
+	return strPath.GetData();
 }
 
+/**获取当前模块所在的完整路径*/
+std::wstring PathHelper::GetModulePath(HINSTANCE hInstance)
+{
+	WCHAR szModulePath[MAX_PATH  + 1];
+	::GetModuleFileName(hInstance, szModulePath, MAX_PATH);
+
+	return szModulePath;
+}
 
 /** 获取用户Application Data目录
 采用windows api SHGetSpecialFolderPath来获取
@@ -123,7 +125,7 @@ std::wstring PathHelper::GetTempDir(void)
 	return strTempPath;
 }
 
-bool PathHelper::CreateMultipleDirectory(const std::wstring& strPath)
+BOOL PathHelper::CreateMultipleDirectory(const std::wstring& strPath)
 {
 	//存放要创建的目录字符串
 	std::wstring strDir(strPath);
@@ -139,7 +141,7 @@ bool PathHelper::CreateMultipleDirectory(const std::wstring& strPath)
 	//一个临时变量,存放目录字符串
 	std::wstring strTemp;
 	//成功标志
-	bool bSuccess = false;
+	BOOL bSuccess = FALSE;
 
 	//遍历要创建的字符串
 	for (UINT i=0; i<strDir.length(); ++i)
@@ -161,14 +163,14 @@ bool PathHelper::CreateMultipleDirectory(const std::wstring& strPath)
 	std::vector<std::wstring>::const_iterator iter;
 	for (iter = vecPath.begin(); iter != vecPath.end(); iter++) 
 	{
-		//如果CreateDirectory执行成功,返回true,否则返回false
-		bSuccess = CreateDirectoryW(iter->c_str(), NULL) ? true : false;    
+		//如果CreateDirectory执行成功,返回true,否则返回FALSE
+		bSuccess = CreateDirectoryW(iter->c_str(), NULL) ? true : FALSE;    
 	}
 
 	return bSuccess;
 }
 
-bool PathHelper::RemoveMultipleDirectory(const std::wstring& strPath)
+BOOL PathHelper::RemoveMultipleDirectory(const std::wstring& strPath)
 {
 	//存放要删除的目录字符串
 	std::wstring strDir(strPath);
@@ -184,7 +186,7 @@ bool PathHelper::RemoveMultipleDirectory(const std::wstring& strPath)
 	//一个临时变量,存放目录字符串
 	std::wstring strTemp;
 	//成功标志
-	bool bSuccess = false;
+	BOOL bSuccess = FALSE;
 
 	//遍历要删除的字符串
 	for (UINT i=0; i<strDir.length(); ++i)
@@ -206,25 +208,25 @@ bool PathHelper::RemoveMultipleDirectory(const std::wstring& strPath)
 	std::vector<std::wstring>::const_reverse_iterator iter;
 	for (iter = vecPath.rbegin(); iter != vecPath.rend(); iter++) 
 	{
-		//如果RemoveDirectory执行成功,返回true,否则返回false
-		///bool bResult = iter->find('\\');
+		//如果RemoveDirectory执行成功,返回true,否则返回FALSE
+		///BOOL bResult = iter->find('\\');
 		std::wstring::size_type iFindPos = iter->find(L'\\');		
 		if (std::wstring::npos != iFindPos)
 		{
-			bSuccess = RemoveDirectoryW(iter->c_str()) ? true : false;
+			bSuccess = RemoveDirectoryW(iter->c_str()) ? true : FALSE;
 		}    
 	}
 
 	return bSuccess;
 }
 
-bool PathHelper::GetAllSubDir(
+BOOL PathHelper::GetAllSubDir(
 							const std::wstring & strDir, 
 							CStdStringVector &vecSubDir, 
 							const std::wstring &strDirMask
 							)
 {
-	bool bResult = false ;
+	BOOL bResult = FALSE ;
 	/*
 	下面的代码为访问目录，和操作系统相关，目前为windows操作系统的相关代码
 	*/
@@ -248,7 +250,7 @@ bool PathHelper::GetAllSubDir(
 
 	while (INVALID_HANDLE_VALUE != hFindFile)
 	{
-		if ((fileinfo.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) == false) 
+		if ((fileinfo.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) == FALSE) 
 		{
 			//文件不为子目录
 			/**
@@ -260,7 +262,7 @@ bool PathHelper::GetAllSubDir(
 		{
 			//将查找中间碰到的子目录全部存入dirQueue队列中，以后还要对该目录进行查找
 			bResult = DirFilter(fileinfo.cFileName);
-			if (true != bResult) //不为要过滤掉的.和..目录则压入目录队列中
+			if (TRUE != bResult) //不为要过滤掉的.和..目录则压入目录队列中
 			{
 				strSubDirName = strCurDirName;
 				strSubDirName += L"\\";
@@ -273,7 +275,7 @@ bool PathHelper::GetAllSubDir(
 		}
 
 		bResult = FindNextFileW(hFindFile, &fileinfo);
-		if (false == bResult)
+		if (FALSE == bResult)
 		{
 			/*
 			if (GetLastError() == ERROR_NO_MORE_FILES) 
@@ -310,13 +312,13 @@ bool PathHelper::GetAllSubDir(
 	return bResult;
 }
 
-bool PathHelper::GetDirFile(
+BOOL PathHelper::GetDirFile(
 						  const std::wstring &strDir,  
 						  CStdStringVector &vecFile,
 						  const std::wstring &strFileMask
 						  )
 {
-	bool bResult = false;
+	BOOL bResult = FALSE;
 	vecFile.clear();
 	/*
 	下面的代码为访问目录，和操作系统相关，目前为windows操作系统的相关代码
@@ -341,7 +343,7 @@ bool PathHelper::GetDirFile(
 
 	while (INVALID_HANDLE_VALUE != hFindFile)
 	{
-		if ((fileinfo.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) == false) 
+		if ((fileinfo.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) == FALSE) 
 		{
 			std::wstring strTmpFile = strCurDirName;
 			strTmpFile += L"\\";
@@ -373,7 +375,7 @@ bool PathHelper::GetDirFile(
 
 		bResult = FindNextFileW(hFindFile, &fileinfo);
 
-		if (false == bResult)
+		if (FALSE == bResult)
 		{
 			/*
 			if (GetLastError() == ERROR_NO_MORE_FILES) 
@@ -395,14 +397,14 @@ bool PathHelper::GetDirFile(
 	return bResult;
 }
 
-bool PathHelper::GetAllFile(
+BOOL PathHelper::GetAllFile(
 						  const std::wstring & strDir, 
 						  CStdStringVector &vecFile,
 						  const std::wstring &strDirMask, 
 						  const std::wstring &strFileMask 
 						  )
 {
-	bool bResult = false;
+	BOOL bResult = FALSE;
 	vecFile.clear();
 
 	CStdStringVector vecSubDir;
@@ -431,9 +433,9 @@ bool PathHelper::GetAllFile(
 	return bResult;
 }
 
-bool PathHelper::DirFilter(const std::wstring &strDirName)
+BOOL PathHelper::DirFilter(const std::wstring &strDirName)
 {
-	bool bReturn = false;
+	BOOL bReturn = FALSE;
 
 	if ( (strDirName == L".") || ( strDirName == L".."))
 	{
@@ -502,13 +504,13 @@ BOOL PathHelper::IsFileExist(const std::wstring &strFilePath)
 }
 
 /** 删除某个目录下所有信息
-@return bool.
+@return BOOL.
 */
-bool PathHelper::RemoveDir(std::wstring & strPath, const bool &bForce)
+BOOL PathHelper::RemoveDir(std::wstring & strPath, const BOOL &bForce)
 {
-	bool bResult = false;
+	BOOL bResult = FALSE;
 
-	if (true == bForce)
+	if (TRUE == bForce)
 	{
 		bResult = ForceRemoveDir(strPath);
 	}
@@ -520,9 +522,9 @@ bool PathHelper::RemoveDir(std::wstring & strPath, const bool &bForce)
 	return bResult;
 }
 
-bool PathHelper::RemoveDirAllFile(const std::wstring &strPath)
+BOOL PathHelper::RemoveDirAllFile(const std::wstring &strPath)
 {
-	bool bResult = false;
+	BOOL bResult = FALSE;
 
 	///获取所有的*.*文件
 	PathHelper::CStdStringVector vecFile;
@@ -542,11 +544,11 @@ bool PathHelper::RemoveDirAllFile(const std::wstring &strPath)
 	return bResult;
 }
 
-bool PathHelper::RemoveDirAllSubDir(const std::wstring &strPath)
+BOOL PathHelper::RemoveDirAllSubDir(const std::wstring &strPath)
 {
 	///获取所有子目录
 	CStdStringVector vecSubDir;
-	bool bResult = GetAllSubDir(strPath, vecSubDir);
+	BOOL bResult = GetAllSubDir(strPath, vecSubDir);
 
 	///删除所有的子目录,遍历存放目录的数组,删除每层目录,从最深的目录开始删除,进行逆向访问
 	if (vecSubDir.size() > 0)
@@ -567,10 +569,10 @@ bool PathHelper::RemoveDirAllSubDir(const std::wstring &strPath)
 	return bResult;
 }
 
-bool PathHelper::ForceRemoveDir(const std::wstring &strPath)
+BOOL PathHelper::ForceRemoveDir(const std::wstring &strPath)
 {
 	///删除所有*.*文件
-	bool bResult = RemoveDirAllFile(strPath);
+	BOOL bResult = RemoveDirAllFile(strPath);
 	
 	///删除所有子目录
 	bResult = RemoveDirAllSubDir(strPath);
