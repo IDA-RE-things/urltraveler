@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="ModuleManager"
-	ProjectGUID="{14FEB1EA-CBFF-4852-8941-DAE4730E4676}"
-	RootNamespace="ModuleManager"
+	Name="PlugInManager"
+	ProjectGUID="{D4F3F13E-4CAD-4038-A5B2-D1212174C3BF}"
+	RootNamespace="PlugIn"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -20,8 +20,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfMFC="0"
+			ConfigurationType="2"
 			CharacterSet="1"
 			>
 			<Tool
@@ -42,13 +41,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\thirdlib\boost_1350_vc80\include;..\utility\;include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\..\include;..\utility\"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGIN_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
-				WarningLevel="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -62,12 +61,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Utilityd.lib vldmtdll.lib"
-				OutputFile="..\..\bin\UrlTravelerd.exe"
+				AdditionalDependencies="Utilityd.lib"
+				OutputFile="..\..\bin\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -97,7 +95,7 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -120,8 +118,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\include;..\..\thirdlib\boost_1350_vc80\include;..\utility\;include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\..\include;..\utility\"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLUGIN_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -140,11 +138,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Utility.lib"
-				OutputFile="..\..\bin\UrlTraveler.exe"
+				OutputFile="..\..\bin\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -177,16 +174,38 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="源文件"
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\ModuleManager.cpp"
+				RelativePath=".\dllmain.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						CompileAsManaged="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						CompileAsManaged="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\PlugIn.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ModuleManagerImpl.cpp"
+				RelativePath=".\PlugInModule.cpp"
 				>
 			</File>
 			<File
@@ -211,40 +230,20 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="头文件"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\include\Module.h"
+				RelativePath="..\..\include\PlugInDefine.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\ModuleImp.h"
+				RelativePath=".\PlugInList.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ModuleList.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleManagerImpl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\PlugIn.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Resource.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\SndaBase.h"
+				RelativePath=".\PlugInModule.h"
 				>
 			</File>
 			<File
@@ -255,32 +254,12 @@
 				RelativePath=".\targetver.h"
 				>
 			</File>
-			<File
-				RelativePath="..\..\include\UrlTravelerHeader.h"
-				>
-			</File>
 		</Filter>
 		<Filter
-			Name="Resource Files"
+			Name="资源文件"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\res\earth_scan48.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleManager.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\ModuleManager.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\small.ico"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"

@@ -6,7 +6,36 @@
 #include "Decoder.h"
 #include "CppSQLite3.h"
 
+using namespace sogouplugin;
+
 #pragma comment(lib, "shlwapi.lib")
+
+namespace sogouplugin
+{
+	CSogouPlugIn*	g_SogouPlugIn	=	NULL;
+}
+
+// 导出借口实现
+IPlugIn*	GetPlugIn()
+{
+	if( g_SogouPlugIn == NULL)
+	{
+		g_SogouPlugIn = new CSogouPlugIn();
+		ASSERT( g_SogouPlugIn != NULL);
+	}
+
+	return g_SogouPlugIn;
+}
+
+void	ReleasePlugIn( IPlugIn* p)
+{
+	ASSERT( g_SogouPlugIn == p);
+	if( g_SogouPlugIn  != NULL)
+	{
+		delete g_SogouPlugIn;
+		g_SogouPlugIn = NULL;
+	}
+}
 
 CSogouPlugIn aa;
 

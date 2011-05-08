@@ -3,12 +3,17 @@
 #include "SndaBase.h"
 #include "PlugIn.h"
 
+extern "C" 
+{
+	DLLEXPORT IPlugIn*	GetPlugIn();
+	DLLEXPORT void	ReleasePlugIn( IPlugIn*);
+}
 
-class CIEPlugIn : public IPlugIn
+class IEPlugIn : public IPlugIn
 {
 public:
-	CIEPlugIn(void);
-	~CIEPlugIn(void);
+	IEPlugIn(void);
+	~IEPlugIn(void);
 
 	//----------------------------------------------------------------------------------------
 	//Ãû³Æ: IsWorked
@@ -75,3 +80,9 @@ public:
 	//----------------------------------------------------------------------------------------
 	virtual BOOL ImportFavoriteData(FAVORITELINEDATA stData);
 };
+
+namespace ieplugin
+{
+	extern IEPlugIn*	g_IEPlugIn;
+}
+using namespace ieplugin;

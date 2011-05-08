@@ -62,7 +62,7 @@ const wchar_t* DataCenterModule::GetModuleName()
 //----------------------------------------------------------------------------------------
 uint32 const DataCenterModule::GetModuleId()
 {
-	return MODULE_ID_SETTING;
+	return MODULE_ID_DATACENTER;
 }
 
 //----------------------------------------------------------------------------------------

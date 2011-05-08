@@ -1,6 +1,12 @@
 #pragma once
 #include "PlugIn.h"
 
+extern "C" 
+{
+	DLLEXPORT IPlugIn*	GetPlugIn();
+	DLLEXPORT void	ReleasePlugIn( IPlugIn*);
+}
+
 class CSogouPlugIn : public IPlugIn
 {
 public:
@@ -74,3 +80,8 @@ public:
 private:
 };
 
+namespace sogouplugin
+{
+	extern CSogouPlugIn*	g_SogouPlugIn;
+}
+using namespace sogouplugin;

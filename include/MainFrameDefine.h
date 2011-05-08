@@ -14,6 +14,7 @@ namespace mainframe
 		EVENT_VALUE_MAINFRAME_CLOSE,						//	关闭当前主界面
 		EVENT_VALUE_MAINFRAME_SHOW,						//	显示主对话框
 		EVENT_VALUE_MAINFRAME_HIDE,							//	隐藏当前主界面
+
 		EVENT_VALUE_MAINFRAME_OPENLOGIN,					//	打开登录对话框
 
 		EVENT_VALUE_MAINFRAME_END = EVENT_VALUE_MAINFRAME_END ,			//所有的事件结束
