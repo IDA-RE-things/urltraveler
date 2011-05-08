@@ -1,4 +1,4 @@
-#include "stdafx.h"
+s#include "stdafx.h"
 #include "Decoder.h"
 #include <stdio.h>
 

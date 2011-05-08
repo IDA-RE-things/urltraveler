@@ -237,6 +237,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SystemHelper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeHelper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Utility.cpp"
 				>
 			</File>
@@ -267,7 +275,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SystemHelper.h"
+				>
+			</File>
+			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeHelper.h"
 				>
 			</File>
 			<File
