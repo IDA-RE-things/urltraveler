@@ -71,5 +71,6 @@ public:
 	//		@param	stData			需要导入的的收藏夹记录
 	//----------------------------------------------------------------------------------------
 	virtual BOOL ImportFavoriteData(FAVORITELINEDATA stData);
+private:
 };
 
