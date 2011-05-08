@@ -1151,7 +1151,7 @@ CppSQLite3DB& CppSQLite3DB::operator=(const CppSQLite3DB& db)
 const char * CRYPT_KEY = "1q2zue4y";
 const int CRYPT_KEY_LEN = 8;
 
-void CppSQLite3DB::open(const char* szFile,const char * szKey )
+void CppSQLite3DB::open(const char* szFile,const char * szKey)
 {	
 	int iResult = InternalOpen(szFile, szKey);
 
@@ -1369,7 +1369,7 @@ bool CppSQLite3DB::IsOpen()
 	return (this->mpDB == NULL)?false:true;
 }
 
-int CppSQLite3DB::InternalOpen(const char* szFile, const char * szKey )
+int CppSQLite3DB::InternalOpen(const char* szFile, const char * szKey)
 {
 	char* szFileTmp = new char[strlen(szFile)+1];
 	char strOriginDir[512] = {0};
@@ -1403,6 +1403,7 @@ int CppSQLite3DB::InternalOpen(const char* szFile, const char * szKey )
 	*pTchar = _T('\\');
 
 	ptrStrFileName = (pTchar+1);
+
 
 	iReturn = sqlite3_open(ptrStrFileName, &mpDB);
 
@@ -1641,7 +1642,7 @@ int sqlite3_decode_binary(const unsigned char *in, unsigned char *out){
   return i;
 }
 
-void CppSQLite3DB::open(const WCHAR* szFile, const char * szKey )
+void CppSQLite3DB::open(const WCHAR* szFile, const char * szKey)
 {	
 	int iResult = InternalOpen(szFile, szKey);
 
@@ -1700,7 +1701,7 @@ void CppSQLite3DB::open(const WCHAR* szFile, const char * szKey )
 	}
 }
 
-int CppSQLite3DB::InternalOpen(const WCHAR* szFile, const char * szKey )
+int CppSQLite3DB::InternalOpen(const WCHAR* szFile, const char * szKey)
 {
 	WCHAR* szFileTmp = new WCHAR[wcslen(szFile)+1];
 	WCHAR strOriginDir[512] = {0};
@@ -1777,4 +1778,45 @@ int CppSQLite3DB::InternalOpen(const WCHAR* szFile, const char * szKey )
 	}
 
 	return iReturn;	
+}
+
+void CppSQLite3DB::openmem( void *h, const char *szKey )
+{
+	int iReturn = -1;
+
+	iReturn = sqlite3_open_v2((char *)h, &mpDB, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, "win32mem");
+
+	if (SQLITE_OK != iReturn)
+	{
+		const char* szError = (const char*)sqlite3_errmsg(mpDB);
+		throw CppSQLite3Exception(iReturn, (char*)szError, DONT_DELETE_MSG);
+	}
+	else
+	{
+		///数据库加密密码不为空则进行数据库加密方式的打开
+		if ( NULL != szKey && strlen(szKey) > 0)
+		{
+			iReturn = sqlite3_key(mpDB, szKey, strlen(szKey));
+			if (SQLITE_OK == iReturn)
+			{
+				setBusyTimeout(mnBusyTimeoutMs);
+			}
+		}
+
+		///执行一条sql语句看数据库是否正确打开了
+		try
+		{
+			bool bResult = tableExists("JustASqlTestTable");
+		}
+		catch (CppSQLite3Exception& e)
+		{
+			iReturn = e.errorCode();
+			///assert(0);
+		}
+		catch (...)
+		{
+			iReturn = FAILURE;
+			///assert(0);
+		}
+	}
 }
