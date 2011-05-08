@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="bin\$(ConfigurationName)"
+			OutputDirectory="bin\"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -79,11 +79,12 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy bin\*.lib ..\..\..\..\lib"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="bin\$(ConfigurationName)"
+			OutputDirectory="bin\"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -140,6 +141,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy bin\*.lib ..\..\..\..\lib"
 			/>
 		</Configuration>
 	</Configurations>

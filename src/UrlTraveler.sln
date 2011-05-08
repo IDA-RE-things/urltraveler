@@ -21,6 +21,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OptionSetting", "OptionSetting\OptionSetting.vcproj", "{BF482DF9-AA3E-4B45-A6EF-88D7D6EBD8BD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "Utility\Utility.vcproj", "{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}"
+	ProjectSection(ProjectDependencies) = postProject
+		{106D4DC1-0E2B-4C5B-A013-DA48656584BD} = {106D4DC1-0E2B-4C5B-A013-DA48656584BD}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrayIcon", "TrayIcon\TrayIcon.vcproj", "{9D1B70E9-0BEE-437C-8EB5-CD5295688421}"
 EndProject
