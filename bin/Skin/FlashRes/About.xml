@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<Window size="400,400" sizebox="4,4,6,6" caption="0,0,0,21">
-    <VerticalLayout name="VerticalLayoutUI1" pos="143,102,543,502" width="400" height="400" bkcolor="#FFFFFFFF" bordercolor="#00FF0000">
-        <HorizontalLayout name="HorizontalLayoutUI1" pos="0,0,398,21" width="398" height="21" padding="1,1,395,0" bkcolor="#FFA0A0A4">
-            <Text name="TextUI1" text="About" float="true" pos="7,4,56,17" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-        </HorizontalLayout>
-        <Button name="CloseButton" text="关闭" float="true" pos="153,293,252,333" bordercolor="#00C0C0C0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-    </VerticalLayout>
-</Window>
