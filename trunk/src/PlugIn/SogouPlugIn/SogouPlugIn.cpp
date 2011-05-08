@@ -51,17 +51,17 @@ CSogouPlugIn::CSogouPlugIn()
 	{
 		CppSQLite3DB  m_SqliteDatabase;
 
-		winFileMem stFileMem;
+		winFileMem *pstFileMem = new winFileMem;
 
-		stFileMem.ulMemSize = strDecodeContent.length();
-		stFileMem.pMemPointer = new unsigned char[strDecodeContent.length()];
-		memcpy(stFileMem.pMemPointer, strDecodeContent.c_str(), stFileMem.ulMemSize);
+		pstFileMem->ulMemSize = strDecodeContent.length();
+		pstFileMem->pMemPointer = new unsigned char[strDecodeContent.length()];
+		memcpy(pstFileMem->pMemPointer, strDecodeContent.c_str(), pstFileMem->ulMemSize);
 
-		m_SqliteDatabase.openmem((char *)&stFileMem, "");
+		m_SqliteDatabase.openmem((char *)pstFileMem, "");
 
-		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from dbInfo");
+		//CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from dbInfo");
 
-		int dbVer = Query.getIntField("value");
+		//int dbVer = Query.getIntField("value");
 
 		m_SqliteDatabase.execDML("insert into dbInfo(id, value, reserved) values('hello world', '4', 0)");
 
@@ -69,7 +69,7 @@ CSogouPlugIn::CSogouPlugIn()
 
 		FILE *fOut = fopen("b.db", "wb");
 
-		fwrite(stFileMem.pMemPointer, 1, stFileMem.ulMemSize, fOut);
+		fwrite(pstFileMem->pMemPointer, 1, pstFileMem->ulMemSize, fOut);
 
 		fclose(fOut);
 	}
