@@ -5,8 +5,6 @@
 #pragma warning (default:4819)
 #pragma warning (default:4227)
 
-
-
 #if defined(_WIN64)
 typedef uint64 uintptr;
 typedef uint32 EventValue;

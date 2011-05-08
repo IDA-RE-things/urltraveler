@@ -153,7 +153,7 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		wstring strPlugInPath = strPath + *itr;
 
 		PLUGININFO stPlugInInfo;
-		wcsncpy(stPlugInInfo.wszPlugInName, strPlugInPath.c_str(), wcslen(stPlugInInfo.wszPlugInName));
+		STRNCPY(stPlugInInfo.wszPlugInName, strPlugInPath.c_str());
 
 		HMODULE exportplugin =LoadLibrary(strPlugInPath.c_str());
 		ASSERT(exportplugin != NULL);
