@@ -37,8 +37,6 @@ void	ReleasePlugIn( IPlugIn* p)
 	}
 }
 
-CSogouPlugIn aa;
-
 CSogouPlugIn::CSogouPlugIn()
 {
 	GetInstallPath();
