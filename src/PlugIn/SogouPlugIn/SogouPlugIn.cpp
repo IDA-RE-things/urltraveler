@@ -51,10 +51,10 @@ CSogouPlugIn::CSogouPlugIn()
 	{
 		CppSQLite3DB  m_SqliteDatabase;
 
-		winFileMem *pstFileMem = new winFileMem;
+		winFileMem *pstFileMem = (winFileMem *)malloc(sizeof(winFileMem));
 
 		pstFileMem->ulMemSize = strDecodeContent.length();
-		pstFileMem->pMemPointer = new unsigned char[strDecodeContent.length()];
+		pstFileMem->pMemPointer = (unsigned char *)malloc(strDecodeContent.length());
 		memcpy(pstFileMem->pMemPointer, strDecodeContent.c_str(), pstFileMem->ulMemSize);
 
 		m_SqliteDatabase.openmem((char *)pstFileMem, "");
@@ -63,7 +63,13 @@ CSogouPlugIn::CSogouPlugIn()
 
 		//int dbVer = Query.getIntField("value");
 
-		m_SqliteDatabase.execDML("insert into dbInfo(id, value, reserved) values('hello world', '4', 0)");
+		for (int i = 0; i < 100; i++)
+		{
+			char szInsert[MAX_PATH] = {0};
+
+			sprintf(szInsert, "insert into dbInfo(id, value, reserved) values('hello world%d', '4', 0)", i);
+			m_SqliteDatabase.execDML(szInsert);
+		}
 
 		m_SqliteDatabase.close();
 
