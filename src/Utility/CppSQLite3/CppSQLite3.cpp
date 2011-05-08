@@ -1393,7 +1393,13 @@ int CppSQLite3DB::InternalOpen(const char* szFile, const char * szKey)
 	}
 	*pTchar = _T('\0');
 
-	if (SetCurrentDirectoryA(szFileTmp) == 0)
+	char szTemp[MAX_PATH] = {0};
+
+	//解决如果用户指定的路径为c:\a.db时候，SetCurrentDirectoryA函数的参数为c:存在问题，正确参数应该为c:\
+
+	sprintf(szTemp, "%s\\", szFileTmp);
+
+	if (SetCurrentDirectoryA(szTemp) == 0)
 	{
 		///目录不存在,返回
 		*pTchar = _T('\\');
@@ -1724,6 +1730,12 @@ int CppSQLite3DB::InternalOpen(const WCHAR* szFile, const char * szKey)
 		return iReturn;
 	}
 	*pTchar = L'\0';
+
+	WCHAR szTemp[MAX_PATH] = {0};
+
+	//解决如果用户指定的路径为c:\a.db时候，SetCurrentDirectoryA函数的参数为c:存在问题，正确参数应该为c:\
+
+	swprintf(szTemp, L"%s\\", szFileTmp);
 
 	if (SetCurrentDirectoryW(szFileTmp) == 0)
 	{
