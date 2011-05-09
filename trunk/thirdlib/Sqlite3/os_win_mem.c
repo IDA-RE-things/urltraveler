@@ -338,13 +338,8 @@ static int winWriteMem(
 
   if (ulRemain < amt)
   {
-	  void *pTemp;
-
-	  pTemp = malloc(pMem->ulMemSize + amt - ulRemain);
-	  assert(pTemp != NULL);
-	  memmove(pTemp, pMem->pMemPointer, pMem->ulMemSize);
-	  free(pMem->pMemPointer);
-	  pMem->pMemPointer = pTemp;
+	  pMem->pMemPointer = realloc(pMem->pMemPointer, pMem->ulMemSize + amt - ulRemain);
+	  assert(pMem->pMemPointer != NULL);
 	  pMem->ulMemSize = pMem->ulMemSize + amt - ulRemain;
   }
 
