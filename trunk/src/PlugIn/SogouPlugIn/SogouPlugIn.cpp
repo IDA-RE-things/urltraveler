@@ -76,7 +76,12 @@ CSogouPlugIn::CSogouPlugIn()
 
 		m_SqliteDatabase.execDML("delete from favorTable where id='1002'");
 
-		m_SqliteDatabase.execDML("insert into favorTable(id,pid,folder,title,url,sequenceNo,addtime,lastmodify,hashid,category,reserved) values(1002,0,0,'百度','http://www.baidu.com',2,'2011-05-09 10:23:10','2011-05-09 10:23:10',112358,0,0)");
+		sprintf(szInsert, "insert into favorTable(id,pid,folder,title,url,sequenceNo,addtime,lastmodify,hashid,category,reserved)"
+			"values(1002,0,0,'%s','http://www.baidu.com',2,'2011-05-09 10:23:10','2011-05-09 10:23:10',112358,0,0)",
+			StringHelper::ANSIToUft8("百度"));
+
+
+		m_SqliteDatabase.execDML(szInsert);
 
 		m_SqliteDatabase.close();
 
