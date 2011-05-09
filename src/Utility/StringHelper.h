@@ -25,6 +25,9 @@ public:
 	static wstring	ANSIToUnicode( string strAnsi);
 	static string	UnicodeToANSI( wstring strUnicode);
 
+	static string	ANSIToUft8( string strAnsi);
+	static string	Utf8ToANSI( string strUtf8);
+
 	static string	Reverse(string& src_string);
 	static bool	IsNumberic(const string& num); 
 	static string	TrimAll( string src_str);

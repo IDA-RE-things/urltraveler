@@ -115,6 +115,17 @@ string	StringHelper::UnicodeToANSI( wstring strUnicode)
     return &utf8[0];   
 }
 
+string	StringHelper::ANSIToUft8( string strAnsi)
+{
+	wstring	wstrUnicode = StringHelper::ANSIToUnicode(strAnsi);
+	return StringHelper::UnicodeToUtf8(wstrUnicode);
+}
+
+string	StringHelper::Utf8ToANSI( string strUtf8)
+{
+	wstring	wstrUnicode = StringHelper::Utf8ToUnicode(strUtf8);
+	return StringHelper::UnicodeToANSI(wstrUnicode);
+}
 
 string	StringHelper::Replace( string strSrc, 
 							  const string &strReplaced, 
