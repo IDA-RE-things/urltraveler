@@ -71,6 +71,11 @@ string StringHelper::TrimAll( string src_str )
 	return src_str;
 }
 
+/*
+** Convert a UTF-8 string to microsoft unicode (UTF-16?). 
+**
+** Space to hold the returned string is obtained from malloc.
+*/
 wstring	StringHelper::Utf8ToUnicode( string strUtf8)
 {
 	int len = ::MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, NULL, 0);   
@@ -82,35 +87,57 @@ wstring	StringHelper::Utf8ToUnicode( string strUtf8)
     return &unicode[0];   
 }
 
+/*
+** Convert microsoft unicode to UTF-8.  Space to hold the returned string is
+** obtained from malloc().
+*/
 string	StringHelper::UnicodeToUtf8( wstring strUnicode)
 {
-	int len = ::WideCharToMultiByte(CP_UTF8, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);   
+	int len = ::WideCharToMultiByte(CP_UTF8, 0, strUnicode.c_str(), -1, 0, 0, 0, 0);   
     if (len == 0) return "";   
 	
     std::vector<char> utf8(len);   
-    ::WideCharToMultiByte(CP_UTF8, 0, strUnicode.c_str(), -1, &utf8[0], len, NULL, NULL);   
+    ::WideCharToMultiByte(CP_UTF8, 0, strUnicode.c_str(), -1, &utf8[0], len, 0, 0);   
 	
     return &utf8[0];   
 }
 
+/*
+** Convert an ansi string to microsoft unicode, based on the
+** current codepage settings for file apis.
+** 
+** Space to hold the returned string is obtained
+** from malloc.
+*/
 wstring	StringHelper::ANSIToUnicode( string strAnsi)
 {
-    int len = ::MultiByteToWideChar(CP_ACP, 0, strAnsi.c_str(), -1, NULL, 0);   
+	int nCodePage = AreFileApisANSI() ? CP_ACP : CP_OEMCP;
+
+    int len = ::MultiByteToWideChar(nCodePage, 0, strAnsi.c_str(), -1, NULL, 0)*sizeof(WCHAR);   
     if (len == 0) return L"";   
 	
     std::vector<wchar_t> unicode(len);   
-    ::MultiByteToWideChar(CP_ACP, 0, strAnsi.c_str(), -1, &unicode[0], len);   
+    ::MultiByteToWideChar(nCodePage, 0, strAnsi.c_str(), -1, &unicode[0], len);   
 	
     return &unicode[0];   
 }
 
+/*
+** Convert microsoft unicode to multibyte character string, based on the
+** user's Ansi codepage.
+**
+** Space to hold the returned string is obtained from
+** malloc().
+*/
 string	StringHelper::UnicodeToANSI( wstring strUnicode)
 {
-    int len = ::WideCharToMultiByte(CP_ACP, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);   
+	int nCodePage = AreFileApisANSI() ? CP_ACP : CP_OEMCP;
+
+    int len = ::WideCharToMultiByte(nCodePage, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);   
     if (len == 0) return "";   
 	
     std::vector<char> utf8(len);   
-    ::WideCharToMultiByte(CP_ACP, 0, strUnicode.c_str(), -1, &utf8[0], len, NULL, NULL);   
+    ::WideCharToMultiByte(nCodePage, 0, strUnicode.c_str(), -1, &utf8[0], len, NULL, NULL);   
 	
     return &utf8[0];   
 }
