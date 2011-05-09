@@ -125,9 +125,26 @@ int32 CSogouPlugIn::GetPluginVersion()
 	return 0;
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetBrowserName
+//描述: 获取该插件对应的浏览器的名称和版本
+//----------------------------------------------------------------------------------------
+void CSogouPlugIn::GetSupportBrowserVersion(wchar_t** ppBrowserVersion, int& nVersionNumber)
+{
+}
+
 const wchar_t* CSogouPlugIn::GetBrowserName()
 {
 	return L"SogouExplorer";
+}
+
+//----------------------------------------------------------------------------------------
+//名称: GetBrowserIcon
+//描述: 获取该插件对应的浏览器的图标
+//----------------------------------------------------------------------------------------
+HICON CSogouPlugIn::GetBrowserIcon() 
+{
+	return NULL;
 }
 
 const wchar_t* CSogouPlugIn::GetInstallPath()
