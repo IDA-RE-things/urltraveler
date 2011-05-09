@@ -86,6 +86,9 @@ CSogouPlugIn::CSogouPlugIn()
 		fwrite(pstFileMem->pMemPointer, 1, pstFileMem->ulMemSize, fOut);
 
 		fclose(fOut);
+
+		free(pstFileMem->pMemPointer);
+		free(pstFileMem);
 		std::string strEncode;
 
 		strEncode.assign((char *)pstFileMem->pMemPointer, pstFileMem->ulMemSize);
