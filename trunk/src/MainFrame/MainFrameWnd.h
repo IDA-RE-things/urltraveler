@@ -8,8 +8,12 @@
 #include <exdisp.h>
 #include <comdef.h>
 #include "ControlEx.h"
+#include "resource.h"
 
 using namespace DuiLib;
+
+extern HMODULE	g_hModule;
+
 
 
 class CFrameWnd : public CWindowWnd, public INotifyUI
@@ -38,12 +42,23 @@ public:
 				PostQuitMessage(0);
 				return; 
 			}
-			else if( msg.pSender == m_pMinBtn ) { 
+			else if( msg.pSender->GetName() == L"minbtn" ) { 
 				SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0); return; }
-			else if( msg.pSender == m_pMaxBtn ) { 
+			else if( msg.pSender->GetName() == L"maxbtn" ) { 
 				SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0); return; }
-			else if( msg.pSender == m_pRestoreBtn ) { 
+			else if( msg.pSender->GetName() == L"restorebtn" ) { 
 				SendMessage(WM_SYSCOMMAND, SC_RESTORE, 0); return; }
+			else if( msg.pSender->GetName() == L"menubtn" ) { 
+
+				HMENU	hPopMenu;
+				hPopMenu = ::LoadMenuW(g_hModule, MAKEINTRESOURCE(IDR_MENU1)); 
+				hPopMenu = ::GetSubMenu(hPopMenu, 0);
+
+				POINT pt;
+				GetCursorPos(&pt);
+				::TrackPopupMenu(hPopMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x - 10,pt.y + 17,0, this->m_hWnd, NULL);
+			}
+
 		}
 		else if(msg.sType==_T("setfocus"))
 		{

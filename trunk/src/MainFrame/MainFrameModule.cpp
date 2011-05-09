@@ -7,6 +7,8 @@
 using namespace mainframe;
 using namespace plugin;
 
+HMODULE	g_hModule = NULL;
+
 namespace mainframe
 {
 	MainFrameModule*	g_MainFrameModule = NULL;
