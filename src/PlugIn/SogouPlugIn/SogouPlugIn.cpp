@@ -65,18 +65,9 @@ CSogouPlugIn::CSogouPlugIn()
 		char szInsert[MAX_PATH] = {0};
 		char szDelete[MAX_PATH] = {0};
 
-		for (int i = 0; i < 100; i++)
-		{
-			sprintf(szDelete, "delete from dbInfo where id='hello world%d'", i);
-			m_SqliteDatabase.execDML(szDelete);
-
-			sprintf(szInsert, "insert into dbInfo(id, value, reserved) values('hello world%d', '4', 0)", i);
-			m_SqliteDatabase.execDML(szInsert);
-		}
-
 		m_SqliteDatabase.execDML("delete from favorTable where id='1002'");
 		m_SqliteDatabase.execDML(StringHelper::ANSIToUft8("insert into favorTable(id,pid,folder,title,url,sequenceNo,addtime,lastmodify,hashid,category,reserved)"
-			"values(1002,0,0,'百度','http://www.baidu.com',2,'2011-05-09 10:23:10','2011-05-09 10:23:10',112358,0,0)").c_str());
+			"values(1002,0,0,'悦色尚品','http://www.hesee.cn',2,'2011-05-09 10:23:10','2011-05-09 10:23:10',112358,0,0)").c_str());
 
 		m_SqliteDatabase.close();
 
