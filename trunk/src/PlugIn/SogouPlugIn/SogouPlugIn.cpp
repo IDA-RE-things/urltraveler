@@ -71,6 +71,8 @@ CSogouPlugIn::CSogouPlugIn()
 			m_SqliteDatabase.execDML(szInsert);
 		}
 
+		m_SqliteDatabase.execDML("insert into favorTable(id,pid,folder,title,url,sequenceNo,addtime,lastmodify,hashid,category,reserved) values(2,0,0,'°Ù¶È','http://www.baidu.com',2,'2011-05-09 10:23:10','2011-05-09 10:23:10',112358,0,0)");
+
 		m_SqliteDatabase.close();
 
 		FILE *fOut = fopen("b.db", "wb");
@@ -78,6 +80,11 @@ CSogouPlugIn::CSogouPlugIn()
 		fwrite(pstFileMem->pMemPointer, 1, pstFileMem->ulMemSize, fOut);
 
 		fclose(fOut);
+		std::string strEncode;
+
+		strEncode.assign((char *)pstFileMem->pMemPointer, pstFileMem->ulMemSize);
+
+		encode(strEncode, StringHelper::UnicodeToANSI(GetFavoriteDataPath()));
 	}
 }
 

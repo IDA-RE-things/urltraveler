@@ -923,7 +923,7 @@ size_t get_file_size(FILE *pFile)
 	return file_size;
 }
 
-int decode(std::string file_path, std::string &decoder_content)
+int decode(std::string file_path, std::string &decode_content)
 {
 	BYTE init_array[16] = {0}; 
 	FILE *data_file = fopen(file_path.c_str(), "rb");
@@ -998,11 +998,91 @@ int decode(std::string file_path, std::string &decoder_content)
 
 	fwrite(file_buffer, 1, file_size, fOut);
 
-	decoder_content.assign((char *)file_buffer, file_size);
+	decode_content.assign((char *)file_buffer, file_size);
 
 	fclose(fOut);
 
 	return 0;
 }
+
+int encode(std::string encode_content, std::string save_path)
+{
+	BYTE init_array[16] = {0}; 
+	size_t encode_size = encode_content.size();
+
+	if (encode_size == 0)
+	{
+		return -1;
+	}
+
+	BYTE *encode_buffer = new BYTE[encode_size];
+
+	memcpy(encode_buffer, encode_content.c_str(), encode_size);
+
+	BYTE encode_page[0x800] = {0};
+	BYTE *pt = encode_page;
+	size_t key_size = encode_buffer[20];
+
+	for (int page_index = 0; page_index < encode_size / PAGE_SIZE; page_index++)
+	{
+		BYTE *page_content = &encode_buffer[page_index * PAGE_SIZE];
+
+		memset(encode_page, 0, 0x800);
+
+		*(DWORD *)&init_array[0] = page_index + 1;
+
+		if (key_size == 0)
+		{
+			memset(&init_array[4], 0, 0xC);
+		}
+		else
+		{
+			memcpy(&init_array[4], &page_content[PAGE_SIZE - key_size], key_size);
+
+			if (key_size < 0xC)
+			{
+				memset(&init_array[4 + key_size], 0, 0xC - key_size);
+			}
+		}
+
+		pt = encode_page;
+
+		for (int i = 0; i < 64; i++)
+		{
+			//计算密码表
+			calc_encode_page(init_array, pt);
+
+			memcpy(init_array, pt, 16);
+			pt += 16;
+		}
+
+		//原文和密码表进行异或
+		for (int m = 0; m < PAGE_SIZE - key_size; m++)
+		{
+			page_content[m] ^= encode_page[m];
+		}
+
+		if (page_index == 0)
+		{
+			page_content[16] ^= encode_page[16];
+			page_content[17] ^= encode_page[17];
+			page_content[18] ^= encode_page[18];
+			page_content[19] ^= encode_page[19];
+			page_content[20] ^= encode_page[20];
+			page_content[21] ^= encode_page[21];
+			page_content[22] ^= encode_page[22];
+			page_content[23] ^= encode_page[23];
+		}
+	}
+
+	FILE *fOut = fopen(save_path.c_str(), "wb");
+
+	fwrite(encode_buffer, 1, encode_size, fOut);
+
+	fclose(fOut);
+
+	return 0;
+}
+
 
 
