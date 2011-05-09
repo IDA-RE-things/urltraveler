@@ -62,6 +62,7 @@
 				Name="VCLinkerTool"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -134,6 +135,7 @@
 				Name="VCLinkerTool"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

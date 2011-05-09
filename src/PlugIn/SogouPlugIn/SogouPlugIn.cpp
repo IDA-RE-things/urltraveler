@@ -75,25 +75,21 @@ CSogouPlugIn::CSogouPlugIn()
 		}
 
 		m_SqliteDatabase.execDML("delete from favorTable where id='1002'");
-
 		m_SqliteDatabase.execDML(StringHelper::ANSIToUft8("insert into favorTable(id,pid,folder,title,url,sequenceNo,addtime,lastmodify,hashid,category,reserved)"
 			"values(1002,0,0,'°Ù¶È','http://www.baidu.com',2,'2011-05-09 10:23:10','2011-05-09 10:23:10',112358,0,0)").c_str());
 
 		m_SqliteDatabase.close();
 
 		FILE *fOut = fopen("b.db", "wb");
-
 		fwrite(pstFileMem->pMemPointer, 1, pstFileMem->ulMemSize, fOut);
-
 		fclose(fOut);
+
+		std::string strEncode;
+		strEncode.assign((char *)pstFileMem->pMemPointer, pstFileMem->ulMemSize);
+		encode(strEncode, StringHelper::UnicodeToANSI(GetFavoriteDataPath()));
 
 		free(pstFileMem->pMemPointer);
 		free(pstFileMem);
-		std::string strEncode;
-
-		strEncode.assign((char *)pstFileMem->pMemPointer, pstFileMem->ulMemSize);
-
-		encode(strEncode, StringHelper::UnicodeToANSI(GetFavoriteDataPath()));
 	}
 }
 

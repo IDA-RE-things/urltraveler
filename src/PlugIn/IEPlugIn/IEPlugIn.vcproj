@@ -64,6 +64,7 @@
 				OutputFile="..\..\..\bin\PlugIn\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -138,6 +139,7 @@
 				OutputFile="..\..\..\bin\PlugIn\$(ProjectName).dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
