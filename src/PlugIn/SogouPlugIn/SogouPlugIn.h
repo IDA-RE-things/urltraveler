@@ -7,7 +7,7 @@ extern "C"
 	DLLEXPORT void	ReleasePlugIn( IPlugIn*);
 }
 
-class CSogouPlugIn : public IPlugIn
+class CSogouPlugIn : public IPlugInImp
 {
 public:
 	CSogouPlugIn();
@@ -51,13 +51,6 @@ public:
 	//描述: 获取该插件对应的浏览器的名称和版本
 	//----------------------------------------------------------------------------------------
 	virtual const wchar_t* GetBrowserName() ;
-
-	//----------------------------------------------------------------------------------------
-	//名称: GetBrowserIcon
-	//描述: 获取该插件对应的浏览器的图标
-	//----------------------------------------------------------------------------------------
-	virtual HICON GetBrowserIcon() ;
-
 	//----------------------------------------------------------------------------------------
 	//名称: GetInstallPath
 	//描述: 获取插件对应的浏览器的安装目录
