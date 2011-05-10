@@ -5,7 +5,6 @@
 #include "PathHelper.h"
 #include "Decoder.h"
 #include "CppSQLite3.h"
-#include <shellapi.h>
 
 using namespace sogouplugin;
 
@@ -159,16 +158,7 @@ const wchar_t* CSogouPlugIn::GetBrowserName()
 	return L"SogouExplorer";
 }
 
-//----------------------------------------------------------------------------------------
-//名称: GetBrowserIcon
-//描述: 获取该插件对应的浏览器的图标
-//----------------------------------------------------------------------------------------
-HICON CSogouPlugIn::GetBrowserIcon() 
-{
-	return ExtractIcon(GetModuleHandle(NULL), GetInstallPath(), 0);
-}
-
-const wchar_t* CSogouPlugIn::GetInstallPath()
+wchar_t* CSogouPlugIn::GetInstallPath()
 {
 	wchar_t szPath[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szPath); 
@@ -181,13 +171,13 @@ const wchar_t* CSogouPlugIn::GetInstallPath()
 		szPath, 
 		&dwSize))
 	{
-		return szPath;
+		return _tcsdup(szPath);
 	}
 
 	return NULL;
 }
 
-const wchar_t* CSogouPlugIn::GetFavoriteDataPath()
+wchar_t* CSogouPlugIn::GetFavoriteDataPath()
 {
 	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer\\Favorite2.dat";
 
@@ -196,7 +186,7 @@ const wchar_t* CSogouPlugIn::GetFavoriteDataPath()
 	return _tcsdup(strPath.c_str());
 }
 
-const wchar_t* CSogouPlugIn::GetHistoryDataPath()
+wchar_t* CSogouPlugIn::GetHistoryDataPath()
 {
 	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer\\HistoryUrl.db";
 
