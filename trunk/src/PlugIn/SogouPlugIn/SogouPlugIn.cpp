@@ -134,6 +134,13 @@ int32 CSogouPlugIn::GetPluginVersion()
 //----------------------------------------------------------------------------------------
 void CSogouPlugIn::GetSupportBrowserVersion(wchar_t** ppBrowserVersion, int& nVersionNumber)
 {
+	if (nVersionNumber < 1)
+	{
+		return;
+	}
+
+	nVersionNumber = 1;
+	_tcscpy_s(ppBrowserVersion[0], MAX_PATH, _T("2.0.0.7"));
 }
 
 const wchar_t* CSogouPlugIn::GetBrowserName()
@@ -147,7 +154,7 @@ const wchar_t* CSogouPlugIn::GetBrowserName()
 //----------------------------------------------------------------------------------------
 HICON CSogouPlugIn::GetBrowserIcon() 
 {
-	return NULL;
+	return ExtractIcon(GetModuleHandle(NULL), GetInstallPath(), 0);
 }
 
 const wchar_t* CSogouPlugIn::GetInstallPath()
@@ -163,11 +170,7 @@ const wchar_t* CSogouPlugIn::GetInstallPath()
 		szPath, 
 		&dwSize))
 	{
-		if (PathRemoveFileSpec(szPath))
-		{
-			MessageBox(NULL, szPath, szPath, NULL);
-			return szPath;
-		}
+		return szPath;
 	}
 
 	return NULL;
