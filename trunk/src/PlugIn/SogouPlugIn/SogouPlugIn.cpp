@@ -89,6 +89,16 @@ CSogouPlugIn::~CSogouPlugIn()
 
 }
 
+BOOL CSogouPlugIn::Load()
+{
+	return TRUE;
+}
+
+BOOL CSogouPlugIn::UnLoad()
+{
+	return TRUE;
+}
+
 BOOL CSogouPlugIn::IsWorked()
 {
 	return GetPluginVersion() != 0;
@@ -208,3 +218,5 @@ BOOL CSogouPlugIn::ImportFavoriteData( FAVORITELINEDATA stData )
 {
 	return TRUE;
 }
+
+
