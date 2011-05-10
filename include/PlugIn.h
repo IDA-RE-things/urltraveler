@@ -3,6 +3,7 @@
 #include "SndaBase.h"
 #include "malloc.h"
 #include <shellapi.h>
+#include "tchar.h"
 
 
 // 定义收藏夹数据结构
