@@ -51,6 +51,7 @@ PlugInModule::~PlugInModule()
 
 BEGIN_EVENT_MAP(PlugInModule)
 	ON_EVENT(EVENT_VALUE_PLUGIN_LOAD_ALL, OnEvent_LoadAllPlugin)
+	ON_EVENT(EVENT_VALUE_PLUGIN_COMBINE_FAVORITE, OnEvent_LoadAllFavorite)
 END_EVENT_MAP()
 
 //----------------------------------------------------------------------------------------
@@ -187,4 +188,9 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		stPlugInInfo.pPlugIn = pPlugIn;
 		m_vPlugInModuleInfo.push_back(stPlugInInfo);
 	}
+}
+
+void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
+{
+
 }

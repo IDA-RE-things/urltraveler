@@ -9,17 +9,18 @@
 // 定义收藏夹数据结构
 
 // 收藏夹中每一个收藏记录的数据
-struct FavoriteLineData
+typedef struct FavoriteLineData
 {
-	wchar_t	szTitle;			//	描述文本，或者为分类名称，或者为URL的title
+	wchar_t	szTitle;				//	描述文本，或者为分类名称，或者为URL的title
 	int32		nCatId;				// 分类ID
-	int32		nParentCatId;	//	父类的ID
-	wchar_t	szUrl;			//	收藏的URL
+	int32		nParentCatId;		//	父类的ID，如果nParentCatId=0表示当前ID是目录结点
+	wchar_t	szUrl;				//	收藏的URL
+	int32		nAddTimes;		//	增加的时间
+	int32		nLastModifyTime;	//	最近的更改时间
 	int32		nClickTimes;		//	点击次数
-	int32		nOrder;				//	顺序
-};
-typedef FavoriteLineData	FAVORITELINEDATA;
-typedef FAVORITELINEDATA* PFAVORITELINEDATA;
+	int32		nOrder;				//	当前结点在当前层次中的顺序
+
+} FAVORITELINEDATA, *PFAVORITELINEDATA; 
 
 // 浏览器插件接口，每一个浏览器都必须实现该接口
 // 上层应用程序通过该插件了解对应的浏览器的相关信息
