@@ -90,7 +90,7 @@ HICON IEPlugIn::GetBrowserIcon()
 //名称: GetInstallPath
 //描述: 获取插件对应的浏览器的安装目录
 //----------------------------------------------------------------------------------------
-const wchar_t* IEPlugIn::GetInstallPath() 
+wchar_t* IEPlugIn::GetInstallPath() 
 {
 	return NULL;
 }
@@ -99,7 +99,7 @@ const wchar_t* IEPlugIn::GetInstallPath()
 //名称: GetFavoriteDataPath
 //描述: 获取浏览器收藏夹对应的文件或者文件夹的路径
 //----------------------------------------------------------------------------------------
-const wchar_t* IEPlugIn::GetFavoriteDataPath() 
+wchar_t* IEPlugIn::GetFavoriteDataPath() 
 {
 	return NULL;
 }
@@ -108,7 +108,7 @@ const wchar_t* IEPlugIn::GetFavoriteDataPath()
 //名称: GetHistoryDataPath
 //描述: 获取浏览器收藏夹的历史数据对应的文件或者文件夹
 //----------------------------------------------------------------------------------------
-const wchar_t* IEPlugIn::GetHistoryDataPath() 
+wchar_t* IEPlugIn::GetHistoryDataPath() 
 {
 	return NULL;
 }
