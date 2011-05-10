@@ -5,6 +5,7 @@
 #include "PathHelper.h"
 #include "Decoder.h"
 #include "CppSQLite3.h"
+#include <shellapi.h>
 
 using namespace sogouplugin;
 
