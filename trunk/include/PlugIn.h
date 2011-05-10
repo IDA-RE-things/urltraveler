@@ -72,19 +72,19 @@ interface IPlugIn
 	//名称: GetInstallPath
 	//描述: 获取插件对应的浏览器的安装目录
 	//----------------------------------------------------------------------------------------
-	virtual const wchar_t* GetInstallPath() PURE;
+	virtual wchar_t* GetInstallPath() PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetFavoriteDataPath
 	//描述: 获取浏览器收藏夹对应的文件或者文件夹的路径
 	//----------------------------------------------------------------------------------------
-	virtual const wchar_t* GetFavoriteDataPath() PURE;
+	virtual wchar_t* GetFavoriteDataPath() PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetHistoryDataPath
 	//描述: 获取浏览器收藏夹的历史数据对应的文件或者文件夹
 	//----------------------------------------------------------------------------------------
-	virtual const wchar_t* GetHistoryDataPath() PURE;
+	virtual wchar_t* GetHistoryDataPath() PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: ExportFavoriteData
@@ -207,7 +207,7 @@ class IPlugInImp : public IPlugIn
 	//名称: GetInstallPath
 	//描述: 获取插件对应的浏览器的安装目录
 	//----------------------------------------------------------------------------------------
-	virtual const wchar_t* GetInstallPath()
+	virtual wchar_t* GetInstallPath()
 	{
 		return _T("");
 	}
@@ -216,7 +216,7 @@ class IPlugInImp : public IPlugIn
 	//名称: GetFavoriteDataPath
 	//描述: 获取浏览器收藏夹对应的文件或者文件夹的路径
 	//----------------------------------------------------------------------------------------
-	virtual const wchar_t* GetFavoriteDataPath()
+	virtual wchar_t* GetFavoriteDataPath()
 	{
 		return _T("");
 	}
@@ -225,7 +225,7 @@ class IPlugInImp : public IPlugIn
 	//名称: GetHistoryDataPath
 	//描述: 获取浏览器收藏夹的历史数据对应的文件或者文件夹
 	//----------------------------------------------------------------------------------------
-	virtual const wchar_t* GetHistoryDataPath()
+	virtual wchar_t* GetHistoryDataPath()
 	{
 		return _T("");
 	}
