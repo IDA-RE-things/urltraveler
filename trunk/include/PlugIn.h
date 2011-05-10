@@ -1,7 +1,8 @@
 #pragma  once
 
 #include "SndaBase.h"
-
+#include "malloc.h"
+#include <shellapi.h>
 
 
 // 定义收藏夹数据结构
@@ -191,7 +192,7 @@ class IPlugInImp : public IPlugIn
 		wchar_t *pszBrowserPath = GetInstallPath();
 		HICON    hIcon = NULL;
 
-		if (_tcsicmp(pszBrowserPath, "") == 0)
+		if (_tcsicmp(pszBrowserPath, _T("")) == 0)
 		{
 			free(pszBrowserPath);
 			return NULL;
