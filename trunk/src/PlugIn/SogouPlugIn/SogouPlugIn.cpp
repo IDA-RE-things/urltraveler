@@ -2,6 +2,7 @@
 #include "SogouPlugIn.h"
 #include <shlwapi.h>
 #include "StringHelper.h"
+#include "TimeHelper.h"
 #include "PathHelper.h"
 #include "Decoder.h"
 #include "CppSQLite3.h"
@@ -42,6 +43,10 @@ CSogouPlugIn::CSogouPlugIn()
 	m_pMemFavoriteDB = NULL;
 	Load();
 	GetFavoriteCount();
+	FAVORITELINEDATA stFavorite[100];
+
+	int32 len = 100;
+	ExportFavoriteData(stFavorite, len);
 }
 
 CSogouPlugIn::~CSogouPlugIn()
@@ -160,7 +165,44 @@ wchar_t* CSogouPlugIn::GetHistoryDataPath()
 
 BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 {
-	return TRUE;
+	if (pData == NULL || nDataNum == 0)
+	{
+		return FALSE;
+	}
+
+	if (m_pMemFavoriteDB != NULL)
+	{
+		CppSQLite3DB  m_SqliteDatabase;
+
+		m_SqliteDatabase.openmem(m_pMemFavoriteDB, "");
+		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from FavorTable");
+		int i = 0;
+
+		while(!Query.eof() && i < nDataNum)
+		{
+			 pData[i].nId = Query.getIntField("id", 0);
+		     pData[i].nPid = Query.getIntField("pid", 0);
+			 pData[i].bFolder = Query.getIntField("folder", 0);
+			 _tcscpy_s(pData[i].szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
+			 pData[i].szTitle[MAX_PATH - 1] = 0;
+			 _tcscpy_s(pData[i].szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str());
+			 pData[i].szUrl[1023] = 0;
+			 pData[i].nOrder = Query.getIntField("sequenceNO", 0);
+
+			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(Query.getStringField("addTime", "2011-05-11 21:00:00")).c_str()), pData[i].nAddTimes);
+			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(Query.getStringField("lastmodify", "2011-05-11 21:00:00")).c_str()), pData[i].nLastModifyTime);
+			 pData[i].nHashId = Query.getIntField("hashid", 0);
+			 pData[i].nCatId = Query.getIntField("category", 0);
+			 Query.nextRow();
+			 i++;
+		}
+
+		nDataNum = i;
+
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
