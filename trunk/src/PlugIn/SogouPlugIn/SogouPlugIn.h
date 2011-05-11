@@ -7,6 +7,12 @@ extern "C"
 	DLLEXPORT void	ReleasePlugIn( IPlugIn*);
 }
 
+typedef struct _winFileMem 
+{
+	unsigned char *pMemPointer;
+	unsigned long  ulMemSize;
+}winFileMem;
+
 class CSogouPlugIn : public IPlugInImp
 {
 public:
@@ -82,7 +88,18 @@ public:
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
 	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum);
+
+	//----------------------------------------------------------------------------------------
+	//名称: GetFavoriteCount
+	//描述: 获取浏览器中收藏网址的条数 
+	//返回:
+	//      回返收藏网址条数
+	//----------------------------------------------------------------------------------------
+	virtual int32 GetFavoriteCount();
+protected:
+	BOOL SaveDatabase();
 private:
+	winFileMem *m_pMemFavoriteDB;
 };
 
 namespace sogouplugin
