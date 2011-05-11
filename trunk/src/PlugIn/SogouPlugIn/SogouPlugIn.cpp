@@ -99,7 +99,7 @@ BOOL CSogouPlugIn::UnLoad()
 	return TRUE;
 }
 
-BOOL CSogouPlugIn::IsWorked()
+BOOL CSogouPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
 {
 	return GetPluginVersion() != 0;
 }
@@ -136,21 +136,6 @@ int32 CSogouPlugIn::GetPluginVersion()
 	}
 
 	return 0;
-}
-
-//----------------------------------------------------------------------------------------
-//名称: GetBrowserName
-//描述: 获取该插件对应的浏览器的名称和版本
-//----------------------------------------------------------------------------------------
-void CSogouPlugIn::GetSupportBrowserVersion(wchar_t** ppBrowserVersion, int& nVersionNumber)
-{
-	if (nVersionNumber < 1)
-	{
-		return;
-	}
-
-	nVersionNumber = 1;
-	_tcscpy_s(ppBrowserVersion[0], MAX_PATH, _T("2.0.0.7"));
 }
 
 const wchar_t* CSogouPlugIn::GetBrowserName()

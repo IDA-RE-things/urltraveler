@@ -57,9 +57,12 @@ interface IPlugIn
 	//名称: IsWorked
 	//描述: 检查该插件是否能够正常工作。如果没有安装该PlugIn对应的浏览器，则该插件不需要
 	//	处理，只需要返回FALSE即可。否则它将会被调用。
-	//返回: 插件的版本号，通常为一整数。
+	//参数:
+	//      @param pszBrowserVersion[out]  输出当前支持的浏览器版本号
+	//		@param nLen[in、out]           pszBrowserVersion的buffer长度, 输出实际使用长度
+	//返回: TRUE表示可以工作，FALSE表示不能工作。
 	//----------------------------------------------------------------------------------------
-	virtual BOOL IsWorked() PURE;
+	virtual BOOL IsWorked(wchar_t *pszBrowserVersion, int32 &nLen) PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetPluginVersion
@@ -184,13 +187,17 @@ class IPlugInImp : public IPlugIn
 	{
 		return FALSE;
 	}
+
 	//----------------------------------------------------------------------------------------
 	//名称: IsWorked
 	//描述: 检查该插件是否能够正常工作。如果没有安装该PlugIn对应的浏览器，则该插件不需要
 	//	处理，只需要返回FALSE即可。否则它将会被调用。
-	//返回: 插件的版本号，通常为一整数。
+	//参数:
+	//      @param pszBrowserVersion[out]  输出当前支持的浏览器版本号
+	//		@param nLen[in、out]           pszBrowserVersion的buffer长度, 输出实际使用长度
+	//返回: TRUE表示可以工作，FALSE表示不能工作。
 	//----------------------------------------------------------------------------------------
-	virtual BOOL IsWorked()
+	virtual BOOL IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
 	{
 		return FALSE;
 	}
