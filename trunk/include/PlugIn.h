@@ -2,6 +2,7 @@
 
 #include "SndaBase.h"
 #include "malloc.h"
+#include <tchar.h>
 #include <shellapi.h>
 #include "tchar.h"
 
@@ -21,6 +22,18 @@ typedef struct FavoriteLineData
 	int32		nOrder;				//	当前结点在当前层次中的顺序
 
 } FAVORITELINEDATA, *PFAVORITELINEDATA; 
+
+typedef struct HistoryLineData
+{
+	wchar_t	    szTitle;				//	描述文本，或者为分类名称，或者为URL的title
+	int32		nCatId;				// 分类ID
+	int32		nParentCatId;		//	父类的ID，如果nParentCatId=0表示当前ID是目录结点
+	wchar_t	    szUrl;				//	收藏的URL
+	int32		nAddTimes;		//	增加的时间
+	int32		nLastModifyTime;	//	最近的更改时间
+	int32		nClickTimes;		//	点击次数
+	int32		nOrder;				//	当前结点在当前层次中的顺序
+} HISTORYLINEDATA, *PHISTORYLINEDATA; 
 
 // 浏览器插件接口，每一个浏览器都必须实现该接口
 // 上层应用程序通过该插件了解对应的浏览器的相关信息
@@ -98,6 +111,8 @@ interface IPlugIn
 	//----------------------------------------------------------------------------------------
 	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum) PURE;
 
+	
+
 	//----------------------------------------------------------------------------------------
 	//名称: ImportFavoriteData
 	//描述: 将当前的记录导入到浏览器中
@@ -107,13 +122,48 @@ interface IPlugIn
 	//----------------------------------------------------------------------------------------
 	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum) PURE;
 
+
+
 	//----------------------------------------------------------------------------------------
-	//名称: ImportFavoriteData
-	//描述: 将一条记录导入到浏览器中
+	//名称: ExportHistoryData
+	//描述: 导出历史浏览记录
 	//参数: 
-	//		@param	stData			需要导入的的收藏夹记录
+	//		@param	pData			导出的收藏夹数据数组
+	//		@param	nDataNum		导出的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(FAVORITELINEDATA stData) PURE;
+	virtual BOOL ExportHistoryData(PHISTORYLINEDATA pData, int32& nDataNum) PURE;
+
+
+
+	//----------------------------------------------------------------------------------------
+	//名称: ImportHistoryData
+	//描述: 将历史记录记录导入到浏览器中
+	//参数: 
+	//		@param	pData			需要导入的的收藏夹数据数组
+	//		@param	nDataNum		需要导入的收藏夹条目的条数
+	//----------------------------------------------------------------------------------------
+	virtual BOOL ImportHistoryData(PHISTORYLINEDATA pData, int32 nDataNum) PURE;
+
+
+
+	//----------------------------------------------------------------------------------------
+	//名称: GetHistoryCount
+	//描述: 将历史记录记录导入到浏览器中
+	//返回: 
+	//      返回历史记录条数
+	//----------------------------------------------------------------------------------------
+	virtual int32 GetHistoryCount() = 0;
+
+
+
+
+	//----------------------------------------------------------------------------------------
+	//名称: GetFavoriteCount
+	//描述: 获取浏览器中收藏网址的条数 
+	//返回:
+	//      回返收藏网址条数
+	//----------------------------------------------------------------------------------------
+	virtual int32 GetFavoriteCount() = 0;
 };
 
 typedef IPlugIn *  (*GetPlugInFunc)();
@@ -257,15 +307,59 @@ class IPlugInImp : public IPlugIn
 		return FALSE;
 	}
 
+
 	//----------------------------------------------------------------------------------------
-	//名称: ImportFavoriteData
-	//描述: 将一条记录导入到浏览器中
+	//名称: ExportHistoryData
+	//描述: 导出历史浏览记录
 	//参数: 
-	//		@param	stData			需要导入的的收藏夹记录
+	//		@param	pData			导出的收藏夹数据数组
+	//		@param	nDataNum		导出的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(FAVORITELINEDATA stData)
+	virtual BOOL ExportHistoryData(PHISTORYLINEDATA pData, int32& nDataNum)
 	{
 		return FALSE;
 	}
+
+
+
+	//----------------------------------------------------------------------------------------
+	//名称: ImportHistoryData
+	//描述: 将历史记录记录导入到浏览器中
+	//参数: 
+	//		@param	pData			需要导入的的收藏夹数据数组
+	//		@param	nDataNum		需要导入的收藏夹条目的条数
+	//----------------------------------------------------------------------------------------
+	virtual BOOL ImportHistoryData(PHISTORYLINEDATA pData, int32 nDataNum)
+	{
+		return FALSE;
+	}
+
+
+
+	//----------------------------------------------------------------------------------------
+	//名称: GetHistoryCount
+	//描述: 将历史记录记录导入到浏览器中
+	//返回: 
+	//      返回历史记录条数
+	//----------------------------------------------------------------------------------------
+	virtual int32 GetHistoryCount()
+	{
+		return 0;
+	}
+
+
+
+	//----------------------------------------------------------------------------------------
+	//名称: GetFavoriteCount
+	//描述: 获取浏览器中收藏网址的条数 
+	//返回:
+	//      回返收藏网址条数
+	//----------------------------------------------------------------------------------------
+	virtual int32 GetFavoriteCount()
+	{
+		return 0;
+	}
+
+	
 
 };
