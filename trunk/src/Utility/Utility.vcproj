@@ -213,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Registry.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -264,6 +268,14 @@
 			</File>
 			<File
 				RelativePath=".\PathHelper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RegHelper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Registry.h"
 				>
 			</File>
 			<File
