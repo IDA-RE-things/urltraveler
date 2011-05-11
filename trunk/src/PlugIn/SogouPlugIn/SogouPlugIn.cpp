@@ -47,6 +47,7 @@ CSogouPlugIn::CSogouPlugIn()
 
 	int32 len = 100;
 	ExportFavoriteData(stFavorite, len);
+	ImportFavoriteData(stFavorite, 100);
 }
 
 CSogouPlugIn::~CSogouPlugIn()
@@ -207,7 +208,46 @@ BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum 
 
 BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 {
-	return TRUE;
+	if (pData == NULL || nDataNum == 0)
+	{
+		return FALSE;
+	}
+
+	if (m_pMemFavoriteDB != NULL)
+	{
+		CppSQLite3DB  m_SqliteDatabase;
+		wchar_t szInsert[1024] = {0};
+		wchar_t szDelete[1024] = {0};
+
+		m_SqliteDatabase.openmem(m_pMemFavoriteDB, "");
+		int i = 0;
+
+		for (int i = 0; i < nDataNum; i++)
+		{
+			swprintf_s(szDelete, 1023, L"delete from favorTable where id='%d'", pData[i].nId);
+			
+			m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(szDelete).c_str());
+
+			swprintf_s(szInsert, 1023, L"insert into favorTable"				L"(id,pid,folder,title,url,sequenceNo,addtime,lastmodify,hashid,category,reserved)"
+				L"values(%d,%d,%d,'%s','%s',%d,'%s',"
+				L"'%s',%u,%d,0)", 
+				pData[i].nId,
+				pData[i].nPid,
+				pData[i].bFolder,
+				pData[i].szTitle,
+				pData[i].szUrl,
+				pData[i].nOrder,
+				"2011-05-11 12:00:00", 
+				"2011-05-11 12:00:00",
+				pData[i].nHashId,
+				pData[i].nCatId);
+			m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+		}
+
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 int32 CSogouPlugIn::GetFavoriteCount()
