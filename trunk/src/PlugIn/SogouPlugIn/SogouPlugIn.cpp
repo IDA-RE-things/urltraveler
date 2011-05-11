@@ -205,9 +205,4 @@ BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 	return TRUE;
 }
 
-BOOL CSogouPlugIn::ImportFavoriteData( FAVORITELINEDATA stData )
-{
-	return TRUE;
-}
-
 
