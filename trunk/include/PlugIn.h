@@ -12,15 +12,17 @@
 // 收藏夹中每一个收藏记录的数据
 typedef struct FavoriteLineData
 {
-	wchar_t	szTitle;				//	描述文本，或者为分类名称，或者为URL的title
-	int32		nCatId;				// 分类ID
-	int32		nParentCatId;		//	父类的ID，如果nParentCatId=0表示当前ID是目录结点
-	wchar_t	szUrl;				//	收藏的URL
-	int32		nAddTimes;		//	增加的时间
-	int32		nLastModifyTime;	//	最近的更改时间
+	int32       nId;                //  ID
+	wchar_t	    szTitle[MAX_PATH];			//	描述文本，或者为分类名称，或者为URL的title
+	int32		nCatId;				//  分类ID
+	int32		nPid;		        //	父类的ID
+	bool        bFolder;            //  父类ID
+	wchar_t	    szUrl[1024];				//	收藏的URL
+	time_t		nAddTimes;		    //	增加的时间
+	time_t		nLastModifyTime;	//	最近的更改时间
 	int32		nClickTimes;		//	点击次数
+	int32       nHashId;             //  Hash
 	int32		nOrder;				//	当前结点在当前层次中的顺序
-
 } FAVORITELINEDATA, *PFAVORITELINEDATA; 
 
 typedef struct HistoryLineData
@@ -293,7 +295,6 @@ class IPlugInImp : public IPlugIn
 		return FALSE;
 	}
 
-
 	//----------------------------------------------------------------------------------------
 	//名称: ExportHistoryData
 	//描述: 导出历史浏览记录
@@ -305,8 +306,6 @@ class IPlugInImp : public IPlugIn
 	{
 		return FALSE;
 	}
-
-
 
 	//----------------------------------------------------------------------------------------
 	//名称: ImportHistoryData
@@ -320,8 +319,6 @@ class IPlugInImp : public IPlugIn
 		return FALSE;
 	}
 
-
-
 	//----------------------------------------------------------------------------------------
 	//名称: GetHistoryCount
 	//描述: 将历史记录记录导入到浏览器中
@@ -332,8 +329,6 @@ class IPlugInImp : public IPlugIn
 	{
 		return 0;
 	}
-
-
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetFavoriteCount

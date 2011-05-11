@@ -271,10 +271,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RegHelper.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Registry.h"
 				>
 			</File>
