@@ -152,7 +152,7 @@ interface IPlugIn
 	//返回: 
 	//      返回历史记录条数
 	//----------------------------------------------------------------------------------------
-	virtual int32 GetHistoryCount() = 0;
+	virtual int32 GetHistoryCount() PURE;
 
 
 
@@ -163,7 +163,7 @@ interface IPlugIn
 	//返回:
 	//      回返收藏网址条数
 	//----------------------------------------------------------------------------------------
-	virtual int32 GetFavoriteCount() = 0;
+	virtual int32 GetFavoriteCount() PURE;
 };
 
 typedef IPlugIn *  (*GetPlugInFunc)();

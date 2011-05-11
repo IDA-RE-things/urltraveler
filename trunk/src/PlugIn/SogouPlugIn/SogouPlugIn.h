@@ -85,15 +85,7 @@ public:
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(HISTORYLINEDATA pData, int32 nDataNum);
-
-	//----------------------------------------------------------------------------------------
-	//名称: ImportFavoriteData
-	//描述: 将一条记录导入到浏览器中
-	//参数: 
-	//		@param	stData			需要导入的的收藏夹记录
-	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(FAVORITELINEDATA stData);
+	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum);
 private:
 };
 
