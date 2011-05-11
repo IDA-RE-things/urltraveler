@@ -101,11 +101,6 @@ BOOL CSogouPlugIn::UnLoad()
 
 BOOL CSogouPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
 {
-	return GetPluginVersion() != 0;
-}
-
-int32 CSogouPlugIn::GetPluginVersion()
-{
 	wchar_t szVersion[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 
 	int32   nVersion = 0;
@@ -118,24 +113,19 @@ int32 CSogouPlugIn::GetPluginVersion()
 		szVersion, 
 		&dwSize))
 	{
-		std::string strVersion = StringHelper::UnicodeToANSI(szVersion);
-		std::vector<std::string> vecResutl = StringHelper::Split(strVersion, '.');
-
-		if (vecResutl.size() < 4)
+		if (nLen >= dwSize)
 		{
-			return 0;
+			_tcscpy_s(pszBrowserVersion, nLen - 1, szVersion);
+			pszBrowserVersion[nLen - 1] = 0;
 		}
 
-		BYTE nMajaor = atol(vecResutl[0].c_str());
-		BYTE nMinor  = atol(vecResutl[1].c_str());
-		WORD nBuilderNum = atol(vecResutl[3].c_str());
-
-		nVersion = MAKELONG(MAKEWORD(nMajaor, nMinor), nBuilderNum);
-
-		return nVersion ;
+		return TRUE;
 	}
+}
 
-	return 0;
+int32 CSogouPlugIn::GetPluginVersion()
+{
+	return 1;
 }
 
 const wchar_t* CSogouPlugIn::GetBrowserName()
