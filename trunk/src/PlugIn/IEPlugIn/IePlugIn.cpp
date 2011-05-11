@@ -45,17 +45,9 @@ IEPlugIn::~IEPlugIn(void)
 //	处理，只需要返回FALSE即可。否则它将会被调用。
 //返回: 插件的版本号，通常为一整数。
 //----------------------------------------------------------------------------------------
-BOOL IEPlugIn::IsWorked()
+BOOL IEPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
 {
 	return TRUE;
-}
-
-//----------------------------------------------------------------------------------------
-//名称: GetBrowserName
-//描述: 获取该插件对应的浏览器的名称和版本
-//----------------------------------------------------------------------------------------
-void IEPlugIn::GetSupportBrowserVersion(wchar_t** ppBrowserVersion, int& nVersionNumber)
-{
 }
 
 //----------------------------------------------------------------------------------------
@@ -133,17 +125,6 @@ BOOL IEPlugIn::ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum)
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
 BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
-{
-	return TRUE;
-}
-
-//----------------------------------------------------------------------------------------
-//名称: ImportFavoriteData
-//描述: 将一条记录导入到浏览器中
-//参数: 
-//		@param	stData			需要导入的的收藏夹记录
-//----------------------------------------------------------------------------------------
-BOOL IEPlugIn::ImportFavoriteData(FAVORITELINEDATA stData) 
 {
 	return TRUE;
 }
