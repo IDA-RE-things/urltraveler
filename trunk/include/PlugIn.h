@@ -13,28 +13,30 @@
 typedef struct FavoriteLineData
 {
 	int32       nId;                //  ID
-	wchar_t	    szTitle[MAX_PATH];			//	描述文本，或者为分类名称，或者为URL的title
+	wchar_t	    szTitle[MAX_PATH];	//	描述文本，或者为分类名称，或者为URL的title
 	int32		nCatId;				//  分类ID
 	int32		nPid;		        //	父类的ID
-	bool        bFolder;            //  父类ID
-	wchar_t	    szUrl[1024];				//	收藏的URL
+	bool        bFolder;            //  是否是目录结点。如果是true，表示是目录结点，否则是子结点
+	wchar_t	    szUrl[1024];		//	收藏的URL
 	time_t		nAddTimes;		    //	增加的时间
 	time_t		nLastModifyTime;	//	最近的更改时间
 	int32		nClickTimes;		//	点击次数
-	int32       nHashId;             //  Hash
+	int32       nHashId;			//  Hash
 	int32		nOrder;				//	当前结点在当前层次中的顺序
+
 } FAVORITELINEDATA, *PFAVORITELINEDATA; 
 
 typedef struct HistoryLineData
 {
-	wchar_t	    szTitle;				//	描述文本，或者为分类名称，或者为URL的title
+	wchar_t	    szTitle;			//	描述文本，或者为分类名称，或者为URL的title
 	int32		nCatId;				// 分类ID
 	int32		nParentCatId;		//	父类的ID，如果nParentCatId=0表示当前ID是目录结点
 	wchar_t	    szUrl;				//	收藏的URL
-	int32		nAddTimes;		//	增加的时间
+	int32		nAddTimes;			//	增加的时间
 	int32		nLastModifyTime;	//	最近的更改时间
 	int32		nClickTimes;		//	点击次数
 	int32		nOrder;				//	当前结点在当前层次中的顺序
+
 } HISTORYLINEDATA, *PHISTORYLINEDATA; 
 
 // 浏览器插件接口，每一个浏览器都必须实现该接口
