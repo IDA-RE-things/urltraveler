@@ -228,7 +228,10 @@ BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 			
 			m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(szDelete).c_str());
 
-			swprintf_s(szInsert, 1023, L"insert into favorTable"				L"(id,pid,folder,title,url,sequenceNo,addtime,lastmodify,hashid,category,reserved)"
+			ReplaceSingleQuoteToDoubleQuote(pData[i].szUrl);
+
+			swprintf_s(szInsert, 1023, L"insert into favorTable"
+				L"(id,pid,folder,title,url,sequenceNo,addtime,lastmodify,hashid,category,reserved)"
 				L"values(%d,%d,%d,'%s','%s',%d,'%s',"
 				L"'%s',%u,%d,0)", 
 				pData[i].nId,
@@ -285,6 +288,25 @@ BOOL CSogouPlugIn::SaveDatabase()
 	free(pszFavoriteDataPath);
 
 	return nRet == 0;
+}
+
+void CSogouPlugIn::ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
+{
+	int32 nLen = _tcslen(pszOri);
+
+	if (pszOri == NULL || nLen == 0)
+	{
+		return;
+	}
+
+	for (int i = 0; i < nLen; i++)
+	{
+		if (pszOri[i] == '\'')
+		{
+			pszOri[i] = '\"';
+		}
+	}
+
 }
 
 
