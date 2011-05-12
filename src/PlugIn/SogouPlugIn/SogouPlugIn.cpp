@@ -52,14 +52,7 @@ CSogouPlugIn::CSogouPlugIn()
 
 CSogouPlugIn::~CSogouPlugIn()
 {
-	if (m_pMemFavoriteDB)
-	{
-		FILE *fOut = fopen("b.db", "wb");
-		fwrite(m_pMemFavoriteDB->pMemPointer, 1, m_pMemFavoriteDB->ulMemSize, fOut);
-		fclose(fOut);
-		free(m_pMemFavoriteDB->pMemPointer);
-		free(m_pMemFavoriteDB);
-	}
+	
 }
 
 BOOL CSogouPlugIn::Load()
@@ -68,19 +61,11 @@ BOOL CSogouPlugIn::Load()
 
 	if (decode(StringHelper::UnicodeToANSI(GetFavoriteDataPath()), strDecodeContent) == 0)
 	{
-		CppSQLite3DB  m_SqliteDatabase;
-
 		m_pMemFavoriteDB = (winFileMem *)malloc(sizeof(winFileMem));
 
 		m_pMemFavoriteDB->ulMemSize = strDecodeContent.length();
 		m_pMemFavoriteDB->pMemPointer = (unsigned char *)malloc(strDecodeContent.length());
 		memcpy(m_pMemFavoriteDB->pMemPointer, strDecodeContent.c_str(), m_pMemFavoriteDB->ulMemSize);
-
-		m_SqliteDatabase.openmem((char *)m_pMemFavoriteDB, "");
-
-		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from dbInfo");
-
-		m_SqliteDatabase.close();
 
 		return TRUE;
 	}
@@ -90,7 +75,17 @@ BOOL CSogouPlugIn::Load()
 
 BOOL CSogouPlugIn::UnLoad()
 {
-	return TRUE;
+	if (m_pMemFavoriteDB)
+	{
+		FILE *fOut = fopen("b.db", "wb");
+		fwrite(m_pMemFavoriteDB->pMemPointer, 1, m_pMemFavoriteDB->ulMemSize, fOut);
+		fclose(fOut);
+		free(m_pMemFavoriteDB->pMemPointer);
+		free(m_pMemFavoriteDB);
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 BOOL CSogouPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
