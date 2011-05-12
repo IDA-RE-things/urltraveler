@@ -14,6 +14,7 @@ extern "C"
 	DLLEXPORT void	ReleaseModuleFactory( IModuleFactory*);
 }
 
+
 class PlugInModule : public ModuleImpl
 {
 	DECLEAR_EVENT_MAP(PlugInModule)

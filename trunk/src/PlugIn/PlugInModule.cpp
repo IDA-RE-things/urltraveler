@@ -3,6 +3,7 @@
 #include "PlugInDefine.h"
 #include "PathHelper.h"
 #include "PlugInList.h"
+#include "PlugIn.h"
 
 HMODULE	 g_hModule;
 
@@ -37,6 +38,7 @@ void	ReleaseModuleFactory( IModuleFactory* p)
 		g_PlugInModuleFactory = NULL;
 	}
 }
+
 
 PlugInModule::PlugInModule()
 {
@@ -190,6 +192,7 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 	}
 }
 
+// 通知加载合并所有的收藏夹数据
 void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 {
 
