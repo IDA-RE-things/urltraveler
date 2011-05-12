@@ -20,6 +20,7 @@ struct PlugInList
 	{
 		m_stDllPlugInList.push_back(PLUGIN_NAME(IEPlugIn));
 		m_stDllPlugInList.push_back(PLUGIN_NAME(SogouPlugIn));
+		m_stDllPlugInList.push_back(PLUGIN_NAME(MaxthonPlugIn));
 	}
 
 	typedef std::vector<wstring>    DllPlugInList;
