@@ -23,7 +23,6 @@ END_MESSAGE_MAP()
 
 
 // CUIDesignerDoc 构造/析构
-
 CUIDesignerDoc::CUIDesignerDoc()
 {
 	// TODO: 在此添加一次性构造代码
