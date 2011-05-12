@@ -82,6 +82,7 @@ BOOL CSogouPlugIn::UnLoad()
 		fclose(fOut);
 		free(m_pMemFavoriteDB->pMemPointer);
 		free(m_pMemFavoriteDB);
+		m_pMemFavoriteDB = NULL;
 		return TRUE;
 	}
 
