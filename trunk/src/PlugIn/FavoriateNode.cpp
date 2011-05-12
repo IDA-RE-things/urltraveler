@@ -23,7 +23,7 @@ FavoriateNode::~FavoriateNode()
 void FavoriateNode::Load(PFAVORITELINEDATA	pFavoriateLineData, int nNum)
 {
 	// 首先对pFavoriateLineData进行排序
-	PFAVORITELINEDATA	pSortLineData = new FAVORITELINEDATA(nNum);
+	PFAVORITELINEDATA	pSortLineData;// = new FAVORITELINEDATA(nNum);
 
 	// 逐一找到合适的数据，并插入到pSortLineData中去
 	int nParentId	=	0;
@@ -34,7 +34,7 @@ void FavoriateNode::Load(PFAVORITELINEDATA	pFavoriateLineData, int nNum)
 		{
 			if( pFavoriateLineData[j].nPid	==	nParentId)
 			{
-				memcpy(pSortLineData[i], pFavoriateLineData[j]);
+				//memcpy(pSortLineData[i], pFavoriateLineData[j]);
 				nParentId	=	pFavoriateLineData[i].nId;
 				i++;
 			}
