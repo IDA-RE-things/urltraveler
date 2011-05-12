@@ -23,7 +23,10 @@ FavoriateNode::~FavoriateNode()
 void FavoriateNode::Load(PFAVORITELINEDATA	pFavoriateLineData, int nNum)
 {
 	// 首先对pFavoriateLineData进行排序
-	PFAVORITELINEDATA	pSortLineData;// = new FAVORITELINEDATA(nNum);
+	FAVORITELINEDATA*	pSortLineData = new FAVORITELINEDATA[nNum];
+	memset(pSortLineData, 0x0, sizeof(FAVORITELINEDATA) * nNum);
+
+	FAVORITELINEDATA*	pSortLineDataPos = pSortLineData;
 
 	// 逐一找到合适的数据，并插入到pSortLineData中去
 	int nParentId	=	0;
@@ -34,12 +37,21 @@ void FavoriateNode::Load(PFAVORITELINEDATA	pFavoriateLineData, int nNum)
 		{
 			if( pFavoriateLineData[j].nPid	==	nParentId)
 			{
-				//memcpy(pSortLineData[i], pFavoriateLineData[j]);
-				nParentId	=	pFavoriateLineData[i].nId;
-				i++;
+				memcpy(pSortLineDataPos, &pFavoriateLineData[j], sizeof(FAVORITELINEDATA));
+				pSortLineDataPos++;
 			}
 		}
+
+		nParentId	=	pSortLineData[i].nId;
 	}
+
+	// pSortLineData已经进过排序，按照层次进行排序
+
+
+
+
+
+	delete[] pSortLineData;
 
 
 }
