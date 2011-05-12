@@ -29,7 +29,7 @@ typedef struct FavoriteLineData
 typedef struct HistoryLineData
 {
 	wchar_t	    szTitle;			//	描述文本，或者为分类名称，或者为URL的title
-	int32		nCatId;				// 分类ID
+	int32		nCatId;				//	分类ID
 	int32		nParentCatId;		//	父类的ID，如果nParentCatId=0表示当前ID是目录结点
 	wchar_t	    szUrl;				//	收藏的URL
 	int32		nAddTimes;			//	增加的时间

@@ -42,7 +42,7 @@ void	ReleaseModuleFactory( IModuleFactory* p)
 
 PlugInModule::PlugInModule()
 {
-
+	m_pRootFavoriateNode	=	NULL;
 }
 
 PlugInModule::~PlugInModule()
@@ -187,6 +187,9 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 			continue ;
 		}
 
+		// 对插件进行加载操作
+		pPlugIn->Load();
+
 		stPlugInInfo.pPlugIn = pPlugIn;
 		m_vPlugInModuleInfo.push_back(stPlugInInfo);
 	}
@@ -195,5 +198,25 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 // 通知加载合并所有的收藏夹数据
 void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 {
+	// 对所有的浏览器数据进行合并
+	for(int i=0; i<m_vPlugInModuleInfo.size(); i++)
+	{
+		PPLUGININFO	pLogInfo = &m_vPlugInModuleInfo.at(i);
+		if( pLogInfo == NULL)
+			continue;
 
+		if( pLogInfo->pPlugIn == NULL)
+			continue;
+
+
+		int nFavoriteCount = pLogInfo->pPlugIn->GetFavoriteCount();
+		if( nFavoriteCount == 0)
+			continue;
+
+		PFAVORITELINEDATA	pFavoriteLineData = new FAVORITELINEDATA[nFavoriteCount];
+
+
+
+		delete pFavoriteLineData;
+	}
 }
