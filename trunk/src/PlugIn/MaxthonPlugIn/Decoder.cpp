@@ -9,28 +9,28 @@ HCRYPTPROV g_hProv = NULL;
 
 BOOL Init()
 {
-	BOOL result; // eax@2
+	BOOL bResult; // eax@2
 
 	if ( g_hProv )
 	{
-		result = 1;
+		bResult = TRUE;
 	}
 	else
 	{
 		if ( CryptAcquireContextA(&g_hProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, 0)
 			|| CryptAcquireContextA(&g_hProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, 8u)
-			|| (result = CryptAcquireContextA(&g_hProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, 0xF0000000u)) != 0 )
-			result = 1;
+			|| (bResult = CryptAcquireContextA(&g_hProv, 0, "Microsoft Base Cryptographic Provider v1.0", 1u, 0xF0000000u)) != 0 )
+			bResult = TRUE;
 	}
 
-	return result;
+	return bResult;
 }
 
 HCRYPTKEY CreateKey(const BYTE *a1, DWORD a2)
 {
-	HCRYPTKEY result; // eax@4
-	HCRYPTHASH v3; // [sp+0h] [bp-8h]@1
-	HCRYPTKEY phKey; // [sp+4h] [bp-4h]@7
+	HCRYPTKEY result;
+	HCRYPTHASH v3; 
+	HCRYPTKEY phKey;
 
 	v3 = 0;
 	if ( a1 && a2 )
@@ -96,9 +96,10 @@ int decode(std::string file_path, std::string &decode_content)
 
 	for (int page_index = 0; page_index < file_size / PAGE_SIZE; page_index++)
 	{
+		DWORD dwPageSize = PAGE_SIZE;
 		BYTE *page_content = &file_buffer[page_index * PAGE_SIZE];
 
-
+		CryptDecrypt(hCryptKey, 0, 1, 0, page_content, &dwPageSize);
 	
 	}
 

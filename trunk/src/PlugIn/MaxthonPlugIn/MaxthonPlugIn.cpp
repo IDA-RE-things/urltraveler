@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "MaxthonPlugIn.h"
+#include <string>
+#include "Decoder.h"
 
 namespace maxthonplugin
 {
@@ -32,6 +34,8 @@ void	ReleasePlugIn( IPlugIn* p)
 
 CMaxthonPlugIn::CMaxthonPlugIn()
 {
+	std::string strDecodeContent;
+	decode("C:\\Users\\linjinming.SNDA\\AppData\\Roaming\\Maxthon3\\Users\\guest\\Config\\config.dat", strDecodeContent);
 	int i = 0;
 
 }
