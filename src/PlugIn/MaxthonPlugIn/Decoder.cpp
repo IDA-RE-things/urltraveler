@@ -90,9 +90,13 @@ int decode(std::string file_path, std::string &decode_content)
 	BYTE encode_page[0x800] = {0};
 	BYTE *pt = encode_page;
 	size_t key_size = file_buffer[20];
+    //_maxthon3_default_storage_
+	//Maxthon3_MxCmpUrl_Mood
+	//Maxthon__WebSIteBooster
+	//guestmaxthon3_favdb_txmood
+	//guestmaxthon3_config_txmood
 
-
-	HCRYPTKEY hCryptKey = CreateKey((BYTE *)"guestmaxthon3_config_txmood", 0x1b);
+	HCRYPTKEY hCryptKey = CreateKey((BYTE *)"guestmaxthon3_favdb_txmood", 0x1a);
 
 	for (int page_index = 0; page_index < file_size / PAGE_SIZE; page_index++)
 	{
