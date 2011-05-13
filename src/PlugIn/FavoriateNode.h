@@ -13,11 +13,12 @@ public:
 	FavoriateNode();
 	virtual ~FavoriateNode();
 
-	//	从收藏夹数据行中构造数据树
-	void Load(PFAVORITELINEDATA	pFavoriateLineData, int nNum);
 
 	//	在当前结点下增加一个子结点
 	void AddChild( FavoriateNode*	pChildNode);
+
+	//	在当前结点下增加一个子结点
+	void AddChild( FAVORITELINEDATA*	pChildData);
 	
 	//	从当前结点下删除子结点
 	void RemoveChild(FavoriateNode*	pChildNode);
@@ -26,7 +27,7 @@ public:
 	void RemoveAllChild();
 
 
-private:
+public:
 
 	// 保存合并后的收藏夹，指向根结点
 	FavoriateNode*	m_pNextSiblingNode;			//	与当前结点同级的下一个结点
@@ -36,6 +37,8 @@ private:
 	FavoriateNode*	m_pFirstChildNode;			//	指向当前结点的第一个子结点
 	FavoriateNode*	m_pFirstUrlNode;			//	指向子结点中第一个非目录结点。
 												//	在所有的子结点中，目录结点总是排在前面，然后才是子结点
+
+	int	m_nNodeId;								//	当前结点的ID
 
 	FAVORITELINEDATA*	m_pFavoriateData;		//	收藏夹的结点数据	
 };

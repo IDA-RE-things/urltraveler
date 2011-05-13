@@ -211,22 +211,24 @@ BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 
 	if (m_pMemFavoriteDB != NULL)
 	{
+#define MAX_BUFFER_LEN	4096
+
 		CppSQLite3DB  m_SqliteDatabase;
-		wchar_t szInsert[1024] = {0};
-		wchar_t szDelete[1024] = {0};
+		wchar_t szInsert[MAX_BUFFER_LEN] = {0};
+		wchar_t szDelete[MAX_BUFFER_LEN] = {0};
 
 		m_SqliteDatabase.openmem(m_pMemFavoriteDB, "");
 		int i = 0;
 
 		for (int i = 0; i < nDataNum; i++)
 		{
-			swprintf_s(szDelete, 1023, L"delete from favorTable where id='%d'", pData[i].nId);
+			swprintf_s(szDelete, MAX_BUFFER_LEN-1, L"delete from favorTable where id='%d'", pData[i].nId);
 			
 			m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(szDelete).c_str());
 
 			ReplaceSingleQuoteToDoubleQuote(pData[i].szUrl);
 
-			swprintf_s(szInsert, 1023, L"insert into favorTable"
+			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into favorTable"
 				L"(id,pid,folder,title,url,sequenceNo,addtime,lastmodify,hashid,category,reserved)"
 				L"values(%d,%d,%d,'%s','%s',%d,'%s',"
 				L"'%s',%u,%d,0)", 
@@ -236,8 +238,8 @@ BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 				pData[i].szTitle,
 				pData[i].szUrl,
 				pData[i].nOrder,
-				"2011-05-11 12:00:00", 
-				"2011-05-11 12:00:00",
+				L"2011-05-11 12:00:00", 
+				L"2011-05-11 12:00:00",
 				pData[i].nHashId,
 				pData[i].nCatId);
 			m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
