@@ -42,6 +42,7 @@ void	ReleasePlugIn( IPlugIn* p)
 CSogouPlugIn::CSogouPlugIn()
 {
 	m_pMemFavoriteDB = NULL;
+/*
 	Load();
 	GetFavoriteCount();
 	FAVORITELINEDATA stFavorite[100];
@@ -61,6 +62,7 @@ CSogouPlugIn::CSogouPlugIn()
 		int nId = vec[i].nPid;
 	}
 	int i = 0;
+*/
 }
 
 CSogouPlugIn::~CSogouPlugIn()
