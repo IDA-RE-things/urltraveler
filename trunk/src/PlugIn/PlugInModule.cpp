@@ -4,6 +4,7 @@
 #include "PathHelper.h"
 #include "PlugInList.h"
 #include "PlugIn.h"
+#include "FavoriateTree.h"
 
 HMODULE	 g_hModule;
 
@@ -42,7 +43,7 @@ void	ReleaseModuleFactory( IModuleFactory* p)
 
 PlugInModule::PlugInModule()
 {
-	m_pRootFavoriateNode	=	NULL;
+	m_pFavoriateTree	=	NULL;
 }
 
 PlugInModule::~PlugInModule()
@@ -198,6 +199,8 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 // 通知加载合并所有的收藏夹数据
 void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 {
+	m_pFavoriateTree	=	new FavoriateTree();
+
 	// 对所有的浏览器数据进行合并
 	for(int i=0; i<m_vPlugInModuleInfo.size(); i++)
 	{
@@ -214,8 +217,9 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 			continue;
 
 		PFAVORITELINEDATA	pFavoriteLineData = new FAVORITELINEDATA[nFavoriteCount];
+		pLogInfo->pPlugIn->ExportFavoriteData(pFavoriteLineData, nFavoriteCount);
 
-
+		m_pFavoriateTree->Add(pFavoriteLineData, nFavoriteCount);
 
 		delete pFavoriteLineData;
 	}

@@ -6,6 +6,7 @@
 #include "PlugIn.h"
 #include <vector>
 
+
 using namespace std;
 
 extern "C" 
@@ -14,7 +15,7 @@ extern "C"
 	DLLEXPORT void	ReleaseModuleFactory( IModuleFactory*);
 }
 
-class FavoriateNode;
+class FavoriateTree;
 
 class PlugInModule : public ModuleImpl
 {
@@ -97,7 +98,7 @@ private:
 	// 存储各个模块中的IPlugIn指针
 	std::vector<PLUGININFO>		m_vPlugInModuleInfo;
 
-	FavoriateNode*		m_pRootFavoriateNode;			//	收藏夹树的根结点	
+	FavoriateTree*		m_pFavoriateTree;			//	收藏夹树的根结点	
 };
 
 class CPlugInModuleFactory : public ModuleFactoryImpl<PlugInModule>{};

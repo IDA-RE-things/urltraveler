@@ -12,47 +12,12 @@ FavoriateNode::FavoriateNode()
 
 	m_pFirstChildNode	=	NULL;
 	m_pFirstUrlNode		=	NULL;
+
+	m_nNodeId	=	0;
 }
 
 FavoriateNode::~FavoriateNode()
 {
-
-}
-
-//	从收藏夹数据行中构造数据树
-void FavoriateNode::Load(PFAVORITELINEDATA	pFavoriateLineData, int nNum)
-{
-	// 首先对pFavoriateLineData进行排序
-	FAVORITELINEDATA*	pSortLineData = new FAVORITELINEDATA[nNum];
-	memset(pSortLineData, 0x0, sizeof(FAVORITELINEDATA) * nNum);
-
-	FAVORITELINEDATA*	pSortLineDataPos = pSortLineData;
-
-	// 逐一找到合适的数据，并插入到pSortLineData中去
-	int nParentId	=	0;
-	for( int i=0; i<nNum; i++)
-	{
-		// 在未排序的数据中查找Parent为nParentId的数据
-		for(int j=0; j<nNum; j++)
-		{
-			if( pFavoriateLineData[j].nPid	==	nParentId)
-			{
-				memcpy(pSortLineDataPos, &pFavoriateLineData[j], sizeof(FAVORITELINEDATA));
-				pSortLineDataPos++;
-			}
-		}
-
-		nParentId	=	pSortLineData[i].nId;
-	}
-
-	// pSortLineData已经进过排序，按照层次进行排序
-
-
-
-
-
-	delete[] pSortLineData;
-
 
 }
 
@@ -135,6 +100,16 @@ void FavoriateNode::AddChild( FavoriateNode*	pChildNode)
 
 		return;
 	}
+}
+
+//	在当前结点下增加一个子结点
+void FavoriateNode::AddChild( FAVORITELINEDATA*	pChildData)
+{
+	FavoriateNode* pNode = new FavoriateNode();
+	pNode->m_pFavoriateData	=	pChildData;
+	pNode->m_nNodeId	=	pChildData->nPid;
+
+	AddChild(pNode);
 }
 
 

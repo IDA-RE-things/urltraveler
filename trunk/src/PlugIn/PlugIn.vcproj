@@ -209,6 +209,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FavoriateTree.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PlugIn.cpp"
 				>
 			</File>
@@ -244,6 +248,10 @@
 			>
 			<File
 				RelativePath=".\FavoriateNode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FavoriateTree.h"
 				>
 			</File>
 			<File
