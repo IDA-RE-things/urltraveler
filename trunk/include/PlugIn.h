@@ -222,7 +222,7 @@ class IPlugInImp : public IPlugIn
 	//----------------------------------------------------------------------------------------
 	virtual const wchar_t* GetBrowserName()
 	{
-		return _T("");
+		return L"";
 	}
 
 	//----------------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ class IPlugInImp : public IPlugIn
 		wchar_t *pszBrowserPath = GetInstallPath();
 		HICON    hIcon = NULL;
 
-		if (_tcsicmp(pszBrowserPath, _T("")) == 0)
+		if (_wcsicmp(pszBrowserPath, _T("")) == 0)
 		{
 			free(pszBrowserPath);
 			return NULL;
@@ -252,7 +252,7 @@ class IPlugInImp : public IPlugIn
 	//----------------------------------------------------------------------------------------
 	virtual wchar_t* GetInstallPath()
 	{
-		return _T("");
+		return L"";
 	}
 
 	//----------------------------------------------------------------------------------------
@@ -261,7 +261,7 @@ class IPlugInImp : public IPlugIn
 	//----------------------------------------------------------------------------------------
 	virtual wchar_t* GetFavoriteDataPath()
 	{
-		return _T("");
+		return L"";
 	}
 
 	//----------------------------------------------------------------------------------------
@@ -270,7 +270,7 @@ class IPlugInImp : public IPlugIn
 	//----------------------------------------------------------------------------------------
 	virtual wchar_t* GetHistoryDataPath()
 	{
-		return _T("");
+		return L"";
 	}
 
 	//----------------------------------------------------------------------------------------

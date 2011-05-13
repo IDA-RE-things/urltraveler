@@ -136,7 +136,7 @@ wchar_t* CSogouPlugIn::GetInstallPath()
 		szPath, 
 		&dwSize))
 	{
-		return _tcsdup(szPath);
+		return _wcsdup(szPath);
 	}
 
 	return NULL;
@@ -148,7 +148,7 @@ wchar_t* CSogouPlugIn::GetFavoriteDataPath()
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 
-	return _tcsdup(strPath.c_str());
+	return _wcsdup(strPath.c_str());
 }
 
 wchar_t* CSogouPlugIn::GetHistoryDataPath()
@@ -157,7 +157,7 @@ wchar_t* CSogouPlugIn::GetHistoryDataPath()
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 
-	return _tcsdup(strPath.c_str());
+	return _wcsdup(strPath.c_str());
 }
 
 BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
