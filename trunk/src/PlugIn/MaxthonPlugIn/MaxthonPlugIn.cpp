@@ -35,7 +35,7 @@ void	ReleasePlugIn( IPlugIn* p)
 CMaxthonPlugIn::CMaxthonPlugIn()
 {
 	std::string strDecodeContent;
-	decode("C:\\Users\\linjinming.SNDA\\AppData\\Roaming\\Maxthon3\\Users\\guest\\Config\\config.dat", strDecodeContent);
+	decode("C:\\Users\\linjinming.SNDA\\AppData\\Roaming\\Maxthon3\\Users\\guest\\Favorite\\Favorite.dat", strDecodeContent);
 	int i = 0;
 
 }
