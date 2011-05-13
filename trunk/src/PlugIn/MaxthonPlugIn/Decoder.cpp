@@ -95,6 +95,7 @@ int decode(std::string file_path, std::string &decode_content)
 	//Maxthon__WebSIteBooster
 	//guestmaxthon3_favdb_txmood
 	//guestmaxthon3_config_txmood
+	//username+maxthon3_favdb_txmood
 
 	HCRYPTKEY hCryptKey = CreateKey((BYTE *)"guestmaxthon3_favdb_txmood", 0x1a);
 
