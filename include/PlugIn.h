@@ -24,6 +24,16 @@ typedef struct FavoriteLineData
 	uint32       nHashId;             //  Hash
 	int32		nOrder;				//	当前结点在当前层次中的顺序
 
+	bool operator < (const FavoriteLineData& x)const
+	{
+		if (nPid < x.nPid)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 } FAVORITELINEDATA, *PFAVORITELINEDATA; 
 
 typedef struct HistoryLineData
