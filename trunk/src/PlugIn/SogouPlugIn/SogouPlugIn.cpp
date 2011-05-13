@@ -6,6 +6,7 @@
 #include "PathHelper.h"
 #include "Decoder.h"
 #include "CppSQLite3.h"
+#include <algorithm>
 
 using namespace sogouplugin;
 
@@ -45,9 +46,21 @@ CSogouPlugIn::CSogouPlugIn()
 	GetFavoriteCount();
 	FAVORITELINEDATA stFavorite[100];
 
+	using namespace std::rel_ops;
+
+
+	vector<FAVORITELINEDATA> vec(100);
+
 	int32 len = 100;
-	ExportFavoriteData(stFavorite, len);
-	ImportFavoriteData(stFavorite, 100);
+	ExportFavoriteData(&vec[0], len);
+	//ImportFavoriteData(stFavorite, 100);
+	sort(vec.begin(), vec.end());
+
+	for (int i = 0; i < vec.size(); i++)
+	{
+		int nId = vec[i].nPid;
+	}
+	int i = 0;
 }
 
 CSogouPlugIn::~CSogouPlugIn()
