@@ -194,6 +194,8 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		stPlugInInfo.pPlugIn = pPlugIn;
 		m_vPlugInModuleInfo.push_back(stPlugInInfo);
 	}
+
+	OnEvent_LoadAllFavorite(NULL);
 }
 
 // 通知加载合并所有的收藏夹数据

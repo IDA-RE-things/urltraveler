@@ -21,8 +21,9 @@ typedef struct FavoriteLineData
 	time_t		nAddTimes;		    //	增加的时间
 	time_t		nLastModifyTime;	//	最近的更改时间
 	int32		nClickTimes;		//	点击次数
-	uint32       nHashId;             //  Hash
+	uint32		nHashId;			//  Hash
 	int32		nOrder;				//	当前结点在当前层次中的顺序
+	int8		nDepth;				//	当前结点的深度。从0开始
 
 	bool operator < (const FavoriteLineData& x)const
 	{
