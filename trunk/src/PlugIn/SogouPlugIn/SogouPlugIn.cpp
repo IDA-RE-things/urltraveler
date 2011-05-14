@@ -71,15 +71,36 @@ void Mereg(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 					//重新修正所有父节点为j节点
 					for (int m = 0; m < nLen; m++)
 					{
-						if (pData[m].nPid == j + 1)
+						if (pData[m].nPid == vec[j]->nId)
 						{
-							pData[m].nPid = i + 1;
+							pData[m].nPid = vec[i]->nId;
 						}
 					}
 
-					Mereg(pData, nLen, i + 1);
+					Mereg(pData, nLen, vec[i]->nId);
 				}
 			}
+		}
+	}
+}
+
+void Rearrange(PFAVORITELINEDATA pData, int nLen)
+{
+	for (int i = 0; i < nLen; i++)
+	{
+		//如果该结点的nId不是数组下标+1,则需要修正
+		if ((pData[i].nId != i + 1))
+		{
+			//扫描所有以该结点为父结点，并修正他们的父结点id
+			for (int j = 0; j < nLen + 7; j++)
+			{
+				if (pData[j].nPid == pData[i].nId)
+				{
+					pData[j].nPid = i + 1;
+				}
+			}
+
+			pData[i].nId = i + 1;
 		}
 	}
 }
@@ -94,28 +115,24 @@ CSogouPlugIn::CSogouPlugIn()
 	vector<FAVORITELINEDATA> vec(245);
 
 	int32 len = 245;
-	ExportFavoriteData(&vec[0], len);
+
+	FILE *pTemp = fopen("aa.bin", "rb");
+	//FILE *pTemp = fopen("aa.bin", "wb");
+
+	//ExportFavoriteData(&vec[0], len);
+
+	fread(&vec[0], sizeof(FAVORITELINEDATA), 7, pTemp);
+	//fwrite(&vec[0], sizeof(FAVORITELINEDATA), 7, pTemp);
+
+	fclose(pTemp);
 	//ImportFavoriteData(stFavorite, 100);
+	ExportFavoriteData(&vec[7], len);
 
-	for (int i = 0; i < len; i++)
-	{
-		//如果该结点的nId不是数组下标+1,则需要修正
-		if ((vec[i].nId != i + 1))
-		{
-			//扫描所有以该结点为父结点，并修正他们的父结点id
-			for (int j = 0; j < len; j++)
-			{
-				if (vec[j].nPid == vec[i].nId)
-				{
-					vec[j].nPid = i + 1;
-				}
-			}
+	Rearrange(&vec[0], len + 7);
 
-			vec[i].nId = i + 1;
-		}
-	}
+	Mereg(&vec[0], len + 7, 0);
 
-	ImportFavoriteData(&vec[0], len);
+	ImportFavoriteData(&vec[0], len + 7);
 	UnLoad();
 
 }
@@ -250,8 +267,14 @@ BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum 
 
 		while(!Query.eof() && i < nDataNum)
 		{
-			 pData[i].nId = Query.getIntField("id", 0);
+			 pData[i].nId = Query.getIntField("id", 0) + PLUGIN_SOGOU_ID_BASE;
 		     pData[i].nPid = Query.getIntField("pid", 0);
+
+			 if (pData[i].nPid != 0)
+			 {
+				 pData[i].nPid += PLUGIN_SOGOU_ID_BASE;
+			 }
+
 			 pData[i].bFolder = Query.getIntField("folder", 0);
 			 _tcscpy_s(pData[i].szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
 			 pData[i].szTitle[MAX_PATH - 1] = 0;
@@ -264,6 +287,8 @@ BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum 
 			 objCrc32.process_bytes(pData[i].szTitle, wcslen(pData[i].szTitle) * sizeof(wchar_t));
 			 pData[i].nHashId = objCrc32.checksum();
 			 pData[i].nCatId = Query.getIntField("category", 0);
+
+			 pData[i].bDelete = false;
 
 			 Query.nextRow();
 			 i++;
@@ -299,6 +324,11 @@ BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 
 		for (int i = 0; i < nDataNum; i++)
 		{
+			if (pData[i].bDelete == true)
+			{
+				continue;
+			}
+
 			ReplaceSingleQuoteToDoubleQuote(pData[i].szTitle);
 			ReplaceSingleQuoteToDoubleQuote(pData[i].szUrl);
 
@@ -318,6 +348,8 @@ BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 				pData[i].nCatId);
 			m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
 		}
+
+		SaveDatabase();
 
 		return TRUE;
 	}
