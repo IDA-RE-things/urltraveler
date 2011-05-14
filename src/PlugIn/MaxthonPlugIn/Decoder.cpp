@@ -108,7 +108,7 @@ int decode(std::string file_path, std::string &decode_content)
 	
 	}
 
-	FILE *fOut = fopen("a.db", "wb");
+	FILE *fOut = fopen("maxthon_a.db", "wb");
 
 	fwrite(file_buffer, 1, file_size, fOut);
 

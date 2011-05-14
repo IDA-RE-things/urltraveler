@@ -24,6 +24,7 @@ typedef struct FavoriteLineData
 	uint32		nHashId;			//  Hash
 	int32		nOrder;				//	当前结点在当前层次中的顺序
 	int8		nDepth;				//	当前结点的深度。从0开始
+	bool        bDelete;
 
 	bool operator < (const FavoriteLineData& x)const
 	{
