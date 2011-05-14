@@ -90,10 +90,6 @@ CSogouPlugIn::CSogouPlugIn()
 
 	Load();
 	GetFavoriteCount();
-	FAVORITELINEDATA stFavorite[100];
-
-	using namespace std::rel_ops;
-
 
 	vector<FAVORITELINEDATA> vec(245);
 
@@ -101,19 +97,25 @@ CSogouPlugIn::CSogouPlugIn()
 	ExportFavoriteData(&vec[0], len);
 	//ImportFavoriteData(stFavorite, 100);
 
-	for (int i = 0; i < vec.size(); i++)
+	for (int i = 0; i < len; i++)
 	{
-		if (vec[i].nId != i + 1)
+		//如果该结点的nId不是数组下标+1,则需要修正
+		if ((vec[i].nId != i + 1))
 		{
-			if (vec[i].nPid != 0)
+			//扫描所有以该结点为父结点，并修正他们的父结点id
+			for (int j = 0; j < len; j++)
 			{
-				vec[i].nPid -= vec[i].nId - (i + 1);
+				if (vec[j].nPid == vec[i].nId)
+				{
+					vec[j].nPid = i + 1;
+				}
 			}
+
 			vec[i].nId = i + 1;
 		}
 	}
 
-	ImportFavoriteData(&vec[0], 245);
+	ImportFavoriteData(&vec[0], len);
 	UnLoad();
 
 }

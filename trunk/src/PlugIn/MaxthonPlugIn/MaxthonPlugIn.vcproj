@@ -61,8 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Utilityd.lib"
 				OutputFile="..\..\..\bin\PlugIn\$(ProjectName)d.dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="../../../lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -134,7 +136,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Utility.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="../../../lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
