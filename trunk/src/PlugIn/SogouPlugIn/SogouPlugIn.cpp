@@ -39,39 +39,6 @@ void	ReleasePlugIn( IPlugIn* p)
 	}
 }
 
-CSogouPlugIn::CSogouPlugIn()
-{
-	m_pMemFavoriteDB = NULL;
-
-	Load();
-	GetFavoriteCount();
-	FAVORITELINEDATA stFavorite[100];
-
-	using namespace std::rel_ops;
-
-
-	vector<FAVORITELINEDATA> vec(245);
-
-	int32 len = 245;
-	ExportFavoriteData(&vec[0], len);
-	//ImportFavoriteData(stFavorite, 100);
-
-	for (int i = 0; i < vec.size(); i++)
-	{
-		if (vec[i].nId != i + 1)
-		{
-			if (vec[i].nPid != 0)
-			{
-				vec[i].nPid -= vec[i].nId - (i + 1);
-			}
-			vec[i].nId = i + 1;
-		}
-	}
-
-	ImportFavoriteData(&vec[0], 245);
-	UnLoad();
-
-}
 
 void Mereg(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 {
@@ -115,6 +82,41 @@ void Mereg(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 		}
 	}
 }
+
+CSogouPlugIn::CSogouPlugIn()
+{
+	m_pMemFavoriteDB = NULL;
+
+	Load();
+	GetFavoriteCount();
+	FAVORITELINEDATA stFavorite[100];
+
+	using namespace std::rel_ops;
+
+
+	vector<FAVORITELINEDATA> vec(245);
+
+	int32 len = 245;
+	ExportFavoriteData(&vec[0], len);
+	//ImportFavoriteData(stFavorite, 100);
+
+	for (int i = 0; i < vec.size(); i++)
+	{
+		if (vec[i].nId != i + 1)
+		{
+			if (vec[i].nPid != 0)
+			{
+				vec[i].nPid -= vec[i].nId - (i + 1);
+			}
+			vec[i].nId = i + 1;
+		}
+	}
+
+	ImportFavoriteData(&vec[0], 245);
+	UnLoad();
+
+}
+
 
 CSogouPlugIn::~CSogouPlugIn()
 {
