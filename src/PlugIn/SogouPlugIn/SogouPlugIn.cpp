@@ -7,6 +7,7 @@
 #include "Decoder.h"
 #include "CppSQLite3.h"
 #include <algorithm>
+#include <boost/crc.hpp>
 
 using namespace sogouplugin;
 
@@ -230,6 +231,8 @@ wchar_t* CSogouPlugIn::GetHistoryDataPath()
 
 BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 {
+	boost::crc_32_type objCrc32;
+
 	if (pData == NULL || nDataNum == 0)
 	{
 		return FALSE;
@@ -256,8 +259,10 @@ BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum 
 
 			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(Query.getStringField("addTime", "2011-05-11 21:00:00")).c_str()), pData[i].nAddTimes);
 			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(Query.getStringField("lastmodify", "2011-05-11 21:00:00")).c_str()), pData[i].nLastModifyTime);
-			 pData[i].nHashId = Query.getIntField("hashid", 0);
+			 objCrc32.process_bytes(pData[i].szTitle, wcslen(pData[i].szTitle) * sizeof(wchar_t));
+			 pData[i].nHashId = objCrc32.checksum();
 			 pData[i].nCatId = Query.getIntField("category", 0);
+
 			 Query.nextRow();
 			 i++;
 		}
