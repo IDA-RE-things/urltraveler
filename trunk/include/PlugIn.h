@@ -9,7 +9,7 @@
 
 enum E_PluginIdBase
 {
-	PLUGIN_SOGOU_ID_BASE = 10000,
+	PLUGIN_SOGOU_ID_BASE = 20000,
 	PLUGIN_MAXTHON_ID_BASE = 20000,
 };
 // 定义收藏夹数据结构
