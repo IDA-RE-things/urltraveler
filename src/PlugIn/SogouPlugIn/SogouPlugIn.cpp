@@ -91,7 +91,7 @@ void Rearrange(PFAVORITELINEDATA pData, int nLen)
 		//如果该结点的nId不是数组下标+1,则需要修正
 		if ((pData[i].nId != i + 1))
 		{
-			//扫描所有以该结点为父结点，并修正他们的父结点id
+			//扫描所有以该结点为父结点，并修正他们的nPid点id
 			for (int j = 0; j < nLen + 7; j++)
 			{
 				if (pData[j].nPid == pData[i].nId)
