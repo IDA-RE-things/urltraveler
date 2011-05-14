@@ -73,6 +73,47 @@ CSogouPlugIn::CSogouPlugIn()
 
 }
 
+void mege(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
+{
+	int nHash = 0;
+	vector<PFAVORITELINEDATA> vec;
+
+	for (int i = 0; i < nLen; i++)
+	{
+		if (pData[i].nPid == nParentId)
+		{
+			vec.push_back(&pData[i]);
+		}
+	}
+
+	int vSize = vec.size();
+
+	if (vSize != 0)
+	{
+		for (int i = 0; i < vSize; i++)
+		{
+			for(int j = i + 1; j < vSize; j++)
+			{
+				if (vec[i]->nHashId == vec[j]->nHashId)
+				{
+					//置上懒删除标记
+					vec[j]->bDelete = true;
+					//重新修正所有父节点为j节点
+					for (int m = 0; m < nLen; m++)
+					{
+						if (pData[m].nPid == j + 1)
+						{
+							pData[m].nPid = i + 1;
+						}
+					}
+
+					mege(pData, nLen, i + 1);
+				}
+			}
+		}
+	}
+}
+
 CSogouPlugIn::~CSogouPlugIn()
 {
 	
