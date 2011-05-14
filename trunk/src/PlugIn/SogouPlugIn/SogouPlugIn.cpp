@@ -73,11 +73,12 @@ CSogouPlugIn::CSogouPlugIn()
 
 }
 
-void mege(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
+void Mereg(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 {
 	int nHash = 0;
 	vector<PFAVORITELINEDATA> vec;
 
+	//把所有相同父结点的节点放到vec中
 	for (int i = 0; i < nLen; i++)
 	{
 		if (pData[i].nPid == nParentId)
@@ -88,7 +89,8 @@ void mege(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 
 	int vSize = vec.size();
 
-	if (vSize != 0)
+	//如果扫描出来的结点数少于1，merge结束, 即至少需要两个节点指到同一个父结点
+	if (vSize > 1)
 	{
 		for (int i = 0; i < vSize; i++)
 		{
@@ -107,7 +109,7 @@ void mege(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 						}
 					}
 
-					mege(pData, nLen, i + 1);
+					Mereg(pData, nLen, i + 1);
 				}
 			}
 		}
