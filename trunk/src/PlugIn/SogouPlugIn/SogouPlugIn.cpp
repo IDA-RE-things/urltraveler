@@ -110,7 +110,6 @@ CSogouPlugIn::CSogouPlugIn()
 	m_pMemFavoriteDB = NULL;
 
 	Load();
-	GetFavoriteCount();
 
 	vector<FAVORITELINEDATA> vec(245);
 
@@ -119,13 +118,15 @@ CSogouPlugIn::CSogouPlugIn()
 	FILE *pTemp = fopen("aa.bin", "rb");
 	//FILE *pTemp = fopen("aa.bin", "wb");
 
-	//ExportFavoriteData(&vec[0], len);
+	//文件中的结点样子
+	//    a
+	//  b   c
+	//d   e
 
 	fread(&vec[0], sizeof(FAVORITELINEDATA), 7, pTemp);
 	//fwrite(&vec[0], sizeof(FAVORITELINEDATA), 7, pTemp);
-
 	fclose(pTemp);
-	//ImportFavoriteData(stFavorite, 100);
+
 	ExportFavoriteData(&vec[7], len);
 
 	Rearrange(&vec[0], len + 7);
