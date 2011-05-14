@@ -268,12 +268,12 @@ BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum 
 
 		while(!Query.eof() && i < nDataNum)
 		{
-			 pData[i].nId = Query.getIntField("id", 0) + PLUGIN_SOGOU_ID_BASE;
+			 pData[i].nId = Query.getIntField("id", 0) + ID_VALUE_SOGOU_BEGIN;
 		     pData[i].nPid = Query.getIntField("pid", 0);
 
 			 if (pData[i].nPid != 0)
 			 {
-				 pData[i].nPid += PLUGIN_SOGOU_ID_BASE;
+				 pData[i].nPid += ID_VALUE_SOGOU_BEGIN;
 			 }
 
 			 pData[i].bFolder = Query.getIntField("folder", 0);
