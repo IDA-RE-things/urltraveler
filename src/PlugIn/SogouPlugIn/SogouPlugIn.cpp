@@ -115,12 +115,12 @@ CSogouPlugIn::CSogouPlugIn()
 
 	int32 len = 245;
 
-	FILE *pTemp = fopen("aa.bin", "rb");
+	FILE *pTemp = fopen(StringHelper::UnicodeToANSI(PathHelper::GetModuleDir(NULL) + L"TestTree.bin").c_str(), "rb");
 	//FILE *pTemp = fopen("aa.bin", "wb");
 
 	//文件中的结点样子
-	//    a
-	//  b   c
+	//      a
+	//  b       c     浏览器个人首页
 	//d   e
 
 	fread(&vec[0], sizeof(FAVORITELINEDATA), 7, pTemp);
