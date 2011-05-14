@@ -42,7 +42,7 @@ void	ReleasePlugIn( IPlugIn* p)
 CSogouPlugIn::CSogouPlugIn()
 {
 	m_pMemFavoriteDB = NULL;
-/*
+
 	Load();
 	GetFavoriteCount();
 	FAVORITELINEDATA stFavorite[100];
@@ -50,19 +50,27 @@ CSogouPlugIn::CSogouPlugIn()
 	using namespace std::rel_ops;
 
 
-	vector<FAVORITELINEDATA> vec(100);
+	vector<FAVORITELINEDATA> vec(245);
 
-	int32 len = 100;
+	int32 len = 245;
 	ExportFavoriteData(&vec[0], len);
 	//ImportFavoriteData(stFavorite, 100);
-	sort(vec.begin(), vec.end());
 
 	for (int i = 0; i < vec.size(); i++)
 	{
-		int nId = vec[i].nPid;
+		if (vec[i].nId != i + 1)
+		{
+			if (vec[i].nPid != 0)
+			{
+				vec[i].nPid -= vec[i].nId - (i + 1);
+			}
+			vec[i].nId = i + 1;
+		}
 	}
-	int i = 0;
-*/
+
+	ImportFavoriteData(&vec[0], 245);
+	UnLoad();
+
 }
 
 CSogouPlugIn::~CSogouPlugIn()
@@ -235,12 +243,11 @@ BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 		m_SqliteDatabase.openmem(m_pMemFavoriteDB, "");
 		int i = 0;
 
+		m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(L"delete from favorTable").c_str());
+
 		for (int i = 0; i < nDataNum; i++)
 		{
-			swprintf_s(szDelete, MAX_BUFFER_LEN-1, L"delete from favorTable where id='%d'", pData[i].nId);
-			
-			m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(szDelete).c_str());
-
+			ReplaceSingleQuoteToDoubleQuote(pData[i].szTitle);
 			ReplaceSingleQuoteToDoubleQuote(pData[i].szUrl);
 
 			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into favorTable"
