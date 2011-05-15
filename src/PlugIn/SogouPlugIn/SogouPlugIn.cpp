@@ -68,7 +68,7 @@ void Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 				{
 					//置上懒删除标记
 					vec[j]->bDelete = true;
-					//重新修正所有父节点为j节点
+					//重新修正所有父节点为j的节点的nPid, 即合并
 					for (int m = 0; m < nLen; m++)
 					{
 						if (pData[m].nPid == vec[j]->nId)
