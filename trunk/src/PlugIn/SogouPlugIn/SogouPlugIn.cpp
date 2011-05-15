@@ -41,7 +41,7 @@ void	ReleasePlugIn( IPlugIn* p)
 }
 
 
-void Mereg(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
+void Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 {
 	int nHash = 0;
 	vector<PFAVORITELINEDATA> vec;
@@ -77,7 +77,7 @@ void Mereg(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 						}
 					}
 
-					Mereg(pData, nLen, vec[i]->nId);
+					Merge(pData, nLen, vec[i]->nId);
 				}
 			}
 		}
@@ -134,7 +134,7 @@ CSogouPlugIn::CSogouPlugIn()
 
 	//Rearrange(&vec[0], len + 6);
 
-	Mereg(&vec[0], len + 6, 0);
+	Merge(&vec[0], len + 6, 0);
 
 	ImportFavoriteData(&vec[0], len + 6);
 	UnLoad();
