@@ -39,7 +39,10 @@ void	ReleasePlugIn( IPlugIn* p)
 		g_SogouPlugIn = NULL;
 	}
 }
-
+bool compare(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
+{
+	return a1->nHashId < a2->nHashId;
+}
 //该算法最好时间复杂度为O(N),即不需要合并的情况，最坏时间复杂度为O(N ^ 4)
 void Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 {
@@ -60,26 +63,25 @@ void Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 	//如果扫描出来的结点数少于1，merge结束, 即至少需要两个节点指到同一个父结点
 	if (vSize > 1)
 	{
-		for (int i = 0; i < vSize; i++)
-		{
-			for(int j = i + 1; j < vSize; j++)
-			{
-				//同一个父节点下如果有Hash相同的两个点，则该两个点需要合并
-				if (vec[i]->nHashId == vec[j]->nHashId)
-				{
-					//置上懒删除标记
-					vec[j]->bDelete = true;
-					//重新修正所有父节点为j的节点的nPid, 即合并
-					for (int m = 0; m < nLen; m++)
-					{
-						if (pData[m].nPid == vec[j]->nId)
-						{
-							pData[m].nPid = vec[i]->nId;
-						}
-					}
+		sort(vec.begin(), vec.end(), compare);
 
-					Merge(pData, nLen, vec[i]->nId);
+		for (int i = 0; i < vSize - 1; i++)
+		{
+			//同一个父节点下如果有Hash相同的两个点，则该两个点需要合并
+			if (vec[i]->nHashId == vec[i + 1]->nHashId)
+			{
+				//置上懒删除标记
+				vec[i]->bDelete = true;
+				//重新修正所有父节点为j的节点的nPid, 即合并
+				for (int m = 0; m < nLen; m++)
+				{
+					if (pData[m].nPid == vec[i]->nId)
+					{
+						pData[m].nPid = vec[i + 1]->nId;
+					}
 				}
+
+				Merge(pData, nLen, vec[i + 1]->nId);
 			}
 		}
 	}
