@@ -40,7 +40,7 @@ void	ReleasePlugIn( IPlugIn* p)
 	}
 }
 
-
+//该算法最好时间复杂度为O(N),即不需要合并的情况，最坏时间复杂度为O(N ^ 4)
 void Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 {
 	int nHash = 0;
@@ -64,6 +64,7 @@ void Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 		{
 			for(int j = i + 1; j < vSize; j++)
 			{
+				//同一个父节点下如果有Hash相同的两个点，则该两个点需要合并
 				if (vec[i]->nHashId == vec[j]->nHashId)
 				{
 					//置上懒删除标记
