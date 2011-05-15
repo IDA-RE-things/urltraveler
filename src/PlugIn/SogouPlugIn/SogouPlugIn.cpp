@@ -83,15 +83,16 @@ void Mereg(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 		}
 	}
 }
-
+//这个算法好像是鸡肋，不需要重新编号
 void Rearrange(PFAVORITELINEDATA pData, int nLen)
 {
+	//最坏时间复杂度O(N^2)
 	for (int i = 0; i < nLen; i++)
 	{
 		//如果该结点的nId不是数组下标+1,则需要修正
 		if ((pData[i].nId != i + 1))
 		{
-			//扫描所有以该结点为父结点，并修正他们的nPid点id
+			//扫描所有以该结点为父结点的结点，并修正这些结点的nPid
 			for (int j = 0; j < nLen; j++)
 			{
 				if (pData[j].nPid == pData[i].nId)
@@ -131,7 +132,7 @@ CSogouPlugIn::CSogouPlugIn()
 
 	ExportFavoriteData(&vec[6], len);
 
-	Rearrange(&vec[0], len + 6);
+	//Rearrange(&vec[0], len + 6);
 
 	Mereg(&vec[0], len + 6, 0);
 
