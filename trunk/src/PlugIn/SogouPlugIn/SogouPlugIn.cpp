@@ -7,7 +7,7 @@
 #include "Decoder.h"
 #include "CppSQLite3.h"
 #include <algorithm>
-#include <boost/crc.hpp>
+#include "CRCHash.h"
 
 using namespace sogouplugin;
 
@@ -123,17 +123,19 @@ CSogouPlugIn::CSogouPlugIn()
 	//  b       c     ä¯ÀÀÆ÷¸öÈËÊ×Ò³
 	//d   e
 
-	fread(&vec[0], sizeof(FAVORITELINEDATA), 7, pTemp);
-	//fwrite(&vec[0], sizeof(FAVORITELINEDATA), 7, pTemp);
+	//ExportFavoriteData(&vec[0], len);
+
+	fread(&vec[0], sizeof(FAVORITELINEDATA), 6, pTemp);
+	//fwrite(&vec[0], sizeof(FAVORITELINEDATA), 6, pTemp);
 	fclose(pTemp);
 
-	ExportFavoriteData(&vec[7], len);
+	ExportFavoriteData(&vec[6], len);
 
-	Rearrange(&vec[0], len + 7);
+	Rearrange(&vec[0], len + 6);
 
-	Mereg(&vec[0], len + 7, 0);
+	Mereg(&vec[0], len + 6, 0);
 
-	ImportFavoriteData(&vec[0], len + 7);
+	ImportFavoriteData(&vec[0], len + 6);
 	UnLoad();
 
 }
@@ -251,7 +253,7 @@ wchar_t* CSogouPlugIn::GetHistoryDataPath()
 
 BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 {
-	boost::crc_32_type objCrc32;
+	CCRCHash ojbCrcHash;
 
 	if (pData == NULL || nDataNum == 0)
 	{
@@ -268,6 +270,7 @@ BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum 
 
 		while(!Query.eof() && i < nDataNum)
 		{
+			 memset(&pData[i], 0, sizeof(FAVORITELINEDATA));
 			 pData[i].nId = Query.getIntField("id", 0) + ID_VALUE_SOGOU_BEGIN;
 		     pData[i].nPid = Query.getIntField("pid", 0);
 
@@ -285,8 +288,7 @@ BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum 
 
 			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(Query.getStringField("addTime", "2011-05-11 21:00:00")).c_str()), pData[i].nAddTimes);
 			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(Query.getStringField("lastmodify", "2011-05-11 21:00:00")).c_str()), pData[i].nLastModifyTime);
-			 objCrc32.process_bytes(pData[i].szTitle, wcslen(pData[i].szTitle) * sizeof(wchar_t));
-			 pData[i].nHashId = objCrc32.checksum();
+			 ojbCrcHash.GetHash((BYTE *)pData[i].szTitle, wcslen(pData[i].szTitle) * sizeof(wchar_t), (BYTE *)&pData[i].nHashId, sizeof(uint32));
 			 pData[i].nCatId = Query.getIntField("category", 0);
 
 			 pData[i].bDelete = false;
