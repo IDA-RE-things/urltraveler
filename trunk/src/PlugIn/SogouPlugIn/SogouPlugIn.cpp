@@ -70,7 +70,7 @@ void Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 			//同一个父节点下如果有Hash相同的两个点，则该两个点需要合并
 			if (vec[i]->nHashId == vec[i + 1]->nHashId)
 			{
-				//置上懒删除标记
+				//置上懒删除标记, 向后删除
 				vec[i]->bDelete = true;
 				//重新修正所有父节点为j的节点的nPid, 即合并
 				for (int m = 0; m < nLen; m++)
