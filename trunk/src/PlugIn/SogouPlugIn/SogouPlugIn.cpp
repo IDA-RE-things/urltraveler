@@ -63,6 +63,7 @@ void Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 	//如果扫描出来的结点数少于1，merge结束, 即至少需要两个节点指到同一个父结点
 	if (vSize > 1)
 	{
+		//对vec按hashid进行排序, 主要方便下面一次遍历就能找出所有相同元素
 		sort(vec.begin(), vec.end(), compare);
 
 		for (int i = 0; i < vSize - 1; i++)
