@@ -92,7 +92,7 @@ void Rearrange(PFAVORITELINEDATA pData, int nLen)
 		if ((pData[i].nId != i + 1))
 		{
 			//扫描所有以该结点为父结点，并修正他们的nPid点id
-			for (int j = 0; j < nLen + 7; j++)
+			for (int j = 0; j < nLen; j++)
 			{
 				if (pData[j].nPid == pData[i].nId)
 				{
