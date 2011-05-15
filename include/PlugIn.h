@@ -10,9 +10,9 @@ enum PlugId
 {
 	PLUG_ID_INVALID=-1,
 
-	PLUG_ID_IE6 = 0X01,		//	IE6.0,7.0
+	PLUG_ID_SOGOU = 0X01,	//	ËÑ¹·
+	PLUG_ID_IE6,		    //	IE6.0,7.0
 	PLUG_ID_IE9,			//	IE9.0
-	PLUG_ID_SOGOU,			//	ËÑ¹·
 	PLUG_ID_MAXTHON2,		//	Maxthon 2.0
 	PLUG_ID_MAXTHON3,		//	Maxthon 3.0
 	PLUG_ID_360,			//	360se ä¯ÀÀÆ÷
