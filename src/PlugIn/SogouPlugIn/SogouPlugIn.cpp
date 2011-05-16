@@ -88,6 +88,7 @@ void Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 		}
 	}
 }
+
 //这个算法好像是鸡肋，不需要重新编号
 void Rearrange(PFAVORITELINEDATA pData, int nLen)
 {
@@ -115,6 +116,7 @@ CSogouPlugIn::CSogouPlugIn()
 {
 	m_pMemFavoriteDB = NULL;
 
+/*
 	Load();
 
 	vector<FAVORITELINEDATA> vec(245);
@@ -143,6 +145,7 @@ CSogouPlugIn::CSogouPlugIn()
 
 	ImportFavoriteData(&vec[0], len + 6);
 	UnLoad();
+*/
 
 }
 

@@ -235,11 +235,6 @@ void PlugInModule::SortFavoriateData(PFAVORITELINEDATA pFavoriteLineData, int nN
 //	将pFavoriteData进行合并
 void	PlugInModule::Merge(PFAVORITELINEDATA	pFavoriteData, int nNum)
 {
-	//	对收藏夹进行深度优先遍历排序
-	SortFavoriateData(pFavoriteData, nNum);
-
-	//	设置它们的树形层次
-
 }
 
 // 通知加载合并所有的收藏夹数据
@@ -265,7 +260,7 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 		PFAVORITELINEDATA	pFavoriteLineData = new FAVORITELINEDATA[nFavoriteCount];
 		pLogInfo->pPlugIn->ExportFavoriteData(pFavoriteLineData, nFavoriteCount);
 
-		m_pFavoriateTree->Add(pFavoriteLineData, nFavoriteCount);
+		Merge(pFavoriteLineData, nFavoriteCount);
 
 		delete pFavoriteLineData;
 	}
