@@ -290,7 +290,9 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 	int *panOffset = new int[nNumOfPlugIns + 1];
 	int nSum = 0;
 
-	panOffset[0] = 0;
+	m_vFavoriateLineData.clear();
+
+	ZeroMemory(panOffset, sizeof(int) * (nNumOfPlugIns + 1));
 
 	for (int i = 0; i < nNumOfPlugIns; i++)
 	{
