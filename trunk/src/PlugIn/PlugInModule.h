@@ -100,7 +100,7 @@ private:
 	void	SortFavoriateData(PFAVORITELINEDATA pFavoriteLineData, int nNum);
 
 	//	将pFavoriteData进行合并
-	void	Merge(PFAVORITELINEDATA	pFavoriteData, int nNum);
+	void	Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId);
 
 private:
 
