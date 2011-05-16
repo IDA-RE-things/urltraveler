@@ -232,9 +232,48 @@ void PlugInModule::SortFavoriateData(PFAVORITELINEDATA pFavoriteLineData, int nN
 	delete[] pSortLineData;
 }
 
-//	将pFavoriteData进行合并
-void	PlugInModule::Merge(PFAVORITELINEDATA	pFavoriteData, int nNum)
+void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 {
+	int nHash = 0;
+	vector<PFAVORITELINEDATA> vec;
+
+	//把所有相同父结点的节点放到vec中
+	for (int i = 0; i < nLen; i++)
+	{
+		if (pData[i].nPid == nParentId)
+		{
+			vec.push_back(&pData[i]);
+		}
+	}
+
+	int vSize = vec.size();
+
+	//如果扫描出来的结点数少于1，merge结束, 即至少需要两个节点指到同一个父结点
+	if (vSize > 1)
+	{
+		//对vec按hashid进行排序, 主要方便下面一次遍历就能找出所有相同元素
+		sort(vec.begin(), vec.end(), compare);
+
+		for (int i = 0; i < vSize - 1; i++)
+		{
+			//同一个父节点下如果有Hash相同的两个点，则该两个点需要合并
+			if (vec[i]->nHashId == vec[i + 1]->nHashId)
+			{
+				//置上懒删除标记, 向后删除
+				vec[i]->bDelete = true;
+				//重新修正所有父节点为j的节点的nPid, 即合并
+				for (int m = 0; m < nLen; m++)
+				{
+					if (pData[m].nPid == vec[i]->nId)
+					{
+						pData[m].nPid = vec[i + 1]->nId;
+					}
+				}
+
+				Merge(pData, nLen, vec[i + 1]->nId);
+			}
+		}
+	}
 }
 
 // 通知加载合并所有的收藏夹数据
@@ -260,7 +299,7 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 		PFAVORITELINEDATA	pFavoriteLineData = new FAVORITELINEDATA[nFavoriteCount];
 		pLogInfo->pPlugIn->ExportFavoriteData(pFavoriteLineData, nFavoriteCount);
 
-		Merge(pFavoriteLineData, nFavoriteCount);
+		Merge(pFavoriteLineData, nFavoriteCount, 0);
 
 		delete pFavoriteLineData;
 	}
