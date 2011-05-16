@@ -43,6 +43,7 @@ bool compare(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
 {
 	return a1->nHashId < a2->nHashId;
 }
+
 //该算法最好时间复杂度为O(N),即不需要合并的情况，最坏时间复杂度为O(N ^ 4)
 void Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 {

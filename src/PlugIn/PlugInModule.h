@@ -93,10 +93,22 @@ protected:
 	void	OnEvent_LoadAllPlugin(Event* pEvent);
 	void	OnEvent_LoadAllFavorite(Event* pEvent);
 
+
+private:
+
+	//	进行排序，排序后为广度优先遍历
+	void	SortFavoriateData(PFAVORITELINEDATA pFavoriteLineData, int nNum);
+
+	//	将pFavoriteData进行合并
+	void	Merge(PFAVORITELINEDATA	pFavoriteData, int nNum);
+
 private:
 
 	// 存储各个模块中的IPlugIn指针
 	std::vector<PLUGININFO>		m_vPlugInModuleInfo;
+
+	//	保存最终的合并后的所有的收藏夹
+	std::vector<FAVORITELINEDATA>	m_vFavoriateLineData;
 
 	FavoriateTree*		m_pFavoriateTree;			//	收藏夹树的根结点	
 };

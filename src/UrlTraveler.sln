@@ -53,6 +53,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3_lib", "..\thirdlib\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaxthonPlugIn", "PlugIn\MaxthonPlugIn\MaxthonPlugIn.vcproj", "{7985C876-85C6-454A-B8F6-BAF3F8BA399A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "360SE", "PlugIn\360SE\360SE.vcproj", "{F857BA31-88C6-4658-8251-59345A9DEFBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -115,6 +117,10 @@ Global
 		{7985C876-85C6-454A-B8F6-BAF3F8BA399A}.Debug|Win32.Build.0 = Debug|Win32
 		{7985C876-85C6-454A-B8F6-BAF3F8BA399A}.Release|Win32.ActiveCfg = Release|Win32
 		{7985C876-85C6-454A-B8F6-BAF3F8BA399A}.Release|Win32.Build.0 = Release|Win32
+		{F857BA31-88C6-4658-8251-59345A9DEFBA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F857BA31-88C6-4658-8251-59345A9DEFBA}.Debug|Win32.Build.0 = Debug|Win32
+		{F857BA31-88C6-4658-8251-59345A9DEFBA}.Release|Win32.ActiveCfg = Release|Win32
+		{F857BA31-88C6-4658-8251-59345A9DEFBA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

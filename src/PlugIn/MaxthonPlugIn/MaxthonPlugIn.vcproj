@@ -68,6 +68,7 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
+				ImportLibrary="..\..\..\lib\$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -139,6 +140,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Utility.lib"
+				OutputFile="..\..\..\bin\PlugIn\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../../lib"
 				GenerateDebugInformation="true"
@@ -146,6 +148,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				ImportLibrary="..\..\..\lib\$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
