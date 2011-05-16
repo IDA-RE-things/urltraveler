@@ -238,6 +238,30 @@ bool compare(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
 	return a1->nHashId < a2->nHashId;
 }
 
+
+//这个算法好像是鸡肋，不需要重新编号
+void Rearrange(PFAVORITELINEDATA pData, int nLen)
+{
+	//最坏时间复杂度O(N^2)
+	for (int i = 0; i < nLen; i++)
+	{
+		//如果该结点的nId不是数组下标+1,则需要修正
+		if ((pData[i].nId != i + 1))
+		{
+			//扫描所有以该结点为父结点的结点，并修正这些结点的nPid
+			for (int j = 0; j < nLen; j++)
+			{
+				if (pData[j].nPid == pData[i].nId)
+				{
+					pData[j].nPid = i + 1;
+				}
+			}
+
+			pData[i].nId = i + 1;
+		}
+	}
+}
+
 void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 {
 	int nHash = 0;
