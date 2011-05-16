@@ -330,7 +330,7 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 		if( nFavoriteCount == 0)
 			continue;
 
-		pLogInfo->pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[panOffset[i]], nFavoriteCount);
+		pLogInfo->pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[panOffset[i]], panOffset[i + 1]);
 	}
 
 	Merge(&m_vFavoriateLineData[0], nSum, 0);
