@@ -5,6 +5,7 @@
 #include "PlugInList.h"
 #include "PlugIn.h"
 #include "FavoriateTree.h"
+#include <algorithm>
 
 HMODULE	 g_hModule;
 
@@ -232,6 +233,11 @@ void PlugInModule::SortFavoriateData(PFAVORITELINEDATA pFavoriteLineData, int nN
 	delete[] pSortLineData;
 }
 
+bool compare(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
+{
+	return a1->nHashId < a2->nHashId;
+}
+
 void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 {
 	int nHash = 0;
@@ -280,9 +286,37 @@ void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 {
 	m_pFavoriateTree	=	new FavoriateTree();
+	int nNumOfPlugIns = m_vPlugInModuleInfo.size();
+	int *panOffset = new int[nNumOfPlugIns + 1];
+	int nSum = 0;
+
+	panOffset[0] = 0;
+
+	for (int i = 0; i < nNumOfPlugIns; i++)
+	{
+		PPLUGININFO	pLogInfo = &m_vPlugInModuleInfo.at(i);
+
+		if( pLogInfo == NULL)
+			continue;
+
+		if( pLogInfo->pPlugIn == NULL)
+			continue;
+
+		int nFavoriteCount = pLogInfo->pPlugIn->GetFavoriteCount();
+
+		if( nFavoriteCount == 0)
+			continue;
+
+		panOffset[i + 1] = nFavoriteCount;
+
+		nSum += nFavoriteCount;
+
+	}
+
+	m_vFavoriateLineData.resize(nSum);
 
 	// 对所有的浏览器数据进行合并
-	for(int i=0; i<m_vPlugInModuleInfo.size(); i++)
+	for(int i=0; i < nNumOfPlugIns; i++)
 	{
 		PPLUGININFO	pLogInfo = &m_vPlugInModuleInfo.at(i);
 		if( pLogInfo == NULL)
@@ -296,11 +330,16 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 		if( nFavoriteCount == 0)
 			continue;
 
-		PFAVORITELINEDATA	pFavoriteLineData = new FAVORITELINEDATA[nFavoriteCount];
-		pLogInfo->pPlugIn->ExportFavoriteData(pFavoriteLineData, nFavoriteCount);
-
-		Merge(pFavoriteLineData, nFavoriteCount, 0);
-
-		delete pFavoriteLineData;
+		pLogInfo->pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[panOffset[i]], nFavoriteCount);
 	}
+
+	Merge(&m_vFavoriateLineData[0], nSum, 0);
+
+
+	if (panOffset)
+	{
+		delete []panOffset;
+		panOffset = NULL;
+	}
+
 }
