@@ -198,6 +198,50 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 	OnEvent_LoadAllFavorite(NULL);
 }
 
+void PlugInModule::SortFavoriateData(PFAVORITELINEDATA pFavoriteLineData, int nNum)
+{
+	// 首先对pFavoriteLineData进行排序
+	FAVORITELINEDATA*	pSortLineData = new FAVORITELINEDATA[nNum];
+	memset(pSortLineData, 0x0, sizeof(FAVORITELINEDATA) * nNum);
+
+	FAVORITELINEDATA*	pSortLineDataPos = pSortLineData;
+
+	// 逐一找到合适的数据，并插入到pSortLineData中去
+	int nParentId	=	0;
+	for( int i=0; i<nNum; i++)
+	{
+		// 在未排序的数据中查找Parent为nParentId的数据
+		for(int j=0; j<nNum; j++)
+		{
+			if( pFavoriteLineData[j].nPid	==	nParentId)
+			{
+				memcpy(pSortLineDataPos, &pFavoriteLineData[j], sizeof(FAVORITELINEDATA));
+
+
+
+
+				pSortLineDataPos++;
+			}
+		}
+
+		nParentId	=	pSortLineData[i].nId;
+	}
+
+	// 排序后的数据拷贝
+	memcpy(pFavoriteLineData, pSortLineData, nNum*sizeof( FAVORITELINEDATA));
+	delete[] pSortLineData;
+}
+
+//	将pFavoriteData进行合并
+void	PlugInModule::Merge(PFAVORITELINEDATA	pFavoriteData, int nNum)
+{
+	//	对收藏夹进行深度优先遍历排序
+	SortFavoriateData(pFavoriteData, nNum);
+
+	//	设置它们的树形层次
+
+}
+
 // 通知加载合并所有的收藏夹数据
 void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 {

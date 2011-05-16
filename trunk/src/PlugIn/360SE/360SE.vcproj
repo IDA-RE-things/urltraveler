@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="SogouPlugIn"
-	ProjectGUID="{5978BFFE-B3AF-41B0-8C43-BFB79812250F}"
-	RootNamespace="SogouPlugIn"
+	Name="360SEPlugIn"
+	ProjectGUID="{F857BA31-88C6-4658-8251-59345A9DEFBA}"
+	RootNamespace="My360SE"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\thirdlib\boost_1350_vc80\include;..\..\..\include;../../Utility;../../Utility/CppSQLite3"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SOGOUPLUGIN_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;MY360SE_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -121,8 +121,8 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="..\..\..\thirdlib\boost_1350_vc80\include;..\..\..\include;../../Utility;../../Utility/CppSQLite3"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SOGOUPLUGIN_EXPORTS"
-				RuntimeLibrary="0"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MY360SE_EXPORTS"
+				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -178,12 +178,16 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="源文件"
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Decoder.cpp"
+				RelativePath=".\360SE.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\360SEPlugIn.cpp"
 				>
 			</File>
 			<File
@@ -209,10 +213,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\SogouPlugIn.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -234,16 +234,12 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="头文件"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Decoder.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SogouPlugIn.h"
+				RelativePath=".\360SEPlugIn.h"
 				>
 			</File>
 			<File
@@ -256,7 +252,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Resource Files"
+			Name="资源文件"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>

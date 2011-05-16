@@ -91,8 +91,33 @@ typedef struct FavoriteLineData
 	int32		nClickTimes;		//	点击次数
 	uint32		nHashId;			//  Hash
 	int32		nOrder;				//	当前结点在当前层次中的顺序
+
+	//==========================================
+	//	树相关的成员
 	int8		nDepth;				//	当前结点的深度。从0开始
 	bool        bDelete;
+	int32		nFirstChildIndex;	//	第一个子结点所在的索引位置，如果没有子结点，则为-1
+	int32		nChildNum;			//	当前结点的子结点的数目，如果没有子结点，则为0
+	int32		nParentIndex;		//	父结点所在的索引，如果没有父结点，则为-1
+
+	FavoriteLineData()
+	{
+		nId	=	0;
+		nCatId	=	0;
+		nPid	=	0;
+		bFolder	=	false;
+		nAddTimes	=	0;
+		nLastModifyTime	=	0;
+		nClickTimes	=	0;
+		nHashId	=	0;
+		nOrder	=	0;
+
+		nDepth	=	0;
+		bDelete	=	false;
+		nFirstChildIndex	=	-1;
+		nChildNum	=	0;
+		nParentIndex	=	-1;
+	}
 
 	bool operator < (const FavoriteLineData& x)const
 	{
