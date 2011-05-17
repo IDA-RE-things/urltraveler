@@ -46,6 +46,7 @@ PlugInModule::PlugInModule()
 {
 	m_pThreadObj = CreateThreadObject();
 	m_pFavoriateTree	=	NULL;
+	m_nSumFavorite = 0;
 }
 
 PlugInModule::~PlugInModule()
