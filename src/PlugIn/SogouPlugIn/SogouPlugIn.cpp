@@ -87,6 +87,7 @@ BOOL CSogouPlugIn::UnLoad()
 
 BOOL CSogouPlugIn::IsWorked()
 {
+/*
 	wchar_t szVersion[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 
 	int32   nVersion = 0;
@@ -101,6 +102,8 @@ BOOL CSogouPlugIn::IsWorked()
 	{
 		return TRUE;
 	}
+*/
+	return TRUE;
 }
 
 int32 CSogouPlugIn::GetPluginVersion()

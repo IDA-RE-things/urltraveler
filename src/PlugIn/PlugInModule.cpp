@@ -4,7 +4,6 @@
 #include "PathHelper.h"
 #include "PlugInList.h"
 #include "PlugIn.h"
-#include "FavoriateTree.h"
 #include <algorithm>
 
 HMODULE	 g_hModule;
@@ -45,7 +44,6 @@ void	ReleaseModuleFactory( IModuleFactory* p)
 PlugInModule::PlugInModule()
 {
 	m_pThreadObj = CreateThreadObject();
-	m_pFavoriateTree	=	NULL;
 	m_nSumFavorite = 0;
 }
 
@@ -351,7 +349,6 @@ void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 // 通知加载合并所有的收藏夹数据
 void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 {
-	m_pFavoriateTree	=	new FavoriateTree();
 	int nNumOfPlugIns = m_vPlugInModuleInfo.size();
 	int *panOffset = new int[nNumOfPlugIns + 1];
 

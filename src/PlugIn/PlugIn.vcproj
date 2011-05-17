@@ -206,14 +206,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\FavoriateNode.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\FavoriateTree.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\PlugIn.cpp"
 				>
 			</File>
@@ -247,14 +239,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\FavoriateNode.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FavoriateTree.h"
-				>
-			</File>
 			<File
 				RelativePath="..\..\include\PlugInDefine.h"
 				>

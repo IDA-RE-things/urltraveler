@@ -16,8 +16,6 @@ extern "C"
 	DLLEXPORT void	ReleaseModuleFactory( IModuleFactory*);
 }
 
-class FavoriateTree;
-
 class PlugInModule : public ModuleImpl,
 					public IThreadEvent
 {
@@ -120,8 +118,6 @@ private:
 
 	//	保存最终的合并后的所有的收藏夹
 	std::vector<FAVORITELINEDATA>	m_vFavoriateLineData;
-
-	FavoriateTree*		m_pFavoriateTree;			//	收藏夹树的根结点	
 
 	IThreadObject*      m_pThreadObj;
 

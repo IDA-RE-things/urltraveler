@@ -64,6 +64,7 @@ BOOL FireFoxPlugIn::UnLoad()
 
 BOOL FireFoxPlugIn::IsWorked()
 {
+/*
 	wchar_t szVersion[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 
 	int32   nVersion = 0;
@@ -78,6 +79,7 @@ BOOL FireFoxPlugIn::IsWorked()
 	{
 		return TRUE;
 	}
+*/
 
 	return FALSE;
 }

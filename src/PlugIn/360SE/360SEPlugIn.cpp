@@ -71,6 +71,7 @@ BOOL C360SEPlugIn::IsWorked()
 	// {66D8959E-B7E9-4cd4-BC16-98711D815F2A}
 	// DisplayIcon	C:\Program Files\360\360se\360SE.exe
 
+/*
 	wchar_t szVersion[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 
 	int32   nVersion = 0;
@@ -85,6 +86,7 @@ BOOL C360SEPlugIn::IsWorked()
 	{
 		return TRUE;
 	}
+*/
 
 	return FALSE;
 }
