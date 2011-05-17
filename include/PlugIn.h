@@ -103,12 +103,6 @@ typedef struct FavoriteLineData
 		nClickTimes	=	0;
 		nHashId	=	0;
 		nOrder	=	0;
-
-		nDepth	=	0;
-		bDelete	=	false;
-		nFirstChildIndex	=	-1;
-		nChildNum	=	0;
-		nParentIndex	=	-1;
 	}
 
 	bool operator < (const FavoriteLineData& x)const
