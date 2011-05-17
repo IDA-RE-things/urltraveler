@@ -359,7 +359,15 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 		pLogInfo->pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[panOffset[i]], panOffset[i + 1]);
 	}
 
+	DWORD dwBegin = GetTickCount();
+
 	Merge(&m_vFavoriateLineData[0], nSum, 0);
+
+	wchar_t szInfo[102];
+
+	_stprintf_s(szInfo, 102, L"Time Elapse:%d", GetTickCount() - dwBegin);
+
+	MessageBox(NULL, szInfo, L"OK", MB_OK);
 
 
 	// 将合并后的数据导入到各个浏览器中
