@@ -53,6 +53,7 @@ PlugInModule::~PlugInModule()
 {
 	if (m_pThreadObj)
 	{
+		m_pThreadObj->ShutdownThread(0);
 		m_pThreadObj->Release();
 	}
 }
@@ -441,6 +442,7 @@ int PlugInModule::Run()
 		pLogInfo->pPlugIn->ImportFavoriteData(&m_vFavoriateLineData[0], m_nSumFavorite);
 	}
 
+	//使线程直接退掉返回0，否则需要自己去Shutdown
 	return 0;
 }
 
