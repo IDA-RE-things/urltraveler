@@ -211,6 +211,10 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		MakeEvent<MODULE_ID_PLUGIN>()(EVENT_VALUE_PLUGIN_COMBINE_FAVORITE,
 		EVENT_VALUE_PLUGIN_COMBINE_FAVORITE));
 
+
+	m_pThreadObj->CreateThread(this);
+
+
 	// OnEvent_LoadAllFavorite(NULL);
 }
 
@@ -414,9 +418,6 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 		delete []panOffset;
 		panOffset = NULL;
 	}
-
-	m_pThreadObj->CreateThread(this);
-
 }
 
 void PlugInModule::OnThreadEntry()
