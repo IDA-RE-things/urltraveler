@@ -92,14 +92,6 @@ typedef struct FavoriteLineData
 	uint32		nHashId;			//  Hash
 	int32		nOrder;				//	当前结点在当前层次中的顺序
 
-	//==========================================
-	//	树相关的成员
-	int8		nDepth;				//	当前结点的深度。从0开始
-	bool        bDelete;
-	int32		nFirstChildIndex;	//	第一个子结点所在的索引位置，如果没有子结点，则为-1
-	int32		nChildNum;			//	当前结点的子结点的数目，如果没有子结点，则为0
-	int32		nParentIndex;		//	父结点所在的索引，如果没有父结点，则为-1
-
 	FavoriteLineData()
 	{
 		nId	=	0;
