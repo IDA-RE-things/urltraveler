@@ -1,6 +1,8 @@
 #ifndef __THREADOBJECT_I_H_GONGWEI__
 #define __THREADOBJECT_I_H_GONGWEI__
 
+#include "stdafx.h"
+
 class IThreadEvent;
 
 class IThreadObject
@@ -37,6 +39,6 @@ public:
 	virtual void OnThreadExit() = 0;
 };
 
- UTILITY_API IThreadObject* CreateThreadObject();
+UTILITY_API IThreadObject* CreateThreadObject();
 
 #endif	// __THREADOBJECT_I_H_GONGWEI__

@@ -436,6 +436,8 @@ int PlugInModule::Run()
 
 		pLogInfo->pPlugIn->ImportFavoriteData(&m_vFavoriateLineData[0], m_nSumFavorite);
 	}
+
+	return 0;
 }
 
 void PlugInModule::OnThreadExit()

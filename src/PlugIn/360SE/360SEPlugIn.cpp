@@ -64,6 +64,13 @@ BOOL C360SEPlugIn::UnLoad()
 
 BOOL C360SEPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
 {
+	// 360SE 2.0和360SE3.0的收藏夹方式不相同
+	// 360 2.0使用和IE一致的收藏夹。360 3.0单独的数据库进行存储
+
+	// 2.0  
+	// {66D8959E-B7E9-4cd4-BC16-98711D815F2A}
+	// DisplayIcon	C:\Program Files\360\360se\360SE.exe
+
 	wchar_t szVersion[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 
 	int32   nVersion = 0;
