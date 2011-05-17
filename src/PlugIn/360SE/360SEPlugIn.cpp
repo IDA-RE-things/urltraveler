@@ -211,9 +211,9 @@ BOOL C360SEPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 		ReplaceSingleQuoteToDoubleQuote(pData[i].szTitle);
 		ReplaceSingleQuoteToDoubleQuote(pData[i].szUrl);
 
-		swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into favorTable"
+		swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into tb_fav"
 			L"(id,parent_id,is_folder,title,url,pos,create_time,last_modify_time,is_best,reserved)"
-			L"values(%d,%d,%d,'%s','%s',%d,'%s',"
+			L" values(%d,%d,%d,'%s','%s',%d,'%s',"
 			L"'%s',%d,0)", 
 			pData[i].nId,
 			pData[i].nPid,
