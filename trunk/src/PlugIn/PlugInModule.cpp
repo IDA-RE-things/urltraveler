@@ -44,12 +44,16 @@ void	ReleaseModuleFactory( IModuleFactory* p)
 
 PlugInModule::PlugInModule()
 {
+	m_pThreadObj = CreateThreadObject();
 	m_pFavoriateTree	=	NULL;
 }
 
 PlugInModule::~PlugInModule()
 {
-
+	if (m_pThreadObj)
+	{
+		m_pThreadObj->Release();
+	}
 }
 
 
@@ -342,11 +346,11 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 	m_pFavoriateTree	=	new FavoriateTree();
 	int nNumOfPlugIns = m_vPlugInModuleInfo.size();
 	int *panOffset = new int[nNumOfPlugIns + 1];
-	int nSum = 0;
 
 	m_vFavoriateLineData.clear();
 
 	ZeroMemory(panOffset, sizeof(int) * (nNumOfPlugIns + 1));
+	m_nSumFavorite = 0;
 
 	for (int i = 0; i < nNumOfPlugIns; i++)
 	{
@@ -365,11 +369,11 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 
 		panOffset[i + 1] = nFavoriteCount;
 
-		nSum += nFavoriteCount;
+		m_nSumFavorite += nFavoriteCount;
 
 	}
 
-	m_vFavoriateLineData.resize(nSum);
+	m_vFavoriateLineData.resize(m_nSumFavorite);
 
 	// 对所有的浏览器数据进行合并
 	for(int i=0; i < nNumOfPlugIns; i++)
@@ -391,7 +395,7 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 
 	DWORD dwBegin = GetTickCount();
 
-	Merge(&m_vFavoriateLineData[0], nSum, 0);
+	Merge(&m_vFavoriateLineData[0], m_nSumFavorite, 0);
 
 	wchar_t szInfo[102];
 
@@ -401,6 +405,26 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 
 
 	// 将合并后的数据导入到各个浏览器中
+
+	if (panOffset)
+	{
+		delete []panOffset;
+		panOffset = NULL;
+	}
+
+	m_pThreadObj->CreateThread(this);
+
+}
+
+void PlugInModule::OnThreadEntry()
+{
+
+}
+
+int PlugInModule::Run()
+{
+	int nNumOfPlugIns = m_vPlugInModuleInfo.size();
+
 	for( int i=0; i<nNumOfPlugIns; i++)
 	{
 		PPLUGININFO	pLogInfo = &m_vPlugInModuleInfo.at(i);
@@ -410,13 +434,10 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 		if( pLogInfo->pPlugIn == NULL)
 			continue;
 
-		pLogInfo->pPlugIn->ImportFavoriteData(&m_vFavoriateLineData[0], nSum);
+		pLogInfo->pPlugIn->ImportFavoriteData(&m_vFavoriateLineData[0], m_nSumFavorite);
 	}
+}
 
-	if (panOffset)
-	{
-		delete []panOffset;
-		panOffset = NULL;
-	}
-
+void PlugInModule::OnThreadExit()
+{
 }

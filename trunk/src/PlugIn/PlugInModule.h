@@ -5,6 +5,7 @@
 #include "ModuleImp.h"
 #include "PlugIn.h"
 #include <vector>
+#include "ThreadObject_i.h"
 
 
 using namespace std;
@@ -17,7 +18,8 @@ extern "C"
 
 class FavoriateTree;
 
-class PlugInModule : public ModuleImpl
+class PlugInModule : public ModuleImpl,
+					public IThreadEvent
 {
 	DECLEAR_EVENT_MAP(PlugInModule)
 
@@ -87,6 +89,14 @@ public:
 	//----------------------------------------------------------------------------------------
 	void PaybackExtraInfo(uint32 valudId, void* pExtraInfo);
 
+public:
+	//! 进入线程虚函数
+	virtual void OnThreadEntry();
+	//! RUN
+	virtual int Run();
+	//! 线程退出虚函数
+	virtual void OnThreadExit();
+
 	// Event处理函数
 protected:
 
@@ -112,6 +122,10 @@ private:
 	std::vector<FAVORITELINEDATA>	m_vFavoriateLineData;
 
 	FavoriateTree*		m_pFavoriateTree;			//	收藏夹树的根结点	
+
+	IThreadObject*      m_pThreadObj;
+
+	int                 m_nSumFavorite;
 };
 
 class CPlugInModuleFactory : public ModuleFactoryImpl<PlugInModule>{};
