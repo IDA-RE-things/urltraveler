@@ -207,6 +207,9 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		MakeEvent<MODULE_ID_PLUGIN>()(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED,
 		MODULE_ID_PLUGIN));
 
+	m_pModuleManager->PushEvent(
+		MakeEvent<MODULE_ID_PLUGIN>()(EVENT_VALUE_PLUGIN_COMBINE_FAVORITE,
+		EVENT_VALUE_PLUGIN_COMBINE_FAVORITE));
 
 	// OnEvent_LoadAllFavorite(NULL);
 }
