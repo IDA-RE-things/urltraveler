@@ -45,9 +45,9 @@ IEPlugIn::~IEPlugIn(void)
 //	处理，只需要返回FALSE即可。否则它将会被调用。
 //返回: 插件的版本号，通常为一整数。
 //----------------------------------------------------------------------------------------
-BOOL IEPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
+BOOL IEPlugIn::IsWorked()
 {
-	return TRUE;
+	return FALSE;
 }
 
 //----------------------------------------------------------------------------------------
