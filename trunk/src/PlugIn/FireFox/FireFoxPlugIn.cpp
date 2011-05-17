@@ -62,7 +62,7 @@ BOOL FireFoxPlugIn::UnLoad()
 	return TRUE;
 }
 
-BOOL FireFoxPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
+BOOL FireFoxPlugIn::IsWorked()
 {
 	wchar_t szVersion[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 
@@ -76,12 +76,6 @@ BOOL FireFoxPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
 		szVersion, 
 		&dwSize))
 	{
-		if (nLen >= dwSize)
-		{
-			_tcscpy_s(pszBrowserVersion, nLen - 1, szVersion);
-			pszBrowserVersion[nLen - 1] = 0;
-		}
-
 		return TRUE;
 	}
 

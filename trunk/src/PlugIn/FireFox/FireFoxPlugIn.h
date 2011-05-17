@@ -41,7 +41,7 @@ public:
 	//      @param nBrowserVersion[out]		为哪个浏览器版本工作
 	//返回: 插件的版本号，通常为一整数。
 	//----------------------------------------------------------------------------------------
-	virtual BOOL IsWorked(wchar_t *pszBrowserVersion, int32 &nLen) ;
+	virtual BOOL IsWorked() ;
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetPluginVersion

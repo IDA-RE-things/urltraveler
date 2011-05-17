@@ -85,7 +85,7 @@ BOOL CSogouPlugIn::UnLoad()
 	return FALSE;
 }
 
-BOOL CSogouPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
+BOOL CSogouPlugIn::IsWorked()
 {
 	wchar_t szVersion[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 
@@ -99,12 +99,6 @@ BOOL CSogouPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
 		szVersion, 
 		&dwSize))
 	{
-		if (nLen >= dwSize)
-		{
-			_tcscpy_s(pszBrowserVersion, nLen - 1, szVersion);
-			pszBrowserVersion[nLen - 1] = 0;
-		}
-
 		return TRUE;
 	}
 }
