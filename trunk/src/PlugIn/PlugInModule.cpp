@@ -362,6 +362,19 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 	Merge(&m_vFavoriateLineData[0], nSum, 0);
 
 
+	// 将合并后的数据导入到各个浏览器中
+	for( int i=0; i<nNumOfPlugIns; i++)
+	{
+		PPLUGININFO	pLogInfo = &m_vPlugInModuleInfo.at(i);
+		if( pLogInfo == NULL)
+			continue;
+
+		if( pLogInfo->pPlugIn == NULL)
+			continue;
+
+		pLogInfo->pPlugIn->ImportFavoriteData(&m_vFavoriateLineData[0], nSum);
+	}
+
 	if (panOffset)
 	{
 		delete []panOffset;
