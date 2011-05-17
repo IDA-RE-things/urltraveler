@@ -361,6 +361,30 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Thread"
+			>
+			<File
+				RelativePath=".\ThreadImpl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreadImpl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreadObject_i.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreadProcess.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreadProcess.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
