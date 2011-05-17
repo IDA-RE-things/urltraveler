@@ -62,7 +62,7 @@ BOOL C360SEPlugIn::UnLoad()
 	return TRUE;
 }
 
-BOOL C360SEPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
+BOOL C360SEPlugIn::IsWorked()
 {
 	// 360SE 2.0和360SE3.0的收藏夹方式不相同
 	// 360 2.0使用和IE一致的收藏夹。360 3.0单独的数据库进行存储
@@ -83,12 +83,6 @@ BOOL C360SEPlugIn::IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
 		szVersion, 
 		&dwSize))
 	{
-		if (nLen >= dwSize)
-		{
-			_tcscpy_s(pszBrowserVersion, nLen - 1, szVersion);
-			pszBrowserVersion[nLen - 1] = 0;
-		}
-
 		return TRUE;
 	}
 
