@@ -91,6 +91,7 @@ typedef struct FavoriteLineData
 	int32		nClickTimes;		//	点击次数
 	uint32		nHashId;			//  Hash
 	int32		nOrder;				//	当前结点在当前层次中的顺序
+	bool        bDelete;
 
 	FavoriteLineData()
 	{
@@ -103,6 +104,7 @@ typedef struct FavoriteLineData
 		nClickTimes	=	0;
 		nHashId	=	0;
 		nOrder	=	0;
+		bDelete =   false;
 	}
 
 	bool operator < (const FavoriteLineData& x)const
