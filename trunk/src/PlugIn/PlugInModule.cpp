@@ -212,7 +212,7 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		EVENT_VALUE_PLUGIN_COMBINE_FAVORITE));
 
 
-	m_pThreadObj->CreateThread(this);
+	m_pThreadObj->CreateThread(static_cast<IThreadEvent *>(this));
 
 
 	// OnEvent_LoadAllFavorite(NULL);
