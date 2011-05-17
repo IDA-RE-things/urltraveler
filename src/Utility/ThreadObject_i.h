@@ -37,6 +37,6 @@ public:
 	virtual void OnThreadExit() = 0;
 };
 
-IThreadObject UTILITY_API *CreateThreadObject();
+ UTILITY_API IThreadObject* CreateThreadObject();
 
 #endif	// __THREADOBJECT_I_H_GONGWEI__
