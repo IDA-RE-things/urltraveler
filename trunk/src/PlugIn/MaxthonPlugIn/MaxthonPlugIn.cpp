@@ -87,7 +87,7 @@ BOOL CMaxthonPlugIn::UnLoad()
 
 }
 
-BOOL CMaxthonPlugIn::IsWorked( wchar_t *pszBrowserVersion, int32 &nLen )
+BOOL CMaxthonPlugIn::IsWorked()
 {
 	return TRUE;
 }

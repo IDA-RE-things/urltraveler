@@ -435,7 +435,96 @@ class IPlugInImp : public IPlugIn
 	{
 		return 0;
 	}
+};
 
-	
+//----------------------------------------------------------------------------------------
+//名称: IPlugInFactory
+//描述: 一个DLL中可以包含多个IPlugIn，通过IPlugInFactory，总线可以知晓当前Dll中的
+//	所有的模块。引入IPlugInFactory的最主要的原因是为了避免Project过多。
+//----------------------------------------------------------------------------------------
+interface IPlugInFactory
+{
+	//----------------------------------------------------------------------------------------
+	//名称: QueryIPlugInCounter
+	//描述: 返回当前Dll中支持的模块的数目
+	//参数: 
+	//		@param	nCount			返回的模块数目，比如1，2等
+	//----------------------------------------------------------------------------------------
+	virtual BOOL QueryPlugInCounter(uint32&  nCount) PURE;
 
+	//----------------------------------------------------------------------------------------
+	//名称: QueryIPlugInPoint
+	//描述: 返回当前Dll中支持的模块的数目
+	//参数: 
+	//		@param	nCount			参数表明后面buf的维度。如果是2，表明后面buf的维度是2
+	//		@param	ppPlugIn		指向一个IPlugIn数组的开始位置，buf的内容由实现者填充
+	//----------------------------------------------------------------------------------------
+	virtual BOOL QueryPlugInPoint(uint32 nCount, IPlugIn *&  ppPlugIn) PURE;
+
+	//----------------------------------------------------------------------------------------
+	//名称: ReleaseIPlugInPoint
+	//描述: 释放当前DLL中的所有的IPlugIn
+	//参数: 
+	//		@param	nCount			参数表明后面buf的维度。如果是2，表明后面buf的维度是2
+	//		@param	ppPlugIn		指向一个IPlugIn数组的开始位置，buf的内容由实现者填充
+	//----------------------------------------------------------------------------------------
+	virtual void ReleasePlugInPoint(uint32 nCount, IPlugIn* pPlugIn ) PURE;
+};
+
+// 
+template <typename T>
+class PlugInFactoryImpl :public  IPlugInFactory
+{
+public:
+	PlugInFactoryImpl():m_pstPlugIn(NULL){}
+	~PlugInFactoryImpl()
+	{
+		if(m_pstPlugIn!=NULL)
+			assert(0);
+	}
+
+	BOOL QueryModuleCounter(uint32 & counter)
+	{
+		counter=1;
+		return TRUE;
+	}
+
+	BOOL QueryModulePoint(uint32 counter,IPlugIn*& pPlugIn)
+	{
+		if(counter == 1 )
+		{
+			if(m_pstPlugIn)
+			{
+				pPlugIn=m_pstPlugIn;
+				return TRUE;
+			}
+
+			m_pstPlugIn = new T;
+			pPlugIn = m_pstPlugIn;
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
+	void 	ReleaseModulePoint(uint32 counter,IPlugIn* pPlugIn)
+	{
+		if(counter==1 && pPlugIn!=NULL)
+		{
+			if(m_pstPlugIn==pPlugIn)
+			{
+				delete m_pstPlugIn;
+				m_pstPlugIn=NULL;
+				return;
+			}
+
+			ASSERT(0);
+			return;
+		}
+
+		ASSERT(0);
+	}
+
+private:
+	T * m_pstPlugIn;
 };
