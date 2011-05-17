@@ -92,6 +92,7 @@ protected:
 
 	void	OnEvent_LoadAllPlugin(Event* pEvent);
 	void	OnEvent_LoadAllFavorite(Event* pEvent);
+	void	OnEvent_CheckPlugInWorked(Event* pEvent);
 
 
 private:

@@ -56,6 +56,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaxthonPlugIn", "PlugIn\Max
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "360SEPlugIn", "PlugIn\360SE\360SE.vcproj", "{F857BA31-88C6-4658-8251-59345A9DEFBA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FireFoxPlugIn", "PlugIn\FireFox\FireFox.vcproj", "{EA32F7C1-6CA0-4006-90EB-A11B363D005B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -122,6 +124,10 @@ Global
 		{F857BA31-88C6-4658-8251-59345A9DEFBA}.Debug|Win32.Build.0 = Debug|Win32
 		{F857BA31-88C6-4658-8251-59345A9DEFBA}.Release|Win32.ActiveCfg = Release|Win32
 		{F857BA31-88C6-4658-8251-59345A9DEFBA}.Release|Win32.Build.0 = Release|Win32
+		{EA32F7C1-6CA0-4006-90EB-A11B363D005B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EA32F7C1-6CA0-4006-90EB-A11B363D005B}.Debug|Win32.Build.0 = Debug|Win32
+		{EA32F7C1-6CA0-4006-90EB-A11B363D005B}.Release|Win32.ActiveCfg = Release|Win32
+		{EA32F7C1-6CA0-4006-90EB-A11B363D005B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

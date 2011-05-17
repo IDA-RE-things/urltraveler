@@ -56,6 +56,7 @@ PlugInModule::~PlugInModule()
 BEGIN_EVENT_MAP(PlugInModule)
 	ON_EVENT(EVENT_VALUE_PLUGIN_LOAD_ALL, OnEvent_LoadAllPlugin)
 	ON_EVENT(EVENT_VALUE_PLUGIN_COMBINE_FAVORITE, OnEvent_LoadAllFavorite)
+	ON_EVENT(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED, OnEvent_CheckPlugInWorked)
 END_EVENT_MAP()
 
 //----------------------------------------------------------------------------------------
@@ -196,7 +197,36 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		m_vPlugInModuleInfo.push_back(stPlugInInfo);
 	}
 
-	OnEvent_LoadAllFavorite(NULL);
+
+	// 调用各个模块的IsWorked方法，检查当前插件是否需要启用
+	m_pModuleManager->PushEvent(
+		MakeEvent<MODULE_ID_PLUGIN>()(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED,
+		MODULE_ID_PLUGIN));
+
+
+	// OnEvent_LoadAllFavorite(NULL);
+}
+
+void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
+{
+	std::vector<PLUGININFO>::iterator itr = m_vPlugInModuleInfo.begin();
+
+	for( ; itr != m_vPlugInModuleInfo.end(); )
+	{
+		PLUGININFO* pPlugInfo = &*itr;
+		if( pPlugInfo != NULL && pPlugInfo->pPlugIn != NULL)
+		{
+			// 如果当前插件不能工作，则将其删除
+			if( pPlugInfo->pPlugIn->IsWorked() == FALSE)
+			{
+				itr = m_vPlugInModuleInfo.erase(itr);
+			}
+			else
+			{
+				itr++;
+			}
+		}
+	}
 }
 
 void PlugInModule::SortFavoriateData(PFAVORITELINEDATA pFavoriteLineData, int nNum)

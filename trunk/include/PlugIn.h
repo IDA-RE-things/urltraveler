@@ -171,7 +171,7 @@ interface IPlugIn
 	//		@param nLen[in、out]           pszBrowserVersion的buffer长度, 输出实际使用长度
 	//返回: TRUE表示可以工作，FALSE表示不能工作。
 	//----------------------------------------------------------------------------------------
-	virtual BOOL IsWorked(wchar_t *pszBrowserVersion, int32 &nLen) PURE;
+	virtual BOOL IsWorked() PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetPluginVersion
@@ -306,7 +306,7 @@ class IPlugInImp : public IPlugIn
 	//		@param nLen[in、out]           pszBrowserVersion的buffer长度, 输出实际使用长度
 	//返回: TRUE表示可以工作，FALSE表示不能工作。
 	//----------------------------------------------------------------------------------------
-	virtual BOOL IsWorked(wchar_t *pszBrowserVersion, int32 &nLen)
+	virtual BOOL IsWorked()
 	{
 		return FALSE;
 	}
