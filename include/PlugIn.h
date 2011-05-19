@@ -5,6 +5,9 @@
 #include <tchar.h>
 #include <shellapi.h>
 #include "tchar.h"
+#include <vector>
+
+using namespace std;
 
 enum PlugId
 {
@@ -130,7 +133,14 @@ typedef struct HistoryLineData
 	int32		nClickTimes;		//	点击次数
 	int32		nOrder;				//	当前结点在当前层次中的顺序
 
-} HISTORYLINEDATA, *PHISTORYLINEDATA; 
+} HISTORYLINEDATA, *PHISTORYLINEDATA;
+
+
+typedef struct _winFileMem 
+{
+	unsigned char *pMemPointer;
+	unsigned long  ulMemSize;
+}winFileMem;
 
 // 浏览器插件接口，每一个浏览器都必须实现该接口
 // 上层应用程序通过该插件了解对应的浏览器的相关信息
@@ -251,16 +261,19 @@ interface IPlugIn
 	virtual int32 GetFavoriteCount() PURE;
 };
 
-typedef IPlugIn *  (*GetPlugInFunc)();
-typedef void  (*ReleasePlugInFunc)(IPlugIn*);
+class IPlugInFactory;
+
+typedef IPlugInFactory *  (*GetPlugInFactoryFunc)();
+typedef void  (*ReleasePlugInFactoryFunc)();
 
 typedef struct _PlugInInfo
 {
-	wchar_t		wszPlugInName[MAX_PATH];
-	HMODULE	hModule;
-	IPlugIn*		pPlugIn;
-	GetPlugInFunc	pGetPlugInFunc;
-	ReleasePlugInFunc	pReleasePlugInFunc;
+	wchar_t			wszPlugInName[MAX_PATH];
+	HMODULE			hModule;
+	std::vector<IPlugIn*>	pvPlugIn;		//	插件的数组
+
+	GetPlugInFactoryFunc	pGetPlugInFactoryFunc;
+	ReleasePlugInFactoryFunc	pReleasePlugInFactoryFunc;
 
 }PLUGININFO, *PPLUGININFO;
 
@@ -457,7 +470,8 @@ interface IPlugInFactory
 	//描述: 返回当前Dll中支持的模块的数目
 	//参数: 
 	//		@param	nCount			参数表明后面buf的维度。如果是2，表明后面buf的维度是2
-	//		@param	ppPlugIn		指向一个IPlugIn数组的开始位置，buf的内容由实现者填充
+	//		@param	ppPlugIn		指向一个IPlugIn数组的开始位置，buf由实现者提供被填充。
+	//								外部通常传入空指针
 	//----------------------------------------------------------------------------------------
 	virtual BOOL QueryPlugInPoint(uint32 nCount, IPlugIn *&  ppPlugIn) PURE;
 
@@ -483,13 +497,13 @@ public:
 			assert(0);
 	}
 
-	BOOL QueryModuleCounter(uint32 & counter)
+	BOOL QueryPlugInCounter(uint32 & counter)
 	{
 		counter=1;
 		return TRUE;
 	}
 
-	BOOL QueryModulePoint(uint32 counter,IPlugIn*& pPlugIn)
+	BOOL QueryPlugInPoint(uint32 counter,IPlugIn*& pPlugIn)
 	{
 		if(counter == 1 )
 		{
@@ -507,7 +521,7 @@ public:
 		return FALSE;
 	}
 
-	void 	ReleaseModulePoint(uint32 counter,IPlugIn* pPlugIn)
+	void 	ReleasePlugInPoint(uint32 counter,IPlugIn* pPlugIn)
 	{
 		if(counter==1 && pPlugIn!=NULL)
 		{

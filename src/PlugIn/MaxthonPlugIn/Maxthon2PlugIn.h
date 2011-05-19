@@ -2,26 +2,24 @@
 #include "PlugIn.h"
 
 
-class FireFoxPlugIn : public IPlugInImp
+
+class Maxthon2PlugIn : public IPlugInImp
 {
 public:
-	FireFoxPlugIn();
-	~FireFoxPlugIn();
-
+	Maxthon2PlugIn();
+	~Maxthon2PlugIn();
 	//----------------------------------------------------------------------------------------
 	//名称: Load 
 	//描述: 插件的Load方法，主要用于数据等初始化 
 	//返回: 初始化成功返回TRUE，初始化失败返回FALSE。
 	//----------------------------------------------------------------------------------------
 	virtual BOOL Load();
-
 	//----------------------------------------------------------------------------------------
 	//名称: UnLoad 
 	//描述: 插件的UnLoad方法，主要用于数据等反初始化 
 	//返回: 初始化成功返回TRUE，初始化失败返回FALSE。
 	//----------------------------------------------------------------------------------------
 	virtual BOOL UnLoad();
-
 	//----------------------------------------------------------------------------------------
 	//名称: IsWorked
 	//描述: 检查该插件是否能够正常工作。如果没有安装该PlugIn对应的浏览器，则该插件不需要
@@ -87,8 +85,6 @@ public:
 	//      回返收藏网址条数
 	//----------------------------------------------------------------------------------------
 	virtual int32 GetFavoriteCount();
-
-protected:
-	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
-	BOOL SaveDatabase();
+private:
+	winFileMem *m_pMemFavoriteDB;
 };

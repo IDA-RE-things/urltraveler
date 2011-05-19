@@ -105,16 +105,19 @@ protected:
 
 private:
 
-	//	进行排序，排序后为广度优先遍历
-	void	SortFavoriateData(PFAVORITELINEDATA pFavoriteLineData, int nNum);
-
 	//	将pFavoriteData进行合并
 	void	Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId);
 
 private:
 
+	//	保存所有的插件模块指针
+	std::vector<IPlugInFactory*>	m_vPlugInFactory;
+
 	// 存储各个模块中的IPlugIn指针
 	std::vector<PLUGININFO>		m_vPlugInModuleInfo;
+
+	//	保存所有的插件
+	std::vector<IPlugIn*>		m_vPlugIns;	
 
 	//	保存最终的合并后的所有的收藏夹
 	std::vector<FAVORITELINEDATA>	m_vFavoriateLineData;
@@ -124,11 +127,11 @@ private:
 	int                 m_nSumFavorite;
 };
 
-class CPlugInModuleFactory : public ModuleFactoryImpl<PlugInModule>{};
+class PlugInModuleFactory : public ModuleFactoryImpl<PlugInModule>{};
 
 namespace plugin
 {
 	extern PlugInModule*	g_PlugInModule;
-	extern CPlugInModuleFactory*	g_PlugInModuleFactory;
+	extern PlugInModuleFactory*	g_PlugInModuleFactory;
 }
 using namespace plugin;

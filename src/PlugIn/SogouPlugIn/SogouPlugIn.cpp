@@ -7,51 +7,25 @@
 #include "Decoder.h"
 #include "CppSQLite3.h"
 #include "CRCHash.h"
+#include "SogouPlugInFactory.h"
 
 using namespace sogouplugin;
 
 #pragma comment(lib, "shlwapi.lib")
 
-namespace sogouplugin
-{
-	CSogouPlugIn*	g_SogouPlugIn	=	NULL;
-}
 
-// 导出借口实现
-IPlugIn*	GetPlugIn()
-{
-	if( g_SogouPlugIn == NULL)
-	{
-		g_SogouPlugIn = new CSogouPlugIn();
-		ASSERT( g_SogouPlugIn != NULL);
-	}
-
-	return g_SogouPlugIn;
-}
-
-void	ReleasePlugIn( IPlugIn* p)
-{
-	ASSERT( g_SogouPlugIn == p);
-	if( g_SogouPlugIn  != NULL)
-	{
-		delete g_SogouPlugIn;
-		g_SogouPlugIn = NULL;
-	}
-}
-
-
-CSogouPlugIn::CSogouPlugIn()
+SogouPlugIn::SogouPlugIn()
 {
 	m_pMemFavoriteDB = NULL;
 }
 
 
-CSogouPlugIn::~CSogouPlugIn()
+SogouPlugIn::~SogouPlugIn()
 {
 	
 }
 
-BOOL CSogouPlugIn::Load()
+BOOL SogouPlugIn::Load()
 {
 	std::string strDecodeContent;
 
@@ -69,7 +43,7 @@ BOOL CSogouPlugIn::Load()
 	return FALSE;
 }
 
-BOOL CSogouPlugIn::UnLoad()
+BOOL SogouPlugIn::UnLoad()
 {
 	if (m_pMemFavoriteDB)
 	{
@@ -85,7 +59,7 @@ BOOL CSogouPlugIn::UnLoad()
 	return FALSE;
 }
 
-BOOL CSogouPlugIn::IsWorked()
+BOOL SogouPlugIn::IsWorked()
 {
 /*
 	wchar_t szVersion[MAX_PATH] = {0};
@@ -106,17 +80,17 @@ BOOL CSogouPlugIn::IsWorked()
 	return TRUE;
 }
 
-int32 CSogouPlugIn::GetPluginVersion()
+int32 SogouPlugIn::GetPluginVersion()
 {
 	return 1;
 }
 
-const wchar_t* CSogouPlugIn::GetBrowserName()
+const wchar_t* SogouPlugIn::GetBrowserName()
 {
 	return L"SogouExplorer";
 }
 
-wchar_t* CSogouPlugIn::GetInstallPath()
+wchar_t* SogouPlugIn::GetInstallPath()
 {
 	wchar_t szPath[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szPath); 
@@ -135,7 +109,7 @@ wchar_t* CSogouPlugIn::GetInstallPath()
 	return NULL;
 }
 
-wchar_t* CSogouPlugIn::GetFavoriteDataPath()
+wchar_t* SogouPlugIn::GetFavoriteDataPath()
 {
 	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer\\Favorite2.dat";
 
@@ -144,7 +118,7 @@ wchar_t* CSogouPlugIn::GetFavoriteDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
-wchar_t* CSogouPlugIn::GetHistoryDataPath()
+wchar_t* SogouPlugIn::GetHistoryDataPath()
 {
 	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer\\HistoryUrl.db";
 
@@ -153,7 +127,7 @@ wchar_t* CSogouPlugIn::GetHistoryDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
-BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
+BOOL SogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 {
 	CCRCHash ojbCrcHash;
 
@@ -207,7 +181,7 @@ BOOL CSogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum 
 	return FALSE;
 }
 
-BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+BOOL SogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 {
 	if (pData == NULL || nDataNum == 0)
 	{
@@ -262,7 +236,7 @@ BOOL CSogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 	return FALSE;
 }
 
-int32 CSogouPlugIn::GetFavoriteCount()
+int32 SogouPlugIn::GetFavoriteCount()
 {
 	int32 nCount = 0;
 	
@@ -279,7 +253,7 @@ int32 CSogouPlugIn::GetFavoriteCount()
 	return nCount;
 }
 
-BOOL CSogouPlugIn::SaveDatabase()
+BOOL SogouPlugIn::SaveDatabase()
 {
 	std::string strEncode;
 	wchar_t *pszFavoriteDataPath = GetFavoriteDataPath();
@@ -299,7 +273,7 @@ BOOL CSogouPlugIn::SaveDatabase()
 	return nRet == 0;
 }
 
-void CSogouPlugIn::ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
+void SogouPlugIn::ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
 {
 	int32 nLen = _tcslen(pszOri);
 

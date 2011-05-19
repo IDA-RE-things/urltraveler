@@ -47,7 +47,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				WarningLevel="3"
+				WarningLevel="0"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -213,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SogouPlugInFactory.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -244,6 +248,10 @@
 			</File>
 			<File
 				RelativePath=".\SogouPlugIn.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SogouPlugInFactory.h"
 				>
 			</File>
 			<File

@@ -2,18 +2,35 @@
 
 #include "SndaBase.h"
 #include "PlugIn.h"
+#include <shlobj.h>
 
-extern "C" 
+
+
+typedef struct FileTimeInfo
 {
-	DLLEXPORT IPlugIn*	GetPlugIn();
-	DLLEXPORT void	ReleasePlugIn( IPlugIn*);
-}
+	time_t tCreateTime;
+	time_t tLastWriteTime;
+	time_t tLastAccessTime;
+} FILETIMEINFO, *PFILETIMEINFO;
 
 class IEPlugIn : public IPlugInImp
 {
 public:
 	IEPlugIn(void);
 	~IEPlugIn(void);
+
+	//----------------------------------------------------------------------------------------
+	//名称: Load 
+	//描述: 插件的Load方法，主要用于数据等初始化 
+	//返回: 初始化成功返回TRUE，初始化失败返回FALSE。
+	//----------------------------------------------------------------------------------------
+	virtual BOOL Load();
+	//----------------------------------------------------------------------------------------
+	//名称: UnLoad 
+	//描述: 插件的UnLoad方法，主要用于数据等反初始化 
+	//返回: 初始化成功返回TRUE，初始化失败返回FALSE。
+	//----------------------------------------------------------------------------------------
+	virtual BOOL UnLoad();
 
 	//----------------------------------------------------------------------------------------
 	//名称: IsWorked
@@ -77,10 +94,38 @@ public:
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
 	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum);
-};
 
-namespace ieplugin
-{
-	extern IEPlugIn*	g_IEPlugIn;
-}
-using namespace ieplugin;
+	//----------------------------------------------------------------------------------------
+	//名称: ImportFavoriteData
+	//描述: 将一条记录导入到浏览器中
+	//参数: 
+	//		@param	stData			需要导入的的收藏夹记录
+	//----------------------------------------------------------------------------------------
+	virtual BOOL ImportFavoriteData(FAVORITELINEDATA stData);
+
+	//----------------------------------------------------------------------------------------
+	//名称: GetFavoriteCount
+	//描述: 获取浏览器中收藏网址的条数 
+	//返回:
+	//      回返收藏网址条数
+	//----------------------------------------------------------------------------------------
+	virtual int32 GetFavoriteCount();
+
+private:
+	//----------------------------------------------------------------------------------------
+	//名称: GetNodeAbsolutePath
+	//描述: 获取节点路径
+	//参数: 
+	//		@param	nIndex			当前节点索引
+	//      @param	pData           节点数据链表
+	//----------------------------------------------------------------------------------------
+	wchar_t* GetNodeAbsolutePath(int32 nIndex, PFAVORITELINEDATA pData);
+
+	BOOL GetFileTimeInfo(void *pFileData, FILETIMEINFO *pstFileTimeInfo);
+
+	BOOL TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum, BOOL bStat = FALSE);
+	HRESULT ResolveInternetShortcut(LPCWSTR lpszLinkFile, LPWSTR* lpszURL);
+
+private:
+	IMalloc *m_pMalloc;
+};
