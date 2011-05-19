@@ -5,6 +5,7 @@
 #include "PlugInList.h"
 #include "PlugIn.h"
 #include <algorithm>
+#include <objbase.h>
 
 HMODULE	 g_hModule;
 
@@ -375,6 +376,7 @@ void PlugInModule::OnThreadEntry()
 
 int PlugInModule::Run()
 {
+	CoInitialize(NULL);
 
 	int nNumOfPlugIns = m_vPlugIns.size();
 	int *panOffset = new int[nNumOfPlugIns + 1];
