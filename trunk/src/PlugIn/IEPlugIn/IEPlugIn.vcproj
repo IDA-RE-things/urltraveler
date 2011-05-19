@@ -41,13 +41,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\include"
+				AdditionalIncludeDirectories="..\..\..\include;../../utility"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;IEPLUGIN_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				WarningLevel="3"
+				WarningLevel="0"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -61,8 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Utilityd.lib"
 				OutputFile="..\..\..\bin\PlugIn\$(ProjectName)d.dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="../../../lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
@@ -118,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\..\include"
+				AdditionalIncludeDirectories="..\..\..\include;../../utility"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;IEPLUGIN_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -137,8 +139,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Utility.lib"
 				OutputFile="..\..\..\bin\PlugIn\$(ProjectName).dll"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="../../../lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
@@ -205,6 +209,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IEPlugInFactory.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PlugIn.cpp"
 				>
 			</File>
@@ -236,6 +244,10 @@
 			>
 			<File
 				RelativePath=".\IePlugIn.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IEPlugInFactory.h"
 				>
 			</File>
 			<File

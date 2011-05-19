@@ -1,23 +1,11 @@
 #pragma once
 #include "PlugIn.h"
 
-extern "C" 
-{
-	DLLEXPORT IPlugIn*	GetPlugIn();
-	DLLEXPORT void	ReleasePlugIn( IPlugIn*);
-}
-
-typedef struct _winFileMem 
-{
-	unsigned char *pMemPointer;
-	unsigned long  ulMemSize;
-}winFileMem;
-
-class CSogouPlugIn : public IPlugInImp
+class SogouPlugIn : public IPlugInImp
 {
 public:
-	CSogouPlugIn();
-	~CSogouPlugIn();
+	SogouPlugIn();
+	~SogouPlugIn();
 
 	//----------------------------------------------------------------------------------------
 	//Ãû³Æ: Load 
@@ -104,9 +92,3 @@ protected:
 private:
 	winFileMem *m_pMemFavoriteDB;
 };
-
-namespace sogouplugin
-{
-	extern CSogouPlugIn*	g_SogouPlugIn;
-}
-using namespace sogouplugin;

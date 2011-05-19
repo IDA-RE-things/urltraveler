@@ -2,11 +2,15 @@
 #include "PlugIn.h"
 
 
-class FireFoxPlugIn : public IPlugInImp
+//===========================================================
+//				360SE 3.0 °æ±¾
+//===========================================================
+
+class C360SE3PlugIn : public IPlugInImp
 {
 public:
-	FireFoxPlugIn();
-	~FireFoxPlugIn();
+	C360SE3PlugIn();
+	~C360SE3PlugIn();
 
 	//----------------------------------------------------------------------------------------
 	//Ãû³Æ: Load 

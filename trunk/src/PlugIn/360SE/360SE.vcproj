@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="360SEPlugIn"
+	Name="360PlugIn"
 	ProjectGUID="{F857BA31-88C6-4658-8251-59345A9DEFBA}"
 	RootNamespace="My360SE"
 	Keyword="Win32Proj"
@@ -47,7 +47,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				WarningLevel="3"
+				WarningLevel="0"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -183,11 +183,23 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\360ChromePlugIn.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\360SE.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\360SEPlugIn.cpp"
+				RelativePath=".\360SE2PlugIn.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\360SE3PlugIn.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\360SEPlugInFactory.cpp"
 				>
 			</File>
 			<File
@@ -239,7 +251,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\360SEPlugIn.h"
+				RelativePath=".\360ChromePlugIn.h"
+				>
+			</File>
+			<File
+				RelativePath=".\360SE2PlugIn.h"
+				>
+			</File>
+			<File
+				RelativePath=".\360SE3PlugIn.h"
+				>
+			</File>
+			<File
+				RelativePath=".\360SEPlugInFactory.h"
 				>
 			</File>
 			<File

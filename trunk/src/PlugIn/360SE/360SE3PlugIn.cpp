@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PlugIn.h"
-#include "FireFoxPlugIn.h"
+#include "360SE3PlugIn.h"
 #include <shlwapi.h>
 #include "StringHelper.h"
 #include "TimeHelper.h"
@@ -8,45 +8,47 @@
 #include "CppSQLite3.h"
 #include <algorithm>
 #include "CRCHash.h"
-#include "FireFoxPlugInFactory.h"
-
-
-using namespace firefox;
 
 #pragma comment(lib, "shlwapi.lib")
 
 
-
-FireFoxPlugIn::FireFoxPlugIn()
+C360SE3PlugIn::C360SE3PlugIn()
 {
 }
 
 
-FireFoxPlugIn::~FireFoxPlugIn()
+C360SE3PlugIn::~C360SE3PlugIn()
 {
 	
 }
 
-BOOL FireFoxPlugIn::Load()
+BOOL C360SE3PlugIn::Load()
 {
 	return TRUE;
 }
 
-BOOL FireFoxPlugIn::UnLoad()
+BOOL C360SE3PlugIn::UnLoad()
 {
 	return TRUE;
 }
 
-BOOL FireFoxPlugIn::IsWorked()
+BOOL C360SE3PlugIn::IsWorked()
 {
+	// 360SE 2.0和360SE3.0的收藏夹方式不相同
+	// 360 2.0使用和IE一致的收藏夹。360 3.0单独的数据库进行存储
+
+	// 2.0  
+	// {66D8959E-B7E9-4cd4-BC16-98711D815F2A}
+	// DisplayIcon	C:\Program Files\360\360se\360SE.exe
+
 /*
 	wchar_t szVersion[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 
 	int32   nVersion = 0;
 
 	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Mozilla Firefox (3.6.17)",
-		L"DisplayIcon", 
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{23F3F476-BE34-4f48-9C77-2806A8393EC4}",
+		L"DisplayVersion", 
 		SRRF_RT_REG_SZ, 
 		NULL, 
 		szVersion, 
@@ -56,26 +58,26 @@ BOOL FireFoxPlugIn::IsWorked()
 	}
 */
 
-	return FALSE;
+	return TRUE;
 }
 
-int32 FireFoxPlugIn::GetPluginVersion()
+int32 C360SE3PlugIn::GetPluginVersion()
 {
 	return 1;
 }
 
-const wchar_t* FireFoxPlugIn::GetBrowserName()
+const wchar_t* C360SE3PlugIn::GetBrowserName()
 {
 	return L"360SE";
 }
 
-wchar_t* FireFoxPlugIn::GetInstallPath()
+wchar_t* C360SE3PlugIn::GetInstallPath()
 {
 	wchar_t szPath[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szPath); 
 
 	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Mozilla Firefox (3.6.17)",
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{23F3F476-BE34-4f48-9C77-2806A8393EC4}",
 		L"UninstallString", 
 		SRRF_RT_REG_SZ, 
 		NULL, 
@@ -88,7 +90,7 @@ wchar_t* FireFoxPlugIn::GetInstallPath()
 	return NULL;
 }
 
-wchar_t* FireFoxPlugIn::GetFavoriteDataPath()
+wchar_t* C360SE3PlugIn::GetFavoriteDataPath()
 {
 	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\360se\\data\\360sefav.db";
 
@@ -96,7 +98,7 @@ wchar_t* FireFoxPlugIn::GetFavoriteDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
-wchar_t* FireFoxPlugIn::GetHistoryDataPath()
+wchar_t* C360SE3PlugIn::GetHistoryDataPath()
 {
 	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\data\\history.dat";
 
@@ -104,7 +106,7 @@ wchar_t* FireFoxPlugIn::GetHistoryDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
-BOOL FireFoxPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
+BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 {
 	memset(pData,0x0, nDataNum*sizeof(FAVORITELINEDATA));
 
@@ -153,7 +155,7 @@ BOOL FireFoxPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum
 	return TRUE;
 }
 
-BOOL FireFoxPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 {
 	if (pData == NULL || nDataNum == 0)
 	{
@@ -202,7 +204,7 @@ BOOL FireFoxPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum 
 	return TRUE;
 }
 
-int32 FireFoxPlugIn::GetFavoriteCount()
+int32 C360SE3PlugIn::GetFavoriteCount()
 {
 	CppSQLite3DB  m_SqliteDatabase;
 	m_SqliteDatabase.open(GetFavoriteDataPath(), "");
@@ -211,12 +213,12 @@ int32 FireFoxPlugIn::GetFavoriteCount()
 	return  Query.getIntField("Total");
 }
 
-BOOL FireFoxPlugIn::SaveDatabase()
+BOOL C360SE3PlugIn::SaveDatabase()
 {
 	return TRUE;
 }
 
-void FireFoxPlugIn::ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
+void C360SE3PlugIn::ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
 {
 	int32 nLen = _tcslen(pszOri);
 

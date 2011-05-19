@@ -1,12 +1,14 @@
 #pragma once
 #include "PlugIn.h"
 
-
-class FireFoxPlugIn : public IPlugInImp
+//===========================================================
+//				360SE 2.0 版本
+//===========================================================
+class C360SE2PlugIn : public IPlugInImp
 {
 public:
-	FireFoxPlugIn();
-	~FireFoxPlugIn();
+	C360SE2PlugIn();
+	~C360SE2PlugIn();
 
 	//----------------------------------------------------------------------------------------
 	//名称: Load 
@@ -87,8 +89,4 @@ public:
 	//      回返收藏网址条数
 	//----------------------------------------------------------------------------------------
 	virtual int32 GetFavoriteCount();
-
-protected:
-	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
-	BOOL SaveDatabase();
 };

@@ -13,7 +13,7 @@ using namespace plugin;
 namespace plugin
 {
 	PlugInModule*	g_PlugInModule = NULL;
-	CPlugInModuleFactory*	g_PlugInModuleFactory = NULL;
+	PlugInModuleFactory*	g_PlugInModuleFactory = NULL;
 }
 
 // 导出借口实现
@@ -21,7 +21,7 @@ IModuleFactory*	GetModuleFactory()
 {
 	if( g_PlugInModuleFactory == NULL)
 	{
-		g_PlugInModuleFactory = new CPlugInModuleFactory();
+		g_PlugInModuleFactory = new PlugInModuleFactory();
 		g_PlugInModuleFactory->QueryModulePoint(1, (IModule*&)g_PlugInModule);
 		
 		ASSERT( g_PlugInModule != NULL);
@@ -45,6 +45,9 @@ PlugInModule::PlugInModule()
 {
 	m_pThreadObj = CreateThreadObject();
 	m_nSumFavorite = 0;
+
+	m_vPlugInFactory.clear();
+	m_vPlugIns.clear();
 }
 
 PlugInModule::~PlugInModule()
@@ -71,10 +74,15 @@ END_EVENT_MAP()
 //----------------------------------------------------------------------------------------
 BOOL PlugInModule::Unload() 
 {
-	for(int i=0; i<m_vPlugInModuleInfo.size(); i++)
+	std::vector<PLUGININFO>::iterator itr = m_vPlugInModuleInfo.begin();
+
+	for( ; itr != m_vPlugInModuleInfo.end(); )
 	{
-		PPLUGININFO pPlugInInfo = &m_vPlugInModuleInfo.at(i);
-		pPlugInInfo->pReleasePlugInFunc(pPlugInInfo->pPlugIn);
+		PLUGININFO* pPlugInfo = &*itr;
+		if( pPlugInfo != NULL)
+		{
+			pPlugInfo->pReleasePlugInFactoryFunc();
+		}
 	}
 
 	return TRUE;
@@ -152,6 +160,7 @@ void PlugInModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
 }
 
 static PLUGINLIST g_stPlugInInitList;
+
 void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 {
 	std::wstring strPath = PathHelper::GetModuleDir(g_hModule);
@@ -165,7 +174,7 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		PLUGININFO stPlugInInfo;
 		STRNCPY(stPlugInInfo.wszPlugInName, strPlugInPath.c_str());
 
-		HMODULE exportplugin =LoadLibrary(strPlugInPath.c_str());
+		HMODULE exportplugin = LoadLibrary(strPlugInPath.c_str());
 		ASSERT(exportplugin != NULL);
 		if(exportplugin==NULL)
 		{
@@ -177,27 +186,56 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 
 		stPlugInInfo.hModule = exportplugin;
 
-		GetPlugInFunc pGetPlugInFunc 
-			=  reinterpret_cast<GetPlugInFunc >(GetProcAddress(exportplugin, "GetPlugIn"));
-		ReleasePlugInFunc pReleasePlugInFunc 
-			= reinterpret_cast<ReleasePlugInFunc>(GetProcAddress(exportplugin, "ReleasePlugIn")); 
+		GetPlugInFactoryFunc pGetPlugInFactoryFunc 
+			=  reinterpret_cast<GetPlugInFactoryFunc >(GetProcAddress(exportplugin, "GetPlugInFactory"));
+		ReleasePlugInFactoryFunc pReleasePlugInFactoryFunc 
+			= reinterpret_cast<ReleasePlugInFactoryFunc>(GetProcAddress(exportplugin, "ReleasePlugInFactory")); 
 
-		stPlugInInfo.pGetPlugInFunc = pGetPlugInFunc;
-		stPlugInInfo.pReleasePlugInFunc = pReleasePlugInFunc;
+		stPlugInInfo.pGetPlugInFactoryFunc = pGetPlugInFactoryFunc;
+		stPlugInInfo.pReleasePlugInFactoryFunc = pReleasePlugInFactoryFunc;
 
-		IPlugIn *pPlugIn = pGetPlugInFunc();
-		if(pPlugIn == NULL)
+		IPlugInFactory *pPlugInFactory = pGetPlugInFactoryFunc();
+		if(pPlugInFactory == NULL)
 		{
 			std::wstring wstrModuleName = strPlugInPath;
-			wstrModuleName.append(L" 找不到GetPlugIn函数失败");
+			wstrModuleName.append(L" 找不到GetPlugInFactory函数失败");
+			MessageBoxW(NULL, wstrModuleName.c_str(), L"PlugIn加载失败", MB_OK);
+			continue ;
+		}
+
+		m_vPlugInFactory.push_back(pPlugInFactory);
+
+		// 调用Factory的Query方法，查找当前的Factory中支持的所有的PlugIn
+		uint32 nPlugNum = 0;
+		BOOL bRet = pPlugInFactory->QueryPlugInCounter(nPlugNum);
+		if( bRet == FALSE)
+		{
+			std::wstring wstrModuleName = strPlugInPath;
+			wstrModuleName.append(L" 找不到QueryPlugInCounter函数失败");
+			MessageBoxW(NULL, wstrModuleName.c_str(), L"PlugIn加载失败", MB_OK);
+			continue ;
+		}
+
+		stPlugInInfo.pvPlugIn.resize(nPlugNum);
+
+
+		// 导出的所有的插件保存在std::vector<IPlugIn*>中
+		bRet = pPlugInFactory->QueryPlugInPoint(nPlugNum, stPlugInInfo.pvPlugIn[0]);
+		if( bRet == FALSE)
+		{
+			std::wstring wstrModuleName = strPlugInPath;
+			wstrModuleName.append(L" 找不到QueryPlugInPoint函数失败");
 			MessageBoxW(NULL, wstrModuleName.c_str(), L"PlugIn加载失败", MB_OK);
 			continue ;
 		}
 
 		// 对插件进行加载操作
-		pPlugIn->Load();
+		for(int i=0; i<nPlugNum; i++)
+		{
+			stPlugInInfo.pvPlugIn[i]->Load();
+			m_vPlugIns.push_back(stPlugInInfo.pvPlugIn[i]);
+		}
 
-		stPlugInInfo.pPlugIn = pPlugIn;
 		m_vPlugInModuleInfo.push_back(stPlugInInfo);
 	}
 
@@ -207,99 +245,29 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		MakeEvent<MODULE_ID_PLUGIN>()(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED,
 		MODULE_ID_PLUGIN));
 
-	m_pModuleManager->PushEvent(
-		MakeEvent<MODULE_ID_PLUGIN>()(EVENT_VALUE_PLUGIN_COMBINE_FAVORITE,
-		EVENT_VALUE_PLUGIN_COMBINE_FAVORITE));
-
-
-	OnEvent_LoadAllFavorite(NULL);
-
 	m_pThreadObj->CreateThread(static_cast<IThreadEvent *>(this));
 }
 
 void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 {
-	std::vector<PLUGININFO>::iterator itr = m_vPlugInModuleInfo.begin();
-
-	for( ; itr != m_vPlugInModuleInfo.end(); )
+	std::vector<IPlugIn*>::iterator itrPlugIn = m_vPlugIns.begin();
+	for( ; itrPlugIn != m_vPlugIns.end(); )
 	{
-		PLUGININFO* pPlugInfo = &*itr;
-		if( pPlugInfo != NULL && pPlugInfo->pPlugIn != NULL)
+		// 如果当前插件不能工作，则将其删除
+		if( (*itrPlugIn)->IsWorked() == FALSE)
 		{
-			// 如果当前插件不能工作，则将其删除
-			if( pPlugInfo->pPlugIn->IsWorked() == FALSE)
-			{
-				itr = m_vPlugInModuleInfo.erase(itr);
-			}
-			else
-			{
-				itr++;
-			}
+			itrPlugIn = m_vPlugIns.erase(itrPlugIn);
+		}
+		else
+		{
+			itrPlugIn++;
 		}
 	}
-}
-
-void PlugInModule::SortFavoriateData(PFAVORITELINEDATA pFavoriteLineData, int nNum)
-{
-	// 首先对pFavoriteLineData进行排序
-	FAVORITELINEDATA*	pSortLineData = new FAVORITELINEDATA[nNum];
-	memset(pSortLineData, 0x0, sizeof(FAVORITELINEDATA) * nNum);
-
-	FAVORITELINEDATA*	pSortLineDataPos = pSortLineData;
-
-	// 逐一找到合适的数据，并插入到pSortLineData中去
-	int nParentId	=	0;
-	for( int i=0; i<nNum; i++)
-	{
-		// 在未排序的数据中查找Parent为nParentId的数据
-		for(int j=0; j<nNum; j++)
-		{
-			if( pFavoriteLineData[j].nPid	==	nParentId)
-			{
-				memcpy(pSortLineDataPos, &pFavoriteLineData[j], sizeof(FAVORITELINEDATA));
-
-
-
-
-				pSortLineDataPos++;
-			}
-		}
-
-		nParentId	=	pSortLineData[i].nId;
-	}
-
-	// 排序后的数据拷贝
-	memcpy(pFavoriteLineData, pSortLineData, nNum*sizeof( FAVORITELINEDATA));
-	delete[] pSortLineData;
 }
 
 bool compare(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
 {
 	return a1->nHashId < a2->nHashId;
-}
-
-
-//这个算法好像是鸡肋，不需要重新编号
-void Rearrange(PFAVORITELINEDATA pData, int nLen)
-{
-	//最坏时间复杂度O(N^2)
-	for (int i = 0; i < nLen; i++)
-	{
-		//如果该结点的nId不是数组下标+1,则需要修正
-		if ((pData[i].nId != i + 1))
-		{
-			//扫描所有以该结点为父结点的结点，并修正这些结点的nPid
-			for (int j = 0; j < nLen; j++)
-			{
-				if (pData[j].nPid == pData[i].nId)
-				{
-					pData[j].nPid = i + 1;
-				}
-			}
-
-			pData[i].nId = i + 1;
-		}
-	}
 }
 
 void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
@@ -349,73 +317,55 @@ void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 // 通知加载合并所有的收藏夹数据
 void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 {
-	int nNumOfPlugIns = m_vPlugInModuleInfo.size();
-	int *panOffset = new int[nNumOfPlugIns + 1];
+		int nNumOfPlugIns = m_vPlugIns.size();
+		int *panOffset = new int[nNumOfPlugIns + 1];
+	
+		m_vFavoriateLineData.clear();
+	
+		ZeroMemory(panOffset, sizeof(int) * (nNumOfPlugIns + 1));
+		m_nSumFavorite = 0;
+	
+		for (int i = 0; i < nNumOfPlugIns; i++)
+		{
+			IPlugIn*	pPlugIn = m_vPlugIns.at(i);
+			if( pPlugIn == NULL)
+				continue;
+	
+			int nFavoriteCount = pPlugIn->GetFavoriteCount();
+			if( nFavoriteCount == 0)
+				continue;
 
-	m_vFavoriateLineData.clear();
-
-	ZeroMemory(panOffset, sizeof(int) * (nNumOfPlugIns + 1));
-	m_nSumFavorite = 0;
-
-	for (int i = 0; i < nNumOfPlugIns; i++)
-	{
-		PPLUGININFO	pLogInfo = &m_vPlugInModuleInfo.at(i);
-
-		if( pLogInfo == NULL)
-			continue;
-
-		if( pLogInfo->pPlugIn == NULL)
-			continue;
-
-		int nFavoriteCount = pLogInfo->pPlugIn->GetFavoriteCount();
-
-		if( nFavoriteCount == 0)
-			continue;
-
-		panOffset[i + 1] = nFavoriteCount;
-
-		m_nSumFavorite += nFavoriteCount;
-
-	}
-
-	m_vFavoriateLineData.resize(m_nSumFavorite);
-
-	// 对所有的浏览器数据进行合并
-	for(int i=0; i < nNumOfPlugIns; i++)
-	{
-		PPLUGININFO	pLogInfo = &m_vPlugInModuleInfo.at(i);
-		if( pLogInfo == NULL)
-			continue;
-
-		if( pLogInfo->pPlugIn == NULL)
-			continue;
-
-
-		int nFavoriteCount = pLogInfo->pPlugIn->GetFavoriteCount();
-		if( nFavoriteCount == 0)
-			continue;
-
-		pLogInfo->pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[panOffset[i]], panOffset[i + 1]);
-	}
-
-	DWORD dwBegin = GetTickCount();
-
-	Merge(&m_vFavoriateLineData[0], m_nSumFavorite, 0);
-
-	wchar_t szInfo[102];
-
-	_stprintf_s(szInfo, 102, L"Time Elapse:%d", GetTickCount() - dwBegin);
-
-	MessageBox(NULL, szInfo, L"OK", MB_OK);
-
-
-	// 将合并后的数据导入到各个浏览器中
-
-	if (panOffset)
-	{
-		delete []panOffset;
-		panOffset = NULL;
-	}
+			panOffset[i + 1] = nFavoriteCount;
+			m_nSumFavorite += nFavoriteCount;
+		}
+	
+		m_vFavoriateLineData.resize(m_nSumFavorite);
+	
+		// 对所有的浏览器数据进行合并
+		for(int i=0; i < nNumOfPlugIns; i++)
+		{
+			IPlugIn*	pPlugIn = m_vPlugIns.at(i);
+			if( pPlugIn == NULL)
+				continue;
+	
+	
+			int nFavoriteCount = pPlugIn->GetFavoriteCount();
+			if( nFavoriteCount == 0)
+				continue;
+	
+			pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[panOffset[i]], panOffset[i + 1]);
+		}
+	
+	
+		Merge(&m_vFavoriateLineData[0], m_nSumFavorite, 0);
+		
+		// 将合并后的数据导入到各个浏览器中
+		if (panOffset)
+		{
+			delete []panOffset;
+			panOffset = NULL;
+		}
+	
 }
 
 void PlugInModule::OnThreadEntry()
@@ -425,18 +375,63 @@ void PlugInModule::OnThreadEntry()
 
 int PlugInModule::Run()
 {
-	int nNumOfPlugIns = m_vPlugInModuleInfo.size();
 
+	int nNumOfPlugIns = m_vPlugIns.size();
+	int *panOffset = new int[nNumOfPlugIns + 1];
+
+	m_vFavoriateLineData.clear();
+
+	ZeroMemory(panOffset, sizeof(int) * (nNumOfPlugIns + 1));
+	m_nSumFavorite = 0;
+
+	for (int i = 0; i < nNumOfPlugIns; i++)
+	{
+		IPlugIn*	pPlugIn = m_vPlugIns.at(i);
+		if( pPlugIn == NULL)
+			continue;
+
+		int nFavoriteCount = pPlugIn->GetFavoriteCount();
+		if( nFavoriteCount == 0)
+			continue;
+
+		panOffset[i + 1] = nFavoriteCount;
+		m_nSumFavorite += nFavoriteCount;
+	}
+
+	m_vFavoriateLineData.resize(m_nSumFavorite);
+
+	// 对所有的浏览器数据进行合并
+	for(int i=0; i < nNumOfPlugIns; i++)
+	{
+		IPlugIn*	pPlugIn = m_vPlugIns.at(i);
+		if( pPlugIn == NULL)
+			continue;
+
+
+		int nFavoriteCount = pPlugIn->GetFavoriteCount();
+		if( nFavoriteCount == 0)
+			continue;
+
+		pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[panOffset[i]], panOffset[i + 1]);
+	}
+
+
+	Merge(&m_vFavoriateLineData[0], m_nSumFavorite, 0);
+	
+	// 将合并后的数据导入到各个浏览器中
+	if (panOffset)
+	{
+		delete []panOffset;
+		panOffset = NULL;
+	}
+	
 	for( int i=0; i<nNumOfPlugIns; i++)
 	{
-		PPLUGININFO	pLogInfo = &m_vPlugInModuleInfo.at(i);
-		if( pLogInfo == NULL)
+		IPlugIn* pPlugIn = m_vPlugIns.at(i);
+		if( pPlugIn == NULL)
 			continue;
 
-		if( pLogInfo->pPlugIn == NULL)
-			continue;
-
-		pLogInfo->pPlugIn->ImportFavoriteData(&m_vFavoriateLineData[0], m_nSumFavorite);
+		pPlugIn->ImportFavoriteData(&m_vFavoriateLineData[0], m_nSumFavorite);
 	}
 
 	//使线程直接退掉返回0，否则需要自己去Shutdown
