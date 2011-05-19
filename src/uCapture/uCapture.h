@@ -6,5 +6,14 @@
 
 extern "C"
 {
-UCAPTURE_API HRESULT Capture(HWND hWnd, LPTSTR szUrl);
+typedef void (*pfnOnCaptureFinish)(HBITMAP hBitmap);
+typedef void (*pfnQueryCaptureSize)(long *pnWidth, long *pnHeight);
+
+typedef struct CaptureCallBack
+{
+	pfnOnCaptureFinish  fn1;
+	pfnQueryCaptureSize fn2;
+}CAPTURECALLBACK;
+
+UCAPTURE_API HRESULT Capture(HWND hWnd, LPTSTR szUrl, CAPTURECALLBACK *cb);
 }
