@@ -516,14 +516,22 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 					pData[nDataNum].bDelete = false;
 					pData[nDataNum].nAddTimes = stFileTimeInfo.tCreateTime;
 					pData[nDataNum].nLastModifyTime = stFileTimeInfo.tLastWriteTime;
-					pData[nDataNum].nPid = nPid + ID_VALUE_IE9_BEGIN;
+					if (nPid == 0)
+					{
+						pData[nDataNum].nPid = nPid;
+					}
+					else
+					{
+						pData[nDataNum].nPid = nPid + ID_VALUE_IE9_BEGIN;
+					}
+
 					wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, lpszName);
 					ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), (BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
 					pData[nDataNum].nCatId = 0;
 				}
 
 				nDataNum++;
-				TaverseFavoriteFolder(pSubFolder, nDataNum - 1, pData, nDataNum, bStat);
+				TaverseFavoriteFolder(pSubFolder, nDataNum - 1 + ID_VALUE_IE9_BEGIN, pData, nDataNum, bStat);
 				pSubFolder->Release();
 			}
 			else
@@ -542,7 +550,7 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 						pData[nDataNum].bDelete = false;
 						pData[nDataNum].nAddTimes = stFileTimeInfo.tCreateTime;
 						pData[nDataNum].nLastModifyTime = stFileTimeInfo.tLastWriteTime;
-						pData[nDataNum].nPid = nPid + ID_VALUE_IE9_BEGIN;
+						pData[nDataNum].nPid = nPid;
 						wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, lpszName);
 						ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), (BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
 						pData[nDataNum].nCatId = 0;
