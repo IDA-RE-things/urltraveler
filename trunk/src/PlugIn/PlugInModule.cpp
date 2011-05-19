@@ -77,7 +77,7 @@ BOOL PlugInModule::Unload()
 {
 	std::vector<PLUGININFO>::iterator itr = m_vPlugInModuleInfo.begin();
 
-	for( ; itr != m_vPlugInModuleInfo.end(); )
+	for( ; itr != m_vPlugInModuleInfo.end(); itr++)
 	{
 		PLUGININFO* pPlugInfo = &*itr;
 		if( pPlugInfo != NULL)
@@ -315,6 +315,28 @@ void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 	}
 }
 
+void Rearrange(PFAVORITELINEDATA pData, int nLen)
+{
+	//最坏时间复杂度O(N^2)
+	for (int i = 0; i < nLen; i++)
+	{
+		//如果该结点的nId不是数组下标+1,则需要修正
+		if ((pData[i].nId != i + 1))
+		{
+			//扫描所有以该结点为父结点的结点，并修正这些结点的nPid
+			for (int j = 0; j < nLen; j++)
+			{
+				if (pData[j].nPid == pData[i].nId)
+				{
+					pData[j].nPid = i + 1;
+				}
+			}
+
+			pData[i].nId = i + 1;
+		}
+	}
+}
+
 // 通知加载合并所有的收藏夹数据
 void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 {
@@ -359,6 +381,8 @@ void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
 	
 	
 		Merge(&m_vFavoriateLineData[0], m_nSumFavorite, 0);
+
+		Rearrange(&m_vFavoriateLineData[0], m_nSumFavorite);
 		
 		// 将合并后的数据导入到各个浏览器中
 		if (panOffset)
@@ -379,11 +403,11 @@ int PlugInModule::Run()
 	CoInitialize(NULL);
 
 	int nNumOfPlugIns = m_vPlugIns.size();
-	int *panOffset = new int[nNumOfPlugIns + 1];
+	int *panCount = new int[nNumOfPlugIns];
 
 	m_vFavoriateLineData.clear();
 
-	ZeroMemory(panOffset, sizeof(int) * (nNumOfPlugIns + 1));
+	ZeroMemory(panCount, sizeof(int) * nNumOfPlugIns);
 	m_nSumFavorite = 0;
 
 	for (int i = 0; i < nNumOfPlugIns; i++)
@@ -396,14 +420,16 @@ int PlugInModule::Run()
 		if( nFavoriteCount == 0)
 			continue;
 
-		panOffset[i + 1] = nFavoriteCount;
+		panCount[i] = nFavoriteCount;
 		m_nSumFavorite += nFavoriteCount;
 	}
 
 	m_vFavoriateLineData.resize(m_nSumFavorite);
 
+	int nCurrentOffset = 0;
+
 	// 对所有的浏览器数据进行合并
-	for(int i=0; i < nNumOfPlugIns; i++)
+	for(int i = 0; i < nNumOfPlugIns; i++)
 	{
 		IPlugIn*	pPlugIn = m_vPlugIns.at(i);
 		if( pPlugIn == NULL)
@@ -414,17 +440,17 @@ int PlugInModule::Run()
 		if( nFavoriteCount == 0)
 			continue;
 
-		pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[panOffset[i]], panOffset[i + 1]);
+		pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[nCurrentOffset], panCount[i]);
+		nCurrentOffset += panCount[i];
 	}
 
-
 	Merge(&m_vFavoriateLineData[0], m_nSumFavorite, 0);
-	
+	Rearrange(&m_vFavoriateLineData[0], m_nSumFavorite);
 	// 将合并后的数据导入到各个浏览器中
-	if (panOffset)
+	if (panCount)
 	{
-		delete []panOffset;
-		panOffset = NULL;
+		delete []panCount;
+		panCount = NULL;
 	}
 	
 	for( int i=0; i<nNumOfPlugIns; i++)

@@ -156,9 +156,9 @@ BOOL SogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 			 }
 
 			 pData[i].bFolder = Query.getIntField("folder", 0);
-			 _tcscpy_s(pData[i].szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
+			 _tcsncpy_s(pData[i].szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str(), MAX_PATH - 2);
 			 pData[i].szTitle[MAX_PATH - 1] = 0;
-			 _tcscpy_s(pData[i].szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str());
+			 _tcsncpy_s(pData[i].szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str(), 1022);
 			 pData[i].szUrl[1023] = 0;
 			 pData[i].nOrder = Query.getIntField("sequenceNO", 0);
 
