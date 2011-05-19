@@ -332,6 +332,12 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 		}
 		else
 		{
+			wchar_t szFileDir[MAX_PATH] = {0};
+
+			wcscpy_s(szFileDir, MAX_PATH - 1, pszCurrNodePath);
+
+			PathRemoveFileSpec(szFileDir);
+			PathHelper::CreateMultipleDirectory(szFileDir);
 			wchar_t szCurrFileName[MAX_PATH] = {0};
 			swprintf_s(szCurrFileName, MAX_PATH, L"%s%s", pszCurrNodePath, L".url");
 			WritePrivateProfileStringW(L"InternetShortcut", L"URL", pData[i].szUrl, szCurrFileName);
@@ -360,21 +366,19 @@ wchar_t* IEPlugIn::GetNodeAbsolutePath(int32 nIndex, PFAVORITELINEDATA pData)
 	int nCurrNodeIndex = nIndex;
 	std::vector<wchar_t *> vecNodeTitle;
 	//std::wstring strNodePath = GetFavoriteDataPath();
-	std::wstring strNodePath = PathHelper::GetHomeDir();
+	std::wstring strNodePath = GetFavoriteDataPath();
 
-	while (true)
+
+	while (pData[nCurrNodeIndex].nPid != 0)
 	{//保存当前节点的路径
-		if ((pData[nCurrNodeIndex].nId) != ID_VALUE_IE9_BEGIN)
-		{
-			vecNodeTitle.push_back(pData[nCurrNodeIndex].szTitle);
-			nCurrNodeIndex = pData[nCurrNodeIndex].nPid - ID_VALUE_IE9_BEGIN;
-		}
-		else if ((pData[nCurrNodeIndex].nPid == ID_VALUE_IE9_BEGIN) && (pData[nCurrNodeIndex].nId == ID_VALUE_IE9_BEGIN))
-		{
-			vecNodeTitle.push_back(pData[nCurrNodeIndex].szTitle);
-			break;
-		}
+		vecNodeTitle.push_back(pData[nCurrNodeIndex].szTitle);
+		nCurrNodeIndex = pData[nCurrNodeIndex].nPid - 1;
 	}
+
+	vecNodeTitle.push_back(pData[nCurrNodeIndex].szTitle);
+
+
+	
 
 	std::vector<wchar_t *>::reverse_iterator it;
 	for (it = vecNodeTitle.rbegin(); it != vecNodeTitle.rend(); ++it)
@@ -459,21 +463,6 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 		{
 			GetFileTimeInfo(&fileAttrData, &stFileTimeInfo);
 		}
-
-		//if (!bStat)
-		//{//如果只是统计节点数量，则不需要导出数据
-		//	pData[nDataNum].nId = nDataNum + ID_VALUE_IE9_BEGIN;
-		//	pData[nDataNum].bFolder = true;
-		//	pData[nDataNum].bDelete = false;
-		//	pData[nDataNum].nAddTimes = stFileTimeInfo.tCreateTime;
-		//	pData[nDataNum].nLastModifyTime = stFileTimeInfo.tLastWriteTime;
-		//	pData[nDataNum].nPid = nPid + ID_VALUE_IE9_BEGIN;
-		//	wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, L"Favorites");
-		//	ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), (BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
-		//	pData[nDataNum].nCatId = 0;
-		//}
-
-		//nDataNum++;
 	}
 	
 	HRESULT hr = pFolder->EnumObjects(NULL, SHCONTF_FOLDERS|SHCONTF_NONFOLDERS, &pItems);
@@ -516,16 +505,10 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 					pData[nDataNum].bDelete = false;
 					pData[nDataNum].nAddTimes = stFileTimeInfo.tCreateTime;
 					pData[nDataNum].nLastModifyTime = stFileTimeInfo.tLastWriteTime;
-					if (nPid == 0)
-					{
-						pData[nDataNum].nPid = nPid;
-					}
-					else
-					{
-						pData[nDataNum].nPid = nPid + ID_VALUE_IE9_BEGIN;
-					}
+					pData[nDataNum].nPid = nPid;
 
 					wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, lpszName);
+					pData[nDataNum].szUrl[0] = 0;
 					ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), (BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
 					pData[nDataNum].nCatId = 0;
 				}
@@ -552,6 +535,9 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 						pData[nDataNum].nLastModifyTime = stFileTimeInfo.tLastWriteTime;
 						pData[nDataNum].nPid = nPid;
 						wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, lpszName);
+						wcscpy_s(pData[nDataNum].szUrl, 1024 - 1, lpszURL);
+						pData[nDataNum].szUrl[1023] = 0;
+
 						ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), (BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
 						pData[nDataNum].nCatId = 0;
 						wcscpy_s(pData[nDataNum].szUrl, 1024 - 1, lpszURL);
