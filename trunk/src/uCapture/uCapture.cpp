@@ -37,7 +37,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 #pragma managed(pop)
 #endif
 
-UCAPTURE_API HBITMAP CreateBitmap2(IDispatch *pApp, int x, int y)
+HBITMAP CreateBitmap2(IDispatch *pApp, int x, int y)
 {
 	HBITMAP hBitmap = 0;
 	IViewObject2*	pViewObject = NULL;
@@ -259,6 +259,7 @@ bool SaveBitmapToFile(HBITMAP   hBitmap,   std::wstring szfilename)
 ::ATL::CComPtr<IWebBrowser2> g_pBrowserApp;
 CActiveXUI g_WebBroswerActive;
 int g_nTimerId = 0;
+CAPTURECALLBACK g_cb;
 
 VOID CALLBACK TimerProc(HWND hwnd,
 						UINT uMsg,
@@ -312,13 +313,47 @@ VOID CALLBACK TimerProc(HWND hwnd,
 	g_pBrowserApp->put_Width(nWidth);
 	g_pBrowserApp->put_Height(nHeight);
 
-	SaveBitmapToFile(CreateBitmap2(pDispature, nWidth, nHeight), L"c:\\b.bmp");
+	g_cb.fn2(&nWidth, &nHeight);
+
+	g_cb.fn1(CreateBitmap2(pDispature, nWidth, nHeight));
+
+	if (g_nTimerId)
+	{
+		KillTimer(NULL, g_nTimerId);
+		g_nTimerId = 0;
+	}
 }
 
-UCAPTURE_API HRESULT Capture(HWND hWnd, LPTSTR szUrl)
+void DefaultOnCaptureFinish(HBITMAP hBitmap)
+{
+	SaveBitmapToFile(hBitmap, L"c:\\b.bmp");
+}
+
+void DefaultQueryCaptureSize(long *pnWidth, long *pnHeight)
+{
+
+}
+
+
+UCAPTURE_API HRESULT Capture(HWND hWnd, LPTSTR szUrl, CAPTURECALLBACK *cb)
 {
 	HRESULT hr;
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+
+	if (g_nTimerId != 0)
+	{
+		return E_FAIL;
+	}
+
+	if (cb == NULL)
+	{
+		g_cb.fn1 = DefaultOnCaptureFinish;
+		g_cb.fn2 = DefaultQueryCaptureSize;
+	}
+	else
+	{
+		memcpy(&g_cb, cb, sizeof(CAPTURECALLBACK));
+	}
 
 	if (g_pBrowserApp == NULL)
 	{
@@ -340,7 +375,7 @@ UCAPTURE_API HRESULT Capture(HWND hWnd, LPTSTR szUrl)
 
 	if (S_OK == hr)
 	{
-		SetTimer(hWnd, 1, 1000, TimerProc);
+		g_nTimerId = SetTimer(NULL, 1, 1000, TimerProc);
 	}
 
 	return hr;
