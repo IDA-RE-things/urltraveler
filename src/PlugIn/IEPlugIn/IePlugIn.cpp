@@ -17,7 +17,6 @@ using namespace ieplugin;
 
 IEPlugIn::IEPlugIn(void)
 {
-	CoInitialize(NULL);
 }
 
 IEPlugIn::~IEPlugIn(void)
