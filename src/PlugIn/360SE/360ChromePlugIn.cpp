@@ -67,7 +67,7 @@ BOOL C360ChromePlugIn::IsWorked()
 	return FALSE;
 }
 
-int32 C360ChromePlugIn::GetPluginVersion()
+int32 C360ChromePlugIn::GetPlugInVersion()
 {
 	return 1;
 }

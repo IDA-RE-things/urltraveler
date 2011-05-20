@@ -66,7 +66,7 @@ BOOL Maxthon2PlugIn::IsWorked()
 	return TRUE;
 }
 
-int32 Maxthon2PlugIn::GetPluginVersion()
+int32 Maxthon2PlugIn::GetPlugInVersion()
 {
 	return 1;
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PlugIn.h"
-#include "FireFoxPlugIn.h"
+#include "FireFox3PlugIn.h"
 
 extern "C" 
 {
@@ -9,7 +9,7 @@ extern "C"
 	DLLEXPORT void	ReleasePlugInFactory( );
 }
 
-class FireFoxPlugInFactory : public PlugInFactoryImpl<FireFoxPlugIn>
+class FireFoxPlugInFactory : public PlugInFactoryImpl<FireFox3PlugIn>
 {
 public:
 	FireFoxPlugInFactory();
@@ -20,7 +20,7 @@ public:
 	void ReleasePlugInPoint(uint32 counter,IPlugIn* pPlugIn);
 
 private:
-	FireFoxPlugIn	m_FireFoxPlugIn;
+	FireFox3PlugIn	m_FireFoxPlugIn;
 };
 
 namespace firefox

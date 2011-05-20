@@ -1,11 +1,12 @@
 #pragma once
 #include "PlugIn.h"
 
-class SogouPlugIn : public IPlugInImp
+
+class FireFox3PlugIn : public IPlugInImp
 {
 public:
-	SogouPlugIn();
-	~SogouPlugIn();
+	FireFox3PlugIn();
+	~FireFox3PlugIn();
 
 	//----------------------------------------------------------------------------------------
 	//名称: Load 
@@ -86,9 +87,9 @@ public:
 	//      回返收藏网址条数
 	//----------------------------------------------------------------------------------------
 	virtual int32 GetFavoriteCount();
+
 protected:
+
 	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
 	BOOL SaveDatabase();
-private:
-	winFileMem *m_pMemFavoriteDB;
 };
