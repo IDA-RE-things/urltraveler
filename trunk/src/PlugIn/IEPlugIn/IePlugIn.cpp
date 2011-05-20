@@ -77,11 +77,11 @@ BOOL IEPlugIn::IsWorked()
 }
 
 //----------------------------------------------------------------------------------------
-//名称: GetPluginVersion
+//名称: GetPlugInVersion
 //描述: 获取当前插件的版本号
 //返回: 插件的版本号，通常为一整数。
 //----------------------------------------------------------------------------------------
-int32 IEPlugIn::GetPluginVersion() 
+int32 IEPlugIn::GetPlugInVersion() 
 {
 	wchar_t szVersion[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 

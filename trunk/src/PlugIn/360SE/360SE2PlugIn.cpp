@@ -42,27 +42,13 @@ BOOL C360SE2PlugIn::IsWorked()
 	// {66D8959E-B7E9-4cd4-BC16-98711D815F2A}
 	// DisplayIcon	C:\Program Files\360\360se\360SE.exe
 
-/*
-	wchar_t szVersion[MAX_PATH] = {0};
-	DWORD   dwSize = sizeof(szVersion); 
-	int32   nVersion = 0;
+	if( GetInstallPath() == NULL)
+		return FALSE;
 
-	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{23F3F476-BE34-4f48-9C77-2806A8393EC4}",
-		L"DisplayVersion", 
-		SRRF_RT_REG_SZ, 
-		NULL, 
-		szVersion, 
-		&dwSize))
-	{
-		return TRUE;
-	}
-*/
-
-	return FALSE;
+	return TRUE;
 }
 
-int32 C360SE2PlugIn::GetPluginVersion()
+int32 C360SE2PlugIn::GetPlugInVersion()
 {
 	return 1;
 }
@@ -74,12 +60,19 @@ const wchar_t* C360SE2PlugIn::GetBrowserName()
 
 wchar_t* C360SE2PlugIn::GetInstallPath()
 {
+	// 360SE 2.0和360SE3.0的收藏夹方式不相同
+	// 360 2.0使用和IE一致的收藏夹。360 3.0单独的数据库进行存储
+
+	// 2.0  
+	// {66D8959E-B7E9-4cd4-BC16-98711D815F2A}
+	// DisplayIcon	C:\Program Files\360\360se\360SE.exe
+
 	wchar_t szPath[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szPath); 
 
 	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{23F3F476-BE34-4f48-9C77-2806A8393EC4}",
-		L"UninstallString", 
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{66D8959E-B7E9-4cd4-BC16-98711D815F2A}",
+		L"DisplayIcon", 
 		SRRF_RT_REG_SZ, 
 		NULL, 
 		szPath, 
@@ -93,31 +86,32 @@ wchar_t* C360SE2PlugIn::GetInstallPath()
 
 wchar_t* C360SE2PlugIn::GetFavoriteDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\360se\\data\\360sefav.db";
+	std::wstring strPath = PathHelper::GetHomeDir() + L"\\Favorites";
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
-	return _wcsdup(strPath.c_str());
+	return wcsdup(strPath.c_str());
 }
 
 wchar_t* C360SE2PlugIn::GetHistoryDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\data\\history.dat";
-
-	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
-	return _wcsdup(strPath.c_str());
+	std::wstring strPath = PathHelper::GetHomeDir() + L"\\AppData\\Local\\Microsoft\\Windows\\History";
+	return wcsdup(strPath.c_str());
 }
 
 BOOL C360SE2PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 {
+	// 由于使用IE收藏夹，因此不需要额外的导入导出，
 	return TRUE;
 }
 
 BOOL C360SE2PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 {
+	// 由于使用IE收藏夹，因此不需要额外的导入导出，
 	return TRUE;
 }
 
 int32 C360SE2PlugIn::GetFavoriteCount()
 {
+	// 由于使用IE收藏夹，因此不需要额外的导入导出，
 	return 0;
 }

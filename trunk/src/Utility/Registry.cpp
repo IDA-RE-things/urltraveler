@@ -6,17 +6,17 @@
 #define CLASS_NAME_LENGTH 255
 
 /* IMPORTANT NOTES ABOUT Registry:
-	
-	Registry never keeps a key open past the end of a function call.
-	This is incase the application crashes before the next call to close
-	the registry 
-	
-	INCLUDE FILES
-	"winreg.h" and "afxdisp.h" must be included in "stdafx.h"
 
-	KEY NAMES:
-	Key names must not begin with a \ and only absolute strings are accepted
-	
+Registry never keeps a key open past the end of a function call.
+This is incase the application crashes before the next call to close
+the registry 
+
+INCLUDE FILES
+"winreg.h" and "afxdisp.h" must be included in "stdafx.h"
+
+KEY NAMES:
+Key names must not begin with a \ and only absolute strings are accepted
+
 */
 
 
@@ -53,9 +53,9 @@ BOOL Registry::SetRootKey(HKEY hRootKey)
 	// sets the root key
 	// make sure to set it to a valid key
 	if (hRootKey != HKEY_CLASSES_ROOT &&
-			hRootKey != HKEY_CURRENT_USER &&
-			hRootKey != HKEY_LOCAL_MACHINE &&
-			hRootKey != HKEY_USERS) return FALSE;
+		hRootKey != HKEY_CURRENT_USER &&
+		hRootKey != HKEY_LOCAL_MACHINE &&
+		hRootKey != HKEY_USERS) return FALSE;
 
 	m_hRootKey = hRootKey;
 	return TRUE;
@@ -65,10 +65,10 @@ BOOL Registry::SetRootKey(HKEY hRootKey)
 BOOL Registry::CreateKey(String strKey)
 {
 	/* Use CreateKey to add a new key to the registry. 
-		Key is the name of the key to create. Key must be 
-		an absolute name. An absolute key 
-		begins with a backslash (\) and is a subkey of 
-		the root key. */
+	Key is the name of the key to create. Key must be 
+	an absolute name. An absolute key 
+	begins with a backslash (\) and is a subkey of 
+	the root key. */
 
 	ASSERT(strKey[0] != '\\');
 	HKEY hKey;
@@ -77,8 +77,8 @@ BOOL Registry::CreateKey(String strKey)
 
 	if (::RegCreateKeyEx(m_hRootKey, LPCTSTR(strKey), 0, NULL,
 		REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey,
-			&dwDisposition)	!= ERROR_SUCCESS) return FALSE;
-	
+		&dwDisposition)	!= ERROR_SUCCESS) return FALSE;
+
 	if (!m_bLazyWrite) ::RegFlushKey(hKey);
 	::RegCloseKey(hKey);
 	m_strCurrentPath = strKey;
@@ -93,7 +93,7 @@ BOOL Registry::DeleteKey(String strKey)
 	Subkeys must be explicitly deleted by separate calls to DeleteKey.
 	DeleteKey returns True if key deletion is successful. On error, 
 	DeleteKey returns False. */
-	
+
 	// need to open the key first with RegOpenKeyEx
 	ASSERT(FALSE); // not yet implemented
 	ASSERT(strKey[0] != '\\');
@@ -108,10 +108,10 @@ BOOL Registry::DeleteKey(String strKey)
 BOOL Registry::DeleteValue(String strName)
 {
 	/* Call DeleteValue to remove a specific data value 
-		associated with the current key. Name is string 
-		containing the name of the value to delete. Keys can contain 
-		multiple data values, and every value associated with a key 
-		has a unique name. */
+	associated with the current key. Name is string 
+	containing the name of the value to delete. Keys can contain 
+	multiple data values, and every value associated with a key 
+	has a unique name. */
 
 	ASSERT(m_strCurrentPath.GetLength() > 0);
 	HKEY hKey;
@@ -177,7 +177,7 @@ DWORD Registry::GetDataType(String strValueName)
 int Registry::GetSubKeyCount()
 {
 	/* Call this function to determine the number of subkeys.
-		the function returns -1 on error */
+	the function returns -1 on error */
 	HKEY hKey;
 	ASSERT(m_strCurrentPath.GetLength() > 0);
 
@@ -190,12 +190,12 @@ int Registry::GetSubKeyCount()
 	FILETIME ftLastWritten;
 
 	_TCHAR szClassBuffer[CLASS_NAME_LENGTH];
-		
+
 	dwClassNameLength = CLASS_NAME_LENGTH;
 	lResult = ::RegQueryInfoKey(hKey, szClassBuffer, &dwClassNameLength,
 		NULL, &dwSubKeyCount, &dwMaxSubKeyName, NULL, &dwValueCount,
 		&dwMaxValueName, &dwMaxValueLength, NULL, &ftLastWritten);
-				
+
 	::RegCloseKey(hKey);
 	if (lResult != ERROR_SUCCESS) return -1;
 
@@ -206,7 +206,7 @@ int Registry::GetSubKeyCount()
 int Registry::GetValueCount()
 {
 	/* Call this function to determine the number of subkeys.
-		the function returns -1 on error */
+	the function returns -1 on error */
 	HKEY hKey;
 	ASSERT(m_strCurrentPath.GetLength() > 0);
 
@@ -219,12 +219,12 @@ int Registry::GetValueCount()
 	FILETIME ftLastWritten;
 
 	_TCHAR szClassBuffer[CLASS_NAME_LENGTH];
-		
+
 	dwClassNameLength = CLASS_NAME_LENGTH;
 	lResult = ::RegQueryInfoKey(hKey, szClassBuffer, &dwClassNameLength,
 		NULL, &dwSubKeyCount, &dwMaxSubKeyName, NULL, &dwValueCount,
 		&dwMaxValueName, &dwMaxValueLength, NULL, &ftLastWritten);
-				
+
 	::RegCloseKey(hKey);
 	if (lResult != ERROR_SUCCESS) return -1;
 
@@ -235,13 +235,13 @@ int Registry::GetValueCount()
 BOOL Registry::KeyExists(String strKey, HKEY hRootKey)
 {
 	/* Call KeyExists to determine if a key of a specified name exists.
-		 Key is the name of the key for which to search. */
+	Key is the name of the key for which to search. */
 
 	ASSERT(strKey[0] != '\\');
 	HKEY hKey;
 
 	if (hRootKey == NULL) hRootKey = m_hRootKey;
-	
+
 	LONG lResult = ::RegOpenKeyEx(hRootKey, LPCTSTR(strKey), 0,
 		KEY_ALL_ACCESS, &hKey);
 	::RegCloseKey(hKey);
@@ -252,17 +252,17 @@ BOOL Registry::KeyExists(String strKey, HKEY hRootKey)
 BOOL Registry::SetKey(String strKey, BOOL bCanCreate)
 {
 	/* Call SetKey to make a specified key the current key. Key is the 
-		name of the key to open. If Key is null, the CurrentKey property 
-		is set to the key specified by the RootKey property.
+	name of the key to open. If Key is null, the CurrentKey property 
+	is set to the key specified by the RootKey property.
 
-		CanCreate specifies whether to create the specified key if it does 
-		not exist. If CanCreate is True, the key is created if necessary.
+	CanCreate specifies whether to create the specified key if it does 
+	not exist. If CanCreate is True, the key is created if necessary.
 
-		Key is opened or created with the security access value KEY_ALL_ACCESS. 
-		OpenKey only creates non-volatile keys, A non-volatile key is stored in 
-		the registry and is preserved when the system is restarted. 
+	Key is opened or created with the security access value KEY_ALL_ACCESS. 
+	OpenKey only creates non-volatile keys, A non-volatile key is stored in 
+	the registry and is preserved when the system is restarted. 
 
-		OpenKey returns True if the key is successfully opened or created */
+	OpenKey returns True if the key is successfully opened or created */
 
 	ASSERT(strKey[0] != '\\');
 	HKEY hKey;
@@ -280,7 +280,7 @@ BOOL Registry::SetKey(String strKey, BOOL bCanCreate)
 	{
 		if (::RegCreateKeyEx(m_hRootKey, LPCTSTR(strKey), 0, NULL, 
 			REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey,
-				&dwDisposition) != ERROR_SUCCESS) return FALSE;
+			&dwDisposition) != ERROR_SUCCESS) return FALSE;
 		m_strCurrentPath = strKey;
 		if (!m_bLazyWrite) ::RegFlushKey(hKey);
 		::RegCloseKey(hKey);	
@@ -302,17 +302,17 @@ BOOL Registry::SetKey(String strKey, BOOL bCanCreate)
 BOOL Registry::ValueExists(String strName)
 {
 	/* Call ValueExists to determine if a particular key exists in 
-		the registry. Calling Value Exists is especially useful before 
-		calling other TRegistry methods that operate only on existing keys.
+	the registry. Calling Value Exists is especially useful before 
+	calling other TRegistry methods that operate only on existing keys.
 
-		Name is the name of the data value for which to check.
+	Name is the name of the data value for which to check.
 	ValueExists returns True if a match if found, False otherwise. */
 
 	HKEY hKey;
 	LONG lResult;
 	ASSERT(m_strCurrentPath.GetLength() > 0);
 
-	
+
 	if (::RegOpenKeyEx(m_hRootKey, LPCTSTR(m_strCurrentPath), 0,
 		KEY_ALL_ACCESS, &hKey) != ERROR_SUCCESS) return FALSE;
 
@@ -328,14 +328,14 @@ BOOL Registry::ValueExists(String strName)
 void Registry::RenameValue(String strOldName, String strNewName)
 {
 	/* Call RenameValue to change the name of a data value associated 
-		with the current key. OldName is a string containing the current 
-		name of the data value. NewName is a string containing the replacement 
-		name for the data value.
-		
-		If OldName is the name of an existing data value for the current key, 
-		and NewName is not the name of an existing data value for the current 
-		key, RenameValue changes the data value name as specified. Otherwise 
-		the current name remains unchanged.
+	with the current key. OldName is a string containing the current 
+	name of the data value. NewName is a string containing the replacement 
+	name for the data value.
+
+	If OldName is the name of an existing data value for the current key, 
+	and NewName is not the name of an existing data value for the current 
+	key, RenameValue changes the data value name as specified. Otherwise 
+	the current name remains unchanged.
 	*/
 	ASSERT(FALSE); // functionality not yet implemented
 }
@@ -343,12 +343,12 @@ void Registry::RenameValue(String strOldName, String strNewName)
 double Registry::ReadFloat(String strName, double fDefault)
 {
 	/* Call ReadFloat to read a float value from a specified 
-		data value associated with the current key. Name is the name 
-		of the data value to read.
-		
-		If successful, ReadFloat returns a double value. 
-		On error, an exception is raised, and the value returned by 
-		this function should be discarded. */
+	data value associated with the current key. Name is the name 
+	of the data value to read.
+
+	If successful, ReadFloat returns a double value. 
+	On error, an exception is raised, and the value returned by 
+	this function should be discarded. */
 
 	DWORD dwType = REG_BINARY;
 	double d;
@@ -372,13 +372,13 @@ String Registry::ReadString(String strName, String strDefault)
 	BOOL bSuccess = TRUE;
 	_TCHAR sz[255];
 	HKEY hKey;
-	
-								 
+
+
 	ASSERT(m_strCurrentPath.GetLength() > 0);
 
 	// make sure it is the proper type
 	dwType = GetDataType(strName);
-	
+
 	if (dwType != REG_SZ && dwType != REG_EXPAND_SZ)
 	{
 		return strDefault;
@@ -392,7 +392,7 @@ String Registry::ReadString(String strName, String strDefault)
 		&dwType, (LPBYTE)sz, &dwSize);
 	if (m_nLastError != ERROR_SUCCESS) bSuccess = FALSE;
 	::RegCloseKey(hKey);	
-	
+
 	if (!bSuccess) return strDefault;
 	return String((LPCTSTR)sz);
 }
@@ -476,11 +476,11 @@ BOOL Registry::WriteBool(String strName, BOOL bValue)
 
 	if (::RegOpenKeyEx(m_hRootKey, LPCTSTR(m_strCurrentPath), 0,
 		KEY_WRITE, &hKey) != ERROR_SUCCESS) return FALSE;
-	
+
 	if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,
 		REG_BINARY, (LPBYTE)&bValue, sizeof(bValue))
-		 != ERROR_SUCCESS) bSuccess = FALSE;
-		
+		!= ERROR_SUCCESS) bSuccess = FALSE;
+
 	if (!m_bLazyWrite) ::RegFlushKey(hKey);
 	::RegCloseKey(hKey);
 	return bSuccess;
@@ -492,7 +492,7 @@ BOOL Registry::WriteString(String strName, String strValue)
 	BOOL bSuccess = TRUE;
 	HKEY hKey;
 	_TCHAR sz[255];
-	
+
 	if (strValue.GetLength() > 254) return FALSE;
 
 #ifdef _UNICODE
@@ -503,17 +503,17 @@ BOOL Registry::WriteString(String strName, String strValue)
 
 	if (::RegOpenKeyEx(m_hRootKey, LPCTSTR(m_strCurrentPath), 0,
 		KEY_WRITE, &hKey) != ERROR_SUCCESS) return FALSE;
-	
+
 #ifdef _UNICODE
 	if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,
 		REG_SZ, (LPBYTE)sz, wcslen(sz) + 1)
-		 != ERROR_SUCCESS) bSuccess = FALSE;
+		!= ERROR_SUCCESS) bSuccess = FALSE;
 #else
 	if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,
 		REG_SZ, (LPBYTE)sz, strlen(sz) + 1)
-		 != ERROR_SUCCESS) bSuccess = FALSE;
+		!= ERROR_SUCCESS) bSuccess = FALSE;
 #endif
-		
+
 	if (!m_bLazyWrite) ::RegFlushKey(hKey);
 	::RegCloseKey(hKey);
 	return bSuccess;
@@ -528,11 +528,11 @@ BOOL Registry::WriteFloat(String strName, double fValue)
 
 	if (::RegOpenKeyEx(m_hRootKey, LPCTSTR(m_strCurrentPath), 0,
 		KEY_WRITE, &hKey) != ERROR_SUCCESS) return FALSE;
-	
+
 	if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,
 		REG_BINARY, (LPBYTE)&fValue, sizeof(fValue))
-		 != ERROR_SUCCESS) bSuccess = FALSE;
-		
+		!= ERROR_SUCCESS) bSuccess = FALSE;
+
 	if (!m_bLazyWrite) ::RegFlushKey(hKey);
 	::RegCloseKey(hKey);
 	return bSuccess;
@@ -546,11 +546,11 @@ BOOL Registry::WriteInt(String strName, int nValue)
 
 	if (::RegOpenKeyEx(m_hRootKey, LPCTSTR(m_strCurrentPath), 0,
 		KEY_WRITE, &hKey) != ERROR_SUCCESS) return FALSE;
-	
+
 	if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,
 		REG_BINARY, (LPBYTE)&nValue, sizeof(nValue))
-		 != ERROR_SUCCESS) bSuccess = FALSE;
-		
+		!= ERROR_SUCCESS) bSuccess = FALSE;
+
 	if (!m_bLazyWrite) ::RegFlushKey(hKey);
 	::RegCloseKey(hKey);
 	return bSuccess;
@@ -564,11 +564,11 @@ BOOL Registry::WriteDword(String strName, DWORD dwValue)
 
 	if (::RegOpenKeyEx(m_hRootKey, LPCTSTR(m_strCurrentPath), 0,
 		KEY_WRITE, &hKey) != ERROR_SUCCESS) return FALSE;
-	
+
 	if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,
 		REG_BINARY, (LPBYTE)&dwValue, sizeof(dwValue))
-		 != ERROR_SUCCESS) bSuccess = FALSE;
-		
+		!= ERROR_SUCCESS) bSuccess = FALSE;
+
 	if (!m_bLazyWrite) ::RegFlushKey(hKey);
 	::RegCloseKey(hKey);
 	return bSuccess;
@@ -582,12 +582,304 @@ BOOL Registry::WriteColor(String strName, COLORREF rgbValue)
 
 	if (::RegOpenKeyEx(m_hRootKey, LPCTSTR(m_strCurrentPath), 0,
 		KEY_WRITE, &hKey) != ERROR_SUCCESS) return FALSE;
-	
+
 	if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,
 		REG_BINARY, (LPBYTE)&rgbValue, sizeof(rgbValue))
-		 != ERROR_SUCCESS) bSuccess = FALSE;
-		
+		!= ERROR_SUCCESS) bSuccess = FALSE;
+
 	if (!m_bLazyWrite) ::RegFlushKey(hKey);
 	::RegCloseKey(hKey);
 	return bSuccess;
+}
+
+//-----------------------------------------------------------------------------------------------------------   
+// 函数: SearchInReg   
+// 功能: 在注册表指定位置搜索某指定字符串.   
+// 参数: [in] LPONSEARCHPROC fnOnSearchProc - 搜索回调函数   
+//       [in] const TCHAR* ptszRegPath - 搜索路径(直接包含根键并支持缩写)   
+//       [in] const TCHAR* ptszSearchKey - 搜索关键字符串   
+//       [in] bool isFuzzy = true - 是否采用模糊方式   
+//       [in] bool isSearchKey = true - 是否搜索键   
+//       [in] bool isSearchValueName = true - 是否搜索值名   
+//       [in] bool isSearchValueData = true - 是否搜索值   
+// 返回: void   
+// 说明: 若要统计搜索数量, 请使用外部变量在回调函数中自行统计.   
+//-----------------------------------------------------------------------------------------------------------   
+void Registry::SearchInReg(void* p,LPONSEARCHPROC fnOnSearchProc, const TCHAR* ptszRegPath, 
+						   const TCHAR* ptszSearchKey, bool isFuzzy /* = true */, bool isSearchKey /* = true */, 
+						   bool isSearchValueName /* = true */, bool isSearchValueData /* = true */)   
+{   
+	// 参数无效   
+	if (NULL == ptszRegPath || 0 == ::_tcslen(ptszRegPath) || NULL == ptszSearchKey || 0 == ::_tcslen(ptszSearchKey))   
+	{   
+		return;   
+	}   
+	// 什么都不搜索   
+	if (false == isSearchKey && false == isSearchValueName && false == isSearchValueData)   
+	{   
+		return;   
+	}   
+	const long MAX_KEY = 255;                       // 键最大长度   
+	const long MAX_VALUENAME = 16383;               // 值名最大长度   
+	TCHAR* ptszRegPathCopy = NULL;                  // ptszRegPath 字符串拷贝   
+	TCHAR* ptszRegSubPath = NULL;                   // 子键路径字符串   
+	HKEY hPredKey = NULL;                           // 系统预设主键句柄   
+	HKEY hKey = NULL;                               // 操作键句柄   
+	DWORD dwSubKeyCount = 0;                        // 当前子键数   
+	DWORD dwValueCount = 0;                         // 当前键值数   
+	DWORD cbSubKey = MAX_KEY;                       // 子键字符串长度   
+	TCHAR ptszSubKey[MAX_KEY] = _T("");             // 子键字符串   
+	DWORD dwValueNameLength = MAX_VALUENAME;        // 值名字符串长度   
+	TCHAR ptszValueName[MAX_VALUENAME] = _T("");    // 值名字符串   
+	DWORD dwType = 0;                               // 键值数据类型   
+	DWORD cbData = 0;                               // 键值数据大小(byte)   
+	BYTE* lpData = NULL;                            // 键值数据   
+	// ptszRegPath 字符串做为常量传入, 不允许修改,    
+	// 所以需创建 Reg 字符串的拷贝, 用于后续操作.   
+	ptszRegPathCopy = (TCHAR*)::malloc((::_tcslen(ptszRegPath) + 1) * sizeof(TCHAR));   
+	::_tcscpy_s(ptszRegPathCopy, ::_tcslen(ptszRegPath) + 1, ptszRegPath);   
+	// 提取系统预设主键字符串   
+	::_tcsstr(ptszRegPathCopy, _T("\\"))[0] = _T('\0');   
+	// 判断获取 hPredKey   
+	if (0 == ::_tcsicmp(ptszRegPathCopy, _T("HKEY_CLASSES_ROOT")) ||    
+		0 == ::_tcsicmp(ptszRegPathCopy, _T("HKCR")))   
+	{   
+		hPredKey = HKEY_CLASSES_ROOT;   
+	}   
+	else if (0 == ::_tcsicmp(ptszRegPathCopy, _T("HKEY_LOCAL_MACHINE")) ||    
+		0 == ::_tcsicmp(ptszRegPathCopy, _T("HKLM")))   
+	{   
+		hPredKey = HKEY_LOCAL_MACHINE;   
+	}   
+	else if (0 == ::_tcsicmp(ptszRegPathCopy, _T("HKEY_CURRENT_USER")) ||    
+		0 == ::_tcsicmp(ptszRegPathCopy, _T("HKCU")))   
+	{   
+		hPredKey = HKEY_CURRENT_USER;   
+	}   
+	else if (0 == ::_tcsicmp(ptszRegPathCopy, _T("HKEY_USERS")) ||    
+		0 == ::_tcsicmp(ptszRegPathCopy, _T("HKU")))   
+	{   
+		hPredKey = HKEY_USERS;   
+	}   
+	else if (0 == ::_tcsicmp(ptszRegPathCopy, _T("HKEY_PERFORMANCE_DATA")) ||    
+		0 == ::_tcsicmp(ptszRegPathCopy, _T("HKPD")))   
+	{   
+		hPredKey = HKEY_PERFORMANCE_DATA;   
+	}   
+	else if (0 == ::_tcsicmp(ptszRegPathCopy, _T("HKEY_PERFORMANCE_TEXT")) ||    
+		0 == ::_tcsicmp(ptszRegPathCopy, _T("HKPT")))   
+	{   
+		hPredKey = HKEY_PERFORMANCE_TEXT;   
+	}   
+	else if (0 == ::_tcsicmp(ptszRegPathCopy, _T("HKEY_PERFORMANCE_NLSTEXT")) ||    
+		0 == ::_tcsicmp(ptszRegPathCopy, _T("HKPN")))   
+	{   
+		hPredKey = HKEY_PERFORMANCE_NLSTEXT;   
+	}   
+	else if (0 == ::_tcsicmp(ptszRegPathCopy, _T("HKEY_CURRENT_CONFIG")) ||    
+		0 == ::_tcsicmp(ptszRegPathCopy, _T("HKCC")))   
+	{   
+		hPredKey = HKEY_CURRENT_CONFIG;   
+	}   
+	else if (0 == ::_tcsicmp(ptszRegPathCopy, _T("HKEY_DYN_DATA")) ||    
+		0 == ::_tcsicmp(ptszRegPathCopy, _T("HKDD")))   
+	{   
+		hPredKey = HKEY_DYN_DATA;   
+	}   
+	else  
+	{   
+		return;   
+	}   
+	if (NULL != ptszRegPathCopy)   
+	{   
+		::free(ptszRegPathCopy);   
+		ptszRegPathCopy = NULL;   
+	}   
+	// 创建 ptszRegPath 字符串的新拷贝   
+	ptszRegPathCopy = (TCHAR*)::malloc((::_tcslen(ptszRegPath) + 1) * sizeof(TCHAR));   
+	::_tcscpy_s(ptszRegPathCopy, ::_tcslen(ptszRegPath) + 1, ptszRegPath);   
+	// 提取子键路径字符串   
+	ptszRegSubPath = ::_tcsstr(ptszRegPathCopy, _T("\\"));   
+	if (NULL != ptszRegSubPath)   
+	{   
+		ptszRegSubPath++;   
+		if (ERROR_SUCCESS != ::RegOpenKeyEx(hPredKey, ptszRegSubPath, 0, KEY_READ, &hKey))   
+		{   
+			return;   
+		}   
+	}   
+	else  
+	{   
+		hKey = hPredKey;   
+	}   
+	if (NULL != ptszRegPathCopy)   
+	{   
+		::free(ptszRegPathCopy);   
+		ptszRegPathCopy = NULL;   
+	}   
+	// 获取键信息(主要是子键数和键值数, 用于下面遍历)   
+	// 注: 也可以不用主动获取数量, 而由枚举函数(RegEnumXXX)返回 ERROR_NO_MORE_ITEMS 来判断枚举结束.   
+	if (ERROR_SUCCESS != ::RegQueryInfoKey(hKey, NULL, NULL, NULL, &dwSubKeyCount, NULL, NULL, &dwValueCount, NULL, NULL, NULL, NULL))   
+	{   
+		if (NULL != hKey)   
+		{   
+			::RegCloseKey(hKey);   
+			hKey = NULL;   
+		}   
+		return;   
+	}   
+	// 遍历子键   
+	if (0 != dwSubKeyCount)   
+	{   
+		for (DWORD i = 0; i < dwSubKeyCount; i++)   
+		{   
+			cbSubKey = MAX_KEY;   
+			if (ERROR_SUCCESS == ::RegEnumKeyEx(hKey, i, ptszSubKey, &cbSubKey, NULL, NULL, NULL, NULL))   
+			{   
+				TCHAR ptszNextPath[1024]; // 1024 为预估大小, 不够则适当加大   
+				_stprintf_s(ptszNextPath, 1024, _T("%s\\%s"), ptszRegPath, ptszSubKey);   
+				SearchInReg(p,fnOnSearchProc, ptszNextPath, ptszSearchKey, isFuzzy, isSearchKey, isSearchValueName, isSearchValueData); // 递归   
+				// 回调处理搜索过程   
+				fnOnSearchProc(p,false, ptszNextPath, NULL, hKey);   
+				// 比对子键   
+				if (true == isSearchKey &&                          // 判断是否要求比对子键   
+					true == isFuzzy ?                               // 判断是否采用模糊方式   
+					NULL != ::_tcsstr(ptszSubKey, ptszSearchKey) :  // 采用模糊方式比对   
+				0 == ::_tcsicmp(ptszSearchKey, ptszSubKey))     // 采用非模糊方式比对   
+				{   
+					// 回调处理搜索结果   
+					TCHAR* ptszResultText = NULL;   // 结果字段(用于显示)   
+					TCHAR* ptszMatched = NULL;      // 被匹配部分的字段   
+					HKEY hResultKey = NULL;         // 当前键的句柄, 用于在回调中对该键操作   
+					ptszResultText = (TCHAR*)::malloc((::_tcslen(ptszNextPath) + 1) * sizeof(TCHAR));   
+					::_tcscpy_s(ptszResultText, ::_tcslen(ptszNextPath) + 1, ptszNextPath);   
+					ptszMatched = (TCHAR*)::malloc((::_tcslen(ptszSubKey) + 1) * sizeof(TCHAR));   
+					::_tcscpy_s(ptszMatched, ::_tcslen(ptszSubKey) + 1, ptszSubKey);   
+					::RegOpenKeyEx(hKey, ptszSubKey, 0, KEY_ALL_ACCESS, &hResultKey);   
+					fnOnSearchProc(p,true, ptszResultText, ptszMatched, hKey);   
+					// 清理   
+					if (NULL != ptszResultText)   
+					{   
+						::free(ptszResultText);   
+						ptszResultText = NULL;   
+					}   
+					if (NULL != ptszMatched)   
+					{   
+						::free(ptszMatched);   
+						ptszMatched = NULL;   
+					}   
+					if (NULL != hResultKey)   
+					{   
+						::RegCloseKey(hResultKey);   
+						hResultKey = NULL;   
+					}   
+				}   
+			}   
+		}   
+	}   
+	// 遍历键值   
+	if (0 != dwValueCount)   
+	{   
+		for (DWORD i = 0; i < dwValueCount; i++)   
+		{   
+			if (ERROR_SUCCESS == ::RegEnumValue(hKey, i, ptszValueName, &dwValueNameLength, NULL, &dwType, NULL, &cbData))   
+			{   
+				// 比对值名   
+				if (true == isSearchValueName &&                        // 判断是否要求比对值名   
+					true == isFuzzy ?                                   // 判断是否采用模糊方式   
+					NULL != ::_tcsstr(ptszValueName, ptszSearchKey) :   // 采用模糊方式比对   
+				0 == ::_tcsicmp(ptszSearchKey, ptszValueName))      // 采用非模糊方式比对   
+				{   
+					// 回调处理搜索结果   
+					TCHAR* ptszResultText = NULL;   // 结果字段(用于显示)   
+					TCHAR* ptszMatched = NULL;      // 匹配部分字段   
+					HKEY hResultKey = NULL;         // 当前键的句柄, 用于在回调中对该键操作   
+					ptszResultText = (TCHAR*)::malloc((::_tcslen(ptszRegPath) + ::_tcslen(ptszValueName) + 4) * sizeof(TCHAR));   
+					_stprintf_s(ptszResultText, ::_tcslen(ptszRegPath) + ::_tcslen(ptszValueName) + 4, _T("%s \"%s\""), ptszRegPath, ptszValueName);   
+					ptszMatched = (TCHAR*)::malloc((::_tcslen(ptszValueName) + 1) * sizeof(TCHAR));   
+					::_tcscpy_s(ptszMatched, ::_tcslen(ptszValueName) + 1, ptszValueName);   
+					::RegOpenKeyEx(hKey, ptszSubKey, 0, KEY_ALL_ACCESS, &hResultKey);   
+					fnOnSearchProc(p,true, ptszResultText, ptszMatched, hKey);   
+					// 清理   
+					if (NULL != ptszResultText)   
+					{   
+						::free(ptszResultText);   
+						ptszResultText = NULL;   
+					}   
+					if (NULL != ptszMatched)   
+					{   
+						::free(ptszMatched);   
+						ptszMatched = NULL;   
+					}   
+					if (NULL != hResultKey)   
+					{   
+						::RegCloseKey(hResultKey);   
+						hResultKey = NULL;   
+					}   
+				}   
+				// 判断若该值为字符串格式且不为空, 则对值进行比对.   
+				if ((REG_SZ == dwType || REG_MULTI_SZ == dwType || REG_EXPAND_SZ == dwType) && 0 != cbData)   
+				{   
+					lpData = (BYTE*)::malloc(cbData);   
+					if (ERROR_SUCCESS == ::RegQueryValueEx(hKey, ptszValueName, NULL, NULL, lpData, &cbData))   
+					{   
+						// 将值转换为字符串类型   
+						TCHAR* ptszValueData = (TCHAR*)::malloc(cbData);   
+						::_tcscpy_s(ptszValueData, cbData / sizeof(TCHAR), (TCHAR*)lpData);   
+						// 对比值   
+						if (true == isSearchValueData &&                        // 判断是否要求比对值   
+							true == isFuzzy ?                                   // 判断是否采用模糊方式   
+							NULL != ::_tcsstr(ptszValueData, ptszSearchKey) :   // 采用模糊方式比对   
+						0 == ::_tcsicmp(ptszSearchKey, ptszValueData))      // 采用非模糊方式比对   
+						{   
+							// 回调处理搜索结果   
+							TCHAR* ptszResultText = NULL;   // 结果字段(用于显示)   
+							TCHAR* ptszMatched = NULL;      // 匹配部分字段   
+							HKEY hResultKey = NULL;         // 当前键的句柄, 用于在回调中对该键操作   
+							ptszResultText = (TCHAR*)::malloc((::_tcslen(ptszRegPath) + ::_tcslen(ptszValueName) + ::_tcslen(ptszValueData) + 8) * sizeof(TCHAR));   
+							_stprintf_s(ptszResultText, ::_tcslen(ptszRegPath) + ::_tcslen(ptszValueName) + ::_tcslen(ptszValueData) + 8, _T("%s \"%s\"=\"%s\""), ptszRegPath, ptszValueName, ptszValueData);   
+							ptszMatched = (TCHAR*)::malloc((::_tcslen(ptszValueData) + 1) * sizeof(TCHAR));   
+							::_tcscpy_s(ptszMatched, ::_tcslen(ptszValueData) + 1, ptszValueData);   
+							::RegOpenKeyEx(hKey, ptszSubKey, 0, KEY_ALL_ACCESS, &hResultKey);   
+							fnOnSearchProc(p,true, ptszResultText, ptszMatched, hKey);   
+							// 清理   
+							if (NULL != ptszResultText)   
+							{   
+								::free(ptszResultText);   
+								ptszResultText = NULL;   
+							}   
+							if (NULL != ptszMatched)   
+							{   
+								::free(ptszMatched);   
+								ptszMatched = NULL;   
+							}   
+							if (NULL != hResultKey)   
+							{   
+								::RegCloseKey(hResultKey);   
+								hResultKey = NULL;   
+							}   
+						}   
+						// 清理   
+						if (NULL != ptszValueData)   
+						{   
+							::free(ptszValueData);   
+							ptszValueData = NULL;   
+						}   
+					}   
+					// 清理   
+					if (NULL != lpData)   
+					{   
+						::free(lpData);   
+						lpData = NULL;   
+					}   
+				}   
+			}   
+		}   
+	}   
+	// 清理   
+	if (NULL != hKey)   
+	{   
+		::RegCloseKey(hKey);   
+		hKey = NULL;   
+	}   
 }

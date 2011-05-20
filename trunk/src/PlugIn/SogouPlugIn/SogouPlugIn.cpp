@@ -80,7 +80,7 @@ BOOL SogouPlugIn::IsWorked()
 	return TRUE;
 }
 
-int32 SogouPlugIn::GetPluginVersion()
+int32 SogouPlugIn::GetPlugInVersion()
 {
 	return 1;
 }

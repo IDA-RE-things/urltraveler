@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PlugIn.h"
-#include "360SE3PlugIn.h"
+#include "FireFox3PlugIn.h"
 #include <shlwapi.h>
 #include "StringHelper.h"
 #include "TimeHelper.h"
@@ -8,97 +8,159 @@
 #include "CppSQLite3.h"
 #include <algorithm>
 #include "CRCHash.h"
+#include "FireFoxPlugInFactory.h"
+#include "Registry.h"
+
+
+using namespace firefox;
 
 #pragma comment(lib, "shlwapi.lib")
 
 
-C360SE3PlugIn::C360SE3PlugIn()
+
+FireFox3PlugIn::FireFox3PlugIn()
 {
 }
 
 
-C360SE3PlugIn::~C360SE3PlugIn()
+FireFox3PlugIn::~FireFox3PlugIn()
 {
 	
 }
 
-BOOL C360SE3PlugIn::Load()
+BOOL FireFox3PlugIn::Load()
 {
 	return TRUE;
 }
 
-BOOL C360SE3PlugIn::UnLoad()
+BOOL FireFox3PlugIn::UnLoad()
 {
 	return TRUE;
 }
 
-BOOL C360SE3PlugIn::IsWorked()
+BOOL FireFox3PlugIn::IsWorked()
 {
-	// 360SE 2.0和360SE3.0的收藏夹方式不相同
-	// 360 2.0使用和IE一致的收藏夹。360 3.0单独的数据库进行存储
+	GetFavoriteDataPath();
 
-	// 2.0  
-	// {66D8959E-B7E9-4cd4-BC16-98711D815F2A}
-	// DisplayIcon	C:\Program Files\360\360se\360SE.exe
-
-/*
-	wchar_t szVersion[MAX_PATH] = {0};
-	DWORD   dwSize = sizeof(szVersion); 
-	int32   nVersion = 0;
-
-	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{23F3F476-BE34-4f48-9C77-2806A8393EC4}",
-		L"DisplayVersion", 
-		SRRF_RT_REG_SZ, 
-		NULL, 
-		szVersion, 
-		&dwSize))
-	{
-		return TRUE;
-	}
-*/
+	if( GetInstallPath() == NULL)
+		return FALSE;
 
 	return TRUE;
 }
 
-int32 C360SE3PlugIn::GetPlugInVersion()
+int32 FireFox3PlugIn::GetPlugInVersion()
 {
 	return 1;
 }
 
-const wchar_t* C360SE3PlugIn::GetBrowserName()
+const wchar_t* FireFox3PlugIn::GetBrowserName()
 {
-	return L"360SE";
+	return L"FireFox3.0";
 }
 
-wchar_t* C360SE3PlugIn::GetInstallPath()
+wchar_t* FireFox3PlugIn::GetInstallPath()
 {
-	wchar_t szPath[MAX_PATH] = {0};
-	DWORD   dwSize = sizeof(szPath); 
+	HKEY	hKey;
+	if (ERROR_SUCCESS != ::RegOpenKeyEx(HKEY_LOCAL_MACHINE, 
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\", 0, KEY_READ, &hKey))   
+	{   
+		return NULL;   
+	}
 
-	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{23F3F476-BE34-4f48-9C77-2806A8393EC4}",
-		L"UninstallString", 
-		SRRF_RT_REG_SZ, 
-		NULL, 
-		szPath, 
-		&dwSize))
-	{
-		return _wcsdup(szPath);
+	// 获取键信息(主要是子键数和键值数, 用于下面遍历)   
+	// 注: 也可以不用主动获取数量, 而由枚举函数(RegEnumXXX)返回 ERROR_NO_MORE_ITEMS 来判断枚举结束.   
+	DWORD dwSubKeyCount = 0;
+	DWORD dwValueCount = 0;
+	if (ERROR_SUCCESS != ::RegQueryInfoKey(hKey, NULL, NULL, NULL, &dwSubKeyCount, 
+		NULL, NULL, &dwValueCount, NULL, NULL, NULL, NULL))   
+	{   
+		if (NULL != hKey)   
+		{   
+			::RegCloseKey(hKey);   
+			hKey = NULL;   
+		}   
+		return NULL;   
+	}
+
+	const long MAX_KEY = 255;                       // 键最大长度   
+	wchar_t ptszSubKey[MAX_KEY] = _T("");             // 子键字符串   
+	DWORD cbSubKey = MAX_KEY; 
+
+	// 遍历子键   
+	if (0 != dwSubKeyCount)   
+	{   
+		wstring	wstrSubKey;
+		for (DWORD i = 0; i < dwSubKeyCount; i++)   
+		{   
+			cbSubKey = MAX_KEY;   
+			if (ERROR_SUCCESS == ::RegEnumKeyExW(hKey, i, ptszSubKey, &cbSubKey, NULL, NULL, NULL, NULL))   
+			{   
+				wstrSubKey = ptszSubKey;
+				size_t n = wstrSubKey.find(L"Mozilla Firefox (3");
+				if( 0xffffffff != wstrSubKey.find(L"Mozilla Firefox (3"))
+				{
+					wchar_t szInstallPath[MAX_PATH] = {0};
+					DWORD   dwSize = sizeof(szInstallPath); 
+					int32   nVersion = 0;
+
+					wchar_t szFullPath[MAX_PATH];
+					swprintf(szFullPath, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s", ptszSubKey);
+
+					if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
+						szFullPath,
+						L"DisplayIcon", 
+						SRRF_RT_REG_SZ, 
+						NULL,			
+						szInstallPath, 
+						&dwSize))
+					{
+						// firefox3.0的路径格式为 C:\Program Files\Mozilla Firefox\firefox.exe,0
+						wstring wstrPath = szInstallPath;
+						int nIndex = wstrPath.find_last_of(L",");
+						if( nIndex != -1)
+							wstrPath = wstrPath.substr(0, nIndex);
+
+						return const_cast<wchar_t*>(wstrPath.c_str());
+					}
+
+				}
+			}   
+		}   
 	}
 
 	return NULL;
 }
 
-wchar_t* C360SE3PlugIn::GetFavoriteDataPath()
+wchar_t* FireFox3PlugIn::GetFavoriteDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\360se\\data\\360sefav.db";
+	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Mozilla\\Firefox\\Profiles\\*";
+
+    WIN32_FIND_DATA fd;
+    ZeroMemory(&fd, sizeof(WIN32_FIND_DATA));
+
+	HANDLE hFile = FindFirstFile(strPath.c_str(), &fd);
+	if( (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+	{
+		wstring	wstrFileName = fd.cFileName;
+		if( wstrFileName.find_last_of(L".default") != wstring::npos)
+		{
+			strPath += wstrFileName;
+			return _wcsdup(strPath.c_str());
+		}
+	}
+
+	int nRet = FindNextFileW(hFile, &fd);
+	while( nRet != FALSE)
+	{
+
+	}
+
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
 }
 
-wchar_t* C360SE3PlugIn::GetHistoryDataPath()
+wchar_t* FireFox3PlugIn::GetHistoryDataPath()
 {
 	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\data\\history.dat";
 
@@ -106,7 +168,7 @@ wchar_t* C360SE3PlugIn::GetHistoryDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
-BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
+BOOL FireFox3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 {
 	memset(pData,0x0, nDataNum*sizeof(FAVORITELINEDATA));
 
@@ -155,7 +217,7 @@ BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum
 	return TRUE;
 }
 
-BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 {
 	if (pData == NULL || nDataNum == 0)
 	{
@@ -204,7 +266,7 @@ BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum 
 	return TRUE;
 }
 
-int32 C360SE3PlugIn::GetFavoriteCount()
+int32 FireFox3PlugIn::GetFavoriteCount()
 {
 	CppSQLite3DB  m_SqliteDatabase;
 	m_SqliteDatabase.open(GetFavoriteDataPath(), "");
@@ -213,12 +275,12 @@ int32 C360SE3PlugIn::GetFavoriteCount()
 	return  Query.getIntField("Total");
 }
 
-BOOL C360SE3PlugIn::SaveDatabase()
+BOOL FireFox3PlugIn::SaveDatabase()
 {
 	return TRUE;
 }
 
-void C360SE3PlugIn::ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
+void FireFox3PlugIn::ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
 {
 	int32 nLen = _tcslen(pszOri);
 

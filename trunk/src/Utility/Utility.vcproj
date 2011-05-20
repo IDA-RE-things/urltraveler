@@ -210,6 +210,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\FileHelper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\lockmgr.cpp"
 				>
 			</File>
@@ -269,6 +273,10 @@
 			>
 			<File
 				RelativePath=".\CRCHash.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FileHelper.h"
 				>
 			</File>
 			<File
