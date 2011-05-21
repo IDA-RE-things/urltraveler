@@ -56,7 +56,7 @@ std::wstring PathHelper::GetAppDataDir(void)
 
 	///获取用户对应的 application data 目录,例:C:\Documents and Settings\username\Application Data
 	WCHAR strPath[MAX_PATH] = {0};
-	BOOL bResult = SHGetSpecialFolderPathW(NULL, strPath, CSIDL_LOCAL_APPDATA, FALSE);
+	BOOL bResult = SHGetSpecialFolderPathW(NULL, strPath, CSIDL_APPDATA, FALSE);
 
 	strAppDataPath = strPath;
 	return strAppDataPath;
