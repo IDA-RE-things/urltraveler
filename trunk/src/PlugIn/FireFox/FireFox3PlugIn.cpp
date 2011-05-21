@@ -25,7 +25,7 @@ FireFox3PlugIn::FireFox3PlugIn()
 
 FireFox3PlugIn::~FireFox3PlugIn()
 {
-	
+
 }
 
 BOOL FireFox3PlugIn::Load()
@@ -131,18 +131,20 @@ wchar_t* FireFox3PlugIn::GetInstallPath()
 	return NULL;
 }
 
-wchar_t* FireFox3PlugIn::GetFavoriteDataPath()
+// 因为Firefox的目录比较特殊，它位于C:\Users\zhangzq\AppData\Roaming\Mozilla\Firefox\Profiles\*.default
+// 目录下，*为一随即数，因此必须先计算出该目录
+wchar_t*	FireFox3PlugIn::GetAppBasePath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Mozilla\\Firefox\\Profiles\\*";
+	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Mozilla\\Firefox\\Profiles\\";
 
-    WIN32_FIND_DATA fd;
-    ZeroMemory(&fd, sizeof(WIN32_FIND_DATA));
+	WIN32_FIND_DATA fd;
+	ZeroMemory(&fd, sizeof(WIN32_FIND_DATA));
 
-	HANDLE hFile = FindFirstFile(strPath.c_str(), &fd);
+	HANDLE hFile = FindFirstFile(wstring(strPath + L"*").c_str(), &fd);
 	if( (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 	{
 		wstring	wstrFileName = fd.cFileName;
-		if( wstrFileName.find_last_of(L".default") != wstring::npos)
+		if( wstrFileName.rfind(L".default") != wstring::npos)
 		{
 			strPath += wstrFileName;
 			return _wcsdup(strPath.c_str());
@@ -152,11 +154,35 @@ wchar_t* FireFox3PlugIn::GetFavoriteDataPath()
 	int nRet = FindNextFileW(hFile, &fd);
 	while( nRet != FALSE)
 	{
+		if( (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+		{
+			wstring	wstrFileName = fd.cFileName;
+			if( wstrFileName.rfind(L".default") != wstring::npos)
+			{
+				strPath += wstrFileName;
+				return _wcsdup(strPath.c_str());
+			}
+		}
 
+		nRet = FindNextFileW(hFile, &fd);
 	}
 
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
+	return NULL;
+}
+
+wchar_t* FireFox3PlugIn::GetFavoriteDataPath()
+{
+	wchar_t* pBaseAppPath =GetAppBasePath();
+	if( pBaseAppPath == NULL)
+		return NULL;
+
+	wstring strPath = pBaseAppPath;
+	strPath += L"\\";
+	strPath += L"places.sqlite";
+
+	free(pBaseAppPath);
 	return _wcsdup(strPath.c_str());
 }
 
@@ -187,29 +213,29 @@ BOOL FireFox3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 
 	while(!Query.eof() && i < nDataNum)
 	{
-		 pData[i].nId = Query.getIntField("id", 0) + ID_VALUE_360_BEGIN;
-	     pData[i].nPid = Query.getIntField("parent_id", 0);
+		pData[i].nId = Query.getIntField("id", 0) + ID_VALUE_360_BEGIN;
+		pData[i].nPid = Query.getIntField("parent_id", 0);
 
-		 if (pData[i].nPid != 0)
-		 {
-			 pData[i].nPid += ID_VALUE_360_BEGIN;
-		 }
+		if (pData[i].nPid != 0)
+		{
+			pData[i].nPid += ID_VALUE_360_BEGIN;
+		}
 
-		 pData[i].bFolder = Query.getIntField("is_folder", 0);
-		 wcscpy_s(pData[i].szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
-		 pData[i].szTitle[MAX_PATH - 1] = 0;
-		 wcscpy_s(pData[i].szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str());
-		 pData[i].szUrl[1023] = 0;
-		 pData[i].nOrder = Query.getIntField("pos", 0);
-		 pData[i].nAddTimes = Query.getInt64Field("create_time", 0);
-		 pData[i].nLastModifyTime = Query.getInt64Field("last_modify_time",0);
+		pData[i].bFolder = Query.getIntField("is_folder", 0);
+		wcscpy_s(pData[i].szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
+		pData[i].szTitle[MAX_PATH - 1] = 0;
+		wcscpy_s(pData[i].szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str());
+		pData[i].szUrl[1023] = 0;
+		pData[i].nOrder = Query.getIntField("pos", 0);
+		pData[i].nAddTimes = Query.getInt64Field("create_time", 0);
+		pData[i].nLastModifyTime = Query.getInt64Field("last_modify_time",0);
 
-		 ojbCrcHash.GetHash((BYTE *)pData[i].szTitle, wcslen(pData[i].szTitle) * sizeof(wchar_t), (BYTE *)&pData[i].nHashId, sizeof(uint32));
-		 pData[i].nCatId = 0;
-		 pData[i].bDelete = false;
+		ojbCrcHash.GetHash((BYTE *)pData[i].szTitle, wcslen(pData[i].szTitle) * sizeof(wchar_t), (BYTE *)&pData[i].nHashId, sizeof(uint32));
+		pData[i].nCatId = 0;
+		pData[i].bDelete = false;
 
-		 Query.nextRow();
-		 i++;
+		Query.nextRow();
+		i++;
 	}
 
 	nDataNum = i;
@@ -268,11 +294,7 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 
 int32 FireFox3PlugIn::GetFavoriteCount()
 {
-	CppSQLite3DB  m_SqliteDatabase;
-	m_SqliteDatabase.open(GetFavoriteDataPath(), "");
-	
-	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select count(*) as Total from tb_fav");
-	return  Query.getIntField("Total");
+	return 0;
 }
 
 BOOL FireFox3PlugIn::SaveDatabase()

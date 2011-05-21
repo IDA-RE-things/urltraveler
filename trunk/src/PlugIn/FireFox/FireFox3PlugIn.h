@@ -89,6 +89,10 @@ public:
 	virtual int32 GetFavoriteCount();
 
 protected:
+	
+	// 因为Firefox的目录比较特殊，它位于C:\Users\zhangzq\AppData\Roaming\Mozilla\Firefox\Profiles\*.default
+	// 目录下，*为一随即数，因此必须先计算出该目录
+	wchar_t*	GetAppBasePath();
 
 	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
 	BOOL SaveDatabase();
