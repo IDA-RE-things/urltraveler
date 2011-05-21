@@ -10,6 +10,8 @@
 #include "CRCHash.h"
 #include "FireFoxPlugInFactory.h"
 #include "Registry.h"
+#include "XString.h"
+#include "StringHelper.h"
 
 
 using namespace firefox;
@@ -20,12 +22,16 @@ using namespace firefox;
 
 FireFox3PlugIn::FireFox3PlugIn()
 {
+	m_pSqliteDatabase = NULL;
 }
-
 
 FireFox3PlugIn::~FireFox3PlugIn()
 {
-
+	if( m_pSqliteDatabase != NULL)
+	{
+		m_pSqliteDatabase->close();
+		delete m_pSqliteDatabase;
+	}
 }
 
 BOOL FireFox3PlugIn::Load()
@@ -40,8 +46,6 @@ BOOL FireFox3PlugIn::UnLoad()
 
 BOOL FireFox3PlugIn::IsWorked()
 {
-	GetFavoriteDataPath();
-
 	if( GetInstallPath() == NULL)
 		return FALSE;
 
@@ -206,9 +210,10 @@ BOOL FireFox3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 	}
 
 	CppSQLite3DB m_SqliteDatabase;
-
 	m_SqliteDatabase.open(GetFavoriteDataPath(), "");
-	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from tb_fav");
+
+
+	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from moz_bookmarks where id in (2,3,4,5)");
 	int i = 0;
 
 	while(!Query.eof() && i < nDataNum)
@@ -292,9 +297,63 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 	return TRUE;
 }
 
+// 获取父结点为nParentId的所有结点的数目
+int FireFox3PlugIn::GetFavoriteCount(int nParentId)
+{
+	if( m_pSqliteDatabase == NULL)
+		m_pSqliteDatabase = new CppSQLite3DB();
+
+	if( m_pSqliteDatabase->IsOpen() == false)
+		m_pSqliteDatabase->open(GetFavoriteDataPath(), "");
+
+	string strSql = "select count(*) from moz_bookmarks where parent = " ;
+	strSql += StringHelper::ConvertFromInt(nParentId);
+
+	CppSQLite3Query Query = m_pSqliteDatabase->execQuery(strSql.c_str());
+	return StringHelper::ConvertToInt(Query.fieldValue(0));
+}
+
+
 int32 FireFox3PlugIn::GetFavoriteCount()
 {
-	return 0;
+	/*
+	static int nTotalNumber = 0;
+
+	if( m_pSqliteDatabase == NULL)
+		m_pSqliteDatabase = new CppSQLite3DB();
+
+
+	wchar_t* pDBPath = GetFavoriteDataPath();
+
+	if( m_pSqliteDatabase->IsOpen() == false)
+		m_pSqliteDatabase->open(pDBPath, "");
+
+
+	// 0 表示 open成功
+	if( m_pSqliteDatabase->IsOpen() == true)
+	{
+		CppSQLite3Query Query = m_pSqliteDatabase->execQuery("select * from moz_bookmarks where id in (2,3,4,5)");
+		while(!Query.eof() )
+		{
+			int nId = Query.getIntField("id", 0);
+			nTotalNumber += GetFavoriteCount(nId);
+
+			Query.nextRow();
+		}
+	}
+	*/
+	wchar_t* pDBPath = GetFavoriteDataPath();
+																						
+	CppSQLite3DB  m_SqliteDatabase;
+	m_SqliteDatabase.open(GetFavoriteDataPath(), "");
+
+	bool b = m_SqliteDatabase.tableExists("moz_bookmarks");
+	
+	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from moz_bookmarks");
+	int n = Query.getIntField(0);
+
+
+	return TRUE;
 }
 
 BOOL FireFox3PlugIn::SaveDatabase()

@@ -2,6 +2,7 @@
 #include "PlugIn.h"
 
 
+class CppSQLite3DB;
 class FireFox3PlugIn : public IPlugInImp
 {
 public:
@@ -94,6 +95,13 @@ protected:
 	// 目录下，*为一随即数，因此必须先计算出该目录
 	wchar_t*	GetAppBasePath();
 
+	// 获取父结点为nParentId的所有结点的数目
+	int		GetFavoriteCount(int nParentId);
+
 	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
 	BOOL SaveDatabase();
+
+private:
+
+	CppSQLite3DB* m_pSqliteDatabase;
 };
