@@ -250,7 +250,6 @@ public:
 	void open(const char* szFile,const char* p);
 	void openmem(void *h, const char *szKey);
 	void close();
-	int  Rekey(const void *pKey, int nKey);
 	bool tableExists(const char* szTable);
 	int execDML(const char* szSQL);
 	CppSQLite3Query execQuery(const char* szSQL);
