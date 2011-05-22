@@ -14,9 +14,6 @@
 
 Maxthon3PlugIn::Maxthon3PlugIn()
 {
-	Load();
-	int32 nCount = GetFavoriteCount();
-	UnLoad();
 
 }
 
@@ -63,7 +60,7 @@ BOOL Maxthon3PlugIn::UnLoad()
 
 BOOL Maxthon3PlugIn::IsWorked()
 {
-	return TRUE;
+	return FALSE;
 }
 
 int32 Maxthon3PlugIn::GetPlugInVersion()
