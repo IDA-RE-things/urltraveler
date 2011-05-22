@@ -2,7 +2,6 @@
 #include "PlugIn.h"
 
 
-
 class Maxthon2PlugIn : public IPlugInImp
 {
 public:
