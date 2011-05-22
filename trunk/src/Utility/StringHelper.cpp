@@ -34,6 +34,79 @@ string	StringHelper::MakeUpper( string in_str )
 	return instr;
 }
 
+std::wstring StringHelper::HexToString(std::string strHex)
+{
+	BYTE *pbyHex = (BYTE *)strHex.c_str();
+	unsigned int nLen = strHex.length();
+	wchar_t szTemp[16] = {0};
+
+	std::wstring str;
+
+	while (nLen--)
+	{
+		_snwprintf_s(szTemp, 16, 2, L"%02x", *pbyHex++);
+		str += szTemp;
+	}
+
+	return str;
+}
+
+std::string StringHelper::StringToHex(std::wstring strString)
+{
+	std::string strHex;
+	int nLen = strString.length();
+
+	if (nLen % 2 != 0)
+	{
+		return "";
+	}
+
+	wchar_t *pbyBuffer = (wchar_t *)strString.c_str();
+	BYTE     byValue = 0;
+
+	for (int i = 0; i < nLen - 1; i = i + 2)
+	{
+		if (pbyBuffer[i] >= 48  && pbyBuffer[i] <= 57)
+		{
+			byValue = pbyBuffer[i] - '0';
+		}
+		else if(pbyBuffer[i] >= 65 && pbyBuffer[i] <= 70)
+		{
+			byValue = pbyBuffer[i] - 55;
+		}
+		else if(pbyBuffer[i] >= 97 && pbyBuffer[i] <= 102)
+		{
+			byValue = pbyBuffer[i] - 87;
+		}
+		else
+		{
+			return "";
+		}
+
+		if (pbyBuffer[i + 1] >= 48  && pbyBuffer[i + 1] <= 57)
+		{
+			byValue = byValue * 16 + pbyBuffer[i + 1] - '0';
+		}
+		else if(pbyBuffer[i + 1] >= 65 && pbyBuffer[i + 1] <= 70)
+		{
+			byValue = byValue * 16 + pbyBuffer[i + 1] - '0' - 7;
+		}
+		else if(pbyBuffer[i + 1] >= 97 && pbyBuffer[i + 1] <= 102)
+		{
+			byValue = byValue * 16 + pbyBuffer[i + 1] - 87;
+		}
+		else
+		{
+			return "";
+		}
+
+		strHex.append(1, (char)byValue);
+	}
+
+	return strHex;
+}
+
+
 string	StringHelper::ConvertFromInt( long	in_int)
 {
 	char instr[256];

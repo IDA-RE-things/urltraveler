@@ -15,6 +15,9 @@ public:
 	
 	static string	MakeLower( string in_str);
 	static string	MakeUpper( string in_str );
+
+	static std::wstring HexToString(std::string strHex);
+	static std::string StringToHex(std::wstring strString);
 	
 	static string	ConvertFromInt( long	in_int);
 	static int		ConvertToInt( string in_str);
