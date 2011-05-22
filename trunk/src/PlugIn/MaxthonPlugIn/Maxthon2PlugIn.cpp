@@ -7,6 +7,7 @@
 #include "PathHelper.h"
 #include "CppSQLite3.h"
 #include "CRCHash.h"
+#include "MD5Checksum.h"
 
 #include "MaxthonPlugInFactory.h"
 
@@ -20,6 +21,7 @@ Maxthon2PlugIn::Maxthon2PlugIn()
 	vector<FAVORITELINEDATA> vecFav(100);
 	int nNum = 100;
 	ExportFavoriteData(&vecFav[0], nNum);
+	ImportFavoriteData(&vecFav[0], nNum);
 	UnLoad();
 
 }
@@ -77,7 +79,7 @@ int32 Maxthon2PlugIn::GetPlugInVersion()
 
 const wchar_t* Maxthon2PlugIn::GetBrowserName()
 {
-	return L"Maxthon";
+	return L"Maxthon2";
 }
 
 wchar_t* Maxthon2PlugIn::GetInstallPath()
@@ -229,7 +231,71 @@ BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 
 BOOL Maxthon2PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 {
-	return TRUE;
+	if (pData == NULL || nDataNum == 0)
+	{
+		return FALSE;
+	}
+
+	#define MAX_BUFFER_LEN	4096
+
+	CppSQLite3DB  m_SqliteDatabase;
+	wchar_t szInsert[MAX_BUFFER_LEN] = {0};
+	wchar_t szDelete[MAX_BUFFER_LEN] = {0};
+
+	if (m_pMemFavoriteDB != NULL)
+	{
+		m_SqliteDatabase.openmem(m_pMemFavoriteDB, "");
+
+		int i = 0;
+
+		m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(L"delete from MyFavNodes where parent_id <> ''").c_str());
+
+		m_SqliteDatabase.execDML("begin transaction");
+
+		for (int i = 0; i < nDataNum; i++)
+		{
+			if (pData[i].bDelete == true)
+			{
+				continue;
+			}
+
+			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into MyFavNodes"
+				L"(id,parent_id,type,title,url,most_fav,visit_count,norder,add_date,shortcut)"
+				L" values(?,?,%d,?,?,0,0,%d,%d,0)",
+				pData[i].bFolder == true ? IT_FOLDER : IT_URL,
+				pData[i].nOrder,
+				(int32)pData[i].nAddTimes);
+
+			CppSQLite3Statement sqliteStatement = m_SqliteDatabase.compileStatement(StringHelper::UnicodeToANSI(szInsert).c_str());
+
+			std::string strTemp1 = StringHelper::StringToHex(StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&pData[i].nId, sizeof(int32))));
+			sqliteStatement.bind(1, (unsigned char *)strTemp1.c_str(), strTemp1.length());
+
+			if (pData[i].nPid == 0)
+			{
+				unsigned char szParentNode[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+				sqliteStatement.bind(2, szParentNode, 16);
+			}
+			else
+			{
+				strTemp1 = StringHelper::StringToHex(StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&pData[i].nPid, sizeof(int32))).c_str());
+				sqliteStatement.bind(2, (unsigned char *)strTemp1.c_str(), strTemp1.length());
+			}
+
+			sqliteStatement.bind(3, (unsigned char *)pData[i].szTitle, (wcslen(pData[i].szTitle) + 1) * sizeof(wchar_t));
+			sqliteStatement.bind(4, (unsigned char *)pData[i].szUrl, (wcslen(pData[i].szUrl) + 1) * sizeof(wchar_t));
+
+			sqliteStatement.execDML();
+			sqliteStatement.reset();
+		}
+		m_SqliteDatabase.execDML("commit transaction");
+
+		SaveDatabase();
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 int32 Maxthon2PlugIn::GetFavoriteCount()
@@ -241,11 +307,31 @@ int32 Maxthon2PlugIn::GetFavoriteCount()
 		CppSQLite3DB  m_SqliteDatabase;
 
 		m_SqliteDatabase.openmem(m_pMemFavoriteDB, "");
-		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select count(*) as Total from MyFavNodes");
+		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select count(*) as Total from MyFavNodes where parent_id <> ''");
 
 		nCount = Query.getIntField("Total");
 	}
 
 	return nCount;
 
+}
+
+BOOL Maxthon2PlugIn::SaveDatabase()
+{
+	std::string strEncode;
+	wchar_t *pszFavoriteDataPath = GetFavoriteDataPath();
+	int nRet = 0;
+
+	if (m_pMemFavoriteDB == NULL)
+	{
+		return FALSE;
+	}
+
+	strEncode.assign((char *)m_pMemFavoriteDB->pMemPointer, m_pMemFavoriteDB->ulMemSize);
+
+	nRet = encode(strEncode, StringHelper::UnicodeToANSI(pszFavoriteDataPath));
+
+	free(pszFavoriteDataPath);
+
+	return nRet == 0;
 }

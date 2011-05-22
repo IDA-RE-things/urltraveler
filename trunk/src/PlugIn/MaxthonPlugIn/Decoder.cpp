@@ -86,10 +86,6 @@ int decode(std::string file_path, std::string &decode_content)
 	BYTE *file_buffer = new BYTE[file_size];
 	fread(file_buffer, 1, file_size, data_file);
 	fclose(data_file);
-
-	BYTE encode_page[0x800] = {0};
-	BYTE *pt = encode_page;
-	size_t key_size = file_buffer[20];
     //_maxthon3_default_storage_
 	//Maxthon3_MxCmpUrl_Mood
 	//Maxthon__WebSIteBooster
@@ -133,15 +129,14 @@ int encode(std::string encode_content, std::string save_path)
 
 	memcpy(encode_buffer, encode_content.c_str(), encode_size);
 
-	BYTE encode_page[0x800] = {0};
-	BYTE *pt = encode_page;
-	size_t key_size = encode_buffer[20];
+	HCRYPTKEY hCryptKey = CreateKey((BYTE *)"guestmaxthon3_favdb_txmood", 0x1a);
 
 	for (int page_index = 0; page_index < encode_size / PAGE_SIZE; page_index++)
 	{
-		BYTE *page_content = &encode_buffer[page_index * PAGE_SIZE];
+		DWORD dwPageSize = PAGE_SIZE;
 
-		
+		BYTE *page_content = &encode_buffer[page_index * PAGE_SIZE];
+		CryptEncrypt(hCryptKey, 0, 1, 0, page_content, &dwPageSize, PAGE_SIZE);
 	}
 
 	FILE *fOut = fopen(save_path.c_str(), "wb");
