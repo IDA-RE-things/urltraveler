@@ -16,13 +16,6 @@
 
 Maxthon2PlugIn::Maxthon2PlugIn()
 {
-	Load();
-	int32 nCount = GetFavoriteCount();
-	vector<FAVORITELINEDATA> vecFav(100);
-	int nNum = 100;
-	ExportFavoriteData(&vecFav[0], nNum);
-	ImportFavoriteData(&vecFav[0], nNum);
-	UnLoad();
 
 }
 
@@ -137,7 +130,7 @@ BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 		CppSQLite3DB  m_SqliteDatabase;
 
 		m_SqliteDatabase.openmem(m_pMemFavoriteDB, "");
-		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from MyFavNodes");
+		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from MyFavNodes where parent_id <> ''");
 		int i = 0;
 		unsigned char szParentNode[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -146,12 +139,6 @@ BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 			const unsigned char *pTemp = NULL;
 			int nBlobLen = 0;
 			pTemp = Query.getBlobField("parent_id", nBlobLen);
-
-			if (nBlobLen == 0)
-			{
-				Query.nextRow();
-				continue;
-			}
 
 			if (memcmp(pTemp, szParentNode, 16) == 0)
 			{
