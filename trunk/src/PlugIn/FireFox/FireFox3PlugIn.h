@@ -98,8 +98,11 @@ protected:
 	// 获取父结点为nParentId的所有结点的数目
 	int		GetFavoriteCount(int nParentId);
 
+	// 导出所有父结点为nParentId的结点的收藏数据
+	// nCurrentIndex为导出的收藏数据
+	BOOL ExportFavoriteData(int nParentId, PFAVORITELINEDATA pData, int32& nCurrentIndex);
+
 	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
-	BOOL SaveDatabase();
 
 private:
 

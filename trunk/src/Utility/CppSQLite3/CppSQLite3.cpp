@@ -1208,16 +1208,6 @@ void CppSQLite3DB::open(const char* szFile,const char * szKey)
 		InternalOpen(szFile, szKey);
 	}
 }
-
-int  CppSQLite3DB::Rekey(const void *pKey, int nKey)
-{
-	if(mpDB)
-	{
-		return sqlite3_rekey(mpDB,pKey,nKey);
-	}
-	return 0;	
-}
-
 void CppSQLite3DB::close()
 {
 	if (mpDB)
@@ -1426,6 +1416,7 @@ int CppSQLite3DB::InternalOpen(const char* szFile, const char * szKey)
 	else
 	{
 		///数据库加密密码不为空则进行数据库加密方式的打开
+/*
 		if ( NULL != szKey && strlen(szKey) > 0)
 		{
 			iReturn = sqlite3_key(mpDB, szKey, strlen(szKey));
@@ -1433,7 +1424,8 @@ int CppSQLite3DB::InternalOpen(const char* szFile, const char * szKey)
 			{
 				setBusyTimeout(mnBusyTimeoutMs);
 			}
-		}
+		}*/
+
 
 		///执行一条sql语句看数据库是否正确打开了
 		try
@@ -1762,6 +1754,7 @@ int CppSQLite3DB::InternalOpen(const WCHAR* szFile, const char * szKey)
 	}
 	else
 	{
+/*
 		///数据库加密密码不为空则进行数据库加密方式的打开
 		if ( NULL != szKey && strlen(szKey) > 0)
 		{
@@ -1771,6 +1764,7 @@ int CppSQLite3DB::InternalOpen(const WCHAR* szFile, const char * szKey)
 				setBusyTimeout(mnBusyTimeoutMs);
 			}
 		}
+*/
 
 		///执行一条sql语句看数据库是否正确打开了
 		try
@@ -1805,6 +1799,7 @@ void CppSQLite3DB::openmem( void *h, const char *szKey )
 	}
 	else
 	{
+/*
 		///数据库加密密码不为空则进行数据库加密方式的打开
 		if ( NULL != szKey && strlen(szKey) > 0)
 		{
@@ -1814,6 +1809,7 @@ void CppSQLite3DB::openmem( void *h, const char *szKey )
 				setBusyTimeout(mnBusyTimeoutMs);
 			}
 		}
+*/
 
 		///执行一条sql语句看数据库是否正确打开了
 		try

@@ -435,7 +435,6 @@ int PlugInModule::Run()
 		if( pPlugIn == NULL)
 			continue;
 
-
 		int nFavoriteCount = pPlugIn->GetFavoriteCount();
 		if( nFavoriteCount == 0)
 			continue;
