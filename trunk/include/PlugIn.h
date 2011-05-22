@@ -78,6 +78,12 @@ enum IDValueRanges
 	ID_VALUE_QQ_END=ID_VALUE_END(PLUG_IN_QQ),
 };
 
+enum EMaxthonItemType
+{
+	IT_URL = 1,
+	IT_FOLDER = 2,
+};
+
 // 定义收藏夹数据结构
 
 // 收藏夹中每一个收藏记录的数据
