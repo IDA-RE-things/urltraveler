@@ -424,10 +424,13 @@ int PlugInModule::Run()
 			continue;
 
 		int nFavoriteCount = pPlugIn->GetFavoriteCount();
-		if( nFavoriteCount == 0)
-			continue;
-
 		panCount[i] = nFavoriteCount;
+
+		if( nFavoriteCount == 0)
+		{
+			continue;
+		}
+
 		m_nSumFavorite += nFavoriteCount;
 	}
 
@@ -447,7 +450,7 @@ int PlugInModule::Run()
 		if( pPlugIn == NULL)
 			continue;
 
-		int nFavoriteCount = pPlugIn->GetFavoriteCount();
+		int nFavoriteCount = panCount[i];
 		if( nFavoriteCount == 0)
 			continue;
 
