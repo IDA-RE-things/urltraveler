@@ -58,15 +58,6 @@ PlugInModule::~PlugInModule()
 		m_pThreadObj->ShutdownThread(0);
 		m_pThreadObj->Release();
 	}
-
-
-	std::vector<IPlugIn*>::iterator itrPlugIn = m_vPlugIns.begin();
-	std::vector<IPlugIn*>::iterator itrConPlugIn = m_vPlugIns.end();
-
-	for( ; itrPlugIn != itrConPlugIn; ++itrPlugIn)
-	{
-		(*itrPlugIn)->UnLoad();
-	}
 }
 
 
@@ -84,6 +75,14 @@ END_EVENT_MAP()
 //----------------------------------------------------------------------------------------
 BOOL PlugInModule::Unload() 
 {
+	std::vector<IPlugIn*>::iterator itrPlugIn = m_vPlugIns.begin();
+	std::vector<IPlugIn*>::const_iterator itrConPlugIn = m_vPlugIns.end();
+
+	for( ; itrPlugIn != itrConPlugIn; ++itrPlugIn)
+	{
+		(*itrPlugIn)->UnLoad();
+	}
+
 	std::vector<PLUGININFO>::iterator itr = m_vPlugInModuleInfo.begin();
 
 	for( ; itr != m_vPlugInModuleInfo.end(); itr++)
@@ -262,9 +261,8 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 {
 	std::vector<IPlugIn*>::iterator itrPlugIn = m_vPlugIns.begin();
-	std::vector<IPlugIn*>::iterator itrConPlugIn = m_vPlugIns.end();
 
-	for( ; itrPlugIn != itrConPlugIn; )
+	for( ; itrPlugIn != m_vPlugIns.end(); )
 	{
 		// 如果当前插件不能工作，则将其删除
 		if( (*itrPlugIn)->IsWorked() == FALSE)
