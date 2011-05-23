@@ -303,7 +303,7 @@ int32 Maxthon3PlugIn::GetFavoriteCount()
 		CppSQLite3DB  m_SqliteDatabase;
 
 		m_SqliteDatabase.openmem(m_pMemFavoriteDB, "");
-		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select count(*) as Total from MyFavNodes");
+		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select count(*) as Total from MyFavNodes where parent_id <> ''");
 
 		nCount = Query.getIntField("Total");
 	}
