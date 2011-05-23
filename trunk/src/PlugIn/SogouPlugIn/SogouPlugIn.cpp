@@ -61,23 +61,28 @@ BOOL SogouPlugIn::UnLoad()
 
 BOOL SogouPlugIn::IsWorked()
 {
-/*
-	wchar_t szVersion[MAX_PATH] = {0};
-	DWORD   dwSize = sizeof(szVersion); 
-	int32   nVersion = 0;
+	BOOL bRet = FALSE;
 
-	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\SogouExplorer",
-		L"DisplayVersion", 
-		SRRF_RT_REG_SZ, 
-		NULL, 
-		szVersion, 
-		&dwSize))
+	if (m_pMemFavoriteDB)
 	{
-		return TRUE;
+		CppSQLite3DB  objSqliteDatabase;
+
+		objSqliteDatabase.openmem(m_pMemFavoriteDB, "");
+
+		bRet = objSqliteDatabase.tableExists("favorTable");
+
+		if (bRet)
+		{
+			CppSQLite3Table objSqliteTable = objSqliteDatabase.getTable("select * from favorTable");
+
+			if (11 != objSqliteTable.numFields())
+			{
+				bRet = FALSE;
+			}
+		}
 	}
-*/
-	return TRUE;
+
+	return bRet;
 }
 
 int32 SogouPlugIn::GetPlugInVersion()
