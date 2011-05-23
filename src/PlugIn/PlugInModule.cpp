@@ -431,6 +431,11 @@ int PlugInModule::Run()
 		m_nSumFavorite += nFavoriteCount;
 	}
 
+	if (m_nSumFavorite == 0)
+	{
+		return EXIT_SUCCESS;
+	}
+
 	m_vFavoriateLineData.resize(m_nSumFavorite);
 
 	int nCurrentOffset = 0;
@@ -452,6 +457,7 @@ int PlugInModule::Run()
 
 	Merge(&m_vFavoriateLineData[0], m_nSumFavorite, 0);
 	Rearrange(&m_vFavoriateLineData[0], m_nSumFavorite);
+	
 	// 将合并后的数据导入到各个浏览器中
 	if (panCount)
 	{
