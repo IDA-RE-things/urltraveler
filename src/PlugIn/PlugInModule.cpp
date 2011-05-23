@@ -233,8 +233,10 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		// 对插件进行加载操作
 		for(int i=0; i<nPlugNum; i++)
 		{
-			stPlugInInfo.pvPlugIn[i]->Load();
-			m_vPlugIns.push_back(stPlugInInfo.pvPlugIn[i]);
+			if (stPlugInInfo.pvPlugIn[i]->Load())
+			{
+				m_vPlugIns.push_back(stPlugInInfo.pvPlugIn[i]);
+			}
 		}
 
 		m_vPlugInModuleInfo.push_back(stPlugInInfo);
