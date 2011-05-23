@@ -433,7 +433,7 @@ int PlugInModule::Run()
 
 	if (m_nSumFavorite == 0)
 	{
-		return EXIT_SUCCESS;
+		return 0;
 	}
 
 	m_vFavoriateLineData.resize(m_nSumFavorite);
