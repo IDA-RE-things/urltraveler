@@ -248,7 +248,6 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		MakeEvent<MODULE_ID_PLUGIN>()(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED,
 		MODULE_ID_PLUGIN));
 
-	m_pThreadObj->CreateThread(static_cast<IThreadEvent *>(this));
 }
 
 void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
@@ -268,6 +267,8 @@ void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 			itrPlugIn++;
 		}
 	}
+
+	m_pThreadObj->CreateThread(static_cast<IThreadEvent *>(this));
 }
 
 bool compare(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
