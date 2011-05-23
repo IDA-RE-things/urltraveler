@@ -252,8 +252,6 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 
 void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 {
-	CGuard objGuard(m_Mutex);
-
 	std::vector<IPlugIn*>::iterator itrPlugIn = m_vPlugIns.begin();
 	for( ; itrPlugIn != m_vPlugIns.end(); )
 	{
@@ -406,8 +404,6 @@ void PlugInModule::OnThreadEntry()
 int PlugInModule::Run()
 {
 	CoInitialize(NULL);
-
-	CGuard objGuard(m_Mutex);
 
 	int nNumOfPlugIns = m_vPlugIns.size();
 	int *panCount = new int[nNumOfPlugIns];
