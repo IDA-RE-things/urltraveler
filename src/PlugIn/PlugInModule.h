@@ -6,6 +6,7 @@
 #include "PlugIn.h"
 #include <vector>
 #include "ThreadObject_i.h"
+#include "Guard.h"
 
 
 using namespace std;
@@ -125,6 +126,9 @@ private:
 	IThreadObject*      m_pThreadObj;
 
 	int                 m_nSumFavorite;
+
+
+	CMutex              m_Mutex;
 };
 
 class PlugInModuleFactory : public ModuleFactoryImpl<PlugInModule>{};
