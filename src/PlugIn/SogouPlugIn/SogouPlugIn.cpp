@@ -70,16 +70,6 @@ BOOL SogouPlugIn::IsWorked()
 		objSqliteDatabase.openmem(m_pMemFavoriteDB, "");
 
 		bRet = objSqliteDatabase.tableExists("favorTable");
-
-		if (bRet)
-		{
-			CppSQLite3Table objSqliteTable = objSqliteDatabase.getTable("select * from favorTable");
-
-			if (11 != objSqliteTable.numFields())
-			{
-				bRet = FALSE;
-			}
-		}
 	}
 
 	return bRet;
