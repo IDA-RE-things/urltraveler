@@ -26,6 +26,7 @@ Maxthon3PlugIn::~Maxthon3PlugIn()
 
 BOOL Maxthon3PlugIn::Load()
 {
+	BOOL bRet = FALSE;
 	std::string strDecodeContent;
 
 	if (decode(StringHelper::UnicodeToANSI(GetFavoriteDataPath()), strDecodeContent) == 0)
@@ -36,11 +37,10 @@ BOOL Maxthon3PlugIn::Load()
 		m_pMemFavoriteDB->pMemPointer = (unsigned char *)malloc(strDecodeContent.length());
 		memcpy(m_pMemFavoriteDB->pMemPointer, strDecodeContent.c_str(), m_pMemFavoriteDB->ulMemSize);
 
-		return TRUE;
+		bRet = TRUE;
 	}
 
-	return FALSE;
-
+	return bRet;
 }
 
 BOOL Maxthon3PlugIn::UnLoad()
@@ -62,13 +62,25 @@ BOOL Maxthon3PlugIn::UnLoad()
 
 BOOL Maxthon3PlugIn::IsWorked()
 {
-	wchar_t *pszFavoritePath = GetFavoriteDataPath();
 	BOOL bRet = FALSE;
 
-	if (pszFavoritePath)
+	if (m_pMemFavoriteDB)
 	{
-		bRet = PathFileExists(pszFavoritePath);
-		free(pszFavoritePath);
+		CppSQLite3DB  objSqliteDatabase;
+
+		objSqliteDatabase.openmem(m_pMemFavoriteDB, "");
+
+		bRet = objSqliteDatabase.tableExists("MyFavNodes");
+
+		if (bRet)
+		{
+			CppSQLite3Table objSqliteTable = objSqliteDatabase.getTable("select * from MyFavNodes");
+
+			if (14 != objSqliteTable.numFields())
+			{
+				bRet = FALSE;
+			}
+		}
 	}
 
 	return bRet;
