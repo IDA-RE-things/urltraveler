@@ -410,6 +410,38 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="json"
+			>
+			<File
+				RelativePath=".\json\json_batchallocator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\json\json_internalarray.inl"
+				>
+			</File>
+			<File
+				RelativePath=".\json\json_internalmap.inl"
+				>
+			</File>
+			<File
+				RelativePath=".\json\json_reader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\json\json_value.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\json\json_valueiterator.inl"
+				>
+			</File>
+			<File
+				RelativePath=".\json\json_writer.cpp"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
