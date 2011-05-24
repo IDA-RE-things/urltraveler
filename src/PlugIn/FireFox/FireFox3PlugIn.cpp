@@ -18,6 +18,20 @@ using namespace firefox;
 
 #pragma comment(lib, "shlwapi.lib")
 
+#define BOOKMARKS_MENU	2
+#define BOOKMARKS_TOOLSBAR	3
+#define BOOKMARKS_TAG	4
+#define BOOKMARKS_UNFILED	5
+
+// 标签菜单中需要排除的记录
+#define BOOKMARKS_MENU_EXCLUED_SQL L" and type <> 3 and ( title <> '最近使用的书签' and title <> '最近使用的标签' \
+	and title <> 'Mozilla Firefox' and title <> '最近使用的標籤' and title<>'最近使用的書籤' and title <> '获取书签附加组件' and title <> '獲取書籤附加組件')"
+
+// 标签工具栏中要排除的记录
+#define BOOKMARKS_TOOLSBAR_EXCLUED_SQL	L" and type <> 3 and ( title <> '访问最多' and title <> '最新头条' and title <> '訪問最多' and title <> '最新頭條' and title<> '新手上路')"
+
+// 43以内是FireFox自带的结点，非用户自己的结点数据
+#define SQL_CONDITION	" and type <> 3 and id > 19"
 
 
 FireFox3PlugIn::FireFox3PlugIn()
@@ -208,20 +222,34 @@ BOOL FireFox3PlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA pData, 
 	if( m_pSqliteDatabase->IsOpen() == false)
 		m_pSqliteDatabase->open(GetFavoriteDataPath(), "");
 
-	string strSql = "select * from moz_bookmarks where parent = " ;
-	strSql += StringHelper::ConvertFromInt(nParentId);
-	strSql += " and type <> 3 and id >=50";
+	wstring strSql = L"select * from moz_bookmarks where parent = " ;
+	strSql += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nParentId));
+	if( nParentId == BOOKMARKS_MENU)
+	{
+		strSql += BOOKMARKS_MENU_EXCLUED_SQL;
+	}
+	else if ( nParentId == BOOKMARKS_TOOLSBAR)
+	{
+		strSql += BOOKMARKS_TOOLSBAR_EXCLUED_SQL;
+	}
 
 	CCRCHash ojbCrcHash;
 
-	CppSQLite3Query Query = m_pSqliteDatabase->execQuery(strSql.c_str());
+	CppSQLite3Query Query = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(strSql).c_str());
 	while(!Query.eof())
 	{
 		int nId = Query.getIntField("id", 0);
 
-		pData[nCurrentIndex].nId = nId + ID_VALUE_FIREFOX_BEGIN;
-		pData[nCurrentIndex].nPid = Query.getIntField("parent", 0);
+		if( nParentId == 2 || nParentId == 3 || nParentId == 4 || nParentId == 5)
+		{
+			pData[nCurrentIndex].nPid = 0;
+		}
+		else
+		{
+			pData[nCurrentIndex].nPid = Query.getIntField("parent", 0);
+		}
 
+		pData[nCurrentIndex].nId = nId + ID_VALUE_FIREFOX_BEGIN;
 		if (pData[nCurrentIndex].nPid != 0)
 		{
 			pData[nCurrentIndex].nPid += ID_VALUE_FIREFOX_BEGIN;
@@ -268,8 +296,6 @@ BOOL FireFox3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 {
 	memset(pData,0x0, nDataNum*sizeof(FAVORITELINEDATA));
 
-	CCRCHash ojbCrcHash;
-
 	if (pData == NULL || nDataNum == 0)
 	{
 		return FALSE;
@@ -311,17 +337,27 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 		return FALSE;
 	}
 
-
 #define MAX_BUFFER_LEN	4096
 
-	CppSQLite3DB  m_SqliteDatabase;
+   	if( m_pSqliteDatabase == NULL)
+		m_pSqliteDatabase = new CppSQLite3DB();
+
+	if( m_pSqliteDatabase->IsOpen() == false)
+		m_pSqliteDatabase->open(GetFavoriteDataPath(), "");
+
+	if( m_pSqliteDatabase->IsOpen() == false)
+	{
+		return FALSE;
+	}
+
+
 	wchar_t szInsert[MAX_BUFFER_LEN] = {0};
 	wchar_t szDelete[MAX_BUFFER_LEN] = {0};
 
-	m_SqliteDatabase.open(GetFavoriteDataPath(), "");
 	int i = 0;
 
-	m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(L"delete from tb_fav").c_str());
+	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(L"delete from moz_places where id in (select fk from moz_bookmarks where id > 19)").c_str());
+	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(L"delete from moz_bookmarks where id > 19").c_str());
 
 	for (int i = 0; i < nDataNum; i++)
 	{
@@ -333,23 +369,58 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 		ReplaceSingleQuoteToDoubleQuote(pData[i].szTitle);
 		ReplaceSingleQuoteToDoubleQuote(pData[i].szUrl);
 
-		swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into tb_fav"
-			L"(id,parent_id,is_folder,title,url,pos,create_time,last_modify_time,is_best,reserved)"
-			L" values(%d,%d,%d,'%s','%s',%d,'%s',"
-			L"'%s',%d,0)", 
-			pData[i].nId,
-			pData[i].nPid,
-			pData[i].bFolder,
-			pData[i].szTitle,
-			pData[i].szUrl,
-			pData[i].nOrder,
-			L"2011-05-11 12:00:00", 
-			L"2011-05-11 12:00:00",
-			0);
-		m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+		if( pData[i].nPid == 0)
+		{
+			if( wcscspn(pData[i].szUrl,L"") != 0)
+			{
+				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_places "
+					L"(url,title) "
+					L" values('%s','%s')",
+					pData[i].szUrl,
+					pData[i].szTitle);
+				m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+			}
+
+			// 取出插入结点的id
+			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select max(id) from moz_places ");
+			CppSQLite3Query selectQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
+			if( selectQuery.eof() == false)
+			{
+				int nFk = selectQuery.getIntField(0);
+
+				// 书签菜单栏目
+				pData[i].nPid = 2;
+				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
+					L"(parent,type,title,position,dateAdded,lastModified,fk) "
+					L" values(%d,%d,'%s',%d,%d,%d, %d)",
+					pData[i].nPid,
+					pData[i].bFolder == true ? 2 : 1,
+					pData[i].szTitle,
+					pData[i].nOrder,
+					L"2011-05-11 12:00:00", 
+					L"2011-05-11 12:00:00",
+					nFk
+					);
+				m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+
+
+				// 书签工具栏
+				pData[i].nPid = 3;
+				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
+					L"(parent,type,title,position,dateAdded,lastModified, fk) "
+					L" values(%d,%d,'%s',%d,%d,%d, %d)",
+					pData[i].nPid,
+					pData[i].bFolder == true ? 2 : 1,
+					pData[i].szTitle,
+					pData[i].nOrder,
+					L"2011-05-11 12:00:00", 
+					L"2011-05-11 12:00:00",
+					nFk);
+				m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+			}
+		}
 	}
 
-	//SaveDatabase();
 	return TRUE;
 }
 
@@ -363,20 +434,36 @@ int FireFox3PlugIn::GetFavoriteCount(int nParentId)
 
 	if( m_pSqliteDatabase->IsOpen() == false)
 		m_pSqliteDatabase->open(GetFavoriteDataPath(), "");
+	
+	wstring strSql = L"select count(*) as total from moz_bookmarks where parent = " ;
+	strSql += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nParentId));
 
-	string strSql = "select count(*) as total from moz_bookmarks where parent = " ;
-	strSql += StringHelper::ConvertFromInt(nParentId);
-	strSql += " and type <> 3 and id >=50";
+	if( nParentId == BOOKMARKS_MENU)
+	{
+		strSql += BOOKMARKS_MENU_EXCLUED_SQL;
+	}
+	else if ( nParentId == BOOKMARKS_TOOLSBAR)
+	{
+		strSql += BOOKMARKS_TOOLSBAR_EXCLUED_SQL;
+	}
 
-	CppSQLite3Query Query = m_pSqliteDatabase->execQuery(strSql.c_str());
+
+	CppSQLite3Query Query = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(strSql).c_str());
 	const char* pTotal = Query.fieldValue("total");
 	nCount =  StringHelper::ConvertToInt(Query.fieldValue("total"));
 
-	strSql = "select * from moz_bookmarks where parent = " ;
-	strSql += StringHelper::ConvertFromInt(nParentId);
-	strSql += " and type <> 3 and id >=50";
+	strSql = L"select * from moz_bookmarks where parent = " ;
+	strSql += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nParentId));
+	if( nParentId == BOOKMARKS_MENU)
+	{
+		strSql += BOOKMARKS_MENU_EXCLUED_SQL;
+	}
+	else if ( nParentId == BOOKMARKS_TOOLSBAR)
+	{
+		strSql += BOOKMARKS_TOOLSBAR_EXCLUED_SQL;
+	}
 
-	Query = m_pSqliteDatabase->execQuery(strSql.c_str());
+	Query = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(strSql).c_str());
 	while(!Query.eof())
 	{
 		int nId = Query.getIntField("id", 0);
