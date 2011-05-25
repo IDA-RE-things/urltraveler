@@ -38,6 +38,7 @@ protected:
 public:
 	inline BOOL PathIsValid() {
 		return (m_strCurrentPath.GetLength() > 0); }
+
 	inline String GetCurrentPath() {
 		return m_strCurrentPath; }
 	inline HKEY GetRootKey() {

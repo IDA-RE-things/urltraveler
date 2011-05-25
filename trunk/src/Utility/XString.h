@@ -5,10 +5,11 @@
 #include "stdafx.h"
 #include "SndaBase.h"
 #include <string>
+#include "SndaBase.h"
 
 using namespace std;
 
-class String
+class UTILITY_API String
 {
 public:
 	//----------------------------------------------------------------------------------------

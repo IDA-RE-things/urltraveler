@@ -257,7 +257,7 @@ public:
 	CppSQLite3Table getTable(const char* szSQL);
 	CppSQLite3Statement compileStatement(const char* szSQL);
 	sqlite_int64 lastRowId();
-	void interrupt() { sqlite3_interrupt(mpDB); }
+	//void interrupt() { sqlite3_interrupt(mpDB); }
 	void setBusyTimeout(int nMillisecs);
 	static const char* SQLiteVersion() { return SQLITE_VERSION; }
 	bool IsOpen();
