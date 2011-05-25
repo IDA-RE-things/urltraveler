@@ -24,15 +24,13 @@ using namespace firefox;
 #define BOOKMARKS_UNFILED	5
 
 // 标签菜单中需要排除的记录
-#define BOOKMARKS_MENU_EXCLUED_SQL L" and type <> 3 and ( title <> '最近使用的书签' and title <> '最近使用的标签' \
-	and title <> 'Mozilla Firefox' and title <> '最近使用的標籤' and title<>'最近使用的書籤' and title <> '获取书签附加组件' and title <> '獲取書籤附加組件')"
+#define BOOKMARKS_MENU_EXCLUED_SQL L" and type <> 3 and ( title <> '最近使用的书签' and title <> '最近使用的标签'  \
+	and title <> 'Mozilla Firefox' and title <> '最近加入的書籤' and title<>'最近新增的標籤'  \
+	and title <> '获取书签附加组件' and title <> '取得書籤類附加元件')"
 
 // 标签工具栏中要排除的记录
-#define BOOKMARKS_TOOLSBAR_EXCLUED_SQL	L" and type <> 3 and ( title <> '访问最多' and title <> '最新头条' and title <> '訪問最多' and title <> '最新頭條' and title<> '新手上路')"
-
-// 43以内是FireFox自带的结点，非用户自己的结点数据
-#define SQL_CONDITION	" and type <> 3 and id > 19"
-
+#define BOOKMARKS_TOOLSBAR_EXCLUED_SQL	L" and type <> 3 and ( title <> '访问最多' and title <> '最新头条'  \
+			and title <> '最常瀏覽' and title <> '即時新聞' and title<> '新手上路')"
 
 FireFox3PlugIn::FireFox3PlugIn()
 {
@@ -359,6 +357,15 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(L"delete from moz_places where id in (select fk from moz_bookmarks where id > 19)").c_str());
 	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(L"delete from moz_bookmarks where id > 19").c_str());
 
+	// 找到插入的起始id
+	int nBeginId = 0;
+	swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select max(id) from moz_bookmarks ");
+	CppSQLite3Query selectQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
+	if( selectQuery.eof() == false)
+	{
+		nBeginId = selectQuery.getIntField(0);
+	}
+
 	for (int i = 0; i < nDataNum; i++)
 	{
 		if (pData[i].bDelete == true)
@@ -369,9 +376,16 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 		ReplaceSingleQuoteToDoubleQuote(pData[i].szTitle);
 		ReplaceSingleQuoteToDoubleQuote(pData[i].szUrl);
 
-		if( pData[i].nPid == 0)
+		int nFk = -1;
+		if( wcscspn(pData[i].szUrl,L"") != 0)
 		{
-			if( wcscspn(pData[i].szUrl,L"") != 0)
+			// 检查url是否存在
+			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select * from moz_places where url ='%s'",
+				pData[i].szUrl);
+			CppSQLite3Query urlQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
+
+			// 该URL不存在，则插入一条新的记录
+			if( urlQuery.eof() == true)
 			{
 				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_places "
 					L"(url,title) "
@@ -379,46 +393,71 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 					pData[i].szUrl,
 					pData[i].szTitle);
 				m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+
+				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select max(id) from moz_places ");
+				CppSQLite3Query selectQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
+				if( selectQuery.eof() == false)
+				{
+					nFk = selectQuery.getIntField(0);
+				}
 			}
-
-			// 取出插入结点的id
-			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select max(id) from moz_places ");
-			CppSQLite3Query selectQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
-			if( selectQuery.eof() == false)
+			else
 			{
-				int nFk = selectQuery.getIntField(0);
-
-				// 书签菜单栏目
-				pData[i].nPid = 2;
-				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
-					L"(parent,type,title,position,dateAdded,lastModified,fk) "
-					L" values(%d,%d,'%s',%d,%d,%d, %d)",
-					pData[i].nPid,
-					pData[i].bFolder == true ? 2 : 1,
-					pData[i].szTitle,
-					pData[i].nOrder,
-					L"2011-05-11 12:00:00", 
-					L"2011-05-11 12:00:00",
-					nFk
-					);
-				m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
-
-
-				// 书签工具栏
-				pData[i].nPid = 3;
-				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
-					L"(parent,type,title,position,dateAdded,lastModified, fk) "
-					L" values(%d,%d,'%s',%d,%d,%d, %d)",
-					pData[i].nPid,
-					pData[i].bFolder == true ? 2 : 1,
-					pData[i].szTitle,
-					pData[i].nOrder,
-					L"2011-05-11 12:00:00", 
-					L"2011-05-11 12:00:00",
-					nFk);
-				m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+				nFk = urlQuery.getIntField(0);
 			}
 		}
+
+		if( pData[i].nPid == 0)
+		{
+			// 书签菜单栏目
+			pData[i].nPid = 2;
+		}
+
+		if( nFk != -1)
+		{
+			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
+				L"(parent,type,title,position,dateAdded,lastModified,fk) "
+				L" values(%d,%d,'%s',%d,%d,%d, %d)",
+				pData[i].nPid + nBeginId,
+				pData[i].bFolder == true ? 2 : 1,
+				pData[i].szTitle,
+				pData[i].nOrder,
+				L"2011-05-11 12:00:00", 
+				L"2011-05-11 12:00:00",
+				nFk
+				);
+		}
+		else
+		{
+			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
+				L"(parent,type,title,position,dateAdded,lastModified) "
+				L" values(%d,%d,'%s',%d,%d,%d)",
+				pData[i].nPid + nBeginId,
+				pData[i].bFolder == true ? 2 : 1,
+				pData[i].szTitle,
+				pData[i].nOrder,
+				L"2011-05-11 12:00:00", 
+				L"2011-05-11 12:00:00"
+				);
+		}
+		m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+
+		/*
+		// 书签工具栏
+		pData[i].nPid = 3;
+		swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
+		L"(parent,type,title,position,dateAdded,lastModified, fk) "
+		L" values(%d,%d,'%s',%d,%d,%d, %d)",
+		pData[i].nPid,
+		pData[i].bFolder == true ? 2 : 1,
+		pData[i].szTitle,
+		pData[i].nOrder,
+		L"2011-05-11 12:00:00", 
+		L"2011-05-11 12:00:00",
+		nFk);
+		m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+		*/
+
 	}
 
 	return TRUE;
