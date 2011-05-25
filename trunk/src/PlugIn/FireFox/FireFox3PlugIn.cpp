@@ -28,9 +28,17 @@ using namespace firefox;
 	and title <> 'Mozilla Firefox' and title <> '最近加入的書籤' and title<>'最近新增的標籤'  \
 	and title <> '获取书签附加组件' and title <> '取得書籤類附加元件')"
 
+#define BOOKMARKS_MENU_INCLUED_SQL L" and ( title = '最近使用的书签' or title = '最近使用的标签'  \
+	or title = 'Mozilla Firefox' or title = '最近加入的書籤' or title = '最近新增的標籤'  \
+	or title = '获取书签附加组件' or title = '取得書籤類附加元件'or type = 3)"
+
 // 标签工具栏中要排除的记录
 #define BOOKMARKS_TOOLSBAR_EXCLUED_SQL	L" and type <> 3 and ( title <> '访问最多' and title <> '最新头条'  \
 			and title <> '最常瀏覽' and title <> '即時新聞' and title<> '新手上路')"
+
+#define BOOKMARKS_TOOLSBAR_INCLUED_SQL	L" and ( title = '访问最多' or title = '最新头条'  \
+			or title = '最常瀏覽' or title = '即時新聞' or title = '新手上路' or type = 3)"
+
 
 FireFox3PlugIn::FireFox3PlugIn()
 {
@@ -39,20 +47,34 @@ FireFox3PlugIn::FireFox3PlugIn()
 
 FireFox3PlugIn::~FireFox3PlugIn()
 {
-	if( m_pSqliteDatabase != NULL)
-	{
-		m_pSqliteDatabase->close();
-		delete m_pSqliteDatabase;
-	}
+	UnLoad();
 }
 
 BOOL FireFox3PlugIn::Load()
 {
+   	if( m_pSqliteDatabase == NULL)
+		m_pSqliteDatabase = new CppSQLite3DB();
+
+	if( m_pSqliteDatabase->IsOpen() == false)
+		m_pSqliteDatabase->open(GetFavoriteDataPath(), "");
+
+	if( m_pSqliteDatabase->IsOpen() == false)
+	{
+		return FALSE;
+	}
+
 	return TRUE;
 }
 
 BOOL FireFox3PlugIn::UnLoad()
 {
+	if( m_pSqliteDatabase != NULL)
+	{
+		m_pSqliteDatabase->close();
+		delete m_pSqliteDatabase;
+		m_pSqliteDatabase = NULL;
+	}
+
 	return TRUE;
 }
 
@@ -210,16 +232,44 @@ wchar_t* FireFox3PlugIn::GetHistoryDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
+// 获取所有的系统的记录ID
+void FireFox3PlugIn::GetSystemFavoriteId(int nParentId,std::vector<int>& vIdData)
+{
+	wstring strSql = L"select id from moz_bookmarks where parent = " ;
+	strSql += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nParentId));
+	if( nParentId == BOOKMARKS_MENU)
+	{
+		strSql += BOOKMARKS_MENU_INCLUED_SQL;
+	}
+	else if ( nParentId == BOOKMARKS_TOOLSBAR)
+	{
+		strSql += BOOKMARKS_TOOLSBAR_INCLUED_SQL;
+	}
+
+	CppSQLite3Query Query = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(strSql).c_str());
+	while(!Query.eof())
+	{
+		int nId = Query.getIntField("id", 0);
+		vIdData.push_back(nId);
+
+		GetSystemFavoriteId(nId, vIdData);	
+
+		Query.nextRow();
+	}
+}
+
+void FireFox3PlugIn::GetSystemFavoriteId(std::vector<int>& vIdData)
+{
+	wchar_t* pDBPath = GetFavoriteDataPath();
+
+	vIdData.push_back(1);
+	GetSystemFavoriteId(1, vIdData);	
+}
+
 // 导出所有父结点为nParentId的结点的收藏数据
 // nDataNum为导出的收藏数据
 BOOL FireFox3PlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA pData, int32& nCurrentIndex)
 {
-	if( m_pSqliteDatabase == NULL)
-		m_pSqliteDatabase = new CppSQLite3DB();
-
-	if( m_pSqliteDatabase->IsOpen() == false)
-		m_pSqliteDatabase->open(GetFavoriteDataPath(), "");
-
 	wstring strSql = L"select * from moz_bookmarks where parent = " ;
 	strSql += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nParentId));
 	if( nParentId == BOOKMARKS_MENU)
@@ -299,17 +349,6 @@ BOOL FireFox3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 		return FALSE;
 	}
 
-	if( m_pSqliteDatabase == NULL)
-		m_pSqliteDatabase = new CppSQLite3DB();
-
-	if( m_pSqliteDatabase->IsOpen() == false)
-		m_pSqliteDatabase->open(GetFavoriteDataPath(), "");
-
-	if( m_pSqliteDatabase->IsOpen() == false)
-	{
-		return FALSE;
-	}
-
 	string strSql = "select marks.* from moz_bookmarks as marks where marks.id in (2,3,4,5)";
 	CppSQLite3Query Query = m_pSqliteDatabase->execQuery(strSql.c_str());
 
@@ -337,16 +376,16 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 
 #define MAX_BUFFER_LEN	4096
 
-   	if( m_pSqliteDatabase == NULL)
-		m_pSqliteDatabase = new CppSQLite3DB();
+	std::vector<int> v;
+	GetSystemFavoriteId(v);
 
-	if( m_pSqliteDatabase->IsOpen() == false)
-		m_pSqliteDatabase->open(GetFavoriteDataPath(), "");
-
-	if( m_pSqliteDatabase->IsOpen() == false)
+	wstring strId = L"";
+	for( int i=0; i<v.size(); i++)
 	{
-		return FALSE;
+		strId += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(v.at(i)));
+		strId += L",";
 	}
+	strId.erase( strId.find_last_not_of(L",") + 1, strId.length()-1);
 
 
 	wchar_t szInsert[MAX_BUFFER_LEN] = {0};
@@ -354,8 +393,13 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 
 	int i = 0;
 
-	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(L"delete from moz_places where id in (select fk from moz_bookmarks where id > 19)").c_str());
-	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(L"delete from moz_bookmarks where id > 19").c_str());
+	wstring wstrDeleteSql =	 L"delete from moz_places where id in (select fk from moz_bookmarks where id not in (";
+	wstrDeleteSql += strId + L"))";
+	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(wstrDeleteSql).c_str());
+
+	wstrDeleteSql = L"delete from moz_bookmarks where id not in (";
+	wstrDeleteSql += strId + L")";
+	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(wstrDeleteSql).c_str());
 
 	// 找到插入的起始id
 	int nBeginId = 0;
@@ -370,6 +414,7 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 	{
 		if (pData[i].bDelete == true)
 		{
+			nBeginId--;
 			continue;
 		}
 
@@ -410,15 +455,10 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 		if( pData[i].nPid == 0)
 		{
 			// 书签菜单栏目
-			pData[i].nPid = 2;
-		}
-
-		if( nFk != -1)
-		{
 			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
 				L"(parent,type,title,position,dateAdded,lastModified,fk) "
 				L" values(%d,%d,'%s',%d,%d,%d, %d)",
-				pData[i].nPid + nBeginId,
+				3,
 				pData[i].bFolder == true ? 2 : 1,
 				pData[i].szTitle,
 				pData[i].nOrder,
@@ -429,16 +469,33 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 		}
 		else
 		{
-			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
-				L"(parent,type,title,position,dateAdded,lastModified) "
-				L" values(%d,%d,'%s',%d,%d,%d)",
-				pData[i].nPid + nBeginId,
-				pData[i].bFolder == true ? 2 : 1,
-				pData[i].szTitle,
-				pData[i].nOrder,
-				L"2011-05-11 12:00:00", 
-				L"2011-05-11 12:00:00"
-				);
+			if( nFk != -1)
+			{
+				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
+					L"(parent,type,title,position,dateAdded,lastModified,fk) "
+					L" values(%d,%d,'%s',%d,%d,%d, %d)",
+					pData[i].nPid + nBeginId,
+					pData[i].bFolder == true ? 2 : 1,
+					pData[i].szTitle,
+					pData[i].nOrder,
+					L"2011-05-11 12:00:00", 
+					L"2011-05-11 12:00:00",
+					nFk
+					);
+			}
+			else
+			{
+				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
+					L"(parent,type,title,position,dateAdded,lastModified) "
+					L" values(%d,%d,'%s',%d,%d,%d)",
+					pData[i].nPid + nBeginId,
+					pData[i].bFolder == true ? 2 : 1,
+					pData[i].szTitle,
+					pData[i].nOrder,
+					L"2011-05-11 12:00:00", 
+					L"2011-05-11 12:00:00"
+					);
+			}
 		}
 		m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
 
@@ -468,12 +525,6 @@ int FireFox3PlugIn::GetFavoriteCount(int nParentId)
 {
 	int nCount = 0;
 
-	if( m_pSqliteDatabase == NULL)
-		m_pSqliteDatabase = new CppSQLite3DB();
-
-	if( m_pSqliteDatabase->IsOpen() == false)
-		m_pSqliteDatabase->open(GetFavoriteDataPath(), "");
-	
 	wstring strSql = L"select count(*) as total from moz_bookmarks where parent = " ;
 	strSql += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nParentId));
 
@@ -518,48 +569,14 @@ int32 FireFox3PlugIn::GetFavoriteCount()
 {
 	int nTotalNumber = 0;
 
-	if( m_pSqliteDatabase == NULL)
-		m_pSqliteDatabase = new CppSQLite3DB();
-
-	wchar_t* pDBPath = GetFavoriteDataPath();
-
-	if( m_pSqliteDatabase->IsOpen() == false)
-		m_pSqliteDatabase->open(pDBPath, "");
-
-	// 0 表示 open成功
-	if( m_pSqliteDatabase->IsOpen() == true)
+	CppSQLite3Query Query = m_pSqliteDatabase->execQuery("select * from moz_bookmarks where id in(2,3,4,5)");
+	while(!Query.eof() )
 	{
-		CppSQLite3Query Query = m_pSqliteDatabase->execQuery("select * from moz_bookmarks where id in(2,3,4,5)");
-		while(!Query.eof() )
-		{
-			int nId = Query.getIntField("id", 0);
-			nTotalNumber += GetFavoriteCount(nId);
+		int nId = Query.getIntField("id", 0);
+		nTotalNumber += GetFavoriteCount(nId);
 
-			Query.nextRow();
-		}
+		Query.nextRow();
 	}
 
 	return nTotalNumber;
 }
-
-void FireFox3PlugIn::ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
-{
-	int32 nLen = _tcslen(pszOri);
-
-	if (pszOri == NULL || nLen == 0)
-	{
-		return;
-	}
-
-	for (int i = 0; i < nLen; i++)
-	{
-		if (pszOri[i] == '\'')
-		{
-			pszOri[i] = '\"';
-		}
-	}
-
-}
-
-
-

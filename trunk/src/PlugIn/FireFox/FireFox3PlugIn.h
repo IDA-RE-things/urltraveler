@@ -3,7 +3,7 @@
 
 
 class CppSQLite3DB;
-class FireFox3PlugIn : public IPlugInImp
+class FireFox3PlugIn : public PlugInImp
 {
 public:
 	FireFox3PlugIn();
@@ -93,16 +93,21 @@ protected:
 	
 	// 因为Firefox的目录比较特殊，它位于C:\Users\zhangzq\AppData\Roaming\Mozilla\Firefox\Profiles\*.default
 	// 目录下，*为一随即数，因此必须先计算出该目录
-	wchar_t*	GetAppBasePath();
+	wchar_t* GetAppBasePath();
 
 	// 获取父结点为nParentId的所有结点的数目
-	int		GetFavoriteCount(int nParentId);
+	int	GetFavoriteCount(int nParentId);
 
 	// 导出所有父结点为nParentId的结点的收藏数据
 	// nCurrentIndex为导出的收藏数据
 	BOOL ExportFavoriteData(int nParentId, PFAVORITELINEDATA pData, int32& nCurrentIndex);
 
-	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
+	// 数据库相关的函数
+protected:
+
+	// 获取所有的系统的记录ID
+	void GetSystemFavoriteId(int nParentId, std::vector<int>& vIdData); 
+	void GetSystemFavoriteId(std::vector<int>& vIdData); 
 
 private:
 

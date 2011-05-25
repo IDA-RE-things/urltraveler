@@ -283,8 +283,10 @@ typedef struct _PlugInInfo
 
 }PLUGININFO, *PPLUGININFO;
 
-class IPlugInImp : public IPlugIn
+class PlugInImp : public IPlugIn
 {
+public:
+
 	//----------------------------------------------------------------------------------------
 	//名称: Load 
 	//描述: 插件的Load方法，主要用于数据等初始化 
@@ -294,6 +296,7 @@ class IPlugInImp : public IPlugIn
 	{
 		return FALSE;
 	}
+
 	//----------------------------------------------------------------------------------------
 	//名称: UnLoad 
 	//描述: 插件的UnLoad方法，主要用于数据等反初始化 
@@ -453,6 +456,24 @@ class IPlugInImp : public IPlugIn
 	virtual int32 GetFavoriteCount()
 	{
 		return 0;
+	}
+
+	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
+	{
+		int32 nLen = _tcslen(pszOri);
+
+		if (pszOri == NULL || nLen == 0)
+		{
+			return;
+		}
+
+		for (int i = 0; i < nLen; i++)
+		{
+			if (pszOri[i] == '\'')
+			{
+				pszOri[i] = '\"';
+			}
+		}
 	}
 };
 

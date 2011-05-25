@@ -5,7 +5,7 @@
 //				360SE 2.0 °æ±¾
 //===========================================================
 
-class C360ChromePlugIn : public IPlugInImp
+class C360ChromePlugIn : public PlugInImp
 {
 public:
 	C360ChromePlugIn();

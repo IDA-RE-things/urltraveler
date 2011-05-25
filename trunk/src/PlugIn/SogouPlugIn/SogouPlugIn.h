@@ -1,7 +1,7 @@
 #pragma once
 #include "PlugIn.h"
 
-class SogouPlugIn : public IPlugInImp
+class SogouPlugIn : public PlugInImp
 {
 public:
 	SogouPlugIn();
@@ -87,8 +87,8 @@ public:
 	//----------------------------------------------------------------------------------------
 	virtual int32 GetFavoriteCount();
 protected:
-	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
 	BOOL SaveDatabase();
+
 private:
 	winFileMem *m_pMemFavoriteDB;
 };

@@ -6,7 +6,7 @@
 //				360SE 3.0 °æ±¾
 //===========================================================
 
-class C360SE3PlugIn : public IPlugInImp
+class C360SE3PlugIn : public PlugInImp
 {
 public:
 	C360SE3PlugIn();

@@ -1,7 +1,7 @@
 #pragma once
 #include "PlugIn.h"
 
-class Maxthon3PlugIn : public IPlugInImp
+class Maxthon3PlugIn : public PlugInImp
 {
 public:
 	Maxthon3PlugIn();
