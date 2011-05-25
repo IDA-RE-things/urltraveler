@@ -12,6 +12,7 @@
 #include "Registry.h"
 #include "XString.h"
 #include "StringHelper.h"
+#include "time.h"
 
 
 using namespace firefox;
@@ -23,7 +24,10 @@ using namespace firefox;
 #define BOOKMARKS_TAG	4
 #define BOOKMARKS_UNFILED	5
 
+//==============================================================
 // 标签菜单中需要排除的记录
+// 这些是系统的关键字，目前仅仅包括简体版和繁体版
+//==============================================================
 #define BOOKMARKS_MENU_EXCLUED_SQL L" and type <> 3 and ( title <> '最近使用的书签' and title <> '最近使用的标签'  \
 	and title <> 'Mozilla Firefox' and title <> '最近加入的書籤' and title<>'最近新增的標籤'  \
 	and title <> '获取书签附加组件' and title <> '取得書籤類附加元件')"
@@ -134,8 +138,9 @@ wchar_t* FireFox3PlugIn::GetInstallPath()
 			if (ERROR_SUCCESS == ::RegEnumKeyExW(hKey, i, ptszSubKey, &cbSubKey, NULL, NULL, NULL, NULL))   
 			{   
 				wstrSubKey = ptszSubKey;
-				size_t n = wstrSubKey.find(L"Mozilla Firefox (3");
-				if( 0xffffffff != wstrSubKey.find(L"Mozilla Firefox (3"))
+				size_t nIndex3 = wstrSubKey.find(L"Mozilla Firefox (3");
+				size_t nIndex4 = wstrSubKey.find(L"Mozilla Firefox 4");
+				if( 0xffffffff != nIndex3 || 0xffffffff != nIndex4)
 				{
 					wchar_t szInstallPath[MAX_PATH] = {0};
 					DWORD   dwSize = sizeof(szInstallPath); 
@@ -452,20 +457,37 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 			}
 		}
 
+		time_t nowTime;
+		time(&nowTime);
+
 		if( pData[i].nPid == 0)
 		{
-			// 书签菜单栏目
-			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
-				L"(parent,type,title,position,dateAdded,lastModified,fk) "
-				L" values(%d,%d,'%s',%d,%d,%d, %d)",
-				3,
-				pData[i].bFolder == true ? 2 : 1,
-				pData[i].szTitle,
-				pData[i].nOrder,
-				L"2011-05-11 12:00:00", 
-				L"2011-05-11 12:00:00",
-				nFk
+			if( nFk != -1)
+			{
+				// 书签菜单栏目
+				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
+					L"(parent,type,title,position,dateAdded,lastModified,fk) "
+					L" values(%d,%d,'%s',%d,%d,%d,%d)",
+					3,
+					pData[i].bFolder == true ? 2 : 1,
+					pData[i].szTitle,
+					pData[i].nOrder,
+					nowTime, 
+					nowTime,
+					nFk
 				);
+			}
+			else
+			{
+				// 书签菜单栏目
+				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks (parent,type,title,position,lastModified,dateAdded) " \
+					L" values(3,%d,'%s',%d,%u,%u)",
+					pData[i].bFolder == true ? 2 : 1,
+					pData[i].szTitle,
+					pData[i].nOrder,
+					nowTime,nowTime);
+			}
+			
 		}
 		else
 		{
@@ -478,8 +500,8 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 					pData[i].bFolder == true ? 2 : 1,
 					pData[i].szTitle,
 					pData[i].nOrder,
-					L"2011-05-11 12:00:00", 
-					L"2011-05-11 12:00:00",
+					nowTime, 
+					nowTime,
 					nFk
 					);
 			}
@@ -492,29 +514,12 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 					pData[i].bFolder == true ? 2 : 1,
 					pData[i].szTitle,
 					pData[i].nOrder,
-					L"2011-05-11 12:00:00", 
-					L"2011-05-11 12:00:00"
+					nowTime, 
+					nowTime	
 					);
 			}
 		}
 		m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
-
-		/*
-		// 书签工具栏
-		pData[i].nPid = 3;
-		swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
-		L"(parent,type,title,position,dateAdded,lastModified, fk) "
-		L" values(%d,%d,'%s',%d,%d,%d, %d)",
-		pData[i].nPid,
-		pData[i].bFolder == true ? 2 : 1,
-		pData[i].szTitle,
-		pData[i].nOrder,
-		L"2011-05-11 12:00:00", 
-		L"2011-05-11 12:00:00",
-		nFk);
-		m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
-		*/
-
 	}
 
 	return TRUE;
