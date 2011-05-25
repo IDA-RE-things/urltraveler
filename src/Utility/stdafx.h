@@ -12,7 +12,7 @@
 #include <windows.h>
 #include <tchar.h>
 
-
+#define UTILITY_EXPORTS
 
 // TODO: 在此处引用程序需要的其他头文件
 #ifdef UTILITY_EXPORTS
