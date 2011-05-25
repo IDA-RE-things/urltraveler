@@ -40,6 +40,4 @@
 #  define JSON_API
 # endif
 
-#define JSON_API
-
 #endif // JSON_CONFIG_H_INCLUDED
