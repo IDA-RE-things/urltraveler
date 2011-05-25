@@ -57,6 +57,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uCapture", "uCapture\uCaptu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3070603", "..\thirdlib\sqlite3070603\sqlite3070603\sqlite3070603.vcproj", "{336215A3-65DA-42BC-80D3-341D7F0CF515}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChromePlugIn", "PlugIn\ChromePlugIn\ChromePlugIn.vcproj", "{9A7CD87D-C517-4736-9849-9B694492E058}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -131,6 +133,10 @@ Global
 		{336215A3-65DA-42BC-80D3-341D7F0CF515}.Debug|Win32.Build.0 = Debug|Win32
 		{336215A3-65DA-42BC-80D3-341D7F0CF515}.Release|Win32.ActiveCfg = Release|Win32
 		{336215A3-65DA-42BC-80D3-341D7F0CF515}.Release|Win32.Build.0 = Release|Win32
+		{9A7CD87D-C517-4736-9849-9B694492E058}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9A7CD87D-C517-4736-9849-9B694492E058}.Debug|Win32.Build.0 = Debug|Win32
+		{9A7CD87D-C517-4736-9849-9B694492E058}.Release|Win32.ActiveCfg = Release|Win32
+		{9A7CD87D-C517-4736-9849-9B694492E058}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
