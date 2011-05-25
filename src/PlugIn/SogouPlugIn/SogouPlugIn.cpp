@@ -267,25 +267,3 @@ BOOL SogouPlugIn::SaveDatabase()
 
 	return nRet == 0;
 }
-
-void SogouPlugIn::ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
-{
-	int32 nLen = _tcslen(pszOri);
-
-	if (pszOri == NULL || nLen == 0)
-	{
-		return;
-	}
-
-	for (int i = 0; i < nLen; i++)
-	{
-		if (pszOri[i] == '\'')
-		{
-			pszOri[i] = '\"';
-		}
-	}
-
-}
-
-
-

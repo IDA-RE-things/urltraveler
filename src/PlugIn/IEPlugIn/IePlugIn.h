@@ -13,7 +13,7 @@ typedef struct FileTimeInfo
 	time_t tLastAccessTime;
 } FILETIMEINFO, *PFILETIMEINFO;
 
-class IEPlugIn : public IPlugInImp
+class IEPlugIn : public PlugInImp
 {
 public:
 	IEPlugIn(void);

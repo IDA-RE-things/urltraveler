@@ -4,7 +4,7 @@
 //===========================================================
 //				360SE 2.0 °æ±¾
 //===========================================================
-class C360SE2PlugIn : public IPlugInImp
+class C360SE2PlugIn : public PlugInImp
 {
 public:
 	C360SE2PlugIn();

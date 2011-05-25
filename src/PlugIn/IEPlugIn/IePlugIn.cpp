@@ -33,6 +33,8 @@ BOOL IEPlugIn::Load()
 // 	ImportFavoriteData(pData, nDataNum);
 // 	delete[] pData;
 // 	pData = NULL;
+
+
 	return TRUE;
 }
 
@@ -365,10 +367,8 @@ wchar_t* IEPlugIn::GetNodeAbsolutePath(int32 nIndex, PFAVORITELINEDATA pData)
 {
 	int nCurrNodeIndex = nIndex;
 	std::vector<wchar_t *> vecNodeTitle;
-	//std::wstring strNodePath = GetFavoriteDataPath();
+
 	std::wstring strNodePath = GetFavoriteDataPath();
-
-
 	while (pData[nCurrNodeIndex].nPid != 0)
 	{//保存当前节点的路径
 		vecNodeTitle.push_back(pData[nCurrNodeIndex].szTitle);
@@ -376,9 +376,6 @@ wchar_t* IEPlugIn::GetNodeAbsolutePath(int32 nIndex, PFAVORITELINEDATA pData)
 	}
 
 	vecNodeTitle.push_back(pData[nCurrNodeIndex].szTitle);
-
-
-	
 
 	std::vector<wchar_t *>::reverse_iterator it;
 	for (it = vecNodeTitle.rbegin(); it != vecNodeTitle.rend(); ++it)
