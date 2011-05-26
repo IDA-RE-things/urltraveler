@@ -308,9 +308,9 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 	}
 
 	//写入新数据之前删除原来的所有的数据
-	std::wstring strFavDir = GetFavoriteDataPath();
-	BOOL bRet = PathHelper::ForceRemoveDir(strFavDir);
-	free((void *)strFavDir.c_str());
+	wchar_t* szFavDir = GetFavoriteDataPath();
+	BOOL bRet = PathHelper::ForceRemoveDir(szFavDir);
+	free(szFavDir);
 
 	for (int i = 0; i < nDataNum; i++)
 	{

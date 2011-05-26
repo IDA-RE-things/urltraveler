@@ -417,6 +417,8 @@ int PlugInModule::Run()
 			itr++;
 	}
 
+	m_nSumFavorite = m_vFavoriateLineData.size();
+
 	Rearrange(&m_vFavoriateLineData[0], m_nSumFavorite);
 	
 	// 将合并后的数据导入到各个浏览器中
