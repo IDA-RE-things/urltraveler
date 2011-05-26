@@ -109,6 +109,8 @@ protected:
 	void GetSystemFavoriteId(int nParentId, std::vector<int>& vIdData); 
 	void GetSystemFavoriteId(std::vector<int>& vIdData); 
 
+	void InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nDataNum);
+
 private:
 
 	CppSQLite3DB* m_pSqliteDatabase;

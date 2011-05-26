@@ -372,39 +372,16 @@ BOOL FireFox3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 	return TRUE;
 }
 
-BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nDataNum)
 {
 	if (pData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ;
 	}
 
 #define MAX_BUFFER_LEN	4096
 
-	std::vector<int> v;
-	GetSystemFavoriteId(v);
-
-	wstring strId = L"";
-	for( int i=0; i<v.size(); i++)
-	{
-		strId += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(v.at(i)));
-		strId += L",";
-	}
-	strId.erase( strId.find_last_not_of(L",") + 1, strId.length()-1);
-
-
 	wchar_t szInsert[MAX_BUFFER_LEN] = {0};
-	wchar_t szDelete[MAX_BUFFER_LEN] = {0};
-
-	int i = 0;
-
-	wstring wstrDeleteSql =	 L"delete from moz_places where id in (select fk from moz_bookmarks where id not in (";
-	wstrDeleteSql += strId + L"))";
-	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(wstrDeleteSql).c_str());
-
-	wstrDeleteSql = L"delete from moz_bookmarks where id not in (";
-	wstrDeleteSql += strId + L")";
-	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(wstrDeleteSql).c_str());
 
 	// 找到插入的起始id
 	int nBeginId = 0;
@@ -468,7 +445,7 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
 					L"(parent,type,title,position,dateAdded,lastModified,fk) "
 					L" values(%d,%d,'%s',%d,%d,%d,%d)",
-					3,
+					nRootId,
 					pData[i].bFolder == true ? 2 : 1,
 					pData[i].szTitle,
 					pData[i].nOrder,
@@ -480,8 +457,10 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 			else
 			{
 				// 书签菜单栏目
-				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks (parent,type,title,position,lastModified,dateAdded) " \
-					L" values(3,%d,'%s',%d,%d,%d)",
+				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks " \
+					L" (parent,type,title,position,lastModified,dateAdded) " \
+					L" values(%d,%d,'%s',%d,%d,%d)",
+					nRootId,
 					pData[i].bFolder == true ? 2 : 1,
 					pData[i].szTitle,
 					pData[i].nOrder,
@@ -522,6 +501,42 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 		}
 		m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
 	}
+}
+
+BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+{
+	if (pData == NULL || nDataNum == 0)
+	{
+		return FALSE;
+	}
+
+#define MAX_BUFFER_LEN	4096
+
+	std::vector<int> v;
+	GetSystemFavoriteId(v);
+
+	wstring strId = L"";
+	for( int i=0; i<v.size(); i++)
+	{
+		strId += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(v.at(i)));
+		strId += L",";
+	}
+	strId.erase( strId.find_last_not_of(L",") + 1, strId.length()-1);
+
+
+	wchar_t szInsert[MAX_BUFFER_LEN] = {0};
+	wchar_t szDelete[MAX_BUFFER_LEN] = {0};
+
+	wstring wstrDeleteSql =	 L"delete from moz_places where id in (select fk from moz_bookmarks where id not in (";
+	wstrDeleteSql += strId + L"))";
+	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(wstrDeleteSql).c_str());
+
+	wstrDeleteSql = L"delete from moz_bookmarks where id not in (";
+	wstrDeleteSql += strId + L")";
+	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(wstrDeleteSql).c_str());
+
+	InsertIntoDB(2, pData, nDataNum);
+	InsertIntoDB(3, pData, nDataNum);
 
 	return TRUE;
 }
