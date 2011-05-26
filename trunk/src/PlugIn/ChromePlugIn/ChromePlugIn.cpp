@@ -157,10 +157,11 @@ BOOL CChromePlugIn::ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum)
 {
 	BOOL bRetCode = FALSE;
 	Json::Value chrome_bookmarks;
-	std::wstring strPath = GetFavoriteDataPath();
-	std::string strTmpPath = StringHelper::UnicodeToUtf8(strPath);
-	
-	free((void *)strPath.c_str());
+
+	wchar_t* pszPath = GetFavoriteDataPath();
+	std::string strTmpPath = StringHelper::UnicodeToUtf8(pszPath);
+	free(pszPath);
+
 	chrome_bookmarks.clear();
 
 	std::ifstream infile(strTmpPath.c_str());
@@ -247,9 +248,9 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 	}
 
 
-	std::wstring strPath = GetFavoriteDataPath();
-	std::string strTmpPath = StringHelper::UnicodeToUtf8(strPath);
-	free((void *)strPath.c_str());
+	wchar_t* pszPath = GetFavoriteDataPath();
+	std::string strTmpPath = StringHelper::UnicodeToUtf8(pszPath);
+	free(pszPath);
 	std::ofstream outfile(strTmpPath.c_str());
 
 	roots.append(bookmark_bar);
