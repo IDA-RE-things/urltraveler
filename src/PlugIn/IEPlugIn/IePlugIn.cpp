@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "IePlugIn.h"
+#include "IEPlugIn.h"
 #include <shlwapi.h>
 #include "PathHelper.h"
 #include "StringHelper.h"
@@ -308,9 +308,9 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 	}
 
 	//写入新数据之前删除原来的所有的数据
-	wchar_t* szFavDir = GetFavoriteDataPath();
-	BOOL bRet = PathHelper::ForceRemoveDir(szFavDir);
-	free(szFavDir);
+	wchar_t* pszFavDir = GetFavoriteDataPath();
+	BOOL bRet = PathHelper::ForceRemoveDir(pszFavDir);
+	free(pszFavDir);
 
 	for (int i = 0; i < nDataNum; i++)
 	{
@@ -335,7 +335,6 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 		else
 		{
 			wchar_t szFileDir[MAX_PATH] = {0};
-
 			wcscpy_s(szFileDir, MAX_PATH - 1, pszCurrNodePath);
 
 			PathRemoveFileSpec(szFileDir);
@@ -370,7 +369,8 @@ wchar_t* IEPlugIn::GetNodeAbsolutePath(int32 nIndex, PFAVORITELINEDATA pData)
 
 	std::wstring strNodePath = GetFavoriteDataPath();
 	while (pData[nCurrNodeIndex].nPid != 0)
-	{//保存当前节点的路径
+	{
+		//保存当前节点的路径
 		vecNodeTitle.push_back(pData[nCurrNodeIndex].szTitle);
 		nCurrNodeIndex = pData[nCurrNodeIndex].nPid - 1;
 	}
@@ -379,7 +379,8 @@ wchar_t* IEPlugIn::GetNodeAbsolutePath(int32 nIndex, PFAVORITELINEDATA pData)
 
 	std::vector<wchar_t *>::reverse_iterator it;
 	for (it = vecNodeTitle.rbegin(); it != vecNodeTitle.rend(); ++it)
-	{//拼接当前节点的全路径
+	{
+		//拼接当前节点的全路径
 		strNodePath.append(L"\\");
 		strNodePath.append(*it);
 	}
