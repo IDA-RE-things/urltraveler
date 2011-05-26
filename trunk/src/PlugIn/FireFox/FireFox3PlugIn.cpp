@@ -472,8 +472,8 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 					pData[i].bFolder == true ? 2 : 1,
 					pData[i].szTitle,
 					pData[i].nOrder,
-					nowTime, 
-					nowTime,
+					(int)nowTime, 
+					(int)nowTime,
 					nFk
 				);
 			}
@@ -481,11 +481,12 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 			{
 				// ÊéÇ©²Ëµ¥À¸Ä¿
 				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks (parent,type,title,position,lastModified,dateAdded) " \
-					L" values(3,%d,'%s',%d,%u,%u)",
+					L" values(3,%d,'%s',%d,%d,%d)",
 					pData[i].bFolder == true ? 2 : 1,
 					pData[i].szTitle,
 					pData[i].nOrder,
-					nowTime,nowTime);
+					(int)nowTime,
+					(int)nowTime);
 			}
 			
 		}
@@ -500,8 +501,8 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 					pData[i].bFolder == true ? 2 : 1,
 					pData[i].szTitle,
 					pData[i].nOrder,
-					nowTime, 
-					nowTime,
+					(int)nowTime, 
+					(int)nowTime,
 					nFk
 					);
 			}
@@ -514,8 +515,8 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 					pData[i].bFolder == true ? 2 : 1,
 					pData[i].szTitle,
 					pData[i].nOrder,
-					nowTime, 
-					nowTime	
+					(int)nowTime, 
+					(int)nowTime	
 					);
 			}
 		}

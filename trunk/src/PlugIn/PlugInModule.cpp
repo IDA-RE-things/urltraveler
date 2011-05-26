@@ -63,7 +63,6 @@ PlugInModule::~PlugInModule()
 
 BEGIN_EVENT_MAP(PlugInModule)
 	ON_EVENT(EVENT_VALUE_PLUGIN_LOAD_ALL, OnEvent_LoadAllPlugin)
-	ON_EVENT(EVENT_VALUE_PLUGIN_COMBINE_FAVORITE, OnEvent_LoadAllFavorite)
 	ON_EVENT(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED, OnEvent_CheckPlugInWorked)
 END_EVENT_MAP()
 
@@ -349,62 +348,6 @@ void Rearrange(PFAVORITELINEDATA pData, int nLen)
 	}
 }
 
-// 通知加载合并所有的收藏夹数据
-void	PlugInModule::OnEvent_LoadAllFavorite(Event* pEvent)
-{
-		int nNumOfPlugIns = m_vPlugIns.size();
-		int *panOffset = new int[nNumOfPlugIns + 1];
-	
-		m_vFavoriateLineData.clear();
-	
-		ZeroMemory(panOffset, sizeof(int) * (nNumOfPlugIns + 1));
-		m_nSumFavorite = 0;
-	
-		for (int i = 0; i < nNumOfPlugIns; i++)
-		{
-			IPlugIn*	pPlugIn = m_vPlugIns.at(i);
-			if( pPlugIn == NULL)
-				continue;
-	
-			int nFavoriteCount = pPlugIn->GetFavoriteCount();
-			if( nFavoriteCount == 0)
-				continue;
-
-			panOffset[i + 1] = nFavoriteCount;
-			m_nSumFavorite += nFavoriteCount;
-		}
-	
-		m_vFavoriateLineData.resize(m_nSumFavorite);
-	
-		// 对所有的浏览器数据进行合并
-		for(int i=0; i < nNumOfPlugIns; i++)
-		{
-			IPlugIn*	pPlugIn = m_vPlugIns.at(i);
-			if( pPlugIn == NULL)
-				continue;
-	
-	
-			int nFavoriteCount = pPlugIn->GetFavoriteCount();
-			if( nFavoriteCount == 0)
-				continue;
-	
-			pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[panOffset[i]], panOffset[i + 1]);
-		}
-	
-	
-		Merge(&m_vFavoriateLineData[0], m_nSumFavorite, 0);
-
-		Rearrange(&m_vFavoriateLineData[0], m_nSumFavorite);
-		
-		// 将合并后的数据导入到各个浏览器中
-		if (panOffset)
-		{
-			delete []panOffset;
-			panOffset = NULL;
-		}
-	
-}
-
 void PlugInModule::OnThreadEntry()
 {
 
@@ -464,6 +407,16 @@ int PlugInModule::Run()
 	}
 
 	Merge(&m_vFavoriateLineData[0], m_nSumFavorite, 0);
+
+	std::vector<FAVORITELINEDATA>::iterator itr = m_vFavoriateLineData.begin();
+	for( ; itr != m_vFavoriateLineData.end();)
+	{
+		if( (*itr).bDelete == true)
+			itr = m_vFavoriateLineData.erase(itr);
+		else
+			itr++;
+	}
+
 	Rearrange(&m_vFavoriateLineData[0], m_nSumFavorite);
 	
 	// 将合并后的数据导入到各个浏览器中
