@@ -22,7 +22,7 @@ typedef struct ChromeUrlNode
 	wchar_t szUrl[MAX_URL_LEN];
 } CHROMEURLNODE, *PCHROMEURLNODE;
 
-class CChromePlugIn : public IPlugInImp
+class CChromePlugIn : public PlugInImp
 {
 public:
 	CChromePlugIn();
