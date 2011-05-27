@@ -45,6 +45,9 @@ BOOL CChromePlugIn::UnLoad()
 //----------------------------------------------------------------------------------------
 BOOL CChromePlugIn::IsWorked()
 {
+	if( GetInstallPath() == NULL)
+		return FALSE;
+
 	return TRUE;
 }
 
@@ -65,22 +68,6 @@ int32 CChromePlugIn::GetPlugInVersion()
 const wchar_t* CChromePlugIn::GetBrowserName() 
 {
 	return L"Chrome";
-}
-
-//----------------------------------------------------------------------------------------
-//名称: GetBrowserIcon
-//描述: 获取该插件对应的浏览器的图标
-//----------------------------------------------------------------------------------------
-HICON CChromePlugIn::GetBrowserIcon() 
-{
-	SHFILEINFO stFileInfo = {0};
-	HRESULT hr = ::SHGetFileInfo(GetInstallPath(), 0, &stFileInfo, sizeof(stFileInfo), SHGFI_ICON);
-
-	if (SUCCEEDED(hr))
-	{
-		return stFileInfo.hIcon;
-	}
-	return NULL;
 }
 
 //----------------------------------------------------------------------------------------
