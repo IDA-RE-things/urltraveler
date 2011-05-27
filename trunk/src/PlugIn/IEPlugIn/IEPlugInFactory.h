@@ -14,13 +14,6 @@ class IEPlugInFactory : public PlugInFactoryImpl<IEPlugIn>
 public:
 	IEPlugInFactory();
 	virtual ~IEPlugInFactory();
-
-	BOOL QueryPlugInCounter(uint32 & counter);
-	BOOL QueryPlugInPoint(uint32 counter,IPlugIn*& pPlugIn);
-	void ReleasePlugInPoint(uint32 counter,IPlugIn* pPlugIn);
-
-private:
-	IEPlugIn	m_IE6PlugIn;
 };
 
 namespace ieplugin

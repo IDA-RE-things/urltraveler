@@ -31,6 +31,6 @@ private:
 
 namespace n360seplugin
 {
-	extern C360SEPlugInFactory*	g_SogouPlugInFactory;
+	extern C360SEPlugInFactory*	g_360PlugInFactory;
 }
 using namespace n360seplugin;

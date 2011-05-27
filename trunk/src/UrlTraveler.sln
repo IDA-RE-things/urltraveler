@@ -59,6 +59,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3070603", "..\thirdli
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChromePlugIn", "PlugIn\ChromePlugIn\ChromePlugIn.vcproj", "{9A7CD87D-C517-4736-9849-9B694492E058}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QQPlugIn", "PlugIn\QQPlugIn\QQ.vcproj", "{60BF2AFC-09A0-4A97-8D6E-CB2505703E5E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -137,6 +139,10 @@ Global
 		{9A7CD87D-C517-4736-9849-9B694492E058}.Debug|Win32.Build.0 = Debug|Win32
 		{9A7CD87D-C517-4736-9849-9B694492E058}.Release|Win32.ActiveCfg = Release|Win32
 		{9A7CD87D-C517-4736-9849-9B694492E058}.Release|Win32.Build.0 = Release|Win32
+		{60BF2AFC-09A0-4A97-8D6E-CB2505703E5E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{60BF2AFC-09A0-4A97-8D6E-CB2505703E5E}.Debug|Win32.Build.0 = Debug|Win32
+		{60BF2AFC-09A0-4A97-8D6E-CB2505703E5E}.Release|Win32.ActiveCfg = Release|Win32
+		{60BF2AFC-09A0-4A97-8D6E-CB2505703E5E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
