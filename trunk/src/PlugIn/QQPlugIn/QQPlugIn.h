@@ -37,6 +37,7 @@ public:
 	//名称: GetBrowserName
 	//描述: 获取该插件对应的浏览器的名称和版本
 	//----------------------------------------------------------------------------------------
+
 	virtual const wchar_t* GetBrowserName() ;
 	//----------------------------------------------------------------------------------------
 	//名称: GetInstallPath
@@ -81,8 +82,4 @@ public:
 	//      回返收藏网址条数
 	//----------------------------------------------------------------------------------------
 	virtual int32 GetFavoriteCount();
-
-protected:
-	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
-	BOOL SaveDatabase();
 };

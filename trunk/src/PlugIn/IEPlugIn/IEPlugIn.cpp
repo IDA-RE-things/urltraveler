@@ -26,15 +26,6 @@ IEPlugIn::~IEPlugIn(void)
 
 BOOL IEPlugIn::Load()
 {
-	//≤‚ ‘¥˙¬Î
-// 	int32 nDataNum = GetFavoriteCount();
-// 	PFAVORITELINEDATA pData = new FAVORITELINEDATA[nDataNum];
-// 	ExportFavoriteData(pData, nDataNum);
-// 	ImportFavoriteData(pData, nDataNum);
-// 	delete[] pData;
-// 	pData = NULL;
-
-
 	return TRUE;
 }
 
