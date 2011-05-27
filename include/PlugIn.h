@@ -6,6 +6,7 @@
 #include <shellapi.h>
 #include "tchar.h"
 #include <vector>
+#include "shlwapi.h"
 
 using namespace std;
 
@@ -318,7 +319,20 @@ public:
 	//----------------------------------------------------------------------------------------
 	virtual BOOL IsWorked()
 	{
-		return FALSE;
+		wchar_t* pszInstallPath = GetInstallPath();
+
+		if( pszInstallPath == NULL)
+			return FALSE;
+
+		// 检查文件是否存在
+		if( PathFileExists(pszInstallPath) == FALSE)
+		{
+			free(pszInstallPath);
+			return FALSE;
+		}
+
+		free(pszInstallPath);
+		return TRUE;
 	}
 
 	//----------------------------------------------------------------------------------------

@@ -31,6 +31,11 @@ public:
 	*/
 	static std::wstring GetAppDataDir(void);
 
+	/** 获取用户本地Application Data目录
+	采用windows api SHGetSpecialFolderPath来获取
+	*/
+	static std::wstring GetLocalAppDataDir(void);
+
 	/** 获取用户MyDocument目录
 	采用windows api SHGetSpecialFolderPath来获取
 	*/

@@ -45,40 +45,6 @@ BOOL IEPlugIn::UnLoad()
 
 
 //----------------------------------------------------------------------------------------
-//名称: IsWorked
-//描述: 检查该插件是否能够正常工作。如果没有安装该PlugIn对应的浏览器，则该插件不需要
-//	处理，只需要返回FALSE即可。否则它将会被调用。
-//返回: 插件的版本号，通常为一整数。
-//----------------------------------------------------------------------------------------
-BOOL IEPlugIn::IsWorked()
-{
-	/*
-	wchar_t szVersion[MAX_PATH] = {0};
-	DWORD   dwSize = sizeof(szVersion); 
-	int32   nVersion = 0;
-
-	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Internet Explorer",
-		L"Version", 
-		SRRF_RT_REG_SZ, 
-		NULL, 
-		szVersion, 
-		&dwSize))
-	{
-		if (nLen >= dwSize)
-		{
-			wcscpy_s(pszBrowserVersion, nLen - 1, szVersion);
-			pszBrowserVersion[nLen - 1] = 0;
-		}
-
-		return TRUE;
-	}
-	*/
-
-	return TRUE;
-}
-
-//----------------------------------------------------------------------------------------
 //名称: GetPlugInVersion
 //描述: 获取当前插件的版本号
 //返回: 插件的版本号，通常为一整数。
