@@ -30,18 +30,20 @@ using namespace firefox;
 //==============================================================
 #define BOOKMARKS_MENU_EXCLUED_SQL L" and type <> 3 and ( title <> '最近使用的书签' and title <> '最近使用的标签'  \
 	and title <> 'Mozilla Firefox' and title <> '最近加入的書籤' and title<>'最近新增的標籤'  \
-	and title <> '获取书签附加组件' and title <> '取得書籤類附加元件')"
+	and title <> '获取书签附加组件' and title <> '取得書籤類附加元件' and title <> 'Recently Bookmarked' \
+	and title <> 'Recent Tags')"
 
 #define BOOKMARKS_MENU_INCLUED_SQL L" and ( title = '最近使用的书签' or title = '最近使用的标签'  \
 	or title = 'Mozilla Firefox' or title = '最近加入的書籤' or title = '最近新增的標籤'  \
-	or title = '获取书签附加组件' or title = '取得書籤類附加元件'or type = 3)"
+	or title = '获取书签附加组件' or title = '取得書籤類附加元件'or type = 3 or title = 'Recently Bookmarked' \
+	or title = 'Recent Tags')"
 
 // 标签工具栏中要排除的记录
 #define BOOKMARKS_TOOLSBAR_EXCLUED_SQL	L" and type <> 3 and ( title <> '访问最多' and title <> '最新头条'  \
-			and title <> '最常瀏覽' and title <> '即時新聞' and title<> '新手上路')"
+	and title <> '最常瀏覽' and title <> '即時新聞' and title<> '新手上路' and title <> 'Most Visited' and title <> 'Latest Headlines')"
 
 #define BOOKMARKS_TOOLSBAR_INCLUED_SQL	L" and ( title = '访问最多' or title = '最新头条'  \
-			or title = '最常瀏覽' or title = '即時新聞' or title = '新手上路' or type = 3)"
+	or title = '最常瀏覽' or title = '即時新聞' or title = '新手上路' or type = 3 or title = 'Most Visited' or title = 'Latest Headlines')"
 
 
 FireFox3PlugIn::FireFox3PlugIn()
@@ -144,7 +146,8 @@ wchar_t* FireFox3PlugIn::GetInstallPath()
 				wstrSubKey = ptszSubKey;
 				size_t nIndex3 = wstrSubKey.find(L"Mozilla Firefox (3");
 				size_t nIndex4 = wstrSubKey.find(L"Mozilla Firefox 4");
-				if( 0xffffffff != nIndex3 || 0xffffffff != nIndex4)
+				size_t nIndex5 = wstrSubKey.find(L"Mozilla Firefox 5");
+				if( 0xffffffff != nIndex3 || 0xffffffff != nIndex4 || 0xffffffff != nIndex5)
 				{
 					wchar_t szInstallPath[MAX_PATH] = {0};
 					DWORD   dwSize = sizeof(szInstallPath); 
