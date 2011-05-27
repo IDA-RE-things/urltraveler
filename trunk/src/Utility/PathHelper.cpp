@@ -62,6 +62,21 @@ std::wstring PathHelper::GetAppDataDir(void)
 	return strAppDataPath;
 }
 
+/** 获取用户Application Data目录
+采用windows api SHGetSpecialFolderPath来获取
+*/
+std::wstring PathHelper::GetLocalAppDataDir(void)
+{
+	std::wstring strAppDataPath;
+
+	///获取用户对应的 application data 目录,例:C:\Documents and Settings\username\Application Data
+	WCHAR strPath[MAX_PATH] = {0};
+	BOOL bResult = SHGetSpecialFolderPathW(NULL, strPath, CSIDL_LOCAL_APPDATA, FALSE);
+
+	strAppDataPath = strPath;
+	return strAppDataPath;
+}
+
 /** 获取用户MyDocument目录
 采用windows api SHGetSpecialFolderPath来获取
 */

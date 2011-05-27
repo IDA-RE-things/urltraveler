@@ -82,14 +82,6 @@ BOOL FireFox3PlugIn::UnLoad()
 	return TRUE;
 }
 
-BOOL FireFox3PlugIn::IsWorked()
-{
-	if( GetInstallPath() == NULL)
-		return FALSE;
-
-	return TRUE;
-}
-
 int32 FireFox3PlugIn::GetPlugInVersion()
 {
 	return 1;

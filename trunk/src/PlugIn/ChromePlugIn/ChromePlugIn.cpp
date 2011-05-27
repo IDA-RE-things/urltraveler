@@ -36,21 +36,6 @@ BOOL CChromePlugIn::UnLoad()
 	return TRUE;
 }
 
-
-//----------------------------------------------------------------------------------------
-//名称: IsWorked
-//描述: 检查该插件是否能够正常工作。如果没有安装该PlugIn对应的浏览器，则该插件不需要
-//	处理，只需要返回FALSE即可。否则它将会被调用。
-//返回: 插件的版本号，通常为一整数。
-//----------------------------------------------------------------------------------------
-BOOL CChromePlugIn::IsWorked()
-{
-	if( GetInstallPath() == NULL)
-		return FALSE;
-
-	return TRUE;
-}
-
 //----------------------------------------------------------------------------------------
 //名称: GetPlugInVersion
 //描述: 获取当前插件的版本号
@@ -103,7 +88,7 @@ wchar_t* CChromePlugIn::GetInstallPath()
 //----------------------------------------------------------------------------------------
 wchar_t* CChromePlugIn::GetFavoriteDataPath() 
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks";
+	std::wstring strPath = PathHelper::GetLocalAppDataDir() + L"\\Google\\Chrome\\User Data\\Default\\Bookmarks";
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 

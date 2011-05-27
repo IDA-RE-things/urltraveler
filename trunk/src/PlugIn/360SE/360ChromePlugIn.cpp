@@ -8,6 +8,7 @@
 #include "CppSQLite3.h"
 #include <algorithm>
 #include "CRCHash.h"
+#include "PathHelper.h"
 
 #include "360ChromePlugIn.h"
 #include "360SEPlugInFactory.h"
@@ -38,35 +39,6 @@ BOOL C360ChromePlugIn::UnLoad()
 	return TRUE;
 }
 
-BOOL C360ChromePlugIn::IsWorked()
-{
-	// 360SE 2.0和360SE3.0的收藏夹方式不相同
-	// 360 2.0使用和IE一致的收藏夹。360 3.0单独的数据库进行存储
-
-	// 2.0  
-	// {66D8959E-B7E9-4cd4-BC16-98711D815F2A}
-	// DisplayIcon	C:\Program Files\360\360se\360SE.exe
-
-/*
-	wchar_t szVersion[MAX_PATH] = {0};
-	DWORD   dwSize = sizeof(szVersion); 
-	int32   nVersion = 0;
-
-	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{23F3F476-BE34-4f48-9C77-2806A8393EC4}",
-		L"DisplayVersion", 
-		SRRF_RT_REG_SZ, 
-		NULL, 
-		szVersion, 
-		&dwSize))
-	{
-		return TRUE;
-	}
-*/
-
-	return FALSE;
-}
-
 int32 C360ChromePlugIn::GetPlugInVersion()
 {
 	return 1;
@@ -83,13 +55,14 @@ wchar_t* C360ChromePlugIn::GetInstallPath()
 	DWORD   dwSize = sizeof(szPath); 
 
 	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{23F3F476-BE34-4f48-9C77-2806A8393EC4}",
-		L"UninstallString", 
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\360chrome.exe",
+		L"Path", 
 		SRRF_RT_REG_SZ, 
 		NULL, 
 		szPath, 
 		&dwSize))
 	{
+		swprintf_s(szPath,MAX_PATH-1, L"%s%s", szPath, L"\\360chrome.exe"); 
 		return _wcsdup(szPath);
 	}
 
@@ -98,7 +71,7 @@ wchar_t* C360ChromePlugIn::GetInstallPath()
 
 wchar_t* C360ChromePlugIn::GetFavoriteDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\360se\\data\\360sefav.db";
+	std::wstring strPath = PathHelper::GetLocalAppDataDir() + L"\\360Chrome\Chrome\User Data\Default\\Bookmarks";
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
@@ -106,7 +79,7 @@ wchar_t* C360ChromePlugIn::GetFavoriteDataPath()
 
 wchar_t* C360ChromePlugIn::GetHistoryDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\data\\history.dat";
+	std::wstring strPath = PathHelper::GetLocalAppDataDir() + L"\\360Chrome\Chrome\User Data\Default\\History";
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
