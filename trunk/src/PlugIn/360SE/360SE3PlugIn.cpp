@@ -40,23 +40,8 @@ BOOL C360SE3PlugIn::IsWorked()
 	// 2.0  
 	// {66D8959E-B7E9-4cd4-BC16-98711D815F2A}
 	// DisplayIcon	C:\Program Files\360\360se\360SE.exe
-
-/*
-	wchar_t szVersion[MAX_PATH] = {0};
-	DWORD   dwSize = sizeof(szVersion); 
-	int32   nVersion = 0;
-
-	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{23F3F476-BE34-4f48-9C77-2806A8393EC4}",
-		L"DisplayVersion", 
-		SRRF_RT_REG_SZ, 
-		NULL, 
-		szVersion, 
-		&dwSize))
-	{
-		return TRUE;
-	}
-*/
+	if( GetInstallPath() == NULL)
+		return FALSE;
 
 	return TRUE;
 }
