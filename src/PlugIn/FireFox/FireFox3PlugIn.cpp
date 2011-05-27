@@ -56,11 +56,23 @@ FireFox3PlugIn::~FireFox3PlugIn()
 
 BOOL FireFox3PlugIn::Load()
 {
+	wchar_t* pszFavoritePath = GetFavoriteDataPath();
+	if( pszFavoritePath == NULL)
+		return FALSE;
+
+	if( PathFileExists(pszFavoritePath) == FALSE)
+	{
+		free(pszFavoritePath);
+		return FALSE;
+	}
+
    	if( m_pSqliteDatabase == NULL)
 		m_pSqliteDatabase = new CppSQLite3DB();
 
 	if( m_pSqliteDatabase->IsOpen() == false)
-		m_pSqliteDatabase->open(GetFavoriteDataPath(), "");
+		m_pSqliteDatabase->open(pszFavoritePath, "");
+
+	free(pszFavoritePath);
 
 	if( m_pSqliteDatabase->IsOpen() == false)
 	{
