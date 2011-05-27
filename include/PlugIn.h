@@ -536,15 +536,15 @@ public:
 	{
 	}
 
-	BOOL QueryPlugInCounter(uint32 & counter)
+	virtual BOOL QueryPlugInCounter(uint32 & counter)
 	{
 		counter=1;
 		return TRUE;
 	}
 
-	BOOL QueryPlugInPoint(uint32 counter,IPlugIn*& pPlugIn)
+	virtual BOOL QueryPlugInPoint(uint32 counter,IPlugIn*& pPlugIn)
 	{
-		PAssert_ReturnWithValue(3 == counter, false);
+		PAssert_ReturnWithValue(1 == counter, false);
 
 		IPlugIn** ptrPlugIn = &pPlugIn;
 		ptrPlugIn[0] = (IPlugIn *)&m_stPlugIn;
@@ -552,11 +552,11 @@ public:
 		return FALSE;
 	}
 
-	void 	ReleasePlugInPoint(uint32 counter,IPlugIn* pPlugIn)
+	virtual void ReleasePlugInPoint(uint32 counter,IPlugIn* pPlugIn)
 	{
 	}
 
-private:
+protected:
 
 	T  m_stPlugIn;
 };
