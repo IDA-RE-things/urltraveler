@@ -112,4 +112,7 @@ private:
 	BOOL ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum);
 	BOOL MakeFolderNode(CHROMEFOLDERNODE stFolderNode, Json::Value& folder_obj);
 	BOOL MakeUrlNode(CHROMEURLNODE stUrlNode, Json::Value& url_obj);
+
+	BOOL MakeSpecialFolderNode(wchar_t *pszName, int32& nIndex, Json::Value& folder_obj);
+	BOOL EnumNode(Json::Value& folder_obj, int32& nCount);
 };

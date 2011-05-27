@@ -427,6 +427,8 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 		{
 			GetFileTimeInfo(&fileAttrData, &stFileTimeInfo);
 		}
+
+		free(pszFavoritePath);
 	}
 	
 	HRESULT hr = pFolder->EnumObjects(NULL, SHCONTF_FOLDERS|SHCONTF_NONFOLDERS, &pItems);

@@ -75,7 +75,7 @@ wchar_t* CChromePlugIn::GetInstallPath()
 		if (::PathRemoveFileSpec(szPath))
 		{
 			::MessageBox(NULL, szPath, szPath, NULL);
-			return _wcsdup(szPath);
+			return wcsdup(szPath);
 		}
 	}
 
@@ -114,8 +114,24 @@ wchar_t* CChromePlugIn::GetHistoryDataPath()
 //----------------------------------------------------------------------------------------
 int32 CChromePlugIn::GetFavoriteCount()
 {
+	int32 nFavoriteCount = 0;
+	Json::Value chrome_bookmarks;
+	chrome_bookmarks.clear();
 
-	return 0;
+	wchar_t* pszPath = GetFavoriteDataPath();
+	std::string strTmpPath = StringHelper::UnicodeToUtf8(pszPath);
+	free(pszPath);
+
+	std::ifstream infile(strTmpPath.c_str());
+	Json::Reader reader;
+	if (reader.parse(infile, chrome_bookmarks))
+	{
+		EnumNode(chrome_bookmarks["roots"]["bookmark_bar"], nFavoriteCount);
+		EnumNode(chrome_bookmarks["roots"]["other"], nFavoriteCount);	
+	}
+
+	infile.close();
+	return nFavoriteCount;
 }
 
 //----------------------------------------------------------------------------------------
@@ -142,6 +158,7 @@ BOOL CChromePlugIn::ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum)
 	{
 		if (!chrome_bookmarks.empty())
 		{
+			nDataNum = 0;
 			Json::Value roots = chrome_bookmarks["roots"];
 			ExportFolder(roots["bookmark_bar"], 0, pData, nDataNum);
 			ExportFolder(roots["other"], 0, pData, nDataNum);
@@ -172,9 +189,14 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 	Json::Value roots;
 	Json::Value bookmark_bar;
 	Json::Value other;
-	Json::Value children;
+	Json::Value curr_node;
 	Json::StyledStreamWriter writer;
 	int32 nIndex = 0;
+
+	MakeSpecialFolderNode(L"roots", nIndex, roots);
+	MakeSpecialFolderNode(L"bookmark_bar", nIndex, bookmark_bar);
+	MakeSpecialFolderNode(L"other", nIndex, other);
+	curr_node = roots.append(bookmark_bar);
 
 	for (int32 i = 0; i < nDataNum; ++i)
 	{
@@ -188,46 +210,38 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 			CHROMEFOLDERNODE stFolderNode = {0};
 			stFolderNode.nAddedTime = pData[i].nAddTimes;
 			stFolderNode.nModifiedTime = pData[i].nLastModifyTime;
-			stFolderNode.nId = nIndex;
+			stFolderNode.nId = ++nIndex;
 			wcscpy_s(stFolderNode.szName, MAX_PATH - 1, pData[i].szTitle);
 			wcscpy_s(stFolderNode.szType, MAX_PATH - 1, L"folder");
 
 			Json::Value folder_obj;
 			MakeFolderNode(stFolderNode, folder_obj);
-
-			if (pData[i].nPid == 0)
-			{
-				bookmark_bar.append(folder_obj);
-			}
+			curr_node = curr_node.append(folder_obj);
 		}
 		else
 		{
 			CHROMEURLNODE stUrlNode = {0};
 			stUrlNode.nAddedTime = pData[i].nAddTimes;
-			stUrlNode.nId = nIndex;
+			stUrlNode.nId = ++nIndex;
 			wcscpy_s(stUrlNode.szName, MAX_PATH - 1, pData[i].szTitle);
 			wcscpy_s(stUrlNode.szType, MAX_PATH - 1, L"url");
 			wcscpy_s(stUrlNode.szUrl, MAX_URL_LEN - 1, pData[i].szUrl);
 
 			Json::Value url_obj;
 			MakeUrlNode(stUrlNode, url_obj);
-
-			if (pData[i].nPid == 0)
-			{
-				other.append(url_obj);
-			}
+			curr_node = curr_node.append(url_obj);
 		}
 	}
 
+	roots.append(other);
 
 	wchar_t* pszPath = GetFavoriteDataPath();
 	std::string strTmpPath = StringHelper::UnicodeToUtf8(pszPath);
 	free(pszPath);
 	std::ofstream outfile(strTmpPath.c_str());
 
-	roots.append(bookmark_bar);
-	roots.append(other);
 	writer.write(outfile, roots);
+	outfile.close();
 
 	return TRUE;
 }
@@ -345,11 +359,68 @@ BOOL CChromePlugIn::MakeUrlNode(CHROMEURLNODE stUrlNode, Json::Value& url_obj)
 
 	wchar_t szTmp[2048];
 	swprintf_s(szTmp, 2048 -1, szFormat, TimeHelper::GetStrTime2(sysTime), stUrlNode.nId, stUrlNode.szName, stUrlNode.szUrl);
-
 	std::string strTmp = StringHelper::UnicodeToUtf8(szTmp);
+
 	Json::Reader reader;
 	url_obj.clear();
 	reader.parse(strTmp.c_str(),url_obj);	
+
+	return TRUE;
+}
+
+BOOL CChromePlugIn::MakeSpecialFolderNode(wchar_t *pszName, int32& nIndex, Json::Value& folder_obj)
+{
+	wchar_t szFormat[] = L" { \"date_added\": \"0\",\
+						  \"date_modified\": \"%s\",\
+						  \"id\": \"%d\",\
+						  \"name\": \"%s\",\
+						  \"type\": \"folder\" }";
+
+	wchar_t szTmp[2048];
+	swprintf_s(szTmp, 2048 - 1, szFormat, TimeHelper::GetCurrentStrTime2(), ++nIndex, pszName);
+	std::string strTmp = StringHelper::UnicodeToUtf8(szTmp);
+
+	Json::Reader reader;
+	folder_obj.clear();
+	reader.parse(strTmp.c_str(), folder_obj);
+
+	return TRUE;
+}
+
+BOOL CChromePlugIn::EnumNode(Json::Value& folder_obj, int32& nCount)
+{
+	switch (folder_obj.type())
+	{
+	case Json::nullValue:
+	case Json::intValue:
+	case Json::uintValue:
+	case Json::realValue:
+	case Json::stringValue:
+	case Json::booleanValue:
+		break;
+	case Json::arrayValue:
+		{
+			int32 nSize = folder_obj.size();
+			nCount += nSize;
+			for (int32 index = 0; index < nSize; ++index)
+			{
+				EnumNode(folder_obj[index], nCount);
+			}
+		}
+		break;
+	case Json::objectValue:
+		{
+			Json::Value::Members members( folder_obj.getMemberNames() );
+			for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
+			{
+				const std::string &name = *it;
+				EnumNode(folder_obj[name], nCount);
+			}
+		}
+		break;
+	default:
+		break;
+	}
 
 	return TRUE;
 }
