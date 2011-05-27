@@ -75,7 +75,7 @@ wchar_t* CChromePlugIn::GetInstallPath()
 		if (::PathRemoveFileSpec(szPath))
 		{
 			::MessageBox(NULL, szPath, szPath, NULL);
-			return szPath;
+			return _wcsdup(szPath);
 		}
 	}
 
