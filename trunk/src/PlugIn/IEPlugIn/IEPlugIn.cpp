@@ -135,7 +135,7 @@ wchar_t* IEPlugIn::GetInstallPath()
 		if (::PathRemoveFileSpec(szPath))
 		{
 			::MessageBox(NULL, szPath, szPath, NULL);
-			return szPath;
+			return _wcsdup(szPath);
 		}
 	}
 

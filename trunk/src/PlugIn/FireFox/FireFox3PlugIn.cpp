@@ -167,7 +167,7 @@ wchar_t* FireFox3PlugIn::GetInstallPath()
 						if( nIndex != -1)
 							wstrPath = wstrPath.substr(0, nIndex);
 
-						return const_cast<wchar_t*>(wstrPath.c_str());
+						return const_cast<wchar_t*>(_wcsdup(wstrPath.c_str()));
 					}
 
 				}
