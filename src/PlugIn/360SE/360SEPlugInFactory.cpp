@@ -4,27 +4,27 @@
 
 namespace n360seplugin
 {
-	C360SEPlugInFactory*	g_SogouPlugInFactory	=	NULL;
+	C360SEPlugInFactory*	g_360PlugInFactory	=	NULL;
 }
 
 // 导出借口实现
 IPlugInFactory*	GetPlugInFactory()
 {
-	if( g_SogouPlugInFactory == NULL)
+	if( g_360PlugInFactory == NULL)
 	{
-		g_SogouPlugInFactory = new C360SEPlugInFactory();
-		ASSERT( g_SogouPlugInFactory != NULL);
+		g_360PlugInFactory = new C360SEPlugInFactory();
+		ASSERT( g_360PlugInFactory != NULL);
 	}
 
-	return g_SogouPlugInFactory;
+	return g_360PlugInFactory;
 }
 
 void	ReleasePlugInFactory()
 {
-	if( g_SogouPlugInFactory  != NULL)
+	if( g_360PlugInFactory  != NULL)
 	{
-		delete g_SogouPlugInFactory;
-		g_SogouPlugInFactory = NULL;
+		delete g_360PlugInFactory;
+		g_360PlugInFactory = NULL;
 	}
 }
 

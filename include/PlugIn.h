@@ -531,11 +531,9 @@ template <typename T>
 class PlugInFactoryImpl :public  IPlugInFactory
 {
 public:
-	PlugInFactoryImpl():m_pstPlugIn(NULL){}
+	PlugInFactoryImpl(){}
 	~PlugInFactoryImpl()
 	{
-		if(m_pstPlugIn!=NULL)
-			assert(0);
 	}
 
 	BOOL QueryPlugInCounter(uint32 & counter)
@@ -546,40 +544,19 @@ public:
 
 	BOOL QueryPlugInPoint(uint32 counter,IPlugIn*& pPlugIn)
 	{
-		if(counter == 1 )
-		{
-			if(m_pstPlugIn)
-			{
-				pPlugIn=m_pstPlugIn;
-				return TRUE;
-			}
+		PAssert_ReturnWithValue(3 == counter, false);
 
-			m_pstPlugIn = new T;
-			pPlugIn = m_pstPlugIn;
-			return TRUE;
-		}
+		IPlugIn** ptrPlugIn = &pPlugIn;
+		ptrPlugIn[0] = (IPlugIn *)&m_stPlugIn;
 
 		return FALSE;
 	}
 
 	void 	ReleasePlugInPoint(uint32 counter,IPlugIn* pPlugIn)
 	{
-		if(counter==1 && pPlugIn!=NULL)
-		{
-			if(m_pstPlugIn==pPlugIn)
-			{
-				delete m_pstPlugIn;
-				m_pstPlugIn=NULL;
-				return;
-			}
-
-			ASSERT(0);
-			return;
-		}
-
-		ASSERT(0);
 	}
 
 private:
-	T * m_pstPlugIn;
+
+	T  m_stPlugIn;
 };

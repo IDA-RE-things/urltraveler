@@ -36,26 +36,4 @@ IEPlugInFactory::IEPlugInFactory()
 
 IEPlugInFactory::~IEPlugInFactory()
 {
-
-}
-
-BOOL IEPlugInFactory::QueryPlugInCounter(uint32 & counter)
-{
-	counter = 1;
-	return TRUE;
-}
-
-BOOL IEPlugInFactory::QueryPlugInPoint(uint32 counter,IPlugIn*& pPlugIn)
-{
-	PAssert_ReturnWithValue(1 == counter, false);
-
-	IPlugIn** ptrPlugIn = &pPlugIn;
-
-	ptrPlugIn[0] = (IPlugIn *)&m_IE6PlugIn;
-
-	return  true;
-}
-
-void IEPlugInFactory::ReleasePlugInPoint(uint32 counter,IPlugIn* pPlugIn)
-{
 }
