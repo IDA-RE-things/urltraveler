@@ -1,6 +1,8 @@
 #pragma once
 #include "PlugIn.h"
+#include <string>
 
+using namespace std;
 
 //===========================================================
 //				360SE 3.0 °æ±¾
@@ -85,4 +87,7 @@ public:
 protected:
 	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
 	BOOL SaveDatabase();
+
+private:
+	wstring	m_strFavoritePath;
 };
