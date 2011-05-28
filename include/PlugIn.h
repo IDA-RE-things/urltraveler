@@ -544,12 +544,12 @@ public:
 
 	virtual BOOL QueryPlugInPoint(uint32 counter,IPlugIn*& pPlugIn)
 	{
-		PAssert_ReturnWithValue(1 == counter, false);
+		PAssert_ReturnWithValue(1 == counter, FALSE);
 
 		IPlugIn** ptrPlugIn = &pPlugIn;
 		ptrPlugIn[0] = (IPlugIn *)&m_stPlugIn;
 
-		return FALSE;
+		return TRUE;
 	}
 
 	virtual void ReleasePlugInPoint(uint32 counter,IPlugIn* pPlugIn)

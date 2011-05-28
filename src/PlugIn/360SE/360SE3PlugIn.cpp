@@ -8,12 +8,14 @@
 #include "CppSQLite3.h"
 #include <algorithm>
 #include "CRCHash.h"
+#include "XString.h"
 
 #pragma comment(lib, "shlwapi.lib")
 
 
 C360SE3PlugIn::C360SE3PlugIn()
 {
+	m_strFavoritePath = L"";
 }
 
 
@@ -55,6 +57,9 @@ wchar_t* C360SE3PlugIn::GetInstallPath()
 		szPath, 
 		&dwSize))
 	{
+		if( PathFileExists(szPath) == FALSE)
+			return NULL;
+
 		return _wcsdup(szPath);
 	}
 
@@ -63,10 +68,28 @@ wchar_t* C360SE3PlugIn::GetInstallPath()
 
 wchar_t* C360SE3PlugIn::GetFavoriteDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\360se\\data\\360sefav.db";
+	if( m_strFavoritePath != L"")
+		return (wchar_t*)m_strFavoritePath.c_str();
+
+	wchar_t* pszPath = GetInstallPath();
+	if( pszPath == NULL)
+		return NULL;
+
+	String strPath = pszPath;
+	int nIndex = strPath.ReverseFind(L"\\");
+	if( nIndex == String::NPOS)
+		return NULL;
+
+	strPath = strPath.SubStr(0, nIndex);
+	nIndex = strPath.ReverseFind(L"\\");
+	if( nIndex == String::NPOS)
+		return NULL;
+
+	strPath = strPath.SubStr(0, nIndex);
+	strPath += L"\\data\\360sefav.db";
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
-	return _wcsdup(strPath.c_str());
+	return _wcsdup(strPath.GetData());
 }
 
 wchar_t* C360SE3PlugIn::GetHistoryDataPath()

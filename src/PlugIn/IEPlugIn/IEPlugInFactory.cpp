@@ -31,7 +31,6 @@ void	ReleasePlugInFactory()
 
 IEPlugInFactory::IEPlugInFactory()
 {
-
 }
 
 IEPlugInFactory::~IEPlugInFactory()

@@ -409,7 +409,7 @@ String String::Trim()
 int	String::Find(const TCHAR* pszToFind,  uint16 nOffset )
 {
 	size_t nIndex = m_strString.find(pszToFind, nOffset);
-	if( nIndex == 0xffffffff)
+	if( nIndex == NPOS)
 		return -1;
 
 	return (int)nIndex;
@@ -431,7 +431,7 @@ int	String::ReverseFind(const TCHAR* pszToFind,  int16 nOffset)
 	else
 		nIndex = m_strString.rfind(pszToFind, nOffset);
 
-	if( nIndex == 0xffffffff)
+	if( nIndex == NPOS)
 		return -1;
 
 	return (int)nIndex;
@@ -439,98 +439,98 @@ int	String::ReverseFind(const TCHAR* pszToFind,  int16 nOffset)
 
 
 //----------------------------------------------------------------------------------------
-//名称: FindFirstOf
+//名称: FindFirstCharOf
 //描述: 从当前的字符串的给定偏移nOffset开始找到第一个出现的chToFind字符
 //参数: 
 //	@param	chToFind	需要查找的字符
 //	@param	nOffset	查找的起始偏移，默认是0，即从头开始查找
 //返回: 目标字符的索引，如果没有找到，则返回-1；
 //----------------------------------------------------------------------------------------
-int	String::FindFirstOf(TCHAR chToFind,  uint16 nOffset)
+int	String::FindFirstCharOf(TCHAR chToFind,  uint16 nOffset)
 {
 	size_t nIndex = m_strString.find_first_of(chToFind, nOffset);
-	if( nIndex == 0xffffffff)
+	if( nIndex == NPOS)
 		return -1;
 
 	return (int)nIndex;
 }
 
 //----------------------------------------------------------------------------------------
-//名称: FindFirstOf
+//名称: FindFirstCharOf
 //描述: 从当前的字符串的给定偏移nOffset开始查找第一个出现的子串pszToFind中的字符的索引
 //参数: 
 //	@param	pszToFind	需要查找的子字符串
 //	@param	nOffset	查找的起始偏移，默认是0，即从头开始查找
 //返回: 目标字符的索引，如果没有找到，则返回-1；
 //----------------------------------------------------------------------------------------
-int	String::FindFirstOf(const TCHAR* pszToFind, uint16 nOffset)
+int	String::FindFirstCharOf(const TCHAR* pszToFind, uint16 nOffset)
 {
 	ASSERT(!::IsBadStringPtr(pszToFind,-1));
 
 	size_t nIndex = m_strString.find_first_of(pszToFind, nOffset);
-	if( nIndex == 0xffffffff)
+	if( nIndex == NPOS)
 		return -1;
 
 	return (int)nIndex;
 }
 
 //----------------------------------------------------------------------------------------
-//名称: FindFirstNotOf
+//名称: FindFirstCharNotOf
 //描述: 从当前的字符串的给定偏移nOffset开始查找第一个不是szToFind的字符的开始索引
 //参数: 
 //	@param	pszToFind指定的字符
 //	@param	nOffset	查找的起始偏移，默认是0，即从头开始查找
 //返回: 目标字符的索引，如果没有找到，则返回-1；
 //----------------------------------------------------------------------------------------
-int	String::FindFirstNotOf(TCHAR szToFind,  uint16 nOffset)
+int	String::FindFirstCharNotOf(TCHAR szToFind,  uint16 nOffset)
 {
 	size_t nIndex = m_strString.find_first_not_of(szToFind, nOffset);
-	if( nIndex == 0xffffffff)
+	if( nIndex == NPOS)
 		return -1;
 
 	return (int)nIndex;
 }
 
 //----------------------------------------------------------------------------------------
-//名称: FindFirstNotOf
+//名称: FindFirstCharNotOf
 //描述: 从当前的字符串的给定偏移nOffset开始查找第一个不是pszToFind中字符的开始索引，比如
-//	  FindFirstNotOf("abcd")，则是查找当前字符串中的第一个不是a，不是b，不是c也不是d
+//	  FindFirstCharNotOf("abcd")，则是查找当前字符串中的第一个不是a，不是b，不是c也不是d
 //	  的字符的开始索引
 //参数: 
 //	@param	pszToFind指定的字符
 //	@param	nOffset	查找的起始偏移，默认是0，即从头开始查找
 //返回: 目标字符的索引，如果没有找到，则返回-1；
 //----------------------------------------------------------------------------------------
-int	String::FindFirstNotOf(const TCHAR* pszToFind,  uint16 nOffset )
+int	String::FindFirstCharNotOf(const TCHAR* pszToFind,  uint16 nOffset )
 {
 	ASSERT(!::IsBadStringPtr(pszToFind,-1));
 
 	size_t nIndex = m_strString.find_first_not_of(pszToFind, nOffset);
-	if( nIndex == 0xffffffff)
+	if( nIndex == NPOS)
 		return -1;
 
 	return (int)nIndex;
 }
 
 //----------------------------------------------------------------------------------------
-//名称: FindLastOf
+//名称: FindLastCharOf
 //描述: 从当前的字符串尾部的给定偏移nOffset开始反向查找第一个出现的chToFind字符
 //参数: 
 //	@param	chToFind	需要查找的字符
 //	@param	nOffset	查找的起始偏移，默认是0，即从头开始查找
 //返回: 目标字符的索引，如果没有找到，则返回-1；
 //----------------------------------------------------------------------------------------
-int	String::FindLastOf(TCHAR chToFind,  uint16 nOffset)
+int	String::FindLastCharOf(TCHAR chToFind,  uint16 nOffset)
 {
 	size_t nIndex = m_strString.find_last_of(chToFind, nOffset);
-	if( nIndex == 0xffffffff)
+	if( nIndex == NPOS)
 		return -1;
 
 	return (int)nIndex;
 }
 
 //----------------------------------------------------------------------------------------
-//名称: FindLastOf
+//名称: FindLastCharOf
 //描述: 从当前的字符串尾部的给定偏移nOffset开始反向查找第一个出现在子串pszToFind中的字符
 //	  的索引
 //参数: 
@@ -538,50 +538,50 @@ int	String::FindLastOf(TCHAR chToFind,  uint16 nOffset)
 //	@param	nOffset	查找的起始偏移，默认是0，即从头开始查找
 //返回: 目标字符的索引，如果没有找到，则返回-1；
 //----------------------------------------------------------------------------------------
-int	String::FindLastOf(const TCHAR* pszToFind, uint16 nOffset)
+int	String::FindLastCharOf(const TCHAR* pszToFind, uint16 nOffset)
 {
 	ASSERT(!::IsBadStringPtr(pszToFind,-1));
 
-	size_t nIndex = m_strString.find_first_of(pszToFind, nOffset);
-	if( nIndex == 0xffffffff)
+	size_t nIndex = m_strString.find_last_of(pszToFind, nOffset);
+	if( nIndex == NPOS)
 		return -1;
 
 	return (int)nIndex;
 }
 
 //----------------------------------------------------------------------------------------
-//名称: FindLastNotOf
+//名称: FindLastCharNotOf
 //描述: 从当前的字符串的尾部偏移nOffset位置反向查找第一个不是szToFind的字符的开始索引
 //参数: 
 //	@param	pszToFind指定的字符
 //	@param	nOffset	查找的起始偏移，默认是0，即从头开始查找
 //返回: 目标字符的索引，如果没有找到，则返回-1；
 //----------------------------------------------------------------------------------------
-int	String::FindLastNotOf(TCHAR szToFind, uint16 nOffset)
+int	String::FindLastCharNotOf(TCHAR szToFind, uint16 nOffset)
 {
 	size_t nIndex = m_strString.find_last_not_of(szToFind, nOffset);
-	if( nIndex == 0xffffffff)
+	if( nIndex == NPOS)
 		return -1;
 
 	return (int)nIndex;
 }
 
 //----------------------------------------------------------------------------------------
-//名称: FindLastNotOf
+//名称: FindLastCharNotOf
 //描述: 从当前的字符串尾部偏移为nOffset位置开始查找第一个不是pszToFind中字符的开始索引，比如
-//	  FindLastNotOf("abcd")，则是查找当前字符串的尾部开始的第一个不是a，
+//	  FindLastCharNotOf("abcd")，则是查找当前字符串的尾部开始的第一个不是a，
 //	 不是b，不是c也不是d 的字符的开始索引
 //参数: 
 //	@param	pszToFind指定的字符
 //	@param	nOffset	查找的起始偏移，默认是0，即从头开始查找
 //返回: 目标字符的索引，如果没有找到，则返回-1；
 //----------------------------------------------------------------------------------------
-int	String::FindLastNotOf(const TCHAR* pszToFind, uint16 nOffset)
+int	String::FindLastCharNotOf(const TCHAR* pszToFind, uint16 nOffset)
 {
 	ASSERT(!::IsBadStringPtr(pszToFind,-1));
 
 	size_t nIndex = m_strString.find_last_not_of(pszToFind, nOffset);
-	if( nIndex == 0xffffffff)
+	if( nIndex == NPOS)
 		return -1;
 
 	return (int)nIndex;
@@ -708,11 +708,11 @@ String	String::Replace( const TCHAR* pszBefore, const TCHAR* pszAfter)
 	ASSERT(!::IsBadStringPtr(pszBefore,-1));
 	ASSERT(!::IsBadStringPtr(pszAfter,-1));
 
-	int nIndex = FindFirstOf(pszBefore);
+	int nIndex = FindFirstCharOf(pszBefore);
 	while( nIndex != -1)
 	{
 		Replace(nIndex, String(pszBefore).GetLength(), pszAfter);
-		nIndex = FindFirstOf(pszBefore);
+		nIndex = FindFirstCharOf(pszBefore);
 	}
 
 	return (LPCTSTR)m_strString.c_str();
