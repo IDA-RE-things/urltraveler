@@ -2,6 +2,7 @@
 
 #include "PlugIn.h"
 #include "QQPlugIn.h"
+#include "TTPlugIn.h"
 
 extern "C" 
 {
@@ -21,6 +22,7 @@ public:
 
 private:
 	QQPlugIn	m_QQPlugIn;
+	TTPlugIn	m_TTPlugIn;
 };
 
 namespace qqplugin

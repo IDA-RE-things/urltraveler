@@ -74,7 +74,6 @@ wchar_t* CChromePlugIn::GetInstallPath()
 	{
 		if (::PathRemoveFileSpec(szPath))
 		{
-			::MessageBox(NULL, szPath, szPath, NULL);
 			return wcsdup(szPath);
 		}
 	}
@@ -91,7 +90,6 @@ wchar_t* CChromePlugIn::GetFavoriteDataPath()
 	std::wstring strPath = PathHelper::GetLocalAppDataDir() + L"\\Google\\Chrome\\User Data\\Default\\Bookmarks";
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
-
 	return wcsdup(strPath.c_str());
 }
 
@@ -261,8 +259,10 @@ BOOL CChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITEL
 	pData[nDataNum].nId = nDataNum + ID_VALUE_CHROME_BEGIN;
 	pData[nDataNum].bFolder = true;
 	pData[nDataNum].bDelete = false;
-	TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(folder_obj["date_added"].asString()).c_str()), pData[nDataNum].nAddTimes);
-	TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(folder_obj["date_modified"].asString()).c_str()), pData[nDataNum].nLastModifyTime);
+	TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(folder_obj["date_added"].asString()).c_str()),  \
+		pData[nDataNum].nAddTimes);
+	TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(folder_obj["date_modified"].asString()).c_str()),  \
+		pData[nDataNum].nLastModifyTime);
 	pData[nDataNum].nPid = nPid;
 
 	wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str());
@@ -270,7 +270,8 @@ BOOL CChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITEL
 	pData[nDataNum].nCatId = 0;
 	
 	CCRCHash ojbCrcHash;
-	ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), (BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
+	ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t),  \
+		(BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
 	
 	nDataNum++;
 
@@ -302,7 +303,8 @@ BOOL CChromePlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDAT
 	pData[nDataNum].nId = nDataNum + ID_VALUE_CHROME_BEGIN;
 	pData[nDataNum].bFolder = false;
 	pData[nDataNum].bDelete = false;
-	TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(url_obj["date_added"].asString()).c_str()), pData[nDataNum].nAddTimes);
+	TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(url_obj["date_added"].asString()).c_str()),  \
+		pData[nDataNum].nAddTimes);
 	pData[nDataNum].nLastModifyTime =  0;
 	pData[nDataNum].nPid = nPid;
 	pData[nDataNum].nCatId = 0;
@@ -312,7 +314,8 @@ BOOL CChromePlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDAT
 	pData[nDataNum].szUrl[1023] = 0;
 
 	CCRCHash ojbCrcHash;
-	ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), (BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
+	ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t),  \
+		(BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
 
 	nDataNum++;
 
