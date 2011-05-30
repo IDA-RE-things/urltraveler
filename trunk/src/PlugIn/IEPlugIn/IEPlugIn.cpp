@@ -125,6 +125,7 @@ wchar_t* IEPlugIn::GetInstallPath()
 	{
 		if (::PathRemoveFileSpec(szPath))
 		{
+			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", szPath, L"iexplorer.exe");
 			return _wcsdup(szPath);
 		}
 	}
@@ -139,6 +140,7 @@ wchar_t* IEPlugIn::GetInstallPath()
 	{
 		if (::PathRemoveFileSpec(szPath))
 		{
+			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", szPath, L"iexplore.exe");
 			return _wcsdup(szPath);
 		}
 	}
