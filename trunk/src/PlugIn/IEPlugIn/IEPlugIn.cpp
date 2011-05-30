@@ -125,10 +125,24 @@ wchar_t* IEPlugIn::GetInstallPath()
 	{
 		if (::PathRemoveFileSpec(szPath))
 		{
-			::MessageBox(NULL, szPath, szPath, NULL);
 			return _wcsdup(szPath);
 		}
 	}
+
+	if (ERROR_SUCCESS == ::SHRegGetValue(HKEY_LOCAL_MACHINE, 
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE",
+		L"Path", 
+		SRRF_RT_REG_SZ, 
+		NULL, 
+		szPath, 
+		&dwSize))
+	{
+		if (::PathRemoveFileSpec(szPath))
+		{
+			return _wcsdup(szPath);
+		}
+	}
+
 
 	return NULL;
 }

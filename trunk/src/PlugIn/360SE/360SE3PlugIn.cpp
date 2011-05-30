@@ -89,6 +89,7 @@ wchar_t* C360SE3PlugIn::GetFavoriteDataPath()
 	strPath += L"\\data\\360sefav.db";
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
+	m_strFavoritePath = strPath.GetData();
 	return _wcsdup(strPath.GetData());
 }
 

@@ -254,7 +254,6 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 	m_pModuleManager->PushEvent(
 		MakeEvent<MODULE_ID_PLUGIN>()(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED,
 		MODULE_ID_PLUGIN));
-
 }
 
 void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)

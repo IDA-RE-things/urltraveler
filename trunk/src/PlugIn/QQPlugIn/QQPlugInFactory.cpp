@@ -40,16 +40,17 @@ QQPlugInFactory::~QQPlugInFactory()
 
 BOOL QQPlugInFactory::QueryPlugInCounter(uint32 & counter)
 {
-	counter = 1;
+	counter = 2;
 	return TRUE;
 }
 
 BOOL QQPlugInFactory::QueryPlugInPoint(uint32 counter,IPlugIn*& pPlugIn)
 {
-	PAssert_ReturnWithValue(1 == counter, false);
+	PAssert_ReturnWithValue(2 == counter, false);
 
 	IPlugIn** ptrPlugIn = &pPlugIn;
 	ptrPlugIn[0] = (IPlugIn *)&m_QQPlugIn;
+	ptrPlugIn[1] = (IPlugIn *)&m_TTPlugIn;
 
 	return  TRUE;
 }
