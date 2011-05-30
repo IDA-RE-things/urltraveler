@@ -1,8 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <Window size="755,600" sizebox="0,0,755,30" caption="0,0,0,30">
-    <Font name="SimSun" size="12" bold="true" italic="false" />
-    <Font name="" size="10" bold="false" italic="false" />
-    <Font name="" size="10" bold="true" italic="false" />
+    <Font name="宋体" size="13" bold="true" />
+    <Font name="宋体" size="12" bold="true" />
+    <Font name="宋体" size="12" />
+    <Font name="宋体" size="14" bold="true" />
+    <Font name="宋体" size="22" bold="true" italic="true"/>
+    <Font name="宋体" size="12" />
     <VerticalLayout name="VerticalLayoutUI1" pos="0,0,755,606" width="755" height="606" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
         <VerticalLayout name="VerticalLayoutUI2" pos="0,0,755,120" width="755" height="120">
             <Label name="LabelUI1" text="网址漫游精灵1.0" float="true" pos="9,2,104,28" textcolor="#00407E8D" disabledtextcolor="#FFA7A6AA" />
@@ -18,8 +21,8 @@
             <VerticalLayout name="VerticalLayoutUI8" pos="0,0,549,456" width="549" height="456" bkcolor="#FFFFFFFF" bordercolor="#0054676D">
                 <HorizontalLayout name="HorizontalLayoutUI1" pos="0,0,549,121" width="549" height="121" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#006D6754">
                     <Button name="ButtonUI8" float="true" pos="401,35,545,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button.png" />
-                    <Text name="TextUI2" text="所有浏览器的收藏夹已经自动整理合并在下面的列表中，通过一键同步，你可以把这些浏览器列表同步到收藏夹中" float="true" pos="7,44,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-                    <Text name="TextUI3" text="{f 3}{b}您安装的6种浏览器{/b}{/f}" float="true" pos="10,10,282,32" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                    <Text name="TextUI2" text="{p}所有浏览器的收藏夹已经自动整理合并在下面的列表中，通过一键同步，{n}你可以把这些浏览器列表同步到收藏夹中{y 20}{/p}" showhtml="true" float="true" pos="7,44,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                    <Text name="TextUI3" text="{f 3}{b}您安装的{f 4}{c #F27D30}8{/c}{/f}种浏览器：{/b}{/f}" float="true" pos="10,10,282,42" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                 </HorizontalLayout>
                 <HorizontalLayout name="HorizontalLayoutUI3" pos="0,120,549,150" width="549" height="30" padding="0,-1,0,0" bkcolor="#FFFFFFFF" bkcolor2="#00EBE9E8" bordercolor="#0054676D">
                     <Edit name="EditUI1" text="搜索收藏夹" float="true" pos="242,4,348,23" bkcolor="#FFFFFFFF" bordercolor="#006D6754" textpadding="4,3,4,3" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
