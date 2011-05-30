@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="755,600" sizebox="0,0,755,30" caption="0,0,0,30">
+    <Font name="SimSun" size="12" bold="true" italic="false" />
+    <Font name="" size="10" bold="false" italic="false" />
+    <Font name="" size="10" bold="true" italic="false" />
+    <VerticalLayout name="VerticalLayoutUI1" pos="0,0,755,606" width="755" height="606" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
+        <VerticalLayout name="VerticalLayoutUI2" pos="0,0,755,120" width="755" height="120">
+            <Label name="LabelUI1" text="网址漫游精灵1.0" float="true" pos="9,2,104,28" textcolor="#00407E8D" disabledtextcolor="#FFA7A6AA" />
+            <Button name="ButtonUI1" float="true" pos="693,1,719,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_03.png" />
+            <Button name="ButtonUI2" float="true" pos="658,1,693,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_02.png" />
+            <Button name="ButtonUI3" float="true" pos="718,1,754,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_04.png" />
+            <Button name="ButtonUI4" float="true" pos="10,37,84,111" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_2.png" />
+            <Button name="ButtonUI5" float="true" pos="97,37,171,111" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_0.png" />
+            <Button name="ButtonUI6" float="true" pos="186,37,260,111" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_3.png" />
+            <Button name="ButtonUI7" float="true" pos="273,37,347,111" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_1.png" />
+        </VerticalLayout>
+        <HorizontalLayout name="HorizontalLayoutUI2" pos="10,120,745,576" width="735" height="456" padding="10,0,10,0">
+            <VerticalLayout name="VerticalLayoutUI8" pos="0,0,549,456" width="549" height="456" bkcolor="#FFFFFFFF" bordercolor="#0054676D">
+                <HorizontalLayout name="HorizontalLayoutUI1" pos="0,0,549,121" width="549" height="121" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#006D6754">
+                    <Button name="ButtonUI8" float="true" pos="401,35,545,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button.png" />
+                    <Text name="TextUI2" text="所有浏览器的收藏夹已经自动整理合并在下面的列表中，通过一键同步，你可以把这些浏览器列表同步到收藏夹中" float="true" pos="7,44,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                    <Text name="TextUI3" text="{f 3}{b}您安装的6种浏览器{/b}{/f}" float="true" pos="10,10,282,32" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                </HorizontalLayout>
+                <HorizontalLayout name="HorizontalLayoutUI3" pos="0,120,549,150" width="549" height="30" padding="0,-1,0,0" bkcolor="#FFFFFFFF" bkcolor2="#00EBE9E8" bordercolor="#0054676D">
+                    <Edit name="EditUI1" text="搜索收藏夹" float="true" pos="242,4,348,23" bkcolor="#FFFFFFFF" bordercolor="#006D6754" textpadding="4,3,4,3" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    <Label name="LabelUI2" float="true" pos="425,9,439,22" bkimage="button_d.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    <Label name="LabelUI11" float="true" pos="480,9,494,22" bkimage="button_l.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    <Label name="LabelUI12" float="true" pos="508,9,522,22" bkimage="button_p.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    <Label name="LabelUI13" float="true" pos="452,9,466,22" bkimage="button_u.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    <Button name="ButtonUI9" float="true" pos="354,2,380,28" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="icon_06.png" />
+                </HorizontalLayout>
+                <HorizontalLayout name="HorizontalLayoutUI4" pos="0,150,549,455" width="549" height="305">
+                    <VerticalLayout name="VerticalLayoutUI7" pos="0,307,377,615" width="377" height="308" padding="0,-1,0,0" bordercolor="#006D6754" />
+                    <VerticalLayout name="VerticalLayoutUI14" pos="376,306,549,613" width="173" height="307" padding="-1,-1,0,0" bordercolor="#006D6754" />
+                </HorizontalLayout>
+            </VerticalLayout>
+            <VerticalLayout name="VerticalLayoutUI9" pos="549,0,735,456" width="186" height="456" bordercolor="#006D6754">
+                <VerticalLayout name="VerticalLayoutUI10" pos="0,1,185,117" width="185" height="116" padding="0,1,0,0" bkcolor="#FFFFFFFF">
+                    <Label name="LabelUI3" float="true" pos="6,10,48,41" bkimage="icon_01.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    <Label name="LabelUI4" text="同步频率：" float="true" pos="53,11,108,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    <Label name="LabelUI5" text="您隔" float="true" pos="53,30,77,43" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                    <Label name="LabelUI6" text="高" float="true" pos="110,11,124,25" textcolor="#00FF0000" disabledtextcolor="#FFA7A6AA" />
+                    <Text name="TextUI1" text="小时同步一次" float="true" pos="87,30,164,44" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                    <Label name="LabelUI7" text="2" float="true" pos="80,30,94,45" textcolor="#00FF0000" disabledtextcolor="#FFA7A6AA" />
+                    <Label name="LabelUI8" text="上次同步漫游" float="true" pos="11,65,81,79" textcolor="#00688849" disabledtextcolor="#FFA7A6AA" />
+                    <Label name="LabelUI9" text="上次同步漫游" float="true" pos="11,91,81,105" textcolor="#00688849" disabledtextcolor="#FFA7A6AA" />
+                </VerticalLayout>
+                <VerticalLayout name="VerticalLayoutUI11" pos="0,117,185,222" width="185" height="105" bkcolor="#FFFFFFFF">
+                    <Label name="LabelUI10" float="true" pos="19,24,49,42" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                </VerticalLayout>
+                <VerticalLayout name="VerticalLayoutUI12" pos="0,222,185,288" width="185" height="66" bkcolor="#FFFFFFFF" />
+                <VerticalLayout name="VerticalLayoutUI13" pos="0,288,185,455" width="185" height="167" bkcolor="#FFFFFFFF" />
+            </VerticalLayout>
+        </HorizontalLayout>
+        <VerticalLayout name="VerticalLayoutUI4" pos="0,576,600,600" width="600" height="24">
+            <Label name="LabelUI15" text="主程序版本：2.0.0.1" float="true" pos="20,4,148,18" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+            <Button name="ButtonUI10" text="立即检查更新" float="true" pos="209,3,341,19" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+        </VerticalLayout>
+    </VerticalLayout>
+</Window>
