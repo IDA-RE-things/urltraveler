@@ -1,6 +1,7 @@
 #pragma once
 #include "PlugIn.h"
 #include "json/json.h"
+#include <stack>
 
 #define MAX_URL_LEN  1024
 
@@ -115,4 +116,17 @@ private:
 
 	BOOL MakeSpecialFolderNode(wchar_t *pszName, int32& nIndex, Json::Value& folder_obj);
 	BOOL EnumNode(Json::Value& folder_obj, int32& nCount);
+
+	BOOL MergeNode();
+
+private:
+	typedef struct Node
+	{
+		Json::Value node_obj;
+		int32 nPid;
+		int32 nId;
+		bool bIsFolder;
+	} NODE, *PNODE;
+
+	std::stack<NODE> m_stkNodeList;
 };

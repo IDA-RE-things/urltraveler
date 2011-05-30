@@ -10,6 +10,7 @@
 #include "CRCHash.h"
 #include "ChromePlugInFactory.h"
 #include <string>
+#include <stack>
 #include <fstream>
 #include "json/json.h"
 
@@ -124,8 +125,8 @@ int32 CChromePlugIn::GetFavoriteCount()
 	Json::Reader reader;
 	if (reader.parse(infile, chrome_bookmarks))
 	{
-		EnumNode(chrome_bookmarks["roots"]["bookmark_bar"], nFavoriteCount);
-		EnumNode(chrome_bookmarks["roots"]["other"], nFavoriteCount);	
+ 		EnumNode(chrome_bookmarks["roots"]["bookmark_bar"], nFavoriteCount);
+ 		EnumNode(chrome_bookmarks["roots"]["other"], nFavoriteCount);
 	}
 
 	infile.close();
@@ -184,12 +185,27 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 		return FALSE;
 	}
 
+	wchar_t* pszPath = GetFavoriteDataPath();
+	//获取导入文件路径
+	std::string strTmpPath = StringHelper::UnicodeToUtf8(pszPath);
+	//导入前先删除之前的收藏夹文件
+	BOOL bResult = ::DeleteFileW(pszPath);
+	free(pszPath);
+	if (!bResult)
+	{
+		return FALSE;
+	}
+
 	Json::Value roots;
 	Json::Value bookmark_bar;
 	Json::Value other;
 	Json::Value curr_node;
 	Json::StyledStreamWriter writer;
 	int32 nIndex = 0;
+	NODE stNode = {0};
+	bool bIsAccessedAllChlidNode = false;
+	bool bHasChildNode = true;
+	int32 nCurNodePid = 0;
 
 	MakeSpecialFolderNode(L"roots", nIndex, roots);
 	MakeSpecialFolderNode(L"bookmark_bar", nIndex, bookmark_bar);
@@ -214,7 +230,11 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 
 			Json::Value folder_obj;
 			MakeFolderNode(stFolderNode, folder_obj);
-			curr_node = curr_node.append(folder_obj);
+			stNode.node_obj = folder_obj;
+			stNode.nPid = pData[i].nPid;
+			stNode.nId = pData[i].nId;
+			stNode.bIsFolder = true;
+			m_stkNodeList.push(stNode);
 		}
 		else
 		{
@@ -227,17 +247,16 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 
 			Json::Value url_obj;
 			MakeUrlNode(stUrlNode, url_obj);
-			curr_node = curr_node.append(url_obj);
+			stNode.node_obj = url_obj;
+			stNode.nPid = pData[i].nPid;
+			stNode.nId = pData[i].nId;
+			stNode.bIsFolder = false;
+			m_stkNodeList.push(stNode);
 		}
 	}
 
 	roots.append(other);
-
-	wchar_t* pszPath = GetFavoriteDataPath();
-	std::string strTmpPath = StringHelper::UnicodeToUtf8(pszPath);
-	free(pszPath);
 	std::ofstream outfile(strTmpPath.c_str());
-
 	writer.write(outfile, roots);
 	outfile.close();
 
@@ -404,7 +423,7 @@ BOOL CChromePlugIn::EnumNode(Json::Value& folder_obj, int32& nCount)
 	case Json::arrayValue:
 		{
 			int32 nSize = folder_obj.size();
-			nCount += nSize;
+			//nCount += nSize;
 			for (int32 index = 0; index < nSize; ++index)
 			{
 				EnumNode(folder_obj[index], nCount);
@@ -413,7 +432,8 @@ BOOL CChromePlugIn::EnumNode(Json::Value& folder_obj, int32& nCount)
 		break;
 	case Json::objectValue:
 		{
-			Json::Value::Members members( folder_obj.getMemberNames() );
+			nCount++;
+			Json::Value::Members members(folder_obj.getMemberNames());
 			for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
 			{
 				const std::string &name = *it;
@@ -423,6 +443,31 @@ BOOL CChromePlugIn::EnumNode(Json::Value& folder_obj, int32& nCount)
 		break;
 	default:
 		break;
+	}
+
+	return TRUE;
+}
+
+BOOL CChromePlugIn::MergeNode()
+{
+	Json::Value array_obj;
+	if (!m_stkNodeList.empty())
+	{
+		int32 nPid = m_stkNodeList.top().nPid;
+
+		while (m_stkNodeList.top().nPid == nPid)
+		{
+			array_obj.append(m_stkNodeList.top().node_obj);
+			m_stkNodeList.pop();
+		}
+
+		if ((m_stkNodeList.top().nId == nPid) && (m_stkNodeList.top().bIsFolder == true))
+		{//如果是所有子节点的父节点，则合并
+			NODE stTmpNode = m_stkNodeList.top();
+			stTmpNode.node_obj["children"] = array_obj;
+			m_stkNodeList.pop();
+			m_stkNodeList.push(stTmpNode);
+		}
 	}
 
 	return TRUE;
