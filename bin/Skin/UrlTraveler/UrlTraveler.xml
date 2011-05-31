@@ -9,10 +9,10 @@
     <VerticalLayout name="VerticalLayoutUI1" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
         <HorizontalLayout name="VerticalLayoutUI2" pos="0,0,0,130" height="110">
             <HorizontalLayout name="HorizontalLayoutUI7">
-                <Button name="ButtonUI1" float="true" pos="20,30,94,104" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_2.png" />
-                <Button name="ButtonUI2" float="true" pos="107,30,181,104" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_0.png" />
-                <Button name="ButtonUI3" float="true" pos="196,30,270,104" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_3.png" />
-                <Button name="ButtonUI12" float="true" pos="283,30,357,104" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_1.png" />
+                <Option group="contenttab" selectedimage="nav_2a.png" selected="true" name="examine" float="true" pos="20,30,94,104" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_2.png" />
+                <Option group="contenttab" selectedimage="nav_0a.png" name="trojan" float="true" pos="107,30,181,104" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_0.png" />
+                <Option group="contenttab" selectedimage="nav_3a.png" name="plugins" float="true" pos="196,30,270,104" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_3.png" />
+                <Option group="contenttab" selectedimage="nav_1a.png" name="vulnerability" float="true" pos="283,30,357,104" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_1.png" />
                 <Text name="TextUI14" text="{f 3}{b}{c #3e8b9b}网址漫游精灵1.0{/c}{/b}{/f}" float="true" pos="5,5,154,40" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
             </HorizontalLayout>
             <HorizontalLayout name="HorizontalLayoutUI8" pos="0,0,90,122" width="93" height="122">
@@ -21,6 +21,7 @@
                 <Button name="closebtn" padding="0,1,0,0" pos="0,0,39,23" width="39" height="23" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_04.png" />
             </HorizontalLayout>
         </HorizontalLayout>
+	<TabLayout name="switch">
         <HorizontalLayout name="HorizontalLayoutUI2" padding="10,0,10,0">
             <VerticalLayout name="VerticalLayoutUI8" bkcolor="#FFFFFFFF" bordercolor="#00B5BFB4">
                 <HorizontalLayout name="HorizontalLayoutUI1" pos="0,0,0,120" height="120" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#00B4BFB5">
@@ -49,7 +50,7 @@
 		    </VerticalLayout>
                 </HorizontalLayout>
             </VerticalLayout>
-            <VerticalLayout name="VerticalLayoutUI9" pos="0,0,250,0" width="250" bordercolor="#00B4BFB5">
+            <VerticalLayout name="VerticalLayoutUI9" pos="0,0,250,0" width="220" bordercolor="#00B4BFB5">
                 <VerticalLayout name="VerticalLayoutUI10" pos="0,0,0,120" height="120" padding="-1,0,0,0" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8">
                     <Label name="LabelUI3" float="true" pos="6,10,48,41" bkimage="icon_01.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                     <Text name="TextUI4" text="{b}同步频率：{c #F27D30}高{/c}{/b}" float="true" pos="51,10,224,26" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
@@ -66,7 +67,7 @@
                     <Text name="TextUI10" text="手工整理收藏夹太麻烦了？要不要试试超级自动整理？{y 15}" float="true" pos="14,11,218,51" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                     <Button name="ButtonUI11" float="true" pos="16,50,116,76" bkimage="button_01.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
                 </VerticalLayout>
-                <VerticalLayout name="VerticalLayoutUI13" pos="0,0,251,0" width="251" padding="-1,-1,0,3" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8">
+                <VerticalLayout name="VerticalLayoutUI13" padding="-1,-1,0,3" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8">
                     <Label name="LabelUI4" float="true" pos="19,9,33,24" bkimage="icon_03.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                     <Text name="TextUI11" text="{b}漫游更多内容{/b}" float="true" pos="41,9,220,27" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                     <Label name="LabelUI5" float="true" pos="24,36,44,63" bkimage="icon_04.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
@@ -76,6 +77,16 @@
                 </VerticalLayout>
             </VerticalLayout>
         </HorizontalLayout>
+	<HorizontalLayout>
+            <Text text="历史同步" pos="335, 180, 600, 300" relativepos="50,50,0,0"  float="true" font="4" />
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <Text text="cookie同步" pos="335, 180, 600, 300" relativepos="50,50,0,0"  float="true" font="4" />
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <Text text="设置" pos="335, 180, 600, 300" relativepos="50,50,0,0"  float="true" font="4" />
+          </HorizontalLayout>
+	</TabLayout>
         <VerticalLayout name="VerticalLayoutUI4" pos="0,0,0,21" height="21">
             <Label name="LabelUI15" text="主程序版本：2.0.0.1" float="true" pos="20,4,148,18" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             <Button name="ButtonUI10" text="立即检查更新" float="true" pos="209,3,341,19" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
