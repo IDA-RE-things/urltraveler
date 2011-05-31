@@ -23,7 +23,7 @@ public:
 	UINT GetClassStyle() const { return CS_DBLCLKS; };
 	void OnFinalMessage(HWND /*hWnd*/) { delete this; };
 	void Init(){} ;
-	void OnPrepare() {	}
+	void OnPrepare();
 	void Notify(TNotifyUI& msg);
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
