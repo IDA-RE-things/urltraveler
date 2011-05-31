@@ -8,9 +8,9 @@
     <Font name="SimSun" size="12" bold="true" italic="false" />
     <VerticalLayout name="VerticalLayoutUI1" pos="0,0,755,606" width="755" height="606" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
         <VerticalLayout name="VerticalLayoutUI2" pos="0,0,850,120" width="850" height="120">
-            <Button name="ButtonUI1" float="true" pos="787,1,813,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_03.png" />
-            <Button name="ButtonUI2" float="true" pos="752,1,787,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_02.png" />
-            <Button name="ButtonUI3" float="true" pos="813,1,849,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_04.png" />
+            <Button name="restorebtn" float="true" pos="787,1,813,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_03.png" />
+            <Button name="minbtn" float="true" pos="752,1,787,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_02.png" />
+            <Button name="closebtn" float="true" pos="813,1,849,24" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_04.png" />
             <Button name="ButtonUI4" float="true" pos="10,37,84,111" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_2.png" />
             <Button name="ButtonUI5" float="true" pos="97,37,171,111" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_0.png" />
             <Button name="ButtonUI6" float="true" pos="186,37,260,111" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_3.png" />
@@ -34,9 +34,9 @@
                 </HorizontalLayout>
                 <HorizontalLayout name="HorizontalLayoutUI4" pos="0,150,600,455" width="600" height="305">
                     <VerticalLayout name="VerticalLayoutUI7" pos="0,307,416,615" width="416" height="308" padding="0,-1,0,0" bordercolor="#00B4BFB5" />
-                    <VerticalLayout name="VerticalLayoutUI14" pos="376,306,561,613" width="185" height="307" padding="-1,-1,0,0" bordercolor="#00B4BFB5" />
-			<TreeList name="favoritelist" bkcolor="#FFF6F9FF" inset="1,1,1,1" bordercolor="#FF1B4876" bordersize="1" header="hidden" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1' " itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemlinecolor="#FFE4EAF2" itemshowhtml="true" vscrollbar="true" hscrollbar="true">
-    			</TreeList>
+                    <VerticalLayout name="VerticalLayoutUI14" pos="376,306,561,613" width="185" height="307" padding="-1,-1,0,0" bordercolor="#00B4BFB5">
+			<TreeList name="favoritelist" bkcolor="#FFF6F9FF" inset="1,1,1,1" bordercolor="#FF1B4876" bordersize="1" header="hidden" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1' " itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemlinecolor="#FFE4EAF2" itemshowhtml="true" vscrollbar="true" hscrollbar="true" />
+		    </VerticalLayout>
                 </HorizontalLayout>
             </VerticalLayout>
             <VerticalLayout name="VerticalLayoutUI9" pos="549,0,779,456" width="230" height="456" bordercolor="#00B4BFB5">
