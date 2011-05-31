@@ -24,7 +24,7 @@
         <HorizontalLayout name="HorizontalLayoutUI2" padding="10,0,10,0">
             <VerticalLayout name="VerticalLayoutUI8" bkcolor="#FFFFFFFF" bordercolor="#00B5BFB4">
                 <HorizontalLayout name="HorizontalLayoutUI1" pos="0,0,0,120" height="120" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#00B4BFB5">
-                    <Text name="TextUI2" text="{p}所有浏览器的收藏夹已经自动整理合并在下面的列表中，通过一键同步，{n}你可以把这些浏览器列表同步到收藏夹中{y 20}{/p}" float="true" pos="7,44,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                    <Text name="TextUI2" text="{p}所有浏览器的收藏夹已经自动整理合并在下面的列表中，通过一键同步，{n}你可以把这些浏览器列表同步到收藏夹中{y 20}{/p}" float="true" pos="7,54,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                     <Text name="TextUI3" text="{f 3}{b}您安装的{f 4}{c #F27D30}8{/c}{/f}种浏览器：{/b}{/f}" float="true" pos="10,10,282,42" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                     <HorizontalLayout name="HorizontalLayoutUI10" pos="113,7,113,127" height="120" />
                     <HorizontalLayout name="HorizontalLayoutUI11" pos="257,0,427,0" width="170">
