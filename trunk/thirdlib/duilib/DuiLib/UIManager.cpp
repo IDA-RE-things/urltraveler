@@ -826,15 +826,21 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         break;
     case WM_MOUSEWHEEL:
         {
-            if( m_pFocus == NULL ) break;
+            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+            ::ScreenToClient(m_hWndPaint, &pt);
+            m_ptLastMousePos = pt;
+            CControlUI* pControl = FindControl(pt);
+            if( pControl == NULL ) break;
+            if( pControl->GetManager() != this ) break;
             int zDelta = (int) (short) HIWORD(wParam);
             TEventUI event = { 0 };
             event.Type = UIEVENT_SCROLLWHEEL;
+            event.pSender = pControl;
             event.wParam = MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
             event.lParam = lParam;
             event.wKeyState = MapKeyState();
             event.dwTimestamp = ::GetTickCount();
-            m_pFocus->Event(event);
+            pControl->Event(event);
 
             // Let's make sure that the scroll item below the cursor is the same as before...
             ::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) MAKELPARAM(m_ptLastMousePos.x, m_ptLastMousePos.y));
@@ -915,7 +921,10 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         }
         break;
     case WM_CTLCOLOREDIT:
+	case WM_CTLCOLORSTATIC:
         {
+			// Refer To: http://msdn.microsoft.com/en-us/library/bb761691(v=vs.85).aspx
+			// Read-only or disabled edit controls do not send the WM_CTLCOLOREDIT message; instead, they send the WM_CTLCOLORSTATIC message.
             if( lParam == 0 ) break;
             HWND hWndChild = (HWND) lParam;
             lRes = ::SendMessage(hWndChild, OCM__BASE + uMsg, wParam, lParam);
@@ -1590,6 +1599,28 @@ bool CPaintManagerUI::FindFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool
     }
     if( m_pParentResourcePM ) return m_pParentResourcePM->FindFont(pStrFontName, nSize, bBold, bUnderline, bItalic);
     return false;
+}
+
+int CPaintManagerUI::GetFontIndex(HFONT hFont)
+{
+    TFontInfo* pFontInfo = NULL;
+    for( int it = 0; it < m_aCustomFonts.GetSize(); it++ ) {
+        pFontInfo = static_cast<TFontInfo*>(m_aCustomFonts[it]);
+        if( pFontInfo->hFont == hFont ) return it;
+    }
+    return -1;
+}
+
+int CPaintManagerUI::GetFontIndex(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic)
+{
+    TFontInfo* pFontInfo = NULL;
+    for( int it = 0; it < m_aCustomFonts.GetSize(); it++ ) {
+        pFontInfo = static_cast<TFontInfo*>(m_aCustomFonts[it]);
+        if( pFontInfo->sFontName == pStrFontName && pFontInfo->iSize == nSize && 
+            pFontInfo->bBold == bBold && pFontInfo->bUnderline == bUnderline && pFontInfo->bItalic == bItalic) 
+            return it;
+    }
+    return -1;
 }
 
 bool CPaintManagerUI::RemoveFont(HFONT hFont)

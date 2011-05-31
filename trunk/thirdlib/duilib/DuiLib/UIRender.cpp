@@ -914,14 +914,12 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
 
 void CRenderEngine::DrawColor(HDC hDC, const RECT& rc, DWORD color)
 {
-	//如果完全透明直接不绘
     if( color <= 0x00FFFFFF ) return;
-	//不透明情况下，取RGB三色
     if( color >= 0xFF000000 )
     {
         ::SetBkColor(hDC, RGB(GetBValue(color), GetGValue(color), GetRValue(color)));
         ::ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &rc, NULL, 0, NULL);
-    }//有透明值时，需要带上Alpha通道
+    }
     else
     {
         // Create a new 32bpp bitmap with room for an alpha channel
@@ -1062,7 +1060,7 @@ void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTS
     ::SetBkMode(hDC, TRANSPARENT);
     ::SetTextColor(hDC, RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
     HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(iFont));
-    ::DrawText(hDC, pstrText, -1, &rc, uStyle);
+    ::DrawText(hDC, pstrText, -1, &rc, uStyle | DT_NOPREFIX);
     ::SelectObject(hDC, hOldFont);
 }
 

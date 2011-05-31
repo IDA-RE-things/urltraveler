@@ -34,6 +34,8 @@ public:
     LPCTSTR GetClass() const;
 	LPVOID GetInterface(LPCTSTR pstrName);
 
+    HWND GetHostWindow() const;
+
     bool IsDelayCreate() const;
     void SetDelayCreate(bool bDelayCreate = true);
 
@@ -41,6 +43,8 @@ public:
     bool CreateControl(LPCTSTR pstrCLSID);
     HRESULT GetControl(const IID iid, LPVOID* ppRet);
 	CLSID GetClisd() const;
+    CStdString GetModuleName() const;
+    void SetModuleName(LPCTSTR pstrText);
 
     void SetVisible(bool bVisible = true);
     void SetInternVisible(bool bVisible = true);
@@ -57,6 +61,7 @@ protected:
 
 protected:
     CLSID m_clsid;
+    CStdString m_sModuleName;
     bool m_bCreated;
     bool m_bDelayCreate;
     IOleObject* m_pUnk;

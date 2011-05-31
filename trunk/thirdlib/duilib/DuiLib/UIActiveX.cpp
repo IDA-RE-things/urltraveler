@@ -865,6 +865,11 @@ LPVOID CActiveXUI::GetInterface(LPCTSTR pstrName)
 	return CControlUI::GetInterface(pstrName);
 }
 
+HWND CActiveXUI::GetHostWindow() const
+{
+    return m_hwndHost;
+}
+
 static void PixelToHiMetric(const SIZEL* lpSizeInPix, LPSIZEL lpSizeInHiMetric)
 {
 #define HIMETRIC_PER_INCH   2540
@@ -934,6 +939,7 @@ void CActiveXUI::DoPaint(HDC hDC, const RECT& rcPaint)
 void CActiveXUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
     if( _tcscmp(pstrName, _T("clsid")) == 0 ) CreateControl(pstrValue);
+    else if( _tcscmp(pstrName, _T("modulename")) == 0 ) SetModuleName(pstrValue);
     else if( _tcscmp(pstrName, _T("delaycreate")) == 0 ) SetDelayCreate(_tcscmp(pstrValue, _T("true")) == 0);
     else CControlUI::SetAttribute(pstrName, pstrValue);
 }
@@ -946,8 +952,7 @@ LRESULT CActiveXUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool
     if( m_pControl->m_pInPlaceObject == NULL ) return 0;
     if( !IsMouseEnabled() && uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST ) return 0;
     bool bWasHandled = true;
-    if( (uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST) || uMsg == WM_SETCURSOR )
-    {
+    if( (uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST) || uMsg == WM_SETCURSOR ) {
         // Mouse message only go when captured or inside rect
         DWORD dwHitResult = m_pControl->m_bCaptured ? HITRESULT_HIT : HITRESULT_OUTSIDE;
         if( dwHitResult == HITRESULT_OUTSIDE && m_pControl->m_pViewObject != NULL ) {
@@ -962,13 +967,11 @@ LRESULT CActiveXUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool
         if( dwHitResult != HITRESULT_HIT ) return 0;
         if( uMsg == WM_SETCURSOR ) bWasHandled = false;
     }
-    else if( uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST )
-    {
+    else if( uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST ) {
         // Keyboard messages just go when we have focus
-        if( !m_pControl->m_bFocused ) return 0;
+        if( !IsFocused() ) return 0;
     }
-    else
-    {
+    else {
         switch( uMsg ) {
         case WM_HELP:
         case WM_CONTEXTMENU:
@@ -1045,13 +1048,31 @@ void CActiveXUI::ReleaseControl()
     m_pManager->RemoveMessageFilter(this);
 }
 
+typedef HRESULT (__stdcall *DllGetClassObjectFunc)(REFCLSID rclsid, REFIID riid, LPVOID* ppv); 
+
 bool CActiveXUI::DoCreateControl()
 {
     ReleaseControl();
     // At this point we'll create the ActiveX control
     m_bCreated = true;
     IOleControl* pOleControl = NULL;
-    HRESULT Hr = ::CoCreateInstance(m_clsid, NULL, CLSCTX_ALL, IID_IOleControl, (LPVOID*) &pOleControl);
+
+    HRESULT Hr = -1;
+    if( !m_sModuleName.IsEmpty() ) {
+        HMODULE hModule = ::LoadLibrary((LPCTSTR)m_sModuleName);
+        if( hModule != NULL ) {
+            IClassFactory* aClassFactory = NULL;
+            DllGetClassObjectFunc aDllGetClassObjectFunc = (DllGetClassObjectFunc)::GetProcAddress(hModule, "DllGetClassObject");
+            Hr = aDllGetClassObjectFunc(m_clsid, IID_IClassFactory, (LPVOID*)&aClassFactory);
+            if( SUCCEEDED(Hr) ) {
+                Hr = aClassFactory->CreateInstance(NULL, IID_IOleObject, (LPVOID*)&pOleControl);
+            }
+            aClassFactory->Release();
+        }
+    }
+    if( FAILED(Hr) ) {
+        Hr = ::CoCreateInstance(m_clsid, NULL, CLSCTX_ALL, IID_IOleControl, (LPVOID*)&pOleControl);
+    }
     ASSERT(SUCCEEDED(Hr));
     if( FAILED(Hr) ) return false;
     pOleControl->QueryInterface(IID_IOleObject, (LPVOID*) &m_pUnk);
@@ -1108,6 +1129,16 @@ HRESULT CActiveXUI::GetControl(const IID iid, LPVOID* ppRet)
 CLSID CActiveXUI::GetClisd() const
 {
 	return m_clsid;
+}
+
+CStdString CActiveXUI::GetModuleName() const
+{
+    return m_sModuleName;
+}
+
+void CActiveXUI::SetModuleName(LPCTSTR pstrText)
+{
+    m_sModuleName = pstrText;
 }
 
 } // namespace DuiLib
