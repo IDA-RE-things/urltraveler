@@ -358,7 +358,7 @@ bool CListUI::SelectItem(int iIndex)
 
     // We should first unselect the currently selected item
     if( m_iCurSel >= 0 ) {
-        CControlUI* pControl = GetItemAt(m_iCurSel);
+        CControlUI* pControl = m_pList->GetItemAt(m_iCurSel);
         if( pControl != NULL) {
             IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
             if( pListItem != NULL ) pListItem->Select(false);
@@ -368,7 +368,7 @@ bool CListUI::SelectItem(int iIndex)
     }
     if( iIndex < 0 ) return false;
 
-    CControlUI* pControl = GetItemAt(iIndex);
+    CControlUI* pControl = m_pList->GetItemAt(iIndex);
     if( pControl == NULL ) return false;
     if( !pControl->IsVisible() ) return false;
     if( !pControl->IsEnabled() ) return false;
