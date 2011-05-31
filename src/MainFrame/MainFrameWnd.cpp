@@ -6,6 +6,42 @@ CFrameWnd::CFrameWnd()
 	m_pLoginFrame = NULL;	
 }
 
+void CFrameWnd::OnPrepare() { 
+	TreeListUI* pGameList = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
+	TreeListUI::Node* pCategoryNode = NULL;
+	TreeListUI::Node* pGameNode = NULL;
+	TreeListUI::Node* pServerNode = NULL;
+	TreeListUI::Node* pRoomNode = NULL;
+	pCategoryNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 3}{x 4}推荐游戏"));
+	for( int i = 0; i < 4; ++i )
+	{
+	    pGameNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 10}{x 4}四人斗地主"), pCategoryNode);
+	    for( int i = 0; i < 3; ++i )
+	    {
+		pServerNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 10}{x 4}测试服务器"), pGameNode);
+		for( int i = 0; i < 3; ++i )
+		{
+		    pRoomNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 10}{x 4}测试房间"), pServerNode);
+		}
+	    }
+	}
+	pCategoryNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 3}{x 4}最近玩过的游戏"));
+	for( int i = 0; i < 2; ++i )
+	{
+	    pGameList->AddNode(_T("三缺一"), pCategoryNode);
+	}
+	pCategoryNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 3}{x 4}棋牌游戏"));
+	for( int i = 0; i < 8; ++i )
+	{
+	    pGameList->AddNode(_T("双扣"), pCategoryNode);
+	}
+	pCategoryNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 3}{x 4}休闲游戏"));
+	for( int i = 0; i < 8; ++i )
+	{
+	    pGameList->AddNode(_T("飞行棋"), pCategoryNode);
+	}
+}
+
 
 void CFrameWnd::Notify(TNotifyUI& msg)
 {
