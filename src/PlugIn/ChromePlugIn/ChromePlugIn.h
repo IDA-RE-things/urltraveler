@@ -2,6 +2,7 @@
 #include "PlugIn.h"
 #include "json/json.h"
 #include <stack>
+#include <map>
 
 #define MAX_URL_LEN  1024
 
@@ -122,11 +123,11 @@ private:
 private:
 	typedef struct Node
 	{
-		Json::Value node_obj;
-		int32 nPid;
 		int32 nId;
+		int32 nPid;
 		bool bIsFolder;
 	} NODE, *PNODE;
 
 	std::stack<NODE> m_stkNodeList;
+	std::multimap<int32, Json::Value> m_mapNodeTree;
 };

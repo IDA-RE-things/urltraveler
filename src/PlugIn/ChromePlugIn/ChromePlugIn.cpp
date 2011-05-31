@@ -230,11 +230,7 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 
 			Json::Value folder_obj;
 			MakeFolderNode(stFolderNode, folder_obj);
-			stNode.node_obj = folder_obj;
-			stNode.nPid = pData[i].nPid;
-			stNode.nId = pData[i].nId;
-			stNode.bIsFolder = true;
-			m_stkNodeList.push(stNode);
+			m_mapNodeTree.insert(std::make_pair(pData[i].nPid, folder_obj));
 		}
 		else
 		{
@@ -247,11 +243,7 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 
 			Json::Value url_obj;
 			MakeUrlNode(stUrlNode, url_obj);
-			stNode.node_obj = url_obj;
-			stNode.nPid = pData[i].nPid;
-			stNode.nId = pData[i].nId;
-			stNode.bIsFolder = false;
-			m_stkNodeList.push(stNode);
+			m_mapNodeTree.insert(std::make_pair(pData[i].nPid, url_obj));
 		}
 	}
 
@@ -450,25 +442,25 @@ BOOL CChromePlugIn::EnumNode(Json::Value& folder_obj, int32& nCount)
 
 BOOL CChromePlugIn::MergeNode()
 {
-	Json::Value array_obj;
-	if (!m_stkNodeList.empty())
-	{
-		int32 nPid = m_stkNodeList.top().nPid;
-
-		while (m_stkNodeList.top().nPid == nPid)
-		{
-			array_obj.append(m_stkNodeList.top().node_obj);
-			m_stkNodeList.pop();
-		}
-
-		if ((m_stkNodeList.top().nId == nPid) && (m_stkNodeList.top().bIsFolder == true))
-		{//如果是所有子节点的父节点，则合并
-			NODE stTmpNode = m_stkNodeList.top();
-			stTmpNode.node_obj["children"] = array_obj;
-			m_stkNodeList.pop();
-			m_stkNodeList.push(stTmpNode);
-		}
-	}
+// 	Json::Value array_obj;
+// 	if (!m_stkNodeList.empty())
+// 	{
+// 		int32 nPid = m_stkNodeList.top().nPid;
+// 
+// 		while (m_stkNodeList.top().nPid == nPid)
+// 		{
+// 			array_obj.append(m_stkNodeList.top().node_obj);
+// 			m_stkNodeList.pop();
+// 		}
+// 
+// 		if ((m_stkNodeList.top().nId == nPid) && (m_stkNodeList.top().bIsFolder == true))
+// 		{//如果是所有子节点的父节点，则合并
+// 			NODE stTmpNode = m_stkNodeList.top();
+// 			stTmpNode.node_obj["children"] = array_obj;
+// 			m_stkNodeList.pop();
+// 			m_stkNodeList.push(stTmpNode);
+// 		}
+// 	}
 
 	return TRUE;
 }
