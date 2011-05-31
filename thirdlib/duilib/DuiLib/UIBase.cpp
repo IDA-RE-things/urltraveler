@@ -1031,7 +1031,6 @@ bool CWindowWnd::ShowModal(HWND hWnd)
     ASSERT(::IsWindow(hWnd));
     HWND hWndParent = GetWindowOwner(hWnd);
     ASSERT(hWndParent == m_hWnd);
-	
     ::ShowWindow(hWnd, SW_SHOWNORMAL);
     ::EnableWindow(m_hWnd, FALSE);
     bool bNeedClose = false;
