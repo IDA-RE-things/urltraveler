@@ -186,7 +186,7 @@ public:
     virtual CScrollBarUI* GetVerticalScrollBar() const;
     virtual CScrollBarUI* GetHorizontalScrollBar() const;
 
-protected::
+protected:
     bool m_bScrollSelect;
     int m_iCurSel;
     int m_iExpandedItem;
