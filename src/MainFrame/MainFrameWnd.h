@@ -12,6 +12,7 @@
 #include "LoginFrameWnd.h"
 #include "PlugIn.h"
 #include <map>
+#include <vector>
 
 using namespace std;
 using namespace DuiLib;
@@ -54,4 +55,8 @@ private:
 
 	int m_nFavoriteNum;
 	FAVORITELINEDATA*	m_pFavoriteData;
+
+
+	// 保存某个目录结点下的所有的叶子结点
+	std::vector<FAVORITELINEDATA*>		m_vFavoriteNode;
 };
