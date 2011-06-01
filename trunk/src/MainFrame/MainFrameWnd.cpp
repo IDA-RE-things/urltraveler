@@ -137,6 +137,8 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 				if( itr != m_mapNodeId.end())
 				{
 					int nId = itr->second;
+
+					m_vFavoriteNode.clear();
 					
 					for( int i=0; i<m_nFavoriteNum; i++)
 					{
@@ -145,8 +147,15 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 						// “∂◊”Ω·µ„
 						if( pData->nPid == nId && pData->bFolder == false)
 						{
-
+							m_vFavoriteNode.push_back(pData);
 						}
+					}
+
+					CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+					if( pUserList)
+					{
+						pUserList->SetItemTextStyle(DT_LEFT);
+						pUserList->Invalidate();
 					}
 				}
 			}
@@ -209,22 +218,6 @@ LRESULT CFrameWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
 	RECT rcClient;
 	::GetClientRect(*this, &rcClient);
-
-	// 		if( !::IsZoomed(*this) ) {
-	// 			RECT rcSizeBox = m_pm.GetSizeBox();
-	// 			if( pt.y < rcClient.top + rcSizeBox.top ) {
-	// 				if( pt.x < rcClient.left + rcSizeBox.left ) return HTTOPLEFT;
-	// 				if( pt.x > rcClient.right - rcSizeBox.right ) return HTTOPRIGHT;
-	// 				return HTTOP;
-	// 			}
-	// 			else if( pt.y > rcClient.bottom - rcSizeBox.bottom ) {
-	// 				if( pt.x < rcClient.left + rcSizeBox.left ) return HTBOTTOMLEFT;
-	// 				if( pt.x > rcClient.right - rcSizeBox.right ) return HTBOTTOMRIGHT;
-	// 				return HTBOTTOM;
-	// 			}
-	// 			if( pt.x < rcClient.left + rcSizeBox.left ) return HTLEFT;
-	// 			if( pt.x > rcClient.right - rcSizeBox.right ) return HTRIGHT;
-	// 		}
 
 	RECT rcCaption = m_pm.GetCaptionRect();
 	if( pt.x >= rcClient.left + rcCaption.left && pt.x < rcClient.right - rcCaption.right \
@@ -363,9 +356,16 @@ LPCTSTR CFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubItem)
 {
     if( pControl->GetParent()->GetParent()->GetName() == _T("favoritefilelist") ) 
 	{
-        if( iSubItem == 0 ) return _T("<i vip.png>");
-        if( iSubItem == 1 ) return _T("Í«≥∆");
-        if( iSubItem == 2 ) return _T("5");
+		if( m_vFavoriteNode.size() == 0)
+			return L"";
+
+		if( iIndex <= m_vFavoriteNode.size() -1)
+		{
+			if( iSubItem == 0 ) return _T("<i vip.png>");
+			if( iSubItem == 1 ) return m_vFavoriteNode[iIndex]->szTitle;
+			if( iSubItem == 2 ) return m_vFavoriteNode[iIndex]->szUrl;
+		}
+
     }
 
     return _T("");
