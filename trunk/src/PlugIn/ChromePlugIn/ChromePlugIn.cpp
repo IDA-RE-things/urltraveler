@@ -19,12 +19,16 @@
 using namespace chromeplugin;
 
 
-CChromePlugIn::CChromePlugIn(void)
+CChromePlugIn::CChromePlugIn(void) : m_nMaxDepth(0)
 {
+	m_mapDepthInfo.clear();
+	m_mapPidInfo.clear();
 }
 
 CChromePlugIn::~CChromePlugIn(void)
 {
+	m_mapDepthInfo.clear();
+	m_mapPidInfo.clear();
 }
 
 BOOL CChromePlugIn::Load()
@@ -200,12 +204,8 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 	Json::Value bookmark_bar;
 	Json::Value other;
 	Json::Value curr_node;
-	Json::StyledStreamWriter writer;
 	int32 nIndex = 0;
-	NODE stNode = {0};
-	bool bIsAccessedAllChlidNode = false;
-	bool bHasChildNode = true;
-	int32 nCurNodePid = 0;
+	int32 nDepth = 0;
 
 	MakeSpecialFolderNode(L"roots", nIndex, roots);
 	MakeSpecialFolderNode(L"bookmark_bar", nIndex, bookmark_bar);
@@ -219,36 +219,41 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 			continue;
 		}
 
-		if (pData[i].bFolder == true)
+		MAP_PID_INFO::iterator it;
+		it = m_mapPidInfo.find(pData[i].nPid);
+		if (it != m_mapPidInfo.end())
 		{
-			CHROMEFOLDERNODE stFolderNode = {0};
-			stFolderNode.nAddedTime = pData[i].nAddTimes;
-			stFolderNode.nModifiedTime = pData[i].nLastModifyTime;
-			stFolderNode.nId = ++nIndex;
-			wcscpy_s(stFolderNode.szName, MAX_PATH - 1, pData[i].szTitle);
-			wcscpy_s(stFolderNode.szType, MAX_PATH - 1, L"folder");
-
-			Json::Value folder_obj;
-			MakeFolderNode(stFolderNode, folder_obj);
-			m_mapNodeTree.insert(std::make_pair(pData[i].nPid, folder_obj));
+			nDepth = (*it).second + 1;
 		}
 		else
 		{
-			CHROMEURLNODE stUrlNode = {0};
-			stUrlNode.nAddedTime = pData[i].nAddTimes;
-			stUrlNode.nId = ++nIndex;
-			wcscpy_s(stUrlNode.szName, MAX_PATH - 1, pData[i].szTitle);
-			wcscpy_s(stUrlNode.szType, MAX_PATH - 1, L"url");
-			wcscpy_s(stUrlNode.szUrl, MAX_URL_LEN - 1, pData[i].szUrl);
+			nDepth = 0;
+		}
 
-			Json::Value url_obj;
-			MakeUrlNode(stUrlNode, url_obj);
-			m_mapNodeTree.insert(std::make_pair(pData[i].nPid, url_obj));
+		if (nDepth > m_nMaxDepth)
+		{
+			m_nMaxDepth = nDepth;
+		}
+
+		m_mapPidInfo.insert(MAP_PID_INFO::value_type(pData[i].nPid, nDepth));
+		m_mapDepthInfo.insert(MAP_DEPTH_INFO::value_type(nDepth, i));
+
+		if (pData[i].bFolder == true)
+		{
+			
+// 			Json::Value folder_obj;
+// 			MakeFolderNode(pData[i], folder_obj, nIndex);
+		}
+		else
+		{
+// 			Json::Value url_obj;
+// 			MakeUrlNode(pData[i], url_obj, nIndex);
 		}
 	}
 
 	roots.append(other);
 	std::ofstream outfile(strTmpPath.c_str());
+	Json::StyledStreamWriter writer;
 	writer.write(outfile, roots);
 	outfile.close();
 
@@ -334,7 +339,7 @@ BOOL CChromePlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDAT
 }
 
 
-BOOL CChromePlugIn::MakeFolderNode(CHROMEFOLDERNODE stFolderNode, Json::Value& folder_obj)
+BOOL CChromePlugIn(FAVORITELINEDATA stData, Json::Value& folder_obj, int32& nIndex)
 {
 	wchar_t szFormat[] = L" { \"children\": [ ],\
 				  \"date_added\": \"%s\",\
@@ -345,11 +350,11 @@ BOOL CChromePlugIn::MakeFolderNode(CHROMEFOLDERNODE stFolderNode, Json::Value& f
 
 	SYSTEMTIME sysTime1;
 	SYSTEMTIME sysTime2;
-	TimeHelper::Time2SysTime(stFolderNode.nAddedTime, sysTime1);
-	TimeHelper::Time2SysTime(stFolderNode.nModifiedTime, sysTime2);
+	TimeHelper::Time2SysTime(stData.nAddTimes, sysTime1);
+	TimeHelper::Time2SysTime(stData.nLastModifyTime, sysTime2);
 
 	wchar_t szTmp[2048];
-	swprintf_s(szTmp, 2048 - 1, szFormat, TimeHelper::GetStrTime2(sysTime1), TimeHelper::GetStrTime2(sysTime2), stFolderNode.nId, stFolderNode.szName);
+	swprintf_s(szTmp, 2048 - 1, szFormat, TimeHelper::GetStrTime2(sysTime1), TimeHelper::GetStrTime2(sysTime2), ++nIndex, stData.szTitle);
 	std::string strTmp = StringHelper::UnicodeToUtf8(szTmp);
 
 	Json::Reader reader;
@@ -359,7 +364,7 @@ BOOL CChromePlugIn::MakeFolderNode(CHROMEFOLDERNODE stFolderNode, Json::Value& f
 	return TRUE;
 }
 
-BOOL CChromePlugIn::MakeUrlNode(CHROMEURLNODE stUrlNode, Json::Value& url_obj)
+BOOL CChromePlugIn::MakeUrlNode(FAVORITELINEDATA stData, Json::Value& url_obj, int32& nIndex)
 {
 	wchar_t szFormat[] = L" {\
 				 \"date_added\": \"%s\",\
@@ -369,10 +374,10 @@ BOOL CChromePlugIn::MakeUrlNode(CHROMEURLNODE stUrlNode, Json::Value& url_obj)
 				 \"url\": \"%s\"}";
 	
 	SYSTEMTIME sysTime;
-	TimeHelper::Time2SysTime(stUrlNode.nAddedTime, sysTime);
+	TimeHelper::Time2SysTime(stData.nAddTimes, sysTime);
 
 	wchar_t szTmp[2048];
-	swprintf_s(szTmp, 2048 -1, szFormat, TimeHelper::GetStrTime2(sysTime), stUrlNode.nId, stUrlNode.szName, stUrlNode.szUrl);
+	swprintf_s(szTmp, 2048 -1, szFormat, TimeHelper::GetStrTime2(sysTime), ++nIndex, stData.szTitle, stData.szUrl);
 	std::string strTmp = StringHelper::UnicodeToUtf8(szTmp);
 
 	Json::Reader reader;
@@ -440,27 +445,17 @@ BOOL CChromePlugIn::EnumNode(Json::Value& folder_obj, int32& nCount)
 	return TRUE;
 }
 
-BOOL CChromePlugIn::MergeNode()
+BOOL CChromePlugIn::MergeNode(PFAVORITELINEDATA pData, Json::Value& node_obj)
 {
-// 	Json::Value array_obj;
-// 	if (!m_stkNodeList.empty())
-// 	{
-// 		int32 nPid = m_stkNodeList.top().nPid;
-// 
-// 		while (m_stkNodeList.top().nPid == nPid)
-// 		{
-// 			array_obj.append(m_stkNodeList.top().node_obj);
-// 			m_stkNodeList.pop();
-// 		}
-// 
-// 		if ((m_stkNodeList.top().nId == nPid) && (m_stkNodeList.top().bIsFolder == true))
-// 		{//如果是所有子节点的父节点，则合并
-// 			NODE stTmpNode = m_stkNodeList.top();
-// 			stTmpNode.node_obj["children"] = array_obj;
-// 			m_stkNodeList.pop();
-// 			m_stkNodeList.push(stTmpNode);
-// 		}
-// 	}
+	Json::Value array_obj;
+	for (int32 i = m_nMaxDepth; i >= 0; --i)
+	{
+		MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(i);
+		while (it != m_mapDepthInfo.upper_bound(i))
+		{
+			++it;
+		}
+	}
 
 	return TRUE;
 }
