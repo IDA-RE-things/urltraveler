@@ -6,7 +6,13 @@ CFrameWnd::CFrameWnd()
 	m_pLoginFrame = NULL;	
 }
 
-void CFrameWnd::OnPrepare() { 
+void CFrameWnd::OnPrepare() 
+{ 
+
+}
+
+void CFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
+{	 
 	TreeListUI* pGameList = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
 	TreeListUI::Node* pCategoryNode = NULL;
 	TreeListUI::Node* pGameNode = NULL;
@@ -90,6 +96,46 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 		else if(name==_T("tool"))
 			pControl->SelectItem(7);
 	}
+	else if( msg.sType == _T("itemclick") ) 
+	{
+	    TreeListUI* pGameList = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
+	    if( pGameList->GetItemIndex(msg.pSender) != -1 )
+	    {
+			if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) 
+			{
+			    TreeListUI::Node* node = (TreeListUI::Node*)msg.pSender->GetTag();
+
+			    POINT pt = { 0 };
+			    ::GetCursorPos(&pt);
+			    ::ScreenToClient(m_pm.GetPaintWindow(), &pt);
+			    pt.x -= msg.pSender->GetX();
+			    SIZE sz = pGameList->GetExpanderSizeX(node);
+			    if( pt.x >= sz.cx && pt.x < sz.cy )                     
+					pGameList->SetChildVisible(node, !node->data()._child_visible);
+			}
+		}
+	}
+	/*
+else if( msg.sType == _T("itemactivate") ) {
+    GameListUI* pGameList = static_cast<GameListUI*>(m_pm.FindControl(_T("gamelist")));
+    if( pGameList->GetItemIndex(msg.pSender) != -1 )
+    {
+	if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) {
+	    GameListUI::Node* node = (GameListUI::Node*)msg.pSender->GetTag();
+	    pGameList->SetChildVisible(node, !node->data()._child_visible);
+	    if( node->data()._level == 3 ) {
+		COptionUI* pControl = static_cast<COptionUI*>(m_pm.FindControl(_T("roomswitch")));
+		if( pControl ) {
+		    CHorizontalLayoutUI* pH = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(_T("roomswitchpanel")));
+		    if( pH ) pH->SetVisible(true);
+		    pControl->SetText(node->parent()->parent()->data()._text);
+		    pControl->Activate();
+		}
+	    }
+	}
+    }
+	*/
+
 }
 
 LRESULT CFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

@@ -236,7 +236,7 @@ void TrayIconModule::ProcessMessage(const Message& msg)
 //----------------------------------------------------------------------------------------
 int32 TrayIconModule::CallDirect(const param lparam, param wparam) 
 {
-	return -1;
+	CALL_DIRECT(lServiceValue, rparam);
 }
 
 //----------------------------------------------------------------------------------------

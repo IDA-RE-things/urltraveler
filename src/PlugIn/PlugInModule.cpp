@@ -66,6 +66,9 @@ BEGIN_EVENT_MAP(PlugInModule)
 	ON_EVENT(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED, OnEvent_CheckPlugInWorked)
 END_EVENT_MAP()
 
+BEGIN_SERVICE_MAP(PlugInModule)
+	ON_SERVICE(SERVICE_VALUE_GET_FAVORITE_DATA, OnService_GetFavoriteData)
+END_SERVICE_MAP()
 //----------------------------------------------------------------------------------------
 //名称: Unload
 //描述: 主程序通过该方法对模块进行卸载
@@ -150,7 +153,7 @@ void PlugInModule::ProcessMessage(const Message& msg)
 //----------------------------------------------------------------------------------------
 int32 PlugInModule::CallDirect(const param lparam, param wparam) 
 {
-	return -1;
+	CALL_DIRECT(lparam, wparam);
 }
 
 //----------------------------------------------------------------------------------------
@@ -426,7 +429,13 @@ int PlugInModule::Run()
 		delete []panCount;
 		panCount = NULL;
 	}
+
+	// 发送广播，通知收藏夹已经合并完毕
+	m_pModuleManager->PushMessage(
+		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED));
+
 	
+	/*
 	for( int i=0; i<nNumOfPlugIns; i++)
 	{
 		IPlugIn* pPlugIn = m_vPlugIns.at(i);
@@ -435,6 +444,7 @@ int PlugInModule::Run()
 
 		pPlugIn->ImportFavoriteData(&m_vFavoriateLineData[0], m_nSumFavorite);
 	}
+	*/
 
 	//使线程直接退掉返回0，否则需要自己去Shutdown
 	return 0;
@@ -442,4 +452,13 @@ int PlugInModule::Run()
 
 void PlugInModule::OnThreadExit()
 {
+}
+
+void PlugInModule::OnService_GetFavoriteData(ServiceValue lServiceValue, param	lParam)
+{
+	PlugIn_GetFavoriteService* pGetFavoriteServicem = (PlugIn_GetFavoriteService*)lParam;
+	ASSERT( pGetFavoriteServicem != NULL);
+
+	pGetFavoriteServicem->pFavoriteData = &m_vFavoriateLineData[0];
+	pGetFavoriteServicem->nNum = m_vFavoriateLineData.size();
 }

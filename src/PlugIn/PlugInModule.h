@@ -7,9 +7,11 @@
 #include <vector>
 #include "ThreadObject_i.h"
 #include "Guard.h"
+#include "PlugInDefine.h"
 
 
 using namespace std;
+using namespace plugin;
 
 extern "C" 
 {
@@ -21,6 +23,7 @@ class PlugInModule : public ModuleImpl,
 					public IThreadEvent
 {
 	DECLEAR_EVENT_MAP(PlugInModule)
+	DECLEAR_SERVICE_MAP(PlugInModule)
 
 public:
 	PlugInModule();
@@ -102,6 +105,10 @@ protected:
 	void	OnEvent_LoadAllPlugin(Event* pEvent);
 	void	OnEvent_CheckPlugInWorked(Event* pEvent);
 
+protected:
+
+	void	OnService_GetFavoriteData(ServiceValue lServiceValue, param	lParam);
+
 
 private:
 
@@ -125,9 +132,6 @@ private:
 	IThreadObject*      m_pThreadObj;
 
 	int                 m_nSumFavorite;
-
-
-	CMutex              m_Mutex;
 };
 
 class PlugInModuleFactory : public ModuleFactoryImpl<PlugInModule>{};

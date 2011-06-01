@@ -60,6 +60,7 @@ BEGIN_MESSAGE_MAP(MainFrameModule)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_BEGIN_SHOW, OnMessage_Show)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_CYCLE_TRIGGER, OnMessage_CycleTrigged)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_PRE_APP_EXIT, OnMessage_PreExit)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED, OnMessage_PlugInLoaded)
 END_MESSAGE_MAP()
 
 BEGIN_SERVICE_MAP(MainFrameModule)
@@ -143,23 +144,23 @@ void MainFrameModule::PaybackExtraInfo(uint32 valueId, void* pExtraInfo)
 	return;
 }
 
-void	MainFrameModule::OnEvent_OpenMainDlg(Event* pEvent)
+void MainFrameModule::OnEvent_OpenMainDlg(Event* pEvent)
 {
 	MainFrame_OpenEvent* pE = (MainFrame_OpenEvent*)pEvent->m_pstExtraInfo;
 	return;
 }
 
-void	MainFrameModule::OnEvent_CloseMainDlg(Event* pEvent)
+void MainFrameModule::OnEvent_CloseMainDlg(Event* pEvent)
 {
 
 }
 
-void	MainFrameModule::OnEvent_ShowMainDlg(Event* pEvent)
+void MainFrameModule::OnEvent_ShowMainDlg(Event* pEvent)
 {
 	m_pMainFrame->ShowWindow(TRUE);
 }
 
-void	MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
+void MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
 {
 	m_pMainFrame->ShowWindow(FALSE);
 }
@@ -186,21 +187,33 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 	m_pMainFrame->CenterWindow();
 	m_pMainFrame->ShowWindow(true);
 
-	// 通知各个模块退出之前进行必要的准备工作
+	//	通知加载所有的浏览器插件
 	m_pModuleManager->PushEvent(
 		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_PLUGIN_LOAD_ALL,
 		MODULE_ID_PLUGIN));
 }
 
-void	MainFrameModule::OnMessage_PreExit(Message* pMessage)
+void MainFrameModule::OnMessage_PreExit(Message* pMessage)
 {
 }
 
-void	MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
+void MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
 {
 }
 
-int32	MainFrameModule::OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam)
+void MainFrameModule::OnMessage_PlugInLoaded(Message* pMessage)
+{
+	// 在界面上显示整个收藏夹树
+	PlugIn_GetFavoriteService favoriteData;
+	m_pModuleManager->CallService(SERVICE_VALUE_GET_FAVORITE_DATA,(param)&favoriteData); 
+
+	if( favoriteData.nNum > 0)
+	{
+		m_pMainFrame->LoadFavoriteTree(favoriteData.pFavoriteData, favoriteData.nNum);
+	}
+}
+
+int32 MainFrameModule::OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam)
 {
 	MainFrame_GetWndService* pService = (MainFrame_GetWndService*)lParam;
 	pService->pBaseWnd =	 static_cast<CWindowWnd*>(m_pMainFrame);

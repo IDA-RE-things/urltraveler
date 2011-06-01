@@ -10,6 +10,7 @@
 #include "ControlEx.h"
 #include "resource.h"
 #include "LoginFrameWnd.h"
+#include "PlugIn.h"
 
 using namespace DuiLib;
 
@@ -25,6 +26,7 @@ public:
 	void Init(){} ;
 	void OnPrepare();
 	void Notify(TNotifyUI& msg);
+	void LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum);
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)  ;
