@@ -9,10 +9,10 @@
     <VerticalLayout name="VerticalLayoutUI1" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
         <HorizontalLayout name="VerticalLayoutUI2" pos="0,0,0,110" height="110">
             <HorizontalLayout name="HorizontalLayoutUI7">
-                <Option name="examine" float="true" pos="20,30,80,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_2.png" group="contenttab" selected="true" selectedimage="nav_0a.png" />
-                <Option name="trojan" float="true" pos="107,30,167,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_2.png" group="contenttab" selectedimage="nav_0a.png" />
-                <Option name="plugins" float="true" pos="196,30,256,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_1.png" group="contenttab" selectedimage="nav_3a.png" />
-                <Option name="vulnerability" float="true" pos="282,30,342,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_3.png" group="contenttab" selectedimage="nav_1a.png" />
+                <Option name="examine" float="true" pos="20,30,80,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_2.png" group="contenttab" selected="true" selectedimage="nav_2a.png" />
+                <Option name="trojan" float="true" pos="107,30,167,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_0.png" group="contenttab" selectedimage="nav_0a.png" />
+                <Option name="plugins" float="true" pos="196,30,256,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_1.png" group="contenttab" selectedimage="nav_1a.png" />
+                <Option name="vulnerability" float="true" pos="282,30,342,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_3.png" group="contenttab" selectedimage="nav_3a.png" />
                 <Text name="TextUI14" text="{f 3}{b}{c #3e8b9b}网址漫游精灵1.0{/c}{/b}{/f}" float="true" pos="5,5,154,40" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                 <Label name="LabelUI2" text="收藏夹漫游" float="true" pos="22,85,82,115" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                 <Label name="LabelUI11" text="收藏夹同步" float="true" pos="109,86,169,116" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
@@ -28,11 +28,11 @@
         <TabLayout name="switch">
             <HorizontalLayout name="HorizontalLayoutUI2" padding="10,0,10,0">
                 <VerticalLayout name="VerticalLayoutUI8" bkcolor="#FFFFFFFF" bordercolor="#00B5BFB4">
-                    <HorizontalLayout name="HorizontalLayoutUI1" pos="0,0,0,120" height="120" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#00B4BFB5">
+                    <HorizontalLayout name="HorizontalLayoutUI1" pos="0,0,630,104" width="630" height="104" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#00B4BFB5">
                         <Text name="TextUI2" text="{p}所有浏览器的收藏夹已经自动整理合并在下面的列表中，通过一键同步，{n}你可以把这些浏览器列表同步到收藏夹中{y 20}{/p}" float="true" pos="7,54,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         <Text name="TextUI3" text="{f 3}{b}您安装的{f 4}{c #F27D30}8{/c}{/f}种浏览器：{/b}{/f}" float="true" pos="10,10,282,42" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                        <HorizontalLayout name="HorizontalLayoutUI10" pos="113,7,113,127" height="120" />
-                        <HorizontalLayout name="HorizontalLayoutUI11" pos="257,0,427,0" width="170">
+                        <HorizontalLayout name="HorizontalLayoutUI10" pos="0,0,460,106" width="460" height="106" />
+                        <HorizontalLayout name="HorizontalLayoutUI11" pos="460,0,630,103" width="170" height="103">
                             <Button name="ButtonUI5" float="true" pos="11,29,155,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button.png" />
                         </HorizontalLayout>
                     </HorizontalLayout>
@@ -62,30 +62,30 @@
                         </VerticalLayout>
                     </HorizontalLayout>
                 </VerticalLayout>
-                <VerticalLayout name="VerticalLayoutUI9" pos="0,0,220,0" width="200" bordercolor="#00B4BFB5">
+                <VerticalLayout name="VerticalLayoutUI9" pos="0,0,200,0" width="200" bordercolor="#00B4BFB5">
                     <VerticalLayout name="VerticalLayoutUI10" pos="0,0,0,120" height="120" padding="-1,0,0,0" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8">
                         <Label name="LabelUI3" float="true" pos="5,2,53,50" bkimage="icon_01.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                        <Text name="TextUI4" text="{b}同步频率：{c #F27D30}高{/c}{/b}" float="true" pos="56,10,229,26" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                        <Text name="TextUI5" text="{b}您隔{x 4}{c #F27D30}2{/c}{x 4}小时同步一次{/b}" float="true" pos="56,29,229,45" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                        <Text name="TextUI6" text="{c #5a7737}上次同步漫游：{/c}2011-11-05 22:19:23" float="true" pos="8,64,222,79" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                        <Text name="TextUI7" text="{c #5a7737}上次同步漫游：{/c}2011-11-05 22:19:23" float="true" pos="8,89,222,104" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI4" text="{b}同步频率：{c #F27D30}高{/c}{/b}" float="true" pos="56,10,199,23" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI5" text="{b}您隔{x 4}{c #F27D30}2{/c}{x 4}小时同步一次{/b}" float="true" pos="55,33,199,46" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI6" text="{c #5a7737}上次同步漫游：{/c}2011-11-05 22:19:23" float="true" pos="5,64,199,79" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI7" text="{c #5a7737}上次同步漫游：{/c}2011-11-05 22:19:23" float="true" pos="4,89,198,102" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                     </VerticalLayout>
                     <VerticalLayout name="VerticalLayoutUI11" pos="0,0,0,100" height="100" padding="-1,-1,0,0" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8">
-                        <Label name="LabelUI1" float="true" pos="12,6,28,22" bkimage="icon_03.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                        <Text name="TextUI8" text="将漫游精灵最小化窗口，他会自动帮你同步。{y 15}你在任何一个收藏夹中进行收藏，他都会立即同步到其余收藏夹{y 15}，并漫游到网络{y 15}" float="true" pos="14,31,216,96" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Label name="LabelUI1" float="true" pos="8,6,24,22" bkimage="icon_03.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                        <Text name="TextUI8" text="将漫游精灵最小化窗口，他会自动帮你同步。{y 15}你在任何一个收藏夹中进行收藏，他都会立即同步到其余收藏夹{y 15}，并漫游到网络{y 15}" float="true" pos="5,31,197,96" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         <Text name="TextUI9" text="{b}小提示：{/b}" float="true" pos="32,6,104,25" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                     </VerticalLayout>
                     <VerticalLayout name="VerticalLayoutUI12" pos="0,0,0,95" height="95" padding="-1,-1,0,0" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8">
-                        <Text name="TextUI10" text="手工整理收藏夹太麻烦了？要不要试试超级自动整理？{y 15}" float="true" pos="14,11,218,51" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI10" text="手工整理收藏夹太麻烦了？要不要试试超级自动整理？{y 15}" float="true" pos="6,10,197,50" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         <Button name="ButtonUI11" float="true" pos="58,56,159,84" bkimage="button_01.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
                     </VerticalLayout>
                     <VerticalLayout name="VerticalLayoutUI13" padding="-1,-1,0,3" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8">
                         <Label name="LabelUI4" float="true" pos="9,14,25,30" bkimage="icon_03.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                        <Text name="TextUI11" text="{b}漫游更多内容{/b}" float="true" pos="30,14,209,32" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI11" text="{b}漫游更多内容{/b}" float="true" pos="30,14,194,32" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         <Label name="LabelUI5" float="true" pos="4,38,52,86" bkimage="icon_04.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                         <Label name="LabelUI6" float="true" pos="5,100,53,148" bkimage="icon_05.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                        <Text name="TextUI12" text="{c #2d6a7d}{b}漫游浏览历史{/b}{/c}{n}{y 20}在别的电脑上找到自己浏览过{y 15}的网页" float="true" pos="55,40,220,83" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                        <Text name="TextUI13" text="{c #2d6a7d}{b}漫游Cookie/表单密码{/b}{/c}{n}{y 20}在别的电脑上找到自己浏览过{y 15}的网页" float="true" pos="55,100,221,146" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI12" text="{c #2d6a7d}{b}漫游浏览历史{/b}{/c}{n}{y 20}在别的电脑上找到自己浏览过{y 15}的网页" float="true" pos="55,40,196,89" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI13" text="{c #2d6a7d}{b}漫游Cookie/表单密码{/b}{/c}{n}{y 20}在别的电脑上找到自己浏览过{y 15}的网页" float="true" pos="55,100,195,148" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                     </VerticalLayout>
                 </VerticalLayout>
             </HorizontalLayout>
