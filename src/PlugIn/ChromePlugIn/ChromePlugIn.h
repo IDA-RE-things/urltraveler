@@ -1,28 +1,8 @@
 #pragma once
 #include "PlugIn.h"
 #include "json/json.h"
-#include <stack>
+#include <vector>
 #include <map>
-
-#define MAX_URL_LEN  1024
-
-typedef struct ChromeFolderNode
-{
-	time_t  nAddedTime;
-	time_t  nModifiedTime;
-	int32   nId;
-	wchar_t szName[MAX_PATH];
-	wchar_t szType[MAX_PATH];
-} CHROMEFOLDERNODE, *PCHROMEFOLDERNODE;
-
-typedef struct ChromeUrlNode
-{
-	time_t  nAddedTime;
-	int32   nId;
-	wchar_t szName[MAX_PATH];
-	wchar_t szType[MAX_PATH];
-	wchar_t szUrl[MAX_URL_LEN];
-} CHROMEURLNODE, *PCHROMEURLNODE;
 
 class CChromePlugIn : public PlugInImp
 {
@@ -112,22 +92,23 @@ public:
 private:
 	BOOL ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum);
 	BOOL ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum);
-	BOOL MakeFolderNode(CHROMEFOLDERNODE stFolderNode, Json::Value& folder_obj);
-	BOOL MakeUrlNode(CHROMEURLNODE stUrlNode, Json::Value& url_obj);
+	BOOL MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_obj, int32& nIndex);
+	BOOL MakeUrlNode(FAVORITELINEDATA stData, Json::Value& url_obj, int32& nIndex);
 
 	BOOL MakeSpecialFolderNode(wchar_t *pszName, int32& nIndex, Json::Value& folder_obj);
 	BOOL EnumNode(Json::Value& folder_obj, int32& nCount);
 
-	BOOL MergeNode();
+	BOOL MergeNode(PFAVORITELINEDATA pData, Json::Value& node_obj);
 
 private:
-	typedef struct Node
-	{
-		int32 nId;
-		int32 nPid;
-		bool bIsFolder;
-	} NODE, *PNODE;
 
-	std::stack<NODE> m_stkNodeList;
-	std::multimap<int32, Json::Value> m_mapNodeTree;
+	int32 m_nMaxDepth;
+	typedef std::vector<Json::Value> VEC_NODE_LIST;
+	VEC_NODE_LIST m_vecNodeList;
+
+	typedef std::multimap<int32, int32> MAP_DEPTH_INFO;
+	MAP_DEPTH_INFO m_mapDepthInfo;
+
+	typedef std::map<int32, int32> MAP_PID_INFO;
+	MAP_PID_INFO m_mapPidInfo;
 };
