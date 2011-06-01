@@ -110,7 +110,7 @@ public:
 
     bool RemoveAt(int iIndex)
     {
-        CControlUI* pControl = GetItemAt(iIndex);
+        CControlUI* pControl = m_pList->GetItemAt(iIndex);
         if( !pControl ) return false;
         if( _tcscmp(pControl->GetClass(), _T("ListLabelElementUI")) == 0 ) return false;
         return CListUI::RemoveAt(iIndex);
@@ -283,7 +283,7 @@ public:
         Node* end = node->get_last_child();
         for( int i = begin->data()._pListElement->GetIndex(); i <= end->data()._pListElement->GetIndex(); ++i )
         {
-            CControlUI* control = GetItemAt(i);
+            CControlUI* control = m_pList->GetItemAt(i);
             if( _tcscmp(control->GetClass(), _T("ListLabelElementUI")) == 0 )
             {
                 if( !visible ) 
