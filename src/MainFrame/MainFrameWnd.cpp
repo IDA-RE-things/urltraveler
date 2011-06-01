@@ -3,7 +3,10 @@
 
 CFrameWnd::CFrameWnd()
 {
-	m_pLoginFrame = NULL;	
+	m_pLoginFrame = NULL;
+
+	m_nFavoriteNum = 0;
+	m_pFavoriteData	= NULL;
 }
 
 void CFrameWnd::OnPrepare() 
@@ -13,11 +16,14 @@ void CFrameWnd::OnPrepare()
 
 void CFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 {	 
+	m_nFavoriteNum = nNum;
+	m_pFavoriteData = pFavoriteData;
+
 	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
 
-	for( int i=0; i<nNum; i++)
+	for( int i=0; i<m_nFavoriteNum; i++)
 	{
-		FAVORITELINEDATA* pData = &pFavoriteData[i];
+		FAVORITELINEDATA* pData = &m_pFavoriteData[i];
 
 		// 根目录结点
 		if( pData != NULL && pData->bFolder == true && pData->nPid == 0)
@@ -27,6 +33,7 @@ void CFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 
 			TreeListUI::Node* pNode = pFavoriteTree->AddNode(wstrText.c_str());
 			m_mapIdNode[pData->nId] = pNode;
+			m_mapNodeId[pNode] = pData->nId;
 		}
 		// 如果不是根结点
 		else if( pData != NULL && pData->bFolder == true)
@@ -44,10 +51,20 @@ void CFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 
 					TreeListUI::Node* pNode  = pFavoriteTree->AddNode(wstrText.c_str(), pParentNode);
 					m_mapIdNode[pData->nId] = pNode;
+					m_mapNodeId[pNode] = pData->nId;
 				}
 			}
 		}
 	}
+
+
+    CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+    pUserList->SetTextCallback(this);      
+    for( int i = 0; i < 10; i++ ) {
+        CListTextElementUI* pListElement = new CListTextElementUI;
+        pUserList->Add(pListElement);
+    }
+
 }
 
 
@@ -114,30 +131,27 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 			    SIZE sz = pFavoriteTree->GetExpanderSizeX(node);
 			    if( pt.x >= sz.cx && pt.x < sz.cy )                     
 					pFavoriteTree->SetChildVisible(node, !node->data()._child_visible);
+
+				// 得到该结点对应的nId
+				std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(node);
+				if( itr != m_mapNodeId.end())
+				{
+					int nId = itr->second;
+					
+					for( int i=0; i<m_nFavoriteNum; i++)
+					{
+						FAVORITELINEDATA* pData = &m_pFavoriteData[i];
+
+						// 叶子结点
+						if( pData->nPid == nId && pData->bFolder == false)
+						{
+
+						}
+					}
+				}
 			}
 		}
 	}
-	/*
-else if( msg.sType == _T("itemactivate") ) {
-    GameListUI* pFavoriteTree = static_cast<GameListUI*>(m_pm.FindControl(_T("gamelist")));
-    if( pFavoriteTree->GetItemIndex(msg.pSender) != -1 )
-    {
-	if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) {
-	    GameListUI::Node* node = (GameListUI::Node*)msg.pSender->GetTag();
-	    pFavoriteTree->SetChildVisible(node, !node->data()._child_visible);
-	    if( node->data()._level == 3 ) {
-		COptionUI* pControl = static_cast<COptionUI*>(m_pm.FindControl(_T("roomswitch")));
-		if( pControl ) {
-		    CHorizontalLayoutUI* pH = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(_T("roomswitchpanel")));
-		    if( pH ) pH->SetVisible(true);
-		    pControl->SetText(node->parent()->parent()->data()._text);
-		    pControl->Activate();
-		}
-	    }
-	}
-    }
-	*/
-
 }
 
 LRESULT CFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -342,4 +356,17 @@ LRESULT CFrameWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if( bHandled ) return lRes;
 	if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
 	return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
+}
+
+// 提供表单中的数据
+LPCTSTR CFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubItem)
+{
+    if( pControl->GetParent()->GetParent()->GetName() == _T("favoritefilelist") ) 
+	{
+        if( iSubItem == 0 ) return _T("<i vip.png>");
+        if( iSubItem == 1 ) return _T("昵称");
+        if( iSubItem == 2 ) return _T("5");
+    }
+
+    return _T("");
 }

@@ -18,7 +18,7 @@ using namespace DuiLib;
 
 extern HMODULE	g_hModule;
 
-class CFrameWnd : public CWindowWnd, public INotifyUI
+class CFrameWnd : public CWindowWnd, public INotifyUI, public IListCallbackUI
 {
 public:
 	CFrameWnd();
@@ -29,6 +29,7 @@ public:
 	void OnPrepare();
 	void Notify(TNotifyUI& msg);
 	void LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum);
+	LPCTSTR GetItemText(CControlUI* pControl, int iIndex, int iSubItem);
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)  ;
@@ -48,6 +49,9 @@ public:
 
 private:
 	CLoginFrameWnd* m_pLoginFrame;
-
 	std::map<int, TreeListUI::Node*>	m_mapIdNode;	//	id到node的关联关系
+	std::map<TreeListUI::Node*, int>	m_mapNodeId;	//	node到map的映射
+
+	int m_nFavoriteNum;
+	FAVORITELINEDATA*	m_pFavoriteData;
 };
