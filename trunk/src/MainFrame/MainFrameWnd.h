@@ -11,7 +11,9 @@
 #include "resource.h"
 #include "LoginFrameWnd.h"
 #include "PlugIn.h"
+#include <map>
 
+using namespace std;
 using namespace DuiLib;
 
 extern HMODULE	g_hModule;
@@ -46,4 +48,6 @@ public:
 
 private:
 	CLoginFrameWnd* m_pLoginFrame;
+
+	std::map<int, TreeListUI::Node*>	m_mapIdNode;	//	id到node的关联关系
 };

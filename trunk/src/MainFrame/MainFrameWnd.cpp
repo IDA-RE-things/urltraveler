@@ -13,38 +13,40 @@ void CFrameWnd::OnPrepare()
 
 void CFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 {	 
-	TreeListUI* pGameList = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
-	TreeListUI::Node* pCategoryNode = NULL;
-	TreeListUI::Node* pGameNode = NULL;
-	TreeListUI::Node* pServerNode = NULL;
-	TreeListUI::Node* pRoomNode = NULL;
-	pCategoryNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 3}{x 4}推荐游戏"));
-	for( int i = 0; i < 4; ++i )
+	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
+
+	for( int i=0; i<nNum; i++)
 	{
-	    pGameNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 10}{x 4}四人斗地主"), pCategoryNode);
-	    for( int i = 0; i < 3; ++i )
-	    {
-		pServerNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 10}{x 4}测试服务器"), pGameNode);
-		for( int i = 0; i < 3; ++i )
+		FAVORITELINEDATA* pData = &pFavoriteData[i];
+
+		// 根目录结点
+		if( pData != NULL && pData->bFolder == true && pData->nPid == 0)
 		{
-		    pRoomNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 10}{x 4}测试房间"), pServerNode);
+			wstring wstrText = L"{x 4}{x 4}";
+			wstrText += pData->szTitle;
+
+			TreeListUI::Node* pNode = pFavoriteTree->AddNode(wstrText.c_str());
+			m_mapIdNode[pData->nId] = pNode;
 		}
-	    }
-	}
-	pCategoryNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 3}{x 4}最近玩过的游戏"));
-	for( int i = 0; i < 2; ++i )
-	{
-	    pGameList->AddNode(_T("三缺一"), pCategoryNode);
-	}
-	pCategoryNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 3}{x 4}棋牌游戏"));
-	for( int i = 0; i < 8; ++i )
-	{
-	    pGameList->AddNode(_T("双扣"), pCategoryNode);
-	}
-	pCategoryNode = pGameList->AddNode(_T("{x 4}{i gameicons.png 18 3}{x 4}休闲游戏"));
-	for( int i = 0; i < 8; ++i )
-	{
-	    pGameList->AddNode(_T("飞行棋"), pCategoryNode);
+		// 如果不是根结点
+		else if( pData != NULL && pData->bFolder == true)
+		{
+			// 找到当前结点的父节点
+			int nPid = pData->nPid;
+			std::map<int, TreeListUI::Node*>::iterator itr = m_mapIdNode.find(nPid);
+			if( itr != m_mapIdNode.end())
+			{
+				TreeListUI::Node* pParentNode = itr->second;
+				if( pParentNode != NULL)
+				{
+					wstring wstrText = L"{x 4}{x 4}";
+					wstrText += pData->szTitle;
+
+					TreeListUI::Node* pNode  = pFavoriteTree->AddNode(wstrText.c_str(), pParentNode);
+					m_mapIdNode[pData->nId] = pNode;
+				}
+			}
+		}
 	}
 }
 
@@ -98,8 +100,8 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 	}
 	else if( msg.sType == _T("itemclick") ) 
 	{
-	    TreeListUI* pGameList = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
-	    if( pGameList->GetItemIndex(msg.pSender) != -1 )
+	    TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
+	    if( pFavoriteTree->GetItemIndex(msg.pSender) != -1 )
 	    {
 			if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) 
 			{
@@ -109,20 +111,20 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 			    ::GetCursorPos(&pt);
 			    ::ScreenToClient(m_pm.GetPaintWindow(), &pt);
 			    pt.x -= msg.pSender->GetX();
-			    SIZE sz = pGameList->GetExpanderSizeX(node);
+			    SIZE sz = pFavoriteTree->GetExpanderSizeX(node);
 			    if( pt.x >= sz.cx && pt.x < sz.cy )                     
-					pGameList->SetChildVisible(node, !node->data()._child_visible);
+					pFavoriteTree->SetChildVisible(node, !node->data()._child_visible);
 			}
 		}
 	}
 	/*
 else if( msg.sType == _T("itemactivate") ) {
-    GameListUI* pGameList = static_cast<GameListUI*>(m_pm.FindControl(_T("gamelist")));
-    if( pGameList->GetItemIndex(msg.pSender) != -1 )
+    GameListUI* pFavoriteTree = static_cast<GameListUI*>(m_pm.FindControl(_T("gamelist")));
+    if( pFavoriteTree->GetItemIndex(msg.pSender) != -1 )
     {
 	if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) {
 	    GameListUI::Node* node = (GameListUI::Node*)msg.pSender->GetTag();
-	    pGameList->SetChildVisible(node, !node->data()._child_visible);
+	    pFavoriteTree->SetChildVisible(node, !node->data()._child_visible);
 	    if( node->data()._level == 3 ) {
 		COptionUI* pControl = static_cast<COptionUI*>(m_pm.FindControl(_T("roomswitch")));
 		if( pControl ) {
