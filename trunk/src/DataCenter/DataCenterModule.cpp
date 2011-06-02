@@ -48,6 +48,7 @@ END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(DataCenterModule)
 	ON_SERVICE(SERVICE_VALUE__DATACENTER_GET_FAVORITE_VECTOR, OnService_GetFavoriteVector)
+	ON_SERVICE(SERVICE_VALUE__DATACENTER_GET_FAVORITE_DATA,OnService_GetFavoriteData)
 END_SERVICE_MAP()
 
 //----------------------------------------------------------------------------------------
@@ -101,9 +102,9 @@ void DataCenterModule::ProcessMessage(const Message& msg)
 //		@param	lparam			参数1
 //		@param	rparam			参数2
 //----------------------------------------------------------------------------------------
-int32 DataCenterModule::CallDirect(const param lparam, param wparam) 
+int32 DataCenterModule::CallDirect(const ServiceValue lServiceValue, param wparam) 
 {
-	return -1;
+	CALL_DIRECT(lServiceValue, wparam);
 }
 
 //----------------------------------------------------------------------------------------
@@ -127,4 +128,13 @@ void	DataCenterModule::OnService_GetFavoriteVector(ServiceValue lServiceValue, p
 	ASSERT( pGetFavoriteServiceVector != NULL);
 
 	pGetFavoriteServiceVector->pvFavoriteData = &m_vFavoriteLineData;
+}
+
+void DataCenterModule::OnService_GetFavoriteData(ServiceValue lServiceValue, param	lParam)
+{
+	DataCenter_GetFavoriteService* pGetFavoriteDataService = (DataCenter_GetFavoriteService*)lParam;
+	ASSERT( pGetFavoriteDataService != NULL);
+
+	pGetFavoriteDataService->pFavoriteData = &m_vFavoriteLineData[0];
+	pGetFavoriteDataService->nNum = m_vFavoriteLineData.size();
 }

@@ -6,9 +6,7 @@
 #include "AboutDlg.h"
 #include "MainFrameDefine.h"
 
-
 HMODULE	g_hModule = NULL;
-
 
 using namespace trayicon;
 

@@ -30,6 +30,7 @@ namespace datacenter
 	enum E_DataCenterServiceValue
 	{
 		SERVICE_VALUE__DATACENTER_GET_FAVORITE_VECTOR	=	SERVICE_VALUE_DATACENTER_BEGIN,
+		SERVICE_VALUE__DATACENTER_GET_FAVORITE_DATA,
 	};
 
 	//===========================================//
@@ -140,4 +141,17 @@ namespace datacenter
 
 		std::vector<FAVORITELINEDATA>*	pvFavoriteData;
 	};
+
+	struct DataCenter_GetFavoriteService
+	{
+		DataCenter_GetFavoriteService()
+		{
+			nNum = 0;
+			pFavoriteData	=	NULL;
+		}
+
+		int nNum;										//	
+		FAVORITELINEDATA*		pFavoriteData;			//	收藏夹的数据	
+	};
+
 };

@@ -67,7 +67,6 @@ BEGIN_EVENT_MAP(PlugInModule)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(PlugInModule)
-	ON_SERVICE(SERVICE_VALUE_GET_FAVORITE_DATA, OnService_GetFavoriteData)
 END_SERVICE_MAP()
 //----------------------------------------------------------------------------------------
 //名称: Unload
@@ -151,9 +150,9 @@ void PlugInModule::ProcessMessage(const Message& msg)
 //		@param	lparam			参数1
 //		@param	rparam			参数2
 //----------------------------------------------------------------------------------------
-int32 PlugInModule::CallDirect(const param lparam, param wparam) 
+int32 PlugInModule::CallDirect(const ServiceValue lServiceValue, param wparam) 
 {
-	CALL_DIRECT(lparam, wparam);
+	CALL_DIRECT(lServiceValue, wparam);
 }
 
 //----------------------------------------------------------------------------------------
@@ -372,15 +371,16 @@ void PlugInModule::OnThreadEntry()
 
 int PlugInModule::Run()
 {
-	std::vector<FAVORITELINEDATA>*	pvFavoriteLineData = NULL;
-	CallDirect(SERVICE_VALUE__DATACENTER_GET_FAVORITE_VECTOR, (param)pvFavoriteLineData);
+	DataCenter_GetFavoriteVectorService favoriteVectorService;
+	m_pModuleManager->CallService(SERVICE_VALUE__DATACENTER_GET_FAVORITE_VECTOR, (param)&favoriteVectorService);
+	std::vector<FAVORITELINEDATA>*	pvFavoriteData = favoriteVectorService.pvFavoriteData;
 
 	CoInitialize(NULL);
 
 	int nNumOfPlugIns = m_vPlugIns.size();
 	int *panCount = new int[nNumOfPlugIns];
 
-	m_vFavoriateLineData.clear();
+	pvFavoriteData->clear();
 
 	ZeroMemory(panCount, sizeof(int) * nNumOfPlugIns);
 	m_nSumFavorite = 0;
@@ -407,7 +407,7 @@ int PlugInModule::Run()
 		return 0;
 	}
 
-	m_vFavoriateLineData.resize(m_nSumFavorite);
+	pvFavoriteData->resize(m_nSumFavorite);
 
 	int nCurrentOffset = 0;
 
@@ -422,24 +422,24 @@ int PlugInModule::Run()
 		if( nFavoriteCount == 0)
 			continue;
 
-		pPlugIn->ExportFavoriteData(&m_vFavoriateLineData[nCurrentOffset], panCount[i]);
+		pPlugIn->ExportFavoriteData(&(*pvFavoriteData)[nCurrentOffset], panCount[i]);
 		nCurrentOffset += panCount[i];
 	}
 
-	Merge(&m_vFavoriateLineData[0], m_nSumFavorite, 0);
+	Merge(&(*pvFavoriteData)[0], m_nSumFavorite, 0);
 
-	std::vector<FAVORITELINEDATA>::iterator itr = m_vFavoriateLineData.begin();
-	for( ; itr != m_vFavoriateLineData.end();)
+	std::vector<FAVORITELINEDATA>::iterator itr = pvFavoriteData->begin();
+	for( ; itr !=  pvFavoriteData->end();)
 	{
 		if( (*itr).bDelete == true)
-			itr = m_vFavoriateLineData.erase(itr);
+			itr =  pvFavoriteData->erase(itr);
 		else
 			itr++;
 	}
 
-	m_nSumFavorite = m_vFavoriateLineData.size();
+	m_nSumFavorite =  pvFavoriteData->size();
 
-	Rearrange(&m_vFavoriateLineData[0], m_nSumFavorite);
+	Rearrange(&(*pvFavoriteData)[0], m_nSumFavorite);
 	
 	// 将合并后的数据导入到各个浏览器中
 	if (panCount)
@@ -472,11 +472,3 @@ void PlugInModule::OnThreadExit()
 {
 }
 
-void PlugInModule::OnService_GetFavoriteData(ServiceValue lServiceValue, param	lParam)
-{
-	PlugIn_GetFavoriteService* pGetFavoriteServicem = (PlugIn_GetFavoriteService*)lParam;
-	ASSERT( pGetFavoriteServicem != NULL);
-
-	pGetFavoriteServicem->pFavoriteData = &m_vFavoriateLineData[0];
-	pGetFavoriteServicem->nNum = m_vFavoriateLineData.size();
-}
