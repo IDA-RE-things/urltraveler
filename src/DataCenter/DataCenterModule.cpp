@@ -6,7 +6,7 @@ using namespace datacenter;
 namespace datacenter
 {
 	DataCenterModule*	g_DataCenterModule = NULL;
-	CDataCenterModuleFactory*	g_DataCenterModuleFactory = NULL;
+	DataCenterModuleFactory*	g_DataCenterModuleFactory = NULL;
 }
 
 // 导出借口实现
@@ -14,7 +14,7 @@ IModuleFactory*	GetModuleFactory()
 {
 	if( g_DataCenterModuleFactory == NULL)
 	{
-		g_DataCenterModuleFactory = new CDataCenterModuleFactory();
+		g_DataCenterModuleFactory = new DataCenterModuleFactory();
 		g_DataCenterModuleFactory->QueryModulePoint(1, (IModule*&)g_DataCenterModule);
 		
 		ASSERT( g_DataCenterModule != NULL);
@@ -42,6 +42,13 @@ DataCenterModule::~DataCenterModule()
 {
 
 }
+
+BEGIN_EVENT_MAP(DataCenterModule)
+END_EVENT_MAP()
+
+BEGIN_SERVICE_MAP(DataCenterModule)
+	ON_SERVICE(SERVICE_VALUE__DATACENTER_GET_FAVORITE_VECTOR, OnService_GetFavoriteVector)
+END_SERVICE_MAP()
 
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
@@ -111,4 +118,13 @@ int32 DataCenterModule::CallDirect(const param lparam, param wparam)
 void DataCenterModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
 {
 	return;
+}
+
+
+void	DataCenterModule::OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam)
+{
+	DataCenter_GetFavoriteVectorService* pGetFavoriteServiceVector = (DataCenter_GetFavoriteVectorService*)lParam;
+	ASSERT( pGetFavoriteServiceVector != NULL);
+
+	pGetFavoriteServiceVector->pvFavoriteData = &m_vFavoriteLineData;
 }
