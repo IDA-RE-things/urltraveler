@@ -3,6 +3,10 @@
 #include "SndaBase.h"
 #include "Module.h"
 #include "ModuleImp.h"
+#include "PlugIn.h"
+#include <vector>
+
+using namespace std;
 
 
 extern "C" 
@@ -13,6 +17,9 @@ extern "C"
 
 class DataCenterModule : public ModuleImpl
 {
+	DECLEAR_SERVICE_MAP(DataCenterModule)
+	DECLEAR_EVENT_MAP(DataCenterModule)
+
 public:
 	DataCenterModule();
 	~DataCenterModule();
@@ -70,12 +77,26 @@ public:
 	//		@param	pExtraInfo	需要释放的ExtraInfo数据
 	//----------------------------------------------------------------------------------------
 	void PaybackExtraInfo(uint32 valudId, void* pExtraInfo);
+
+protected:
+
+	void	OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam);
+
+protected:
+	
+	//	用以保存所有的收藏夹数据
+	std::vector<FAVORITELINEDATA>	m_vFavoriteLineData;
+
+	//	用以保存所有的历史数据
+	std::vector<HISTORYLINEDATA>	m_vHistoryLineData;
+
+
 };
 
-class CDataCenterModuleFactory : public ModuleFactoryImpl<DataCenterModule>{};
+class DataCenterModuleFactory : public ModuleFactoryImpl<DataCenterModule>{};
 
 namespace datacenter
 {
 	extern DataCenterModule*	g_DataCenterModule;
-	extern CDataCenterModuleFactory*	g_DataCenterModuleFactory;
+	extern DataCenterModuleFactory*	g_DataCenterModuleFactory;
 }

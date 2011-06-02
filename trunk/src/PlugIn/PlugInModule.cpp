@@ -202,6 +202,22 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		ReleasePlugInFactoryFunc pReleasePlugInFactoryFunc 
 			= reinterpret_cast<ReleasePlugInFactoryFunc>(GetProcAddress(exportplugin, "ReleasePlugInFactory")); 
 
+		if( pGetPlugInFactoryFunc == NULL)
+		{
+			std::wstring wstrModuleName = strPlugInPath;
+			wstrModuleName.append(L" DLL中找不到GetPlugInFactory函数失败");
+			MessageBoxW(NULL, wstrModuleName.c_str(), L"PlugIn加载失败", MB_OK);
+			continue;
+		}
+
+		if(pReleasePlugInFactoryFunc == NULL)
+		{
+			std::wstring wstrModuleName = strPlugInPath;
+			wstrModuleName.append(L" DLL中找不到ReleasePlugInFactory函数失败");
+			MessageBoxW(NULL, wstrModuleName.c_str(), L"PlugIn加载失败", MB_OK);
+			continue;
+		}
+
 		stPlugInInfo.pGetPlugInFactoryFunc = pGetPlugInFactoryFunc;
 		stPlugInInfo.pReleasePlugInFactoryFunc = pReleasePlugInFactoryFunc;
 
@@ -222,20 +238,19 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		if( bRet == FALSE)
 		{
 			std::wstring wstrModuleName = strPlugInPath;
-			wstrModuleName.append(L" 找不到QueryPlugInCounter函数失败");
+			wstrModuleName.append(L" QueryPlugInCounter函数返回失败");
 			MessageBoxW(NULL, wstrModuleName.c_str(), L"PlugIn加载失败", MB_OK);
 			continue ;
 		}
 
 		stPlugInInfo.pvPlugIn.resize(nPlugNum);
 
-
 		// 导出的所有的插件保存在std::vector<IPlugIn*>中
 		bRet = pPlugInFactory->QueryPlugInPoint(nPlugNum, stPlugInInfo.pvPlugIn[0]);
 		if( bRet == FALSE)
 		{
 			std::wstring wstrModuleName = strPlugInPath;
-			wstrModuleName.append(L" 找不到QueryPlugInPoint函数失败");
+			wstrModuleName.append(L" QueryPlugInPoint函数返回失败");
 			MessageBoxW(NULL, wstrModuleName.c_str(), L"PlugIn加载失败", MB_OK);
 			continue ;
 		}
@@ -261,7 +276,7 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 
 void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 {
-	std::vector<IPlugIn*>::iterator itrPlugIn = m_vPlugIns.begin();
+ 	std::vector<IPlugIn*>::iterator itrPlugIn = m_vPlugIns.begin();
 
 	for( ; itrPlugIn != m_vPlugIns.end(); )
 	{
@@ -357,6 +372,9 @@ void PlugInModule::OnThreadEntry()
 
 int PlugInModule::Run()
 {
+	std::vector<FAVORITELINEDATA>*	pvFavoriteLineData = NULL;
+	CallDirect(SERVICE_VALUE__DATACENTER_GET_FAVORITE_VECTOR, (param)pvFavoriteLineData);
+
 	CoInitialize(NULL);
 
 	int nNumOfPlugIns = m_vPlugIns.size();
