@@ -185,7 +185,7 @@ public:
     void EnableScrollBar(bool bEnableVertical = true, bool bEnableHorizontal = false);
     virtual CScrollBarUI* GetVerticalScrollBar() const;
     virtual CScrollBarUI* GetHorizontalScrollBar() const;
-	//  [6/2/2011 linjinming]
+	// 增加删除所有Item接口 [6/2/2011 linjinming]
 	void RemoveAllItems();
 
 protected:
