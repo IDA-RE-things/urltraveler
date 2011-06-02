@@ -845,6 +845,12 @@ CScrollBarUI* CListUI::GetHorizontalScrollBar() const
     return m_pList->GetHorizontalScrollBar();
 }
 
+void CListUI::RemoveAllItems()
+{
+	return m_pList->RemoveAll();
+
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 //
 //
