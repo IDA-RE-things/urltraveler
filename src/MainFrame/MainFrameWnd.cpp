@@ -58,13 +58,14 @@ void CFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 	}
 
 
-    CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+   /* ;
     pUserList->SetTextCallback(this);      
     for( int i = 0; i < 10; i++ ) {
         CListTextElementUI* pListElement = new CListTextElementUI;
         pUserList->Add(pListElement);
-    }
-
+    }*/
+	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+    pUserList->SetTextCallback(this);      
 }
 
 
@@ -139,6 +140,9 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 					int nId = itr->second;
 
 					m_vFavoriteNode.clear();
+
+					CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+					pUserList->RemoveAllItems();
 					
 					for( int i=0; i<m_nFavoriteNum; i++)
 					{
@@ -147,11 +151,12 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 						// р╤вс╫А╣Ц
 						if( pData->nPid == nId && pData->bFolder == false)
 						{
+							CListTextElementUI* pListElement = new CListTextElementUI;
+							pUserList->Add(pListElement);
 							m_vFavoriteNode.push_back(pData);
 						}
 					}
 
-					CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 					if( pUserList)
 					{
 						pUserList->SetItemTextStyle(DT_LEFT);

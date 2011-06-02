@@ -185,6 +185,8 @@ public:
     void EnableScrollBar(bool bEnableVertical = true, bool bEnableHorizontal = false);
     virtual CScrollBarUI* GetVerticalScrollBar() const;
     virtual CScrollBarUI* GetHorizontalScrollBar() const;
+	//  [6/2/2011 linjinming]
+	void RemoveAllItems();
 
 protected:
     bool m_bScrollSelect;
