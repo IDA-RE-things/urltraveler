@@ -2,9 +2,11 @@
 #include "MainFrameModule.h"
 #include "MainFrameDefine.h"
 #include "TrayIconDefine.h"
+#include "DataCenterDefine.h"
 #include "PlugInDefine.h"
 
 using namespace mainframe;
+using namespace datacenter;
 using namespace plugin;
 
 HMODULE	g_hModule = NULL;
@@ -204,8 +206,8 @@ void MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
 void MainFrameModule::OnMessage_PlugInLoaded(Message* pMessage)
 {
 	// 在界面上显示整个收藏夹树
-	PlugIn_GetFavoriteService favoriteData;
-	m_pModuleManager->CallService(SERVICE_VALUE_GET_FAVORITE_DATA,(param)&favoriteData); 
+	DataCenter_GetFavoriteService favoriteData;
+	m_pModuleManager->CallService(SERVICE_VALUE__DATACENTER_GET_FAVORITE_DATA,(param)&favoriteData); 
 
 	if( favoriteData.nNum > 0)
 	{

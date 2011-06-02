@@ -29,7 +29,6 @@ namespace plugin
 	// PlugIn能够处理的直接调用
 	enum E_PlugInServiceValue
 	{
-		SERVICE_VALUE_GET_FAVORITE_DATA	=	SERVICE_VALUE_PLUGIN_BEGIN,
 	};
 
 	//=================================================================//
@@ -49,16 +48,5 @@ namespace plugin
 	//=================================================================//
 	//                   PlugInManager中所使用到的Service				   //
 	//=================================================================//
-	struct PlugIn_GetFavoriteService
-	{
-		PlugIn_GetFavoriteService()
-		{
-			nNum = 0;
-			pFavoriteData	=	NULL;
-		}
-
-		int nNum;										//	
-		FAVORITELINEDATA*		pFavoriteData;			//	收藏夹的数据	
-	};
 
 };

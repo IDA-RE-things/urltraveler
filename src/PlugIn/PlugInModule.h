@@ -78,7 +78,7 @@ public:
 	//		@param	lparam			参数1
 	//		@param	rparam			参数2
 	//----------------------------------------------------------------------------------------
-	int32 CallDirect(const param lparam, param wparam);
+	int32 CallDirect(const ServiceValue lServiceValue, param wparam);
 
  	//----------------------------------------------------------------------------------------
 	//名称: PaybackExtraInfo
@@ -106,9 +106,6 @@ protected:
 	void	OnEvent_CheckPlugInWorked(Event* pEvent);
 
 protected:
-
-	void	OnService_GetFavoriteData(ServiceValue lServiceValue, param	lParam);
-
 
 private:
 
