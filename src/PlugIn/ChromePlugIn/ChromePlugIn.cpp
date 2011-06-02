@@ -240,14 +240,11 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 
 		if (pData[i].bFolder == true)
 		{
-			
-// 			Json::Value folder_obj;
-// 			MakeFolderNode(pData[i], folder_obj, nIndex);
+		
 		}
 		else
 		{
-// 			Json::Value url_obj;
-// 			MakeUrlNode(pData[i], url_obj, nIndex);
+
 		}
 	}
 
@@ -339,7 +336,7 @@ BOOL CChromePlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDAT
 }
 
 
-BOOL CChromePlugIn(FAVORITELINEDATA stData, Json::Value& folder_obj, int32& nIndex)
+BOOL CChromePlugIn::MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_obj, int32& nIndex)
 {
 	wchar_t szFormat[] = L" { \"children\": [ ],\
 				  \"date_added\": \"%s\",\
@@ -445,16 +442,29 @@ BOOL CChromePlugIn::EnumNode(Json::Value& folder_obj, int32& nCount)
 	return TRUE;
 }
 
-BOOL CChromePlugIn::MergeNode(PFAVORITELINEDATA pData, Json::Value& node_obj)
+BOOL CChromePlugIn::MergeNode(PFAVORITELINEDATA pData, Json::Value& node_obj, int32 nDepth)
 {
 	Json::Value array_obj;
-	for (int32 i = m_nMaxDepth; i >= 0; --i)
+
+	for (int32 k = nDepth; k >= 0; --k)
 	{
-		MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(i);
-		while (it != m_mapDepthInfo.upper_bound(i))
+		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(k); it != m_mapDepthInfo.upper_bound(k); ++it)
 		{
-			++it;
+			if (pData[(*it).second].bFolder == true)
+			{
+				Json::Value folder_obj;
+				MakeFolderNode(pData[(*it).second], folder_obj, ++m_nIndex);
+				m_vecNodeList.push_back(folder_obj);
+			}
+			else
+			{
+				Json::Value url_obj;
+				MakeUrlNode(pData[(*it).second], url_obj, ++m_nIndex);
+				m_vecNodeList.push_back(url_obj);
+			}
 		}
+
+
 	}
 
 	return TRUE;

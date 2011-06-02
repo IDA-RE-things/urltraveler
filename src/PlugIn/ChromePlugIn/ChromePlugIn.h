@@ -98,11 +98,12 @@ private:
 	BOOL MakeSpecialFolderNode(wchar_t *pszName, int32& nIndex, Json::Value& folder_obj);
 	BOOL EnumNode(Json::Value& folder_obj, int32& nCount);
 
-	BOOL MergeNode(PFAVORITELINEDATA pData, Json::Value& node_obj);
+	BOOL MergeNode(PFAVORITELINEDATA pData, Json::Value& node_obj, int32 nDepth);
 
 private:
 
 	int32 m_nMaxDepth;
+	int32 m_nIndex;
 	typedef std::vector<Json::Value> VEC_NODE_LIST;
 	VEC_NODE_LIST m_vecNodeList;
 
