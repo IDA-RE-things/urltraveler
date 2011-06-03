@@ -187,6 +187,7 @@ public:
     virtual CScrollBarUI* GetHorizontalScrollBar() const;
 	// 增加删除所有Item接口 [6/2/2011 linjinming]
 	void RemoveAllItems();
+	void Get
 
 protected:
     bool m_bScrollSelect;
