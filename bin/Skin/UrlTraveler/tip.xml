@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="400,400" sizebox="4,4,6,6" caption="0,0,0,30">
+    <VerticalLayout name="VerticalLayoutUI1" pos="5,12,427,450" width="422" height="438" bkcolor="#FFFFFF00" bordercolor="#00767676" />
+</Window>
