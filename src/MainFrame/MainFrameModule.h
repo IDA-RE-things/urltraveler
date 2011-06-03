@@ -1,8 +1,8 @@
 #pragma once
 
 #include "SndaBase.h"
-#include "Module.h"
-#include "ModuleImp.h"
+#include "ModuleImpl.h"
+#include "MainFrameWnd.h"
 
 extern "C" 
 {
@@ -84,16 +84,16 @@ protected:
 
 protected:
 
-	int32 OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam);
+	int32	OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam);
 
 private:
 	CMainFrameWnd* m_pMainFrame;
 };
 
-class CMainFrameModuleFactory : public ModuleFactoryImpl<MainFrameModule>{};
+class MainFrameModuleFactory : public ModuleFactoryImpl<MainFrameModule>{};
 
 namespace mainframe
 {
 	extern MainFrameModule*	g_MainFrameModule;
-	extern CMainFrameModuleFactory*	g_MainFrameModuleFactory;
+	extern MainFrameModuleFactory*	g_MainFrameModuleFactory;
 }

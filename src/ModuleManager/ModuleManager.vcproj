@@ -220,7 +220,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\ModuleImp.h"
+				RelativePath="..\..\include\ModuleImpl.h"
 				>
 			</File>
 			<File

@@ -2,7 +2,7 @@
 
 #include "SndaBase.h"
 #include "Module.h"
-#include "ModuleImp.h"
+#include "ModuleImpl.h"
 #include "PlugIn.h"
 #include <vector>
 #include "ThreadObject_i.h"

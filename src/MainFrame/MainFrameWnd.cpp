@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MainFrameWnd.h"
 #include "MainFrameDefine.h"
+#include "CurlHttp.h"
 
 CMainFrameWnd::CMainFrameWnd()
 {
@@ -152,12 +153,16 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 					}
 
 					if( pUserList)
-					{
-						//pUserList->SetItemShowHtml(false);
-						
+					{						
 						pUserList->SetItemTextStyle(pUserList->GetItemTextStyle() & ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
 						pUserList->Invalidate();
 					}
+
+					// 测试代码，此处从服务器拉取http://www.baidu.com/favicon.ico
+					string strIconBuffer = CurlHttp::Instance()->RequestGet(L"http://www.baidu.com/favicon.ico");
+					int nSize = strIconBuffer.size();
+
+
 				}
 			}
 		}

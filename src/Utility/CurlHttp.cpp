@@ -59,8 +59,8 @@ CurlHttp::~CurlHttp()
 */
 string CurlHttp::FindResponse(int nCookie)
 {
-	std::map<int, string>::iterator itr = m_mapResponse.find(nCookie);
-	if( itr == m_mapResponse.end())
+	std::map<int, string>::iterator itr = CurlHttp::Instance()->m_mapResponse.find(nCookie);
+	if( itr == CurlHttp::Instance()->m_mapResponse.end())
 		return "";
 
 	return itr->second;
@@ -141,7 +141,6 @@ string CurlHttp::RequestGet(wstring strUrl)
 	/* get all the response */	
 	string strResponse = FindResponse(nCookie);
 	return strResponse;
-
 }
 
 /**

@@ -8,6 +8,7 @@
 #include <map>
 #include "curl/curl.h"
 #include "Singleton.h"
+#include "stdafx.h"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ typedef struct ProxyInfo
 	wchar_t       szPassword[32];//√‹¬Î
 }PROXYINFO;
 
-class CurlHttp : public CSingleton<CurlHttp>
+class UTILITY_API CurlHttp : public CSingleton<CurlHttp>
 {
 public:
 	
