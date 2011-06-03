@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include "MainFrameModule.h"
 #include "MainFrameDefine.h"
+#include "MainFrameWnd.h"
 #include "TrayIconDefine.h"
 #include "DataCenterDefine.h"
 #include "PlugInDefine.h"
+#include "DatabaseDefine.h"
 
 using namespace mainframe;
 using namespace datacenter;
@@ -127,24 +129,6 @@ int32 MainFrameModule::CallDirect(const ServiceValue lServiceValue, param rparam
 	CALL_DIRECT(lServiceValue, rparam);
 }
 
-//----------------------------------------------------------------------------------------
-//名称: PaybackExtraInfo
-//描述: 某个模块如果有自定义的复杂的数据需要传给其余的模块，那么它可以构造一个ExtraInfo结构
-//	在其余的模块使用完毕后，该结构必须被释放，否则会造成内存泄露。释放必须由模块自身完成。
-//	某个模块都必须提供一个PaybackExtraInfo接口，释放自己的自定义的数据类型
-//参数: 
-//		@param	valudId			对应的pExtraInfo的值，内部根据该值进行对应的释放，该值只有模块自己理解
-//		@param	pExtraInfo	需要释放的ExtraInfo数据
-//----------------------------------------------------------------------------------------
-void MainFrameModule::PaybackExtraInfo(uint32 valueId, void* pExtraInfo)
-{
-	if( valueId == EVENT_VALUE_MAINFRAME_OPEN)
-	{
-		delete (MainFrame_OpenEvent*)pExtraInfo;
-	}
-
-	return;
-}
 
 void MainFrameModule::OnEvent_OpenMainDlg(Event* pEvent)
 {
@@ -183,7 +167,7 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 		return;
 	}
 
-	m_pMainFrame = new CFrameWnd();
+	m_pMainFrame = new CMainFrameWnd();
 	if( m_pMainFrame == NULL ) return;
 	m_pMainFrame->Create(NULL, L"网址漫游", UI_WNDSTYLE_DIALOG, 0);
 	m_pMainFrame->CenterWindow();
@@ -193,6 +177,14 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 	m_pModuleManager->PushEvent(
 		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_PLUGIN_LOAD_ALL,
 		MODULE_ID_PLUGIN));
+
+	database::Database_FavIconSaveEvent* pe = new database::Database_FavIconSaveEvent();
+	pe->srcMId = MODULE_ID_MAINFRAME;
+	STRNCPY(pe->szFavoriteUrl, L"http://www.baidu.com");
+	pe->hIcon = 0;
+	pe->m_pstExtraInfo = pe;
+	
+	m_pModuleManager->PushEvent(*pe);
 }
 
 void MainFrameModule::OnMessage_PreExit(Message* pMessage)

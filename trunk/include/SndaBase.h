@@ -12,7 +12,7 @@
 #define SNDACALL
 #endif
 
-#if !defined(interface)
+#ifndef interface
 #define interface	struct
 #endif
 

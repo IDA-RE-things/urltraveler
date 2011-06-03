@@ -1602,8 +1602,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         cchSize = cchLastGoodSize;                 
                     }
                     if( (uStyle & DT_END_ELLIPSIS) != 0 && cchChars > 2 ) {
-                        cchChars = cchLastGoodWord;
-                        cchSize = cchLastGoodSize;
+                        //cchChars = cchLastGoodWord - 3;
+                        //cchSize = cchLastGoodSize + 1;
                     }
                     bLineEnd = true;
                     cxMaxWidth = MAX(cxMaxWidth, pt.x);
@@ -1622,8 +1622,16 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             if( cchChars > 0 ) {				
                 ::GetTextExtentPoint32(hDC, pstrText, cchSize, &szText);
                 if( bDraw && bLineDraw ) {
-                    ::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize);
-                    if( pt.x >= rc.right && (uStyle & DT_END_ELLIPSIS) != 0 ) ::TextOut(hDC, rc.right - 10, ptPos.y, _T("..."), 3);
+					if (pt.x + szText.cx>= rc.right && uStyle & DT_END_ELLIPSIS)
+					{
+						::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize - 2);
+						::TextOut(hDC, rc.right - 20, ptPos.y, _T("..."), 3);
+					}
+					else
+					{
+						::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize);
+						if( pt.x + szText.cx>= rc.right && (uStyle & DT_END_ELLIPSIS) != 0 ) ::TextOut(hDC, rc.right - 20, ptPos.y, _T("..."), 3);
+					}
                 }
                 pt.x += szText.cx;
                 cxMaxWidth = MAX(cxMaxWidth, pt.x);
