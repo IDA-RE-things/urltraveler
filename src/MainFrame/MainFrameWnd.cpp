@@ -3,6 +3,7 @@
 #include "MainFrameDefine.h"
 #include "CurlHttp.h"
 #include "MainFrameModule.h"
+#include "TipWnd.h"
 
 CMainFrameWnd::CMainFrameWnd()
 {
@@ -148,6 +149,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 						if( pData->nPid == nId && pData->bFolder == false)
 						{
 							CListTextElementUI* pListElement = new CListTextElementUI;
+							pListElement->SetTag((UINT_PTR)pData);
 							pUserList->Add(pListElement);
 							m_vFavoriteNode.push_back(pData);
 						}
@@ -165,6 +167,29 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 
 
 				}
+
+				
+				
+			}
+		}
+	}
+	else if(msg.sType == L"itemselect")
+	{
+
+		if (msg.pSender->GetName() == L"favoritefilelist")
+		{
+			CListUI *pFavariteList = (CListUI *)msg.pSender;
+
+			CListElementUI *pItem = pFavariteList->GetSubItem(pFavariteList->GetCurSel());
+
+			if (pItem)
+			{
+				FAVORITELINEDATA *pData = (FAVORITELINEDATA *)pItem->GetTag();
+				CTipWnd *pTipWnd = new CTipWnd();
+
+				POINT pt1 = {msg.ptMouse.x, msg.ptMouse.y};
+				::ClientToScreen(*this, &pt1);
+				pTipWnd->Init(msg.pSender, CRect(pt1.x, pt1.y, pt1.x + 120, pt1.y + 82)); 
 			}
 		}
 	}
