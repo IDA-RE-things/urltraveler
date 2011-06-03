@@ -851,6 +851,11 @@ void CListUI::RemoveAllItems()
 
 }
 
+CListElementUI* CListUI::GetSubItem( int nIndex )
+{
+	return static_cast<CListElementUI *>(m_pList->GetItemAt(nIndex));
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 //
 //
