@@ -1,5 +1,6 @@
 // App.cpp : Defines the entry point for the application.
 //
+#pragma  once
 
 #include "stdafx.h"
 #include <objbase.h>
@@ -13,7 +14,6 @@
 #include "PlugIn.h"
 #include <map>
 #include <vector>
-
 
 using namespace std;
 using namespace DuiLib;

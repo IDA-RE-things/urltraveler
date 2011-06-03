@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef _MODULE_IMPL_H_
+#define _MODULE_IMPL_H_
+
 #include "SndaBase.h"
 #include "Module.h"
 
@@ -133,3 +136,5 @@ public:
 private:
 	T * m_pstIModule;
 };
+
+#endif

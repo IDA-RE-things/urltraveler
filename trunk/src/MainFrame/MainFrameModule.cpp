@@ -13,10 +13,11 @@ using namespace plugin;
 
 HMODULE	g_hModule = NULL;
 
+
 namespace mainframe
 {
 	MainFrameModule*	g_MainFrameModule = NULL;
-	CMainFrameModuleFactory*	g_MainFrameModuleFactory = NULL;
+	MainFrameModuleFactory*	g_MainFrameModuleFactory = NULL;
 }
 
 // 导出借口实现
@@ -24,7 +25,7 @@ IModuleFactory*	GetModuleFactory()
 {
 	if( g_MainFrameModuleFactory == NULL)
 	{
-		g_MainFrameModuleFactory = new CMainFrameModuleFactory();
+		g_MainFrameModuleFactory = new MainFrameModuleFactory();
 		g_MainFrameModuleFactory->QueryModulePoint(1, (IModule*&)g_MainFrameModule);
 
 		ASSERT( g_MainFrameModule != NULL);
