@@ -2,6 +2,7 @@
 #include "MainFrameWnd.h"
 #include "MainFrameDefine.h"
 #include "CurlHttp.h"
+#include "MainFrameModule.h"
 
 CMainFrameWnd::CMainFrameWnd()
 {

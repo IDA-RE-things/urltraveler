@@ -11,73 +11,51 @@ class ModuleImpl : public IModule
 {
 public:
 	ModuleImpl():m_pModuleManager(NULL){};
-	virtual ~ModuleImpl();
+	virtual ~ModuleImpl(){};
 
-	virtual BOOL Load(IModuleManager* pModuleManager);
-	virtual BOOL Unload();
+	virtual BOOL Load(IModuleManager* pModuleManager)
+	{
+		m_pModuleManager = pModuleManager;
+		return TRUE;
+	}
 
-	virtual  const wchar_t *  GetModuleName();
-	virtual void ProcessEvent(const Event& evt);
-	virtual void ProcessMessage(const Message& msg);
-	virtual int32 CallDirect(const param lparam, param wparam);
-	virtual void PaybackExtraInfo(uint32 valueId ,void * pExtraInfo );
+	virtual BOOL Unload()
+	{
+		m_pModuleManager = NULL;
+		return TRUE;
+	}
+
+	virtual  const wchar_t *  GetModuleName()
+	{
+		return L"ModuleImpl_Example";
+	}
+
+	virtual void ProcessEvent(const Event& evt){};
+	virtual void ProcessMessage(const Message& msg){};
+	virtual int32 CallDirect(const param lparam, param wparam){ return -1;}
+
+	virtual void PaybackExtraInfo(uint32 valueId ,void * pExtraInfo )
+	{
+		if(IsEventValue(valueId))
+		{
+			Event * pstEvent=static_cast<Event*>(pExtraInfo);
+			if(pstEvent->m_pstExtraInfo)
+				delete pstEvent->m_pstExtraInfo;
+		}
+		else if(IsMessageValue(valueId))
+		{
+			Message * pstMessage=static_cast<Message*>(pExtraInfo);
+			if(pstMessage->m_pstExtraInfo)
+				delete pstMessage->m_pstExtraInfo;
+		}
+	}
+
 
 	virtual IModuleManager*	GetModuleManager() { return m_pModuleManager;}
 
 protected:
 	IModuleManager*	m_pModuleManager;
 };
-
-ModuleImpl::~ModuleImpl()
-{
-}
-
-BOOL ModuleImpl::Load(IModuleManager* pModuleManager)
-{
-	m_pModuleManager = pModuleManager;
-	return TRUE;
-}
-
-BOOL ModuleImpl::Unload()
-{
-	m_pModuleManager = NULL;
-	return TRUE;
-}
-
-const wchar_t *  ModuleImpl::GetModuleName()
-{
-	return L"ModuleImpl_Example";
-}
-
-void ModuleImpl::ProcessEvent(const Event& evt)
-{
-}
-
-void ModuleImpl::ProcessMessage(const Message& msg)
-{
-}
-
-int32 ModuleImpl::CallDirect(const param lparam, param wparam)
-{
-	return -1;
-}
-
-void ModuleImpl::PaybackExtraInfo(uint32 valueId ,void * pExtraInfo )
-{
-	if(IsEventValue(valueId))
-	{
-		Event * pstEvent=static_cast<Event*>(pExtraInfo);
-		if(pstEvent->m_pstExtraInfo)
-			delete pstEvent->m_pstExtraInfo;
-	}
-	else if(IsMessageValue(valueId))
-	{
-		Message * pstMessage=static_cast<Message*>(pExtraInfo);
-		if(pstMessage->m_pstExtraInfo)
-			delete pstMessage->m_pstExtraInfo;
-	}
-}
-
 
 // 
 template <typename T>
