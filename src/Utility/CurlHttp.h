@@ -7,10 +7,27 @@
 #include <string>
 #include <map>
 #include "curl/curl.h"
-#include "Sigleton.h"
-#include "IdwDefine.h"
+#include "Singleton.h"
 
 using namespace std;
+
+//代理类型
+enum EIdwProxyType
+{
+	PT_HTTP = 0,
+	PT_SOCK4,
+	PT_SOCK5,
+};
+
+typedef struct ProxyInfo
+{
+	EIdwProxyType eProxyType;//代理服务器类型
+	wchar_t       szAddress[16];//代理服务器地址
+	short         uPort;//代理服务器端口
+	bool          bAuth;//是否需要认证用户名和密码
+	wchar_t       szUsername[32];//用户名
+	wchar_t       szPassword[32];//密码
+}PROXYINFO;
 
 class CurlHttp : public CSingleton<CurlHttp>
 {
@@ -75,7 +92,7 @@ public:
 	* @function 查找给定请求的响应
 	* @param	nCookie	给定的请求
 	*/
-	BOOL SetProxy(idw::PROXYINFO stProxyInfo);
+	BOOL SetProxy(PROXYINFO stProxyInfo);
 	BOOL DisableProxy();
 
 	/* 存储不同请求的响应报文*/

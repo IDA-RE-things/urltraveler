@@ -1,3 +1,4 @@
+#include "StdAfx.h"
 #include "CurlHttp.h"
 #include "assert.h"
 #include "StringHelper.h"
@@ -19,7 +20,7 @@ size_t ReadData(void *pBuffer, size_t size, size_t nmemb, void *pUuserp)
 	if( pUuserp == NULL)
 		return 0;
 
-	CurlHttp* pClient = CurlHttp::GetInstance();
+	CurlHttp* pClient = CurlHttp::Instance();
 
 	int nCookie = *(int*)(pUuserp);
 	
@@ -184,7 +185,7 @@ string CurlHttp::RequestPost(wstring strUrl)
 	return strResponse;
 }
 
-BOOL CurlHttp::SetProxy( idw::PROXYINFO stProxyInfo )
+BOOL CurlHttp::SetProxy(PROXYINFO stProxyInfo )
 {
 	/*
 	 *   - http://[username:password@]proxy:port
@@ -198,15 +199,15 @@ BOOL CurlHttp::SetProxy( idw::PROXYINFO stProxyInfo )
 
 	switch(stProxyInfo.eProxyType)
 	{
-	case idw::PT_HTTP:
+	case PT_HTTP:
 		pszProxyType = "http";
 		curl_easy_setopt(m_pCurl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP); 
 		break;
-	case idw::PT_SOCK4:
+	case PT_SOCK4:
 		pszProxyType = "socks4";
 		curl_easy_setopt(m_pCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4); 
 		break;
-	case idw::PT_SOCK5:
+	case PT_SOCK5:
 		pszProxyType = "socks5";
 		curl_easy_setopt(m_pCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5); 
 		break;
