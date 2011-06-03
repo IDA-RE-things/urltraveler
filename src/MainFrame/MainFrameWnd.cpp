@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "MainFrameWnd.h"
+#include "MainFrameDefine.h"
 
-CFrameWnd::CFrameWnd()
+CMainFrameWnd::CMainFrameWnd()
 {
 	m_pLoginFrame = NULL;
 
@@ -9,12 +10,11 @@ CFrameWnd::CFrameWnd()
 	m_pFavoriteData	= NULL;
 }
 
-void CFrameWnd::OnPrepare() 
+void CMainFrameWnd::OnPrepare() 
 { 
-
 }
 
-void CFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
+void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 {	 
 	m_nFavoriteNum = nNum;
 	m_pFavoriteData = pFavoriteData;
@@ -57,19 +57,12 @@ void CFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 		}
 	}
 
-
-   /* ;
-    pUserList->SetTextCallback(this);      
-    for( int i = 0; i < 10; i++ ) {
-        CListTextElementUI* pListElement = new CListTextElementUI;
-        pUserList->Add(pListElement);
-    }*/
 	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
     pUserList->SetTextCallback(this);      
 }
 
 
-void CFrameWnd::Notify(TNotifyUI& msg)
+void CMainFrameWnd::Notify(TNotifyUI& msg)
 {
 	if( msg.sType == _T("windowinit") ) OnPrepare();
 	else if( msg.sType == _T("click") ) {
@@ -129,8 +122,9 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 			    ::GetCursorPos(&pt);
 			    ::ScreenToClient(m_pm.GetPaintWindow(), &pt);
 			    pt.x -= msg.pSender->GetX();
+				pt.y -= msg.pSender->GetY();
 			    SIZE sz = pFavoriteTree->GetExpanderSizeX(node);
-			    if( pt.x >= sz.cx && pt.x < sz.cy )                     
+			    if( pt.x >= sz.cx && pt.y < sz.cy )                     
 					pFavoriteTree->SetChildVisible(node, !node->data()._child_visible);
 
 				// 得到该结点对应的nId
@@ -159,7 +153,9 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 
 					if( pUserList)
 					{
-						pUserList->SetItemTextStyle(DT_LEFT);
+						//pUserList->SetItemShowHtml(false);
+						
+						pUserList->SetItemTextStyle(pUserList->GetItemTextStyle() & ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
 						pUserList->Invalidate();
 					}
 				}
@@ -168,7 +164,7 @@ void CFrameWnd::Notify(TNotifyUI& msg)
 	}
 }
 
-LRESULT CFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
 	styleValue &= ~WS_CAPTION;
@@ -186,13 +182,13 @@ LRESULT CFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 	return 0;
 }
 
-LRESULT CFrameWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
 	return 0;
 }
 
-LRESULT CFrameWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	::PostQuitMessage(0L);
 
@@ -200,23 +196,23 @@ LRESULT CFrameWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 	return 0;
 }
 
-LRESULT CFrameWnd::OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	if( ::IsIconic(*this) ) bHandled = FALSE;
 	return (wParam == 0) ? TRUE : FALSE;
 }
 
-LRESULT CFrameWnd::OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	return 0;
 }
 
-LRESULT CFrameWnd::OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	return 0;
 }
 
-LRESULT CFrameWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	POINT pt; pt.x = GET_X_LPARAM(lParam); pt.y = GET_Y_LPARAM(lParam);
 	::ScreenToClient(*this, &pt);
@@ -237,7 +233,7 @@ LRESULT CFrameWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 	return HTCLIENT;
 }
 
-LRESULT CFrameWnd::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	SIZE szRoundCorner = m_pm.GetRoundCorner();
 	if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
@@ -254,7 +250,7 @@ LRESULT CFrameWnd::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 	return 0;
 }
 
-LRESULT CFrameWnd::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	MONITORINFO oMonitor = {};
 	oMonitor.cbSize = sizeof(oMonitor);
@@ -272,7 +268,7 @@ LRESULT CFrameWnd::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	return 0;
 }
 
-LRESULT CFrameWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	// 有时会在收到WM_NCDESTROY后收到wParam为SC_CLOSE的WM_SYSCOMMAND
 	if( wParam == SC_CLOSE ) {
@@ -299,7 +295,7 @@ LRESULT CFrameWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	return lRes;
 }
 
-LRESULT CFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 		int wmId    = LOWORD(wParam);
 		int wmEvent = HIWORD(wParam);
@@ -332,7 +328,7 @@ LRESULT CFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 }
 
 
-LRESULT CFrameWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CMainFrameWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lRes = 0;
 	BOOL bHandled = TRUE;
@@ -357,7 +353,7 @@ LRESULT CFrameWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 // 提供表单中的数据
-LPCTSTR CFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubItem)
+LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubItem)
 {
     if( pControl->GetParent()->GetParent()->GetName() == _T("favoritefilelist") ) 
 	{

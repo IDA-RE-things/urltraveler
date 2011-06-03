@@ -82,12 +82,17 @@ static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM wParam, L
 						MakeMessage<MODULE_ID_TRAYICON>()(MESSAGE_VALUE_CORE_PRE_APP_EXIT));
 
 					// 通知正式退出
+/*
 					Event e;
 					e.eventValue = EVENT_VALUE_CORE_MAIN_LOOP_EXIT;
 					e.srcMId = MODULE_ID_TRAYICON;
 					e.desMId = MODULE_ID_CORE;
 					pTrayIconModule->GetModuleManager()->PushEvent(e);
+*/
 
+					pTrayIconModule->GetModuleManager()->PushEvent(
+						MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
+							MODULE_ID_CORE));
 					break;
 				}
 
@@ -237,21 +242,6 @@ int32 TrayIconModule::CallDirect(const param lparam, param wparam)
 	return -1;
 }
 
-//----------------------------------------------------------------------------------------
-//名称: PaybackExtraInfo
-//描述: 某个模块如果有自定义的复杂的数据需要传给其余的模块，那么它可以构造一个ExtraInfo结构
-//	在其余的模块使用完毕后，该结构必须被释放，否则会造成内存泄露。释放必须由模块自身完成。
-//	某个模块都必须提供一个PaybackExtraInfo接口，释放自己的自定义的数据类型
-//参数: 
-//		@param	valudId			对应的pExtraInfo的值，内部根据该值进行对应的释放，该值只有模块自己理解
-//		@param	pExtraInfo	需要释放的ExtraInfo数据
-//----------------------------------------------------------------------------------------
-void TrayIconModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
-{
-
-	return;
-}
-
 void TrayIconModule::OnTrayEvent(WPARAM w, LPARAM l)
 {
 	uint32 uMsgId = l;
@@ -318,5 +308,3 @@ void TrayIconModule::OnMessage_PreExit(Message* pMessage)
 {
 
 }
-
-

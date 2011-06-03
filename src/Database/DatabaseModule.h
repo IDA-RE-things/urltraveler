@@ -5,6 +5,7 @@
 #include "ModuleImp.h"
 #include "PlugIn.h"
 #include <vector>
+#include <CppSQLite3/CppSQLite3.h>
 
 using namespace std;
 
@@ -15,14 +16,14 @@ extern "C"
 	DLLEXPORT void	ReleaseModuleFactory( IModuleFactory*);
 }
 
-class DataCenterModule : public ModuleImpl
+class DatabaseModule : public ModuleImpl
 {
-	DECLEAR_SERVICE_MAP(DataCenterModule)
-	DECLEAR_EVENT_MAP(DataCenterModule)
+	DECLEAR_SERVICE_MAP(DatabaseModule)
+	DECLEAR_EVENT_MAP(DatabaseModule)
 
 public:
-	DataCenterModule();
-	~DataCenterModule();
+	DatabaseModule();
+	~DatabaseModule();
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetModuleName
@@ -69,25 +70,23 @@ public:
 
 protected:
 
-	void	OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam);
-	void	OnService_GetFavoriteData(ServiceValue lServiceValue, param	lParam);
+	void OnEvent_SaveFavoriteIcon(Event* evt);
 
 
 protected:
-	
-	//	用以保存所有的收藏夹数据
-	std::vector<FAVORITELINEDATA>	m_vFavoriteLineData;
 
-	//	用以保存所有的历史数据
-	std::vector<HISTORYLINEDATA>	m_vHistoryLineData;
+	CppSQLite3DB&	OpenFavoriteDB();	
+	bool	PrepareFavoriteTable();
 
+protected:
 
+	CppSQLite3DB	m_dbFavorite;			//	收藏夹相关的数据库内容
 };
 
-class DataCenterModuleFactory : public ModuleFactoryImpl<DataCenterModule>{};
+class DatabaseModuleFactory : public ModuleFactoryImpl<DatabaseModule>{};
 
-namespace datacenter
+namespace database
 {
-	extern DataCenterModule*	g_DataCenterModule;
-	extern DataCenterModuleFactory*	g_DataCenterModuleFactory;
+	extern DatabaseModule*	g_DatabaseModule;
+	extern DatabaseModuleFactory*	g_DatabaseModuleFactory;
 }

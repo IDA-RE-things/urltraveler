@@ -98,17 +98,3 @@ int32 SettingModule::CallDirect(const param lparam, param wparam)
 {
 	return -1;
 }
-
-//----------------------------------------------------------------------------------------
-//名称: PaybackExtraInfo
-//描述: 某个模块如果有自定义的复杂的数据需要传给其余的模块，那么它可以构造一个ExtraInfo结构
-//	在其余的模块使用完毕后，该结构必须被释放，否则会造成内存泄露。释放必须由模块自身完成。
-//	某个模块都必须提供一个PaybackExtraInfo接口，释放自己的自定义的数据类型
-//参数: 
-//		@param	valudId			对应的pExtraInfo的值，内部根据该值进行对应的释放，该值只有模块自己理解
-//		@param	pExtraInfo	需要释放的ExtraInfo数据
-//----------------------------------------------------------------------------------------
-void SettingModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
-{
-	return;
-}

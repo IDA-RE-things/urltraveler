@@ -14,15 +14,16 @@
 #include <map>
 #include <vector>
 
+
 using namespace std;
 using namespace DuiLib;
 
 extern HMODULE	g_hModule;
 
-class CFrameWnd : public CWindowWnd, public INotifyUI, public IListCallbackUI
+class CMainFrameWnd : public CWindowWnd, public INotifyUI, public IListCallbackUI
 {
 public:
-	CFrameWnd();
+	CMainFrameWnd();
 	LPCTSTR GetWindowClassName() const { return _T("UIMainFrame"); };
 	UINT GetClassStyle() const { return CS_DBLCLKS; };
 	void OnFinalMessage(HWND /*hWnd*/) { delete this; };
