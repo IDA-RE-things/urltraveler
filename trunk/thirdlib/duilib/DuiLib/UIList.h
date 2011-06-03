@@ -85,6 +85,7 @@ public:
 
 class CListBodyUI;
 class CListHeaderUI;
+class CListElementUI;
 
 class UILIB_API CListUI : public CVerticalLayoutUI, public IListUI
 {
@@ -187,7 +188,7 @@ public:
     virtual CScrollBarUI* GetHorizontalScrollBar() const;
 	// 增加删除所有Item接口 [6/2/2011 linjinming]
 	void RemoveAllItems();
-	void Get
+	CListElementUI* GetSubItem(int nIndex);
 
 protected:
     bool m_bScrollSelect;

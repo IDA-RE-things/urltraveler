@@ -1744,7 +1744,7 @@ const TImageInfo *CPaintManagerUI::AddIcon(LPCTSTR szIconName, HICON hIcon)
 		return NULL;
 	}
 
-	TImageInfo* data = new TImageInfo;
+	data = new TImageInfo;
 	data->hBitmap = csIconInfo.hbmColor;
 	data->nX = csIconInfo.xHotspot * 2;
 	data->nY = csIconInfo.yHotspot * 2;
