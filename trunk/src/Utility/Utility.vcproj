@@ -522,6 +522,18 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Httpclient"
+			>
+			<File
+				RelativePath=".\CurlHttp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CurlHttp.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
