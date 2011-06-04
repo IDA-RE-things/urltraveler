@@ -530,6 +530,18 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="ImageHelper"
+			>
+			<File
+				RelativePath=".\ImageHelper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ImageHelper.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
