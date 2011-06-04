@@ -15,6 +15,7 @@ CMainFrameWnd::CMainFrameWnd()
 
 void CMainFrameWnd::OnPrepare() 
 { 
+	m_pm.AddIcon(L"icon.test", LoadIcon(NULL, MAKEINTRESOURCE(IDI_INFORMATION)));
 }
 
 void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
@@ -393,7 +394,7 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 
 		if( iIndex <= m_vFavoriteNode.size() -1)
 		{
-			if( iSubItem == 0 ) return _T("<i vip.png>");
+			if( iSubItem == 0 ) return _T("<i icon.test>");
 			if( iSubItem == 1 ) return m_vFavoriteNode[iIndex]->szTitle;
 			if( iSubItem == 2 ) return m_vFavoriteNode[iIndex]->szUrl;
 		}
