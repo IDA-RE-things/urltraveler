@@ -128,7 +128,8 @@ HICON ImageHelper::CreateIconFromBuffer( const LPBYTE lpBuf, unsigned int nSize,
 	int j = 0;
 	/* Assign icon directory entries from buffer */
 	LPICONDIRENTRY lpIDE = (LPICONDIRENTRY)(&lpBuf[bufferIndex]);
-
+	LPICONDIRENTRY lpSelectEntry = NULL;
+	//select the best qulify
 	while (i < imageNumber)
 	{
 		if (lpIDE->bWidth != nIconSize || lpIDE->bWidth != nIconSize)
@@ -138,33 +139,46 @@ HICON ImageHelper::CreateIconFromBuffer( const LPBYTE lpBuf, unsigned int nSize,
 			continue;
 		}
 
+		if (lpSelectEntry == NULL)
+		{
+			lpSelectEntry = lpIDE;
+		}
+		else
+		{
+			if (lpSelectEntry->wBitCount < lpIDE->wBitCount)
+			{
+				lpSelectEntry = lpIDE;
+			}
+		}
+
+		i++;
+		lpIDE++;
+	}
+
+	if (lpSelectEntry)
+	{
 		ICONIMAGE IconImage;
-		IconImage.dwNumBytes = lpIDE->dwBytesInRes;
+		IconImage.dwNumBytes = lpSelectEntry->dwBytesInRes;
 
 		/* Seek to beginning of this image */
-		if (lpIDE->dwImageOffset > nSize) {
+		if (lpSelectEntry->dwImageOffset > nSize) {
 			return NULL;
 		}
 
-		bufferIndex = lpIDE->dwImageOffset;
+		bufferIndex = lpSelectEntry->dwImageOffset;
 
 		/* Read it in */
-		if ((bufferIndex + lpIDE->dwBytesInRes) > nSize) {
+		if ((bufferIndex + lpSelectEntry->dwBytesInRes) > nSize) {
 			return NULL;
 		}
 
 		IconImage.lpBits = &lpBuf[bufferIndex];
-		bufferIndex += lpIDE->dwBytesInRes;
-
 
 		/* It failed, odds are good we're on NT so try the non-Ex way */
 		/* We would break on NT if we try with a 16bpp image */
 		if (((LPBITMAPINFO)IconImage.lpBits)->bmiHeader.biBitCount != 16) {
 			hIcon = CreateIconFromResourceEx(IconImage.lpBits, IconImage.dwNumBytes, TRUE, 0x00030000, lpIDE->bWidth, lpIDE->bHeight, 0);
-			break;
 		}
-
-		i++;
 	}
 
 	return hIcon;

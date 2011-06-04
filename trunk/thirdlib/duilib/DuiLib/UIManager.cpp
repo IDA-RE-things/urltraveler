@@ -1742,11 +1742,6 @@ const TImageInfo *CPaintManagerUI::AddIcon16(LPCTSTR szIconName, HICON hIcon)
 		return NULL;
 	}
 
-	if (stIconInfo.xHotspot != 8 || stIconInfo.yHotspot != 8)
-	{
-		return NULL;
-	}
-
 	data = new TImageInfo;
 	data->hBitmap = NULL;//csIconInfo.hbmColor;
 	data->hIcon = hIcon;
@@ -1770,11 +1765,6 @@ const TImageInfo* CPaintManagerUI::AddIcon32( LPCTSTR szIconName, HICON hIcon )
 	ICONINFO stIconInfo;
 
 	if (!GetIconInfo(hIcon, &stIconInfo))
-	{
-		return NULL;
-	}
-
-	if (stIconInfo.xHotspot != 16 || stIconInfo.yHotspot != 16)
 	{
 		return NULL;
 	}
