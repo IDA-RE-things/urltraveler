@@ -209,8 +209,8 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		{
 			if (m_pTipWnd)
 			{
-				m_pTipWnd->SendMessage(WM_CLOSE, 0, 0);
-				m_pTipWnd = NULL;
+				//m_pTipWnd->SendMessage(WM_CLOSE, 0, 0);
+				//m_pTipWnd = NULL;
 			}
 		}
 	}
