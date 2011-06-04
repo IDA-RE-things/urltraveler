@@ -155,9 +155,7 @@ public:
 		m_pThis->m_pm.RemoveImage(L"shuoluetu");
 		m_pThis->m_pm.AddImage(L"shuoluetu", hBitmap, m_pThis->m_nImageWidth, m_pThis->m_nImageHeight);
 		pRoot = m_pThis->m_pm.GetRoot();
-
 		RECT rc = pRoot->GetPos();
-
 		CTextUI *image = static_cast<CTextUI *>(m_pThis->m_pm.FindControl(L"TextUI1"));
 		rc.bottom = m_pThis->m_nImageHeight;
 		rc.right = m_pThis->m_nImageWidth; 
@@ -171,7 +169,7 @@ public:
 	{
 		m_pThis->m_nImageHeight = *pnHeight;
 		m_pThis->m_nImageWidth = *pnWidth;
-		m_pThis->ResizeClient(*pnWidth, *pnHeight);
+		m_pThis->ResizeClient(430, 400);
 	}
 
 	virtual int Run()
