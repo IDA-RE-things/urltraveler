@@ -45,7 +45,8 @@ public:
 	LRESULT OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
+protected:
+	bool GetRemoteIcon(wstring strUrl, int nRow);
 public:
 	CPaintManagerUI m_pm;
 

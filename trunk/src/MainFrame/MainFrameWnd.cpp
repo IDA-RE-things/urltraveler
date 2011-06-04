@@ -140,6 +140,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 
 					CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 					pUserList->RemoveAllItems();
+					int j = 0;
 					
 					for( int i=0; i<m_nFavoriteNum; i++)
 					{
@@ -148,10 +149,14 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 						// 叶子结点
 						if( pData->nPid == nId && pData->bFolder == false)
 						{
+							// 测试代码，此处从服务器拉取http://www.baidu.com/favicon.ico
+							GetRemoteIcon(pData->szUrl, j);
+
 							CListTextElementUI* pListElement = new CListTextElementUI;
 							pListElement->SetTag((UINT_PTR)pData);
 							pUserList->Add(pListElement);
 							m_vFavoriteNode.push_back(pData);
+							j++;
 						}
 					}
 
@@ -160,16 +165,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 						pUserList->SetItemTextStyle(pUserList->GetItemTextStyle() & ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
 						pUserList->Invalidate();
 					}
-
-					// 测试代码，此处从服务器拉取http://www.baidu.com/favicon.ico
-					string strIconBuffer = CurlHttp::Instance()->RequestGet(L"http://www.baidu.com/favicon.ico");
-					int nSize = strIconBuffer.size();
-					m_pm.AddIcon(L"icon.test", (LPBYTE)strIconBuffer.c_str(), nSize);
-
 				}
-
-				
-				
 			}
 		}
 	}
@@ -393,7 +389,17 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 
 		if( iIndex <= m_vFavoriteNode.size() -1)
 		{
-			if( iSubItem == 0 ) return _T("<i icon.test>");
+			if( iSubItem == 0 )
+			{
+				wstring strIconName;
+				wchar_t szRow[5] = {0};
+				_ltow(iIndex, szRow, 10);
+				strIconName = L"<i favicon";
+				strIconName += szRow;
+				strIconName += L".ico>";
+
+				return _wcsdup(strIconName.c_str());
+			}
 			if( iSubItem == 1 ) return m_vFavoriteNode[iIndex]->szTitle;
 			if( iSubItem == 2 ) return m_vFavoriteNode[iIndex]->szUrl;
 		}
@@ -401,4 +407,46 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
     }
 
     return _T("");
+}
+
+bool CMainFrameWnd::GetRemoteIcon(wstring strUrl, int nRow)
+{
+	int i = strUrl.find(L".com.cn");
+	int j = 0;
+	wstring strFixUrl;
+	wstring strIconName;
+
+	if (i != -1)
+	{
+		j = strUrl.find(L".");
+		strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".com.cn") - j) + L"/favicon.ico";
+		goto Fetch;
+	}
+
+	i = strUrl.find(L".com");
+	if (i != -1)
+	{
+		j = strUrl.find(L".");
+		strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".com") - j) + L"/favicon.ico";
+	}
+	else
+	{
+		return false;
+	}
+Fetch:	
+	string strIconBuffer = CurlHttp::Instance()->RequestGet(strFixUrl);
+	int nSize = strIconBuffer.size();
+
+	if (nSize != 0)
+	{
+		wchar_t szRow[5] = {0};
+		_ltow(nRow, szRow, 10);
+		strIconName = L"favicon";
+		strIconName += szRow;
+		strIconName += L".ico";
+		m_pm.RemoveImage(strIconName.c_str());
+		return m_pm.AddIcon(strIconName.c_str(), (LPBYTE)strIconBuffer.c_str(), nSize) != NULL;
+	}
+
+	return false;
 }
