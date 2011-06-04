@@ -411,23 +411,142 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 
 bool CMainFrameWnd::GetRemoteIcon(wstring strUrl, int nRow)
 {
-	int i = strUrl.find(L".com.cn");
 	int j = 0;
 	wstring strFixUrl;
 	wstring strIconName;
 
+	int i = strUrl.find(L".com.cn");
+
 	if (i != -1)
 	{
-		j = strUrl.find(L".");
-		strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".com.cn") - j) + L"/favicon.ico";
+		j = strUrl.rfind(L".", i - 1);
+		if (j == -1)
+		{
+			j = strUrl.rfind(L"http://", i - 1);
+
+			//≥¢ ‘≤È’“http://
+			if (j != -1)
+			{
+				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"http://"), i + wcslen(L".com.cn") - j - wcslen(L"http://")) + L"/favicon.ico";
+				goto Fetch;
+			}
+
+			//≥¢ ‘≤È’“ «∑Ò”–https://
+			j = strUrl.rfind(L"https://", i - 1);
+
+			if (j != -1)
+			{
+				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"https://"), i + wcslen(L".com.cn") - j - wcslen(L"https://")) + L"/favicon.ico";
+				goto Fetch;
+			}
+
+			strFixUrl = L"http://www." + strUrl.substr(0, i + wcslen(L".com.cn")) + L"/favicon.ico";
+		}
+		else
+		{
+			strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".com.cn") - j) + L"/favicon.ico";
+		}
+		goto Fetch;
+	}
+
+	i = strUrl.find(L".cn");
+
+	if (i != -1)
+	{
+		j = strUrl.rfind(L".", i - 1);
+		if (j == -1)
+		{
+			j = strUrl.rfind(L"http://", i - 1);
+
+			//≥¢ ‘≤È’“http://
+			if (j != -1)
+			{
+				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"http://"), i + wcslen(L".cn") - j - wcslen(L"http://")) + L"/favicon.ico";
+				goto Fetch;
+			}
+
+			//≥¢ ‘≤È’“ «∑Ò”–https://
+			j = strUrl.rfind(L"https://", i - 1);
+
+			if (j != -1)
+			{
+				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"https://"), i + wcslen(L".cn") - j - wcslen(L"https://")) + L"/favicon.ico";
+				goto Fetch;
+			}
+
+			strFixUrl = L"http://www." + strUrl.substr(0, i + wcslen(L".cn")) + L"/favicon.ico";
+		}
+		else
+		{
+			strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".cn") - j) + L"/favicon.ico";
+		}
 		goto Fetch;
 	}
 
 	i = strUrl.find(L".com");
 	if (i != -1)
 	{
-		j = strUrl.find(L".");
-		strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".com") - j) + L"/favicon.ico";
+		j = strUrl.rfind(L".", i - 1);
+		if (j == -1)
+		{
+			j = strUrl.rfind(L"http://", i - 1);
+
+			//≥¢ ‘≤È’“http://
+			if (j != -1)
+			{
+				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"http://"), i + wcslen(L".com") - j - wcslen(L"http://")) + L"/favicon.ico";
+				goto Fetch;
+			}
+
+			//≥¢ ‘≤È’“ «∑Ò”–https://
+			j = strUrl.rfind(L"https://", i - 1);
+
+			if (j != -1)
+			{
+				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"https://"), i + wcslen(L".com") - j - wcslen(L"https://")) + L"/favicon.ico";
+				goto Fetch;
+			}
+
+			strFixUrl = L"http://www." + strUrl.substr(0, i + wcslen(L".com")) + L"/favicon.ico";
+		}
+		else
+		{
+			strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".com") - j) + L"/favicon.ico";
+		}
+		goto Fetch;
+	}
+
+	i = strUrl.find(L".net");
+	if (i != -1)
+	{
+		j = strUrl.rfind(L".", i - 1);
+		if (j == -1)
+		{
+			j = strUrl.rfind(L"http://", i - 1);
+
+			//≥¢ ‘≤È’“http://
+			if (j != -1)
+			{
+				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"http://"), i + wcslen(L".net") - j - wcslen(L"http://")) + L"/favicon.ico";
+				goto Fetch;
+			}
+
+			//≥¢ ‘≤È’“ «∑Ò”–https://
+			j = strUrl.rfind(L"https://", i - 1);
+
+			if (j != -1)
+			{
+				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"https://"), i + wcslen(L".net") - j - wcslen(L"https://")) + L"/favicon.ico";
+				goto Fetch;
+			}
+
+			strFixUrl = L"http://www." + strUrl.substr(0, i + wcslen(L".net")) + L"/favicon.ico";
+		}
+		else
+		{
+			strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".net") - j) + L"/favicon.ico";
+		}
+		goto Fetch;
 	}
 Fetch:	
 	string strIconBuffer;
