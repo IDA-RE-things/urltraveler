@@ -24,22 +24,18 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 
 	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
 
+	wstring wstrText = L"{x 4}{x 4}";
+	wstrText += L"收藏夹";
+
+	TreeListUI::Node* pNode = pFavoriteTree->AddNode(wstrText.c_str());
+	m_mapIdNode[0] = pNode;
+	m_mapNodeId[pNode] = 0;
+
 	for( int i=0; i<m_nFavoriteNum; i++)
 	{
 		FAVORITELINEDATA* pData = &m_pFavoriteData[i];
-
-		// 根目录结点
-		if( pData != NULL && pData->bFolder == true && pData->nPid == 0)
-		{
-			wstring wstrText = L"{x 4}{x 4}";
-			wstrText += pData->szTitle;
-
-			TreeListUI::Node* pNode = pFavoriteTree->AddNode(wstrText.c_str());
-			m_mapIdNode[pData->nId] = pNode;
-			m_mapNodeId[pNode] = pData->nId;
-		}
-		// 如果不是根结点
-		else if( pData != NULL && pData->bFolder == true)
+		
+		if( pData != NULL && pData->bFolder == true)
 		{
 			// 找到当前结点的父节点
 			int nPid = pData->nPid;
@@ -56,6 +52,10 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 					m_mapIdNode[pData->nId] = pNode;
 					m_mapNodeId[pNode] = pData->nId;
 				}
+			}
+			else
+			{
+				int i = 0;
 			}
 		}
 	}
