@@ -1377,8 +1377,15 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                                     rcBmpPart.left = iWidth * iImageListIndex;
                                     rcBmpPart.right = iWidth * (iImageListIndex + 1);
                                     CRect rcCorner(0, 0, 0, 0);
-                                    DrawImage(hDC, pImageInfo->hBitmap, rcImage, rcImage, rcBmpPart, rcCorner, \
-                                        pImageInfo->alphaChannel, 255);
+									if (pImageInfo->hBitmap)
+									{
+										DrawImage(hDC, pImageInfo->hBitmap, rcImage, rcImage, rcBmpPart, rcCorner, \
+											pImageInfo->alphaChannel, 255);
+									}
+									else
+									{
+										DrawIconEx(hDC, rcImage.left, rcImage.top, pImageInfo->hIcon, pImageInfo->nX, pImageInfo->nY, 1, NULL, DI_NORMAL);
+									}
                                 }
 
                                 cyLine = MAX(iHeight, cyLine);

@@ -569,12 +569,13 @@ Fetch:
 
 	if (nSize != 0)
 	{
-		 bOk = m_pm.AddIcon16(strIconName.c_str(), (LPBYTE)strIconBuffer.c_str(), nSize) != NULL;
+		 HICON hIcon = ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 16);
+		 bOk = m_pm.AddIcon16(strIconName.c_str(), hIcon) != NULL;
 
 		 if (bOk == false)
 		 {
-			 HICON hIcon = ImageHelper::Convert32x32IconTo16x16(ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 32));
-			 bOk = m_pm.AddIcon16(strIconName.c_str(), hIcon) != NULL;
+			 HICON hIcon16 = ImageHelper::Convert32x32IconTo16x16(ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 32));
+			 bOk = m_pm.AddIcon16(strIconName.c_str(), hIcon16) != NULL;
 		 }
 	}
 
@@ -614,8 +615,8 @@ Fetch:
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 		};
-		m_pm.AddIcon16(strIconName.c_str(), szDefaultIcon, sizeof(szDefaultIcon));
-
+		HICON hIcon = ImageHelper::CreateIconFromBuffer((LPBYTE)szDefaultIcon, sizeof(szDefaultIcon), 16);
+		m_pm.AddIcon16(strIconName.c_str(), hIcon) != NULL;
 	}
 
 	return false;
