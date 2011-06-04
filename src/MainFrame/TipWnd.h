@@ -48,21 +48,11 @@ public:
         ::SendMessage(hWndParent, WM_NCACTIVATE, TRUE, 0L);
     }
 
-    LPCTSTR GetWindowClassName() const { return _T("MenuWnd"); };
+    LPCTSTR GetWindowClassName() const { return _T("TipWnd"); };
     void OnFinalMessage(HWND /*hWnd*/) { delete this; };
 
     void Notify(TNotifyUI& msg)
     {
-        if( msg.sType == _T("itemselect") ) {
-            Close();
-        }
-        else if( msg.sType == _T("itemclick") ) {
-            if( msg.pSender->GetName() == _T("menu_Delete") ) {
-                if( m_pOwner ) {
-                    MessageBox( _T("≤‚ ‘"), _T("≤‚ ‘"), MB_OK);
-                }
-            }
-        }
     }
 
     LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -75,12 +65,6 @@ public:
         m_pm.AddNotifier(this);
         m_pm.SetRoundCorner(3, 3);
 
-        CListUI* pList = static_cast<CListUI*>(m_pOwner);
-        int nSel = pList->GetCurSel();
-        if( nSel < 0 ) {
-            CControlUI* pControl = m_pm.FindControl(_T("menu_Delete"));
-            if( pControl ) pControl->SetEnabled(false);
-        }
         return 0;
     }
 
