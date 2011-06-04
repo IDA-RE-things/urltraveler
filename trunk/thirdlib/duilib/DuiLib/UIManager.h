@@ -99,6 +99,7 @@ typedef struct tagTFontInfo
 typedef struct tagTImageInfo
 {
     HBITMAP hBitmap;
+	HICON   hIcon;
     int nX;
     int nY;
     bool alphaChannel;
@@ -261,8 +262,6 @@ public:
     const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
 	const TImageInfo* AddIcon16(LPCTSTR szIconName, HICON hIcon);
 	const TImageInfo* AddIcon32(LPCTSTR szIconName, HICON hIcon);
-	const TImageInfo* AddIcon16(LPCTSTR szIconName, const LPBYTE buf, unsigned int size);
-	const TImageInfo* AddIcon32(LPCTSTR szIconName, const LPBYTE buf, unsigned int size);
     bool RemoveImage(LPCTSTR bitmap);
     void RemoveAllImages();
 
