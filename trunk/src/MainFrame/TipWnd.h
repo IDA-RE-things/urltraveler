@@ -12,6 +12,7 @@ public:
     CTipWnd() : m_pOwner(NULL) { };
 	~CTipWnd()
 	{
+		::SendMessage(m_pOwner->GetManager()->GetPaintWindow(), WM_USER + 1, 0, 0);
 		int i = 0;
 	}
     void Init(CControlUI* pOwner, CRect rc, CStdString strTip) {
