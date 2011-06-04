@@ -155,15 +155,8 @@ public:
 		m_pThis->m_pm.RemoveImage(L"shuoluetu");
 		m_pThis->m_pm.AddImage(L"shuoluetu", hBitmap, m_pThis->m_nImageWidth, m_pThis->m_nImageHeight);
 		pRoot = m_pThis->m_pm.GetRoot();
-		RECT rc = pRoot->GetPos();
 		CTextUI *image = static_cast<CTextUI *>(m_pThis->m_pm.FindControl(L"TextUI1"));
-		rc.bottom = m_pThis->m_nImageHeight;
-		rc.right = m_pThis->m_nImageWidth; 
-		//pRoot->SetPos(rc);
-		//image->SetPos(rc);
 		image->SetBkImage(L"shuoluetu");
-
-
 	}
 	static void OnQueryCaptureSize(long *pnWidth, long *pnHeight)
 	{
