@@ -15,7 +15,6 @@ CMainFrameWnd::CMainFrameWnd()
 
 void CMainFrameWnd::OnPrepare() 
 { 
-	m_pm.AddIcon(L"icon.test", LoadIcon(NULL, MAKEINTRESOURCE(IDI_INFORMATION)));
 }
 
 void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
@@ -165,7 +164,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 					// 测试代码，此处从服务器拉取http://www.baidu.com/favicon.ico
 					string strIconBuffer = CurlHttp::Instance()->RequestGet(L"http://www.baidu.com/favicon.ico");
 					int nSize = strIconBuffer.size();
-
+					m_pm.AddIcon(L"icon.test", (LPBYTE)strIconBuffer.c_str(), nSize);
 
 				}
 
