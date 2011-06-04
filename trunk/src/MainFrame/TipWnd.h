@@ -10,7 +10,11 @@ class CTipWnd : public CWindowWnd, public INotifyUI
 {
 public:
     CTipWnd() : m_pOwner(NULL) { };
-    void Init(CControlUI* pOwner, CRect rc) {
+	~CTipWnd()
+	{
+		int i = 0;
+	}
+    void Init(CControlUI* pOwner, CRect rc, CStdString strTip) {
         if( pOwner == NULL ) return;
         m_pOwner = pOwner;
 
@@ -41,6 +45,8 @@ public:
             }
         }
 
+		m_strTip = strTip;
+
         Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP, WS_EX_TOOLWINDOW, rc);
         HWND hWndParent = m_hWnd;
         while( ::GetParent(hWndParent) != NULL ) hWndParent = ::GetParent(hWndParent);
@@ -61,9 +67,13 @@ public:
         CDialogBuilder builder;
         CControlUI* pRoot = builder.Create(_T("tip.xml"), (UINT)0, NULL, &m_pm);
         ASSERT(pRoot && "Failed to parse XML");
+
         m_pm.AttachDialog(pRoot);
         m_pm.AddNotifier(this);
         m_pm.SetRoundCorner(3, 3);
+
+		CTextUI *pTip = static_cast<CTextUI *>(m_pm.FindControl(_T("tips")));
+		pTip->SetText(m_strTip);
 
         return 0;
     }
@@ -119,4 +129,5 @@ public:
     CPaintManagerUI m_pm;
     CControlUI* m_pOwner;
     bool bFlag; // 菜单Notify中尽量不要调用MessageBox函数，如果确实需要调用，使用此变量修正
+	CStdString m_strTip;
 };

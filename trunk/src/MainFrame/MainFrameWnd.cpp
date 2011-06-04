@@ -12,6 +12,7 @@ CMainFrameWnd::CMainFrameWnd()
 
 	m_nFavoriteNum = 0;
 	m_pFavoriteData	= NULL;
+	m_pTipWnd = NULL;
 }
 
 void CMainFrameWnd::OnPrepare() 
@@ -170,23 +171,44 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			}
 		}
 	}
-	else if(msg.sType == L"itemselect")
+	else if(msg.sType == L"itemhot")
 	{
-
-		if (msg.pSender->GetName() == L"favoritefilelist")
+		if (msg.pSender->GetParent()->GetParent()->GetName() == L"favoritefilelist")
 		{
-			CListUI *pFavariteList = (CListUI *)msg.pSender;
-
-			CListElementUI *pItem = pFavariteList->GetSubItem(pFavariteList->GetCurSel());
+			CListElementUI *pItem = (CListElementUI *)msg.pSender;
 
 			if (pItem)
 			{
+				OutputDebugString(L"Item Hot");
 				FAVORITELINEDATA *pData = (FAVORITELINEDATA *)pItem->GetTag();
-				CTipWnd *pTipWnd = new CTipWnd();
+				if (m_pTipWnd)
+				{
+					m_pTipWnd->SendMessage(WM_CLOSE, 0, 0);
+				}
+
+				m_pTipWnd = new CTipWnd();
 
 				POINT pt1 = {msg.ptMouse.x, msg.ptMouse.y};
 				::ClientToScreen(*this, &pt1);
-				pTipWnd->Init(msg.pSender, CRect(pt1.x, pt1.y, pt1.x + 120, pt1.y + 82)); 
+				CStdString strTips;
+
+				strTips += pData->szTitle;
+				strTips += L"\n";
+				strTips += L"<y 20><a>";
+				strTips += pData->szUrl;
+				strTips += L"</a>";
+				m_pTipWnd->Init(msg.pSender, CRect(pt1.x, pt1.y, pt1.x + 120, pt1.y + 82), strTips); 
+			}
+		}
+	}
+	else if(msg.sType == L"itemunhot")
+	{
+		if (msg.pSender->GetParent()->GetParent()->GetName() == L"favoritefilelist")
+		{
+			if (m_pTipWnd)
+			{
+				m_pTipWnd->SendMessage(WM_CLOSE, 0, 0);
+				m_pTipWnd = NULL;
 			}
 		}
 	}

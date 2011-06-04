@@ -1778,6 +1778,8 @@ void CListLabelElementUI::DoEvent(TEventUI& event)
     if( event.Type == UIEVENT_MOUSEENTER )
     {
         if( IsEnabled() ) {
+			//add hot event
+			m_pManager->SendNotify(this, _T("itemhot"));
             m_uButtonState |= UISTATE_HOT;
             Invalidate();
         }
@@ -1787,6 +1789,7 @@ void CListLabelElementUI::DoEvent(TEventUI& event)
     {
         if( (m_uButtonState & UISTATE_HOT) != 0 ) {
             m_uButtonState &= ~UISTATE_HOT;
+			m_pManager->SendNotify(this, _T("itemunhot"));
             Invalidate();
         }
         return;
