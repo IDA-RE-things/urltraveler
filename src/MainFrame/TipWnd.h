@@ -65,7 +65,6 @@ public:
 
     void Notify(TNotifyUI& msg)
     {
-		OutputDebugString(msg.sType);
 		if (msg.sType == L"link")
 		{
 			CAPTURECALLBACK cb;
