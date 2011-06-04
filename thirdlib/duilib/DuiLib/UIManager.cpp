@@ -1731,30 +1731,172 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
     return data;
 }
 
-const TImageInfo *CPaintManagerUI::AddIcon(LPCTSTR szIconName, const LPBYTE buf, unsigned int size)
+const TImageInfo* CPaintManagerUI::AddIcon32( LPCTSTR szIconName, const LPBYTE buf, unsigned int size )
 {
-	typedef struct
-	{
-		BYTE    bWidth;               /* Width of the image */
-		BYTE    bHeight;              /* Height of the image (times 2) */
-		BYTE    bColorCount;          /* Number of colors in image (0 if >=8bpp) */
-		BYTE    bReserved;            /* Reserved */
-		WORD    wPlanes;              /* Color Planes */
-		WORD    wBitCount;            /* Bits per pixel */
-		DWORD   dwBytesInRes;         /* how many bytes in this resource? */
-		DWORD   dwImageOffset;        /* where in the file is this image */
-	} ICONDIRENTRY, *LPICONDIRENTRY;
+	HICON hIcon = NULL;
 
-	typedef struct
-	{
-		UINT            Width, Height, Colors; /* Width, Height and bpp */
-		LPBYTE          lpBits;                /* ptr to DIB bits */
-		DWORD           dwNumBytes;            /* how many bytes? */
-		LPBITMAPINFO    lpbi;                  /* ptr to header */
-		LPBYTE          lpXOR;                 /* ptr to XOR image bits */
-		LPBYTE          lpAND;                 /* ptr to AND image bits */
-	} ICONIMAGE, *LPICONIMAGE;
+	if (!buf || size < sizeof(WORD)) {
+		return NULL;
+	}
 
+	UINT bufferIndex = 0;
+
+	if ((WORD)(buf[bufferIndex]) != 0) {
+		return NULL;
+	}
+
+	bufferIndex += sizeof(WORD);
+
+	if (size - bufferIndex < sizeof(WORD)) {
+		return NULL;
+	}
+
+	if ((WORD)(buf[bufferIndex]) != 1) {
+		return NULL;
+	}
+
+	bufferIndex += sizeof(WORD);
+
+	if (size - bufferIndex < sizeof(WORD)) {
+		return NULL;
+	}
+
+	UINT imageNumber = (WORD)(buf[bufferIndex]);
+
+	if (imageNumber < 1) {
+		return NULL;
+	}
+
+	bufferIndex += sizeof(WORD);
+	/* Is there enough space for the icon directory entries? */
+	if ((bufferIndex + imageNumber * sizeof(ICONDIRENTRY)) > size) {
+		return NULL;
+	}
+
+	int i = 0;
+	/* Assign icon directory entries from buffer */
+	LPICONDIRENTRY lpIDE = (LPICONDIRENTRY)(&buf[bufferIndex]);
+
+	while (i < imageNumber)
+	{
+		if (lpIDE->bWidth != 32 || lpIDE->bWidth != 32)
+		{
+			i++;
+			lpIDE++;
+			continue;
+		}
+
+		ICONIMAGE IconImage;
+		IconImage.dwNumBytes = lpIDE->dwBytesInRes;
+
+		/* Seek to beginning of this image */
+		if (lpIDE->dwImageOffset > size) {
+			return NULL;
+		}
+
+		bufferIndex = lpIDE->dwImageOffset;
+
+		/* Read it in */
+		if ((bufferIndex + lpIDE->dwBytesInRes) > size) {
+			return NULL;
+		}
+
+		IconImage.lpBits = &buf[bufferIndex];
+		bufferIndex += lpIDE->dwBytesInRes;
+
+
+		/* It failed, odds are good we're on NT so try the non-Ex way */
+		if (hIcon == NULL) {
+			/* We would break on NT if we try with a 16bpp image */
+			if (((LPBITMAPINFO)IconImage.lpBits)->bmiHeader.biBitCount != 16) {
+				hIcon = CreateIconFromResourceEx(IconImage.lpBits, IconImage.dwNumBytes, TRUE, 0x00030000, lpIDE->bWidth, lpIDE->bHeight, 0);
+				break;
+			}
+			else
+			{
+				i++;
+			}
+		}
+	}
+
+	return AddIcon32(szIconName, hIcon);
+
+}
+
+
+// 添加增加Icon借口 [6/3/2011 linjinming]
+const TImageInfo *CPaintManagerUI::AddIcon16(LPCTSTR szIconName, HICON hIcon)
+{
+	TImageInfo *data = NULL;
+	ICONINFO csIconInfo;
+
+	BOOL bRet = ::GetIconInfo(hIcon, &csIconInfo);
+
+	if (bRet == FALSE)
+	{
+		return NULL;
+	}
+
+	if (csIconInfo.xHotspot != 8 || csIconInfo.yHotspot != 8)
+	{
+		DeleteObject(csIconInfo.hbmColor);
+		DeleteObject(csIconInfo.hbmMask);
+		return NULL;
+	}
+
+	data = new TImageInfo;
+	data->hBitmap = csIconInfo.hbmColor;
+	data->nX = 16;
+	data->nY = 16;
+	data->alphaChannel = false;
+
+	if( !m_mImageHash.Insert(szIconName, data) ) {
+		DeleteObject(csIconInfo.hbmColor);
+		delete data;
+	}
+
+	DeleteObject(csIconInfo.hbmMask);
+
+	return data;
+}
+
+const TImageInfo* CPaintManagerUI::AddIcon32( LPCTSTR szIconName, HICON hIcon )
+{
+	TImageInfo *data = NULL;
+	ICONINFO csIconInfo;
+
+	BOOL bRet = ::GetIconInfo(hIcon, &csIconInfo);
+
+	if (bRet == FALSE)
+	{
+		return NULL;
+	}
+
+	if (csIconInfo.xHotspot != 16 || csIconInfo.yHotspot != 16)
+	{
+		DeleteObject(csIconInfo.hbmColor);
+		DeleteObject(csIconInfo.hbmMask);
+		return NULL;
+	}
+
+	data = new TImageInfo;
+	data->hBitmap = csIconInfo.hbmColor;
+	data->nX = 32;
+	data->nY = 32;
+	data->alphaChannel = false;
+
+	if( !m_mImageHash.Insert(szIconName, data) ) {
+		DeleteObject(csIconInfo.hbmColor);
+		delete data;
+	}
+
+	DeleteObject(csIconInfo.hbmMask);
+
+	return data;
+}
+
+const TImageInfo *CPaintManagerUI::AddIcon16(LPCTSTR szIconName, const LPBYTE buf, unsigned int size)
+{
 	HICON hIcon = NULL;
 
 	if (!buf || size < sizeof(WORD)) {
@@ -1841,37 +1983,9 @@ const TImageInfo *CPaintManagerUI::AddIcon(LPCTSTR szIconName, const LPBYTE buf,
 		}
 	}
 
-	return AddIcon(szIconName, hIcon);
+	return AddIcon16(szIconName, hIcon);
 }
 
-// 添加增加Icon借口 [6/3/2011 linjinming]
-const TImageInfo *CPaintManagerUI::AddIcon(LPCTSTR szIconName, HICON hIcon)
-{
-	TImageInfo *data = NULL;
-	ICONINFO csIconInfo;
-
-	BOOL bRet = ::GetIconInfo(hIcon, &csIconInfo);
-
-	if (bRet == FALSE)
-	{
-		return NULL;
-	}
-
-	data = new TImageInfo;
-	data->hBitmap = csIconInfo.hbmColor;
-	data->nX = csIconInfo.xHotspot * 2;
-	data->nY = csIconInfo.yHotspot * 2;
-	data->alphaChannel = false;
-
-	if( !m_mImageHash.Insert(szIconName, data) ) {
-		DeleteObject(csIconInfo.hbmColor);
-		delete data;
-	}
-
-	DeleteObject(csIconInfo.hbmMask);
-
-	return data;
-}
 
 
 
@@ -2031,5 +2145,6 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlFromUpdate(CControlUI* pThis,
 {
     return pThis->IsUpdateNeeded() ? pThis : NULL;
 }
+
 
 } // namespace DuiLib

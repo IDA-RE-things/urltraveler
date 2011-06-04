@@ -139,6 +139,28 @@ typedef struct tagTRelativePosUI
 	int nZoomXPercent;
 	int nZoomYPercent;
 }TRelativePosUI;
+//icon struct
+typedef struct
+{
+	BYTE    bWidth;               /* Width of the image */
+	BYTE    bHeight;              /* Height of the image (times 2) */
+	BYTE    bColorCount;          /* Number of colors in image (0 if >=8bpp) */
+	BYTE    bReserved;            /* Reserved */
+	WORD    wPlanes;              /* Color Planes */
+	WORD    wBitCount;            /* Bits per pixel */
+	DWORD   dwBytesInRes;         /* how many bytes in this resource? */
+	DWORD   dwImageOffset;        /* where in the file is this image */
+} ICONDIRENTRY, *LPICONDIRENTRY;
+
+typedef struct
+{
+	UINT            Width, Height, Colors; /* Width, Height and bpp */
+	LPBYTE          lpBits;                /* ptr to DIB bits */
+	DWORD           dwNumBytes;            /* how many bytes? */
+	LPBITMAPINFO    lpbi;                  /* ptr to header */
+	LPBYTE          lpXOR;                 /* ptr to XOR image bits */
+	LPBYTE          lpAND;                 /* ptr to AND image bits */
+} ICONIMAGE, *LPICONIMAGE;
 
 // Listener interface
 class INotifyUI
@@ -237,8 +259,10 @@ public:
     const TImageInfo* GetImage(LPCTSTR bitmap);
     const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
     const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
-	const TImageInfo* AddIcon(LPCTSTR szIconName, HICON hIcon);
-	const TImageInfo* AddIcon(LPCTSTR szIconName, const LPBYTE buf, unsigned int size);
+	const TImageInfo* AddIcon16(LPCTSTR szIconName, HICON hIcon);
+	const TImageInfo* AddIcon32(LPCTSTR szIconName, HICON hIcon);
+	const TImageInfo* AddIcon16(LPCTSTR szIconName, const LPBYTE buf, unsigned int size);
+	const TImageInfo* AddIcon32(LPCTSTR szIconName, const LPBYTE buf, unsigned int size);
     bool RemoveImage(LPCTSTR bitmap);
     void RemoveAllImages();
 

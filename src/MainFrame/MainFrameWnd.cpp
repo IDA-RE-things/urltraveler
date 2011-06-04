@@ -568,7 +568,12 @@ Fetch:
 
 	if (nSize != 0)
 	{
-		 bOk = m_pm.AddIcon(strIconName.c_str(), (LPBYTE)strIconBuffer.c_str(), nSize) != NULL;
+		 bOk = m_pm.AddIcon16(strIconName.c_str(), (LPBYTE)strIconBuffer.c_str(), nSize) != NULL;
+
+		 if (bOk == false)
+		 {
+			 bOk = m_pm.AddIcon32(strIconName.c_str(), (LPBYTE)strIconBuffer.c_str(), nSize) != NULL;
+		 }
 	}
 
 	if (bOk == false)
@@ -607,7 +612,7 @@ Fetch:
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 		};
-		m_pm.AddIcon(strIconName.c_str(), szDefaultIcon, sizeof(szDefaultIcon));
+		m_pm.AddIcon16(strIconName.c_str(), szDefaultIcon, sizeof(szDefaultIcon));
 
 	}
 
