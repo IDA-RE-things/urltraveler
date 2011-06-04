@@ -1744,18 +1744,49 @@ const TImageInfo *CPaintManagerUI::AddIcon(LPCTSTR szIconName, HICON hIcon)
 		return NULL;
 	}
 
+	//(HICON)::SendMessage(GetPaintWindow(), WM_SETICON, FALSE, (LPARAM)hIcon);
+
 	data = new TImageInfo;
 	data->hBitmap = csIconInfo.hbmColor;
 	data->nX = csIconInfo.xHotspot * 2;
 	data->nY = csIconInfo.yHotspot * 2;
-	data->alphaChannel = true;
+	data->alphaChannel = false;
 
 	if( !m_mImageHash.Insert(szIconName, data) ) {
+		DeleteObject(csIconInfo.hbmColor);
 		delete data;
 	}
 
+	DeleteObject(csIconInfo.hbmMask);
+
 	return data;
 }
+
+typedef struct
+{
+	BYTE    bWidth;               /* Width of the image */
+	BYTE    bHeight;              /* Height of the image (times 2) */
+	BYTE    bColorCount;          /* Number of colors in image (0 if >=8bpp) */
+	BYTE    bReserved;            /* Reserved */
+	WORD    wPlanes;              /* Color Planes */
+	WORD    wBitCount;            /* Bits per pixel */
+	DWORD   dwBytesInRes;         /* how many bytes in this resource? */
+	DWORD   dwImageOffset;        /* where in the file is this image */
+} ICONDIRENTRY, *LPICONDIRENTRY;
+
+typedef struct
+{
+	UINT            Width, Height, Colors; /* Width, Height and bpp */
+	LPBYTE          lpBits;                /* ptr to DIB bits */
+	DWORD           dwNumBytes;            /* how many bytes? */
+	LPBITMAPINFO    lpbi;                  /* ptr to header */
+	LPBYTE          lpXOR;                 /* ptr to XOR image bits */
+	LPBYTE          lpAND;                 /* ptr to AND image bits */
+} ICONIMAGE, *LPICONIMAGE;
+
+const TImageInfo *CPaintManagerUI::AddIcon(LPCTSTR szIconName, const LPBYTE buf, unsigned int size)
+{
+	if (!buf || size < sizeof(WORD)) {		return NULL;	}	UINT bufferIndex = 0;	/* Was it 'reserved' ?	 (ie 0) */	if ((WORD)(buf[bufferIndex]) != 0) {		return NULL;	}	bufferIndex += sizeof(WORD);	/* Is there a WORD? */	if (size - bufferIndex < sizeof(WORD)) {		return NULL;	}	/* Was it type 1? */	if ((WORD)(buf[bufferIndex]) != 1) {		return NULL;	}	bufferIndex += sizeof(WORD);	/* Is there a WORD? */	if (size - bufferIndex < sizeof(WORD)) {		return NULL;	}	/* Then that's the number of images in the ICO file */	UINT imageNumber = (WORD)(buf[bufferIndex]);	/* Is there at least one icon in the file? */	if (imageNumber < 1) {		return NULL;	}	bufferIndex += sizeof(WORD);	/* Is there enough space for the icon directory entries? */	if ((bufferIndex + imageNumber * sizeof(ICONDIRENTRY)) > size) {		return NULL;	}	/* Assign icon directory entries from buffer */	LPICONDIRENTRY lpIDE = (LPICONDIRENTRY)(&buf[bufferIndex]);	bufferIndex += imageNumber * sizeof(ICONDIRENTRY);	ICONIMAGE IconImage;	IconImage.dwNumBytes = lpIDE->dwBytesInRes;	/* Seek to beginning of this image */	if (lpIDE->dwImageOffset > size) {		return NULL;	}	bufferIndex = lpIDE->dwImageOffset;	/* Read it in */	if ((bufferIndex + lpIDE->dwBytesInRes) > size) {		return NULL;	}	IconImage.lpBits = &buf[bufferIndex];	bufferIndex += lpIDE->dwBytesInRes;	HICON hIcon = NULL;	/* It failed, odds are good we're on NT so try the non-Ex way */	if (hIcon == NULL) {		/* We would break on NT if we try with a 16bpp image */		if (((LPBITMAPINFO)IconImage.lpBits)->bmiHeader.biBitCount != 16) {			hIcon = CreateIconFromResourceEx(IconImage.lpBits, IconImage.dwNumBytes, TRUE, 0x00030000, lpIDE->bWidth, lpIDE->bHeight, 0);		}	}	return AddIcon(szIconName, hIcon);}
 
 bool CPaintManagerUI::RemoveImage(LPCTSTR bitmap)
 {

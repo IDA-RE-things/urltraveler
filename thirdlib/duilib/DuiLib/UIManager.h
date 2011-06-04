@@ -238,6 +238,7 @@ public:
     const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
     const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
 	const TImageInfo* AddIcon(LPCTSTR szIconName, HICON hIcon);
+	const TImageInfo* AddIcon(LPCTSTR szIconName, const LPBYTE buf, unsigned int size);
     bool RemoveImage(LPCTSTR bitmap);
     void RemoveAllImages();
 
