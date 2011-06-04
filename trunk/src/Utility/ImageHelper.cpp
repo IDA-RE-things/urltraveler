@@ -38,7 +38,7 @@ HICON ImageHelper::Convert32x32IconTo16x16( HICON h32x32Icon )
 	hOldBmp2   =   (HBITMAP)   SelectObject(   hMemDC2, 
 		IconInfo16x16.hbmColor); 
 
-	StretchBlt(hMemDC, 
+	StretchBlt(hMainDC, 
 		0,   0, 
 		16,   16, 
 		hMemDC1, 
