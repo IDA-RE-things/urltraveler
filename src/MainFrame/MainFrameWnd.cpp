@@ -8,6 +8,8 @@
 
 #define WM_TIPCLOSE    (WM_USER + 1)
 
+CTipWnd *CTipWnd::m_pThis = NULL;
+
 CMainFrameWnd::CMainFrameWnd()
 {
 	m_pLoginFrame = NULL;
@@ -181,7 +183,6 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 
 			if (pItem)
 			{
-				OutputDebugString(L"Item Hot");
 				FAVORITELINEDATA *pData = (FAVORITELINEDATA *)pItem->GetTag();
 				if (m_pTipWnd)
 				{

@@ -1731,6 +1731,27 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
     return data;
 }
 
+const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR szBitmapName, HBITMAP hBitmap, int nWidth, int nHeight)
+{
+	TImageInfo *data = NULL;
+
+	data = new TImageInfo;
+	data->hBitmap = hBitmap;//csIconInfo.hbmColor;
+	data->hIcon = NULL;
+	data->nX = nWidth;
+	data->nY = nHeight;
+	data->alphaChannel = false;
+
+	if( !m_mImageHash.Insert(szBitmapName, data) ) {
+		DeleteObject(hBitmap);
+		delete data;
+		data = NULL;
+	}
+
+	return data;
+
+}
+
 // 添加增加Icon借口 [6/3/2011 linjinming]
 const TImageInfo *CPaintManagerUI::AddIcon16(LPCTSTR szIconName, HICON hIcon)
 {
