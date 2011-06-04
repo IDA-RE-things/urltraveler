@@ -6,6 +6,8 @@
 #include "TipWnd.h"
 #include "ImageHelper.h"
 
+#define WM_TIPCLOSE    (WM_USER + 1)
+
 CMainFrameWnd::CMainFrameWnd()
 {
 	m_pLoginFrame = NULL;
@@ -393,7 +395,8 @@ LRESULT CMainFrameWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_SIZE:          lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
 		case WM_GETMINMAXINFO: lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
 		case WM_SYSCOMMAND:    lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
-		case WM_COMMAND:   lRes = OnCommand(uMsg, wParam, lParam, bHandled); break;
+		case WM_COMMAND:       lRes = OnCommand(uMsg, wParam, lParam, bHandled); break;
+		case WM_TIPCLOSE:      m_pTipWnd = NULL; break;
 		default:
 			bHandled = FALSE;
 	}
