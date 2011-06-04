@@ -315,7 +315,9 @@ VOID CALLBACK TimerProc(HWND hwnd,
 
 	g_cb.fn2(&nWidth, &nHeight);
 
-	g_cb.fn1(CreateBitmap2(pDispature, nWidth, nHeight));
+	HBITMAP hBitmap = CreateBitmap2(pDispature, nWidth, nHeight);
+	g_cb.fn1(hBitmap);
+	SaveBitmapToFile(hBitmap, L"c:\\b.bmp");
 
 	if (g_nTimerId)
 	{

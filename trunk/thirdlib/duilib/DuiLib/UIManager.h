@@ -260,6 +260,7 @@ public:
     const TImageInfo* GetImage(LPCTSTR bitmap);
     const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
     const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
+	const TImageInfo* AddImage(LPCTSTR szBitmapName, HBITMAP hBitmap, int nWidth, int nHeight);
 	const TImageInfo* AddIcon16(LPCTSTR szIconName, HICON hIcon);
 	const TImageInfo* AddIcon32(LPCTSTR szIconName, HICON hIcon);
     bool RemoveImage(LPCTSTR bitmap);
