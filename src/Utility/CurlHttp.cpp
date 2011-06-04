@@ -124,6 +124,7 @@ string CurlHttp::RequestGet(wstring strUrl)
 		strResultUrl = strUrl;
 	}
 	curl_easy_setopt(m_pCurl, CURLOPT_HTTPGET, NULL);
+	curl_easy_setopt(m_pCurl, CURLOPT_FOLLOWLOCATION, 1);
 	curl_easy_setopt(m_pCurl, CURLOPT_URL, StringHelper::UnicodeToANSI(strResultUrl.c_str()).c_str()); 
 	
 	int nCookie = m_nCookie;
