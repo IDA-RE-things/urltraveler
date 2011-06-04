@@ -27,7 +27,7 @@ size_t ReadData(void *pBuffer, size_t size, size_t nmemb, void *pUuserp)
 	string strResponse = pClient->FindResponse(nCookie);
 	strResponse.append((char*)pBuffer, nmemb);
 	pClient->m_mapResponse[nCookie] = strResponse;
-	return 0;
+	return nmemb;
 }
 
 CurlHttp::CurlHttp()
