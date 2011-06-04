@@ -4,6 +4,7 @@
 #include "CurlHttp.h"
 #include "MainFrameModule.h"
 #include "TipWnd.h"
+#include "ImageHelper.h"
 
 CMainFrameWnd::CMainFrameWnd()
 {
@@ -572,7 +573,8 @@ Fetch:
 
 		 if (bOk == false)
 		 {
-			 bOk = m_pm.AddIcon32(strIconName.c_str(), (LPBYTE)strIconBuffer.c_str(), nSize) != NULL;
+			 HICON hIcon = ImageHelper::Convert32x32IconTo16x16(ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 32));
+			 bOk = m_pm.AddIcon16(strIconName.c_str(), hIcon) != NULL;
 		 }
 	}
 
