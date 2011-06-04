@@ -1986,9 +1986,6 @@ const TImageInfo *CPaintManagerUI::AddIcon16(LPCTSTR szIconName, const LPBYTE bu
 	return AddIcon16(szIconName, hIcon);
 }
 
-
-
-
 bool CPaintManagerUI::RemoveImage(LPCTSTR bitmap)
 {
     const TImageInfo* data = GetImage(bitmap);
