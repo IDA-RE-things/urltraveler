@@ -84,7 +84,7 @@ protected:
 
 protected:
 
-	int32	OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam);
+	int32 OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam);
 
 private:
 	CMainFrameWnd* m_pMainFrame;

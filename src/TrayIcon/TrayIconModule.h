@@ -96,14 +96,13 @@ protected:
 	void	OnEvent_ShowTrayIcon(Event* pEvent);	
 public:
 
-	void    OnEvent_ShowAboutDialog(Event *pEvent);
+	void OnEvent_ShowAboutDialog(Event *pEvent);
 
 protected:
 
 	void	OnMessage_Show(Message* pMessage);
 	// 程序退出的广播消息，主界面处理该消息，为退出做准备
 	void	OnMessage_PreExit(Message* pMessage);		
-
 
 private:
 	void	CreatTrayIconMsgWnd();

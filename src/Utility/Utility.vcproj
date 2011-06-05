@@ -214,11 +214,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ImageHelper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\lockmgr.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\MD5Checksum.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MiscHelper.cpp"
 				>
 			</File>
 			<File
@@ -284,6 +292,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ImageHelper.h"
+				>
+			</File>
+			<File
 				RelativePath=".\lockmgr.h"
 				>
 			</File>
@@ -293,6 +305,10 @@
 			</File>
 			<File
 				RelativePath=".\MD5ChecksumDefines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MiscHelper.h"
 				>
 			</File>
 			<File
@@ -527,18 +543,6 @@
 			</File>
 			<File
 				RelativePath=".\CurlHttp.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="ImageHelper"
-			>
-			<File
-				RelativePath=".\ImageHelper.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ImageHelper.h"
 				>
 			</File>
 		</Filter>

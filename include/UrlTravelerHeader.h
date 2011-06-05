@@ -369,3 +369,13 @@ struct MakeMessage
 			extraInfo);
 	}
 };
+
+struct Service
+{
+	Service()
+	{
+		serviceId = SERVICE_VALUE_INVALID;
+	}
+
+	int serviceId;
+};

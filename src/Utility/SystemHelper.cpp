@@ -5,6 +5,17 @@
 #include "SystemHelper.h"
 #include "tchar.h"
 
+SystemHelper::SystemHelper()
+{
+
+}
+
+SystemHelper::~SystemHelper()
+{
+
+}
+
+
 BOOL SystemHelper::GetOsVersion(OUT DWORD& dwMajorVer, IN OUT DWORD* pdwMinorVer/* = NULL*/,
 				  IN OUT DWORD* pdwBuildNum/* = NULL*/, IN OUT DWORD* pdwPlatformId/* = NULL*/,
 				  IN OUT LPTSTR szCSDVersion/* = NULL*/, IN OUT int nMaxLen/* = 0*/)

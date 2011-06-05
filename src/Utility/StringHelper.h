@@ -9,10 +9,11 @@ using namespace  std;
 
 class UTILITY_API StringHelper
 {
-public:
+private:
 	StringHelper(void);
 	~StringHelper(void);
-	
+
+public:
 	static string	MakeLower( string in_str);
 	static string	MakeUpper( string in_str );
 

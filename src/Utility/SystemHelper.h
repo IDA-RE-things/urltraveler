@@ -7,6 +7,10 @@ using namespace std;
 
 class UTILITY_API SystemHelper
 {
+private:
+	SystemHelper();
+	~SystemHelper();
+
 public:
 
 	///枚举类型:操作系统版本号
