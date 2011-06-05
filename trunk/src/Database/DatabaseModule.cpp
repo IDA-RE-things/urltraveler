@@ -221,9 +221,11 @@ HICON	DatabaseModule::GetFavoriteIcon( wstring wstrFavoriteUrl)
 	catch (CppSQLite3Exception& e)
 	{
 		m_dbFavorite.close();
+		return NULL;
 	}
 	catch(...)
 	{
+		return NULL;
 	}
 }
 

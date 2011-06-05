@@ -42,8 +42,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/GR"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;tinyxml"
-				PreprocessorDefinitions="BUILDING_LIBCURL;HTTP_ONLY;JSON_DLL_BUILD;WIN32;_DEBUG;_WINDOWS;_USRDLL;UTILITY_EXPORTS"
+				AdditionalIncludeDirectories="..\..\include;tinyxml;..\Utility\HttpClient\include"
+				PreprocessorDefinitions="BUILDING_LIBCURL;HTTP_ONLY;JSON_DLL_BUILD;WIN32;_DEBUG;_WINDOWS;_USRDLL;UTILITY_EXPORTS;HTTPCLIENT_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -62,10 +62,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="sqlite3070603d.lib libcurl_mdd.lib Ws2_32.lib"
+				AdditionalDependencies="sqlite3070603d.lib libcurl_mdd.lib Ws2_32.lib utils-mt-gd.lib"
 				OutputFile="..\..\bin\Utilityd.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../../lib"
+				AdditionalLibraryDirectories="..\..\lib;..\Utility\HttpClient\lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
@@ -121,8 +121,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\include"
-				PreprocessorDefinitions="BUILDING_LIBCURL;HTTP_ONLY;JSON_DLL_BUILD;WIN32;NDEBUG;_WINDOWS;_USRDLL;UTILITY_EXPORTS"
+				AdditionalIncludeDirectories="..\..\include;tinyxml;..\Utility\HttpClient\include"
+				PreprocessorDefinitions="BUILDING_LIBCURL;HTTP_ONLY;JSON_DLL_BUILD;WIN32;_DEBUG;_WINDOWS;_USRDLL;UTILITY_EXPORTS;HTTPCLIENT_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="sqlite3070603.lib libcurl_md.lib Ws2_32.lib"
+				AdditionalDependencies="sqlite3070603d.lib libcurl_mdd.lib Ws2_32.lib utils-mt-gd.lib"
 				OutputFile="..\..\bin\Utility.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../lib"
@@ -185,6 +185,10 @@
 			>
 			<File
 				RelativePath=".\CRCHash.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CurlHttp.cpp"
 				>
 			</File>
 			<File
@@ -285,6 +289,10 @@
 			>
 			<File
 				RelativePath=".\CRCHash.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CurlHttp.h"
 				>
 			</File>
 			<File
@@ -531,18 +539,6 @@
 			</File>
 			<File
 				RelativePath=".\json\writer.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Httpclient"
-			>
-			<File
-				RelativePath=".\CurlHttp.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CurlHttp.h"
 				>
 			</File>
 		</Filter>
