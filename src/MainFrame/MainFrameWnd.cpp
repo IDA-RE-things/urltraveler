@@ -14,8 +14,6 @@ using namespace mainframe;
 
 #define WM_TIPCLOSE    (WM_USER + 1)
 
-CTipWnd *CTipWnd::m_pThis = NULL;
-
 CMainFrameWnd::CMainFrameWnd()
 {
 	m_pLoginFrame = NULL;
@@ -23,10 +21,20 @@ CMainFrameWnd::CMainFrameWnd()
 	m_nFavoriteNum = 0;
 	m_pFavoriteData	= NULL;
 	m_pTipWnd = NULL;
+	m_pTipWnd = new CTipWnd();
 }
 
-void CMainFrameWnd::OnPrepare() 
+CMainFrameWnd::~CMainFrameWnd()
+{
+	if (m_pTipWnd)
+	{
+		m_pTipWnd->SendMessage(WM_CLOSE, 0, 0);
+	}
+}
+
+void CMainFrameWnd::OnPrepare(TNotifyUI& msg) 
 { 
+	m_pTipWnd->Init(msg.pSender); 
 }
 
 void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
@@ -79,7 +87,7 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 
 void CMainFrameWnd::Notify(TNotifyUI& msg)
 {
-	if( msg.sType == _T("windowinit") ) OnPrepare();
+	if( msg.sType == _T("windowinit") ) OnPrepare(msg);
 	else if( msg.sType == _T("click") ) {
 		if( msg.pSender->GetName() == L"closebtn" ) {
 			PostQuitMessage(0);
@@ -190,15 +198,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			if (pItem)
 			{
 				FAVORITELINEDATA *pData = (FAVORITELINEDATA *)pItem->GetTag();
-				if (m_pTipWnd)
-				{
-					m_pTipWnd->SendMessage(WM_CLOSE, 0, 0);
-				}
-
-				m_pTipWnd = new CTipWnd();
-
-				POINT pt1 = {msg.ptMouse.x, msg.ptMouse.y};
-				::ClientToScreen(*this, &pt1);
+				
 				CStdString strTips;
 
 				strTips += pData->szTitle;
@@ -206,7 +206,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 				strTips += L"<y 20><a>";
 				strTips += pData->szUrl;
 				strTips += L"</a>";
-				m_pTipWnd->Init(msg.pSender, CRect(pt1.x, pt1.y, pt1.x + 120, pt1.y + 82), strTips); 
+				m_pTipWnd->ShowTips(1000, strTips);
 			}
 		}
 	}
@@ -216,8 +216,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		{
 			if (m_pTipWnd)
 			{
-				m_pTipWnd->SendMessage(WM_CLOSE, 0, 0);
-				m_pTipWnd = NULL;
+				m_pTipWnd->HideTip();
 			}
 		}
 	}
@@ -403,7 +402,6 @@ LRESULT CMainFrameWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_GETMINMAXINFO: lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
 		case WM_SYSCOMMAND:    lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
 		case WM_COMMAND:       lRes = OnCommand(uMsg, wParam, lParam, bHandled); break;
-		case WM_TIPCLOSE:      m_pTipWnd = NULL; break;
 		default:
 			bHandled = FALSE;
 	}

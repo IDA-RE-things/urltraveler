@@ -25,11 +25,12 @@ class CMainFrameWnd : public CWindowWnd, public INotifyUI, public IListCallbackU
 {
 public:
 	CMainFrameWnd();
+	~CMainFrameWnd();
 	LPCTSTR GetWindowClassName() const { return _T("UIMainFrame"); };
 	UINT GetClassStyle() const { return CS_DBLCLKS; };
 	void OnFinalMessage(HWND /*hWnd*/) { delete this; };
 	void Init(){} ;
-	void OnPrepare();
+	void OnPrepare(TNotifyUI& msg);
 	void Notify(TNotifyUI& msg);
 	void LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum);
 	LPCTSTR GetItemText(CControlUI* pControl, int iIndex, int iSubItem);
