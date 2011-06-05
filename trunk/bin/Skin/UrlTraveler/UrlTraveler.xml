@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<Window size="850,600" sizebox="0,0,800,30" caption="0,0,0,30">
+<Window roundcorner="10,10" size="850,600" sizebox="0,0,800,30" caption="0,0,0,30">
     <Font name="宋体" size="13" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="false" italic="false" default="true" />
     <Font name="宋体" size="14" bold="true" italic="false" />
     <Font name="宋体" size="22" bold="true" italic="true" />
     <Font name="SimSun" size="12" bold="true" italic="false" />
-    <VerticalLayout name="VerticalLayoutUI1" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
+    <VerticalLayout borderround="10,10" name="VerticalLayoutUI1" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
         <HorizontalLayout name="VerticalLayoutUI2" pos="0,0,0,110" height="110">
             <HorizontalLayout name="HorizontalLayoutUI7">
                 <Option name="examine" float="true" pos="20,30,80,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_2.png" group="contenttab" selected="true" selectedimage="nav_2a.png" />
