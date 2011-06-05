@@ -427,14 +427,21 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 				wstring strIconName;
 				wchar_t szRow[5] = {0};
 				_ltow(iIndex, szRow, 10);
-				strIconName = L"<i favicon";
+				strIconName = L"<x 4><i favicon";
 				strIconName += szRow;
-				strIconName += L".ico>";
+				strIconName += L".ico><x 4>";
 
 				strIconName += m_vFavoriteNode[iIndex]->szTitle;
 				return _wcsdup(strIconName.c_str());
 			}
-			if( iSubItem == 1 ) return m_vFavoriteNode[iIndex]->szUrl;
+			if( iSubItem == 1 )
+			{
+				wstring strUrl;
+				strUrl += L"<x 4>";
+				strUrl += m_vFavoriteNode[iIndex]->szUrl;
+
+				return _wcsdup(strUrl.c_str());
+			}
 		}
 
     }
