@@ -170,7 +170,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 						if( pData->nPid == nId && pData->bFolder == false)
 						{
 							// 测试代码，此处从服务器拉取http://www.baidu.com/favicon.ico
-							GetRemoteIcon(pData->szUrl, j);
+							GetWebSiteFavIcon(pData->szUrl, j);
 
 							CListTextElementUI* pListElement = new CListTextElementUI;
 							pListElement->SetTag((UINT_PTR)pData);
@@ -455,21 +455,35 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
     return _T("");
 }
 
-bool CMainFrameWnd::GetRemoteIcon(wstring strUrl, int nRow)
+bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 {
 	wchar_t* pszDomainUrl = MiscHelper::GetDomainFromUrl(strUrl.c_str());
 	if( pszDomainUrl == NULL)
 		return false;
 
 	wstring wstrDomainUrl = pszDomainUrl + wstring(L"/favicon.ico");
-	string strIconBuffer = CurlHttp::Instance()->RequestGet(wstrDomainUrl);
-	int nSize = strIconBuffer.size();
+
+	// 向数据库查找Icon数据
+	database::Database_GetFavoriteIconService getFavoriteService;
+	STRNCPY(getFavoriteService.szFavoriteUrl, pszDomainUrl);
+	g_MainFrameModule->GetModuleManager()->CallService(getFavoriteService.serviceId, (param)&getFavoriteService);
 
 	wstring strRow = StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nRow));
 	wstring wstrIconName = wstring(L"favicon") + strRow + L".ico";
 	m_pm.RemoveImage(wstrIconName.c_str());
 
+	// 该icon数据库中已经存在
 	bool bOk = false;
+	if( getFavoriteService.hcon != NULL)
+	{
+		bOk = m_pm.AddIcon16(wstrIconName.c_str(), getFavoriteService.hcon) != NULL;
+		free(pszDomainUrl);
+		return true;
+	}
+
+
+	string strIconBuffer = CurlHttp::Instance()->RequestGet(wstrDomainUrl);
+	int nSize = strIconBuffer.size();
 	if (nSize != 0)
 	{
 		 HICON hIcon = ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 16);
@@ -486,7 +500,9 @@ bool CMainFrameWnd::GetRemoteIcon(wstring strUrl, int nRow)
 	database::Database_FavIconSaveEvent* pSaveIconEvent = new database::Database_FavIconSaveEvent();
 	STRNCPY(pSaveIconEvent->szFavoriteUrl, pszDomainUrl);
 	pSaveIconEvent->nIconDataLen = strIconBuffer.size();
-	pSaveIconEvent->pIconData  = strIconBuffer.c_str();
+	pSaveIconEvent->pIconData = new char[pSaveIconEvent->nIconDataLen];
+	memcpy((void*)pSaveIconEvent->pIconData,strIconBuffer.c_str(), pSaveIconEvent->nIconDataLen);
+
 	pSaveIconEvent->m_pstExtraInfo = pSaveIconEvent;
 	g_MainFrameModule->GetModuleManager()->PushEvent(*pSaveIconEvent);
 
