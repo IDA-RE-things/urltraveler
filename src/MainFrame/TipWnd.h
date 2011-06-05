@@ -55,8 +55,8 @@ public:
 			//::ClientToScreen(m_hWnd, &pt1);
 
 			CRect rc;
-			rc.left = pt1.x;
-			rc.top = pt1.y;
+			rc.left = pt1.x + 10;
+			rc.top = pt1.y + 10;
 			rc.right = pt1.x + 400;
 			rc.bottom = pt1.y + 100;
 
