@@ -48,7 +48,7 @@ public:
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 protected:
-	bool GetRemoteIcon(wstring strUrl, int nRow);
+	bool GetWebSiteFavIcon(wstring strUrl, int nRow);
 public:
 	CPaintManagerUI m_pm;
 
