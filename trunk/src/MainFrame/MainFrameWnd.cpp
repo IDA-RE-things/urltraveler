@@ -188,6 +188,14 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 				}
 			}
 		}
+
+		if (msg.pSender->GetParent()->GetParent()->GetName() == L"favoritefilelist")
+		{
+			if (m_pTipWnd)
+			{
+				m_pTipWnd->HideTip();
+			}
+		}
 	}
 	else if(msg.sType == L"itemhot")
 	{
