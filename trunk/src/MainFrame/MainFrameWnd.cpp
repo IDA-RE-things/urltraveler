@@ -5,6 +5,12 @@
 #include "MainFrameModule.h"
 #include "TipWnd.h"
 #include "ImageHelper.h"
+#include "DatabaseDefine.h"
+#include "MiscHelper.h"
+#include "StringHelper.h"
+
+using namespace database;
+using namespace mainframe;
 
 #define WM_TIPCLOSE    (WM_USER + 1)
 
@@ -438,172 +444,40 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 
 bool CMainFrameWnd::GetRemoteIcon(wstring strUrl, int nRow)
 {
-	int j = 0;
-	wstring strFixUrl;
-	wstring strIconName;
+	wchar_t* pszDomainUrl = MiscHelper::GetDomainFromUrl(strUrl.c_str());
+	if( pszDomainUrl == NULL)
+		return false;
 
-	int i = strUrl.find(L".com.cn");
+	wstring wstrDomainUrl = pszDomainUrl + wstring(L"\\favicon.ico");
+	string strIconBuffer = CurlHttp::Instance()->RequestGet(wstrDomainUrl);
+	int nSize = strIconBuffer.size();
 
-	if (i != -1)
-	{
-		j = strUrl.rfind(L".", i - 1);
-		if (j == -1)
-		{
-			j = strUrl.rfind(L"http://", i - 1);
+	wstring strRow = StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nRow));
+	wstring wstrIconName = wstring(L"favicon") + strRow + L".ico";
+	m_pm.RemoveImage(wstrIconName.c_str());
 
-			//³¢ÊÔ²éÕÒhttp://
-			if (j != -1)
-			{
-				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"http://"), i + wcslen(L".com.cn") - j - wcslen(L"http://")) + L"/favicon.ico";
-				goto Fetch;
-			}
-
-			//³¢ÊÔ²éÕÒÊÇ·ñÓÐhttps://
-			j = strUrl.rfind(L"https://", i - 1);
-
-			if (j != -1)
-			{
-				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"https://"), i + wcslen(L".com.cn") - j - wcslen(L"https://")) + L"/favicon.ico";
-				goto Fetch;
-			}
-
-			strFixUrl = L"http://www." + strUrl.substr(0, i + wcslen(L".com.cn")) + L"/favicon.ico";
-		}
-		else
-		{
-			strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".com.cn") - j) + L"/favicon.ico";
-		}
-		goto Fetch;
-	}
-
-	i = strUrl.find(L".cn");
-
-	if (i != -1)
-	{
-		j = strUrl.rfind(L".", i - 1);
-		if (j == -1)
-		{
-			j = strUrl.rfind(L"http://", i - 1);
-
-			//³¢ÊÔ²éÕÒhttp://
-			if (j != -1)
-			{
-				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"http://"), i + wcslen(L".cn") - j - wcslen(L"http://")) + L"/favicon.ico";
-				goto Fetch;
-			}
-
-			//³¢ÊÔ²éÕÒÊÇ·ñÓÐhttps://
-			j = strUrl.rfind(L"https://", i - 1);
-
-			if (j != -1)
-			{
-				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"https://"), i + wcslen(L".cn") - j - wcslen(L"https://")) + L"/favicon.ico";
-				goto Fetch;
-			}
-
-			strFixUrl = L"http://www." + strUrl.substr(0, i + wcslen(L".cn")) + L"/favicon.ico";
-		}
-		else
-		{
-			strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".cn") - j) + L"/favicon.ico";
-		}
-		goto Fetch;
-	}
-
-	i = strUrl.find(L".com");
-	if (i != -1)
-	{
-		j = strUrl.rfind(L".", i - 1);
-		if (j == -1)
-		{
-			j = strUrl.rfind(L"http://", i - 1);
-
-			//³¢ÊÔ²éÕÒhttp://
-			if (j != -1)
-			{
-				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"http://"), i + wcslen(L".com") - j - wcslen(L"http://")) + L"/favicon.ico";
-				goto Fetch;
-			}
-
-			//³¢ÊÔ²éÕÒÊÇ·ñÓÐhttps://
-			j = strUrl.rfind(L"https://", i - 1);
-
-			if (j != -1)
-			{
-				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"https://"), i + wcslen(L".com") - j - wcslen(L"https://")) + L"/favicon.ico";
-				goto Fetch;
-			}
-
-			strFixUrl = L"http://www." + strUrl.substr(0, i + wcslen(L".com")) + L"/favicon.ico";
-		}
-		else
-		{
-			strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".com") - j) + L"/favicon.ico";
-		}
-		goto Fetch;
-	}
-
-	i = strUrl.find(L".net");
-	if (i != -1)
-	{
-		j = strUrl.rfind(L".", i - 1);
-		if (j == -1)
-		{
-			j = strUrl.rfind(L"http://", i - 1);
-
-			//³¢ÊÔ²éÕÒhttp://
-			if (j != -1)
-			{
-				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"http://"), i + wcslen(L".net") - j - wcslen(L"http://")) + L"/favicon.ico";
-				goto Fetch;
-			}
-
-			//³¢ÊÔ²éÕÒÊÇ·ñÓÐhttps://
-			j = strUrl.rfind(L"https://", i - 1);
-
-			if (j != -1)
-			{
-				strFixUrl = L"http://www." + strUrl.substr(j + wcslen(L"https://"), i + wcslen(L".net") - j - wcslen(L"https://")) + L"/favicon.ico";
-				goto Fetch;
-			}
-
-			strFixUrl = L"http://www." + strUrl.substr(0, i + wcslen(L".net")) + L"/favicon.ico";
-		}
-		else
-		{
-			strFixUrl = L"http://www" + strUrl.substr(j, i + wcslen(L".net") - j) + L"/favicon.ico";
-		}
-		goto Fetch;
-	}
-Fetch:	
-	string strIconBuffer;
-	int nSize = 0;
 	bool bOk = false;
-
-	if (strFixUrl != L"")
-	{
-		strIconBuffer = CurlHttp::Instance()->RequestGet(strFixUrl);
-		nSize = strIconBuffer.size();
-	}
-
-	wchar_t szRow[5] = {0};
-	_ltow(nRow, szRow, 10);
-	strIconName = L"favicon";
-	strIconName += szRow;
-	strIconName += L".ico";
-	m_pm.RemoveImage(strIconName.c_str());
-
 	if (nSize != 0)
 	{
 		 HICON hIcon = ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 16);
-		 bOk = m_pm.AddIcon16(strIconName.c_str(), hIcon) != NULL;
+		 bOk = m_pm.AddIcon16(wstrIconName.c_str(), hIcon) != NULL;
 
 		 if (bOk == false)
 		 {
-			 HICON hIcon16 = ImageHelper::Convert32x32IconTo16x16(ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 32));
-			 bOk = m_pm.AddIcon16(strIconName.c_str(), hIcon16) != NULL;
+			 HICON hIcon16 = ImageHelper::Convert32x32IconTo16x16(
+				 ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 32));
+			 bOk = m_pm.AddIcon16(wstrIconName.c_str(), hIcon16) != NULL;
 		 }
 	}
+
+	database::Database_FavIconSaveEvent* pSaveIconEvent = new database::Database_FavIconSaveEvent();
+	STRNCPY(pSaveIconEvent->szFavoriteUrl, pszDomainUrl);
+	pSaveIconEvent->nIconDataLen = strIconBuffer.size();
+	pSaveIconEvent->pIconData  = strIconBuffer.c_str();
+	pSaveIconEvent->m_pstExtraInfo = pSaveIconEvent;
+	g_MainFrameModule->GetModuleManager()->PushEvent(*pSaveIconEvent);
+
+	free(pszDomainUrl);
 
 	if (bOk == false)
 	{
@@ -642,7 +516,7 @@ Fetch:
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 		};
 		HICON hIcon = ImageHelper::CreateIconFromBuffer((LPBYTE)szDefaultIcon, sizeof(szDefaultIcon), 16);
-		m_pm.AddIcon16(strIconName.c_str(), hIcon) != NULL;
+		m_pm.AddIcon16(wstrIconName.c_str(), hIcon) != NULL;
 	}
 
 	return false;

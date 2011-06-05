@@ -178,14 +178,6 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 	m_pModuleManager->PushEvent(
 		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_PLUGIN_LOAD_ALL,
 		MODULE_ID_PLUGIN));
-
-	database::Database_FavIconSaveEvent* pe = new database::Database_FavIconSaveEvent();
-	pe->srcMId = MODULE_ID_MAINFRAME;
-	STRNCPY(pe->szFavoriteUrl, L"http://www.baidu.com");
-	pe->hIcon = 0;
-	pe->m_pstExtraInfo = pe;
-	
-	m_pModuleManager->PushEvent(*pe);
 }
 
 void MainFrameModule::OnMessage_PreExit(Message* pMessage)

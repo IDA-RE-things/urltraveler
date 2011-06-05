@@ -3,10 +3,13 @@
 #include "Database.h"
 #include "PathHelper.h"
 #include "DatabaseDefine.h"
+#include "StringHelper.h"
+#include <string>
+#include "ImageHelper.h"
 
 HMODULE	g_hModule = NULL;
 
-
+using namespace std;
 using namespace database;
 
 namespace database
@@ -54,6 +57,7 @@ BEGIN_EVENT_MAP(DatabaseModule)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(DatabaseModule)
+	ON_SERVICE(SERVICE_VALUE_DATABASE_FAVICON_LOAD, OnService_GetFavoriteIcon)
 END_SERVICE_MAP()
 
 //----------------------------------------------------------------------------------------
@@ -113,12 +117,40 @@ int32 DatabaseModule::CallDirect(const ServiceValue lServiceValue, param wparam)
 	CALL_DIRECT(lServiceValue, wparam);
 }
 
+void DatabaseModule::SQLite3EncodeBlob2Buffer(
+	const void * ptrBlobBuffer, 
+	CBinaryBuffer &binaryBuffer
+	)
+{
+	PAssertNotNull_Return(ptrBlobBuffer);
 
-CppSQLite3DB& DatabaseModule::OpenFavoriteDB()
+	/**重新将缓冲区放到CppSQLite3Binary中管理,
+	由于getBlobField返回的为字符串形式的编码后的数据为原始数据经过编码后的形式
+	所以为设置Encoded数据进入blob对象中
+	*/
+	CppSQLite3Binary blob;
+	blob.setEncoded((const unsigned char*)ptrBlobBuffer);
+
+	UINT uiMaxBufferLen = sizeof(binaryBuffer.m_binaryBuffer);
+	UINT uiBinaryBufferLen = blob.getBinaryLength();
+
+	if (uiBinaryBufferLen <= uiMaxBufferLen)
+	{
+		binaryBuffer.m_uiBufferLen = uiBinaryBufferLen;
+	}
+	else
+	{
+		binaryBuffer.m_uiBufferLen = uiMaxBufferLen;
+	}
+	memcpy(binaryBuffer.m_binaryBuffer, blob.getBinary(), binaryBuffer.m_uiBufferLen);
+}
+
+
+void DatabaseModule::OpenFavoriteDB()
 {
 	if (m_dbFavorite.IsOpen())
 	{
-		return m_dbFavorite;
+		return;
 	}
 	else
 	{
@@ -128,7 +160,6 @@ CppSQLite3DB& DatabaseModule::OpenFavoriteDB()
 
 		strFileName += L"\\fav.db";
 		m_dbFavorite.open(strFileName.c_str(),"");
-		return m_dbFavorite;
 	}
 }
 
@@ -145,15 +176,64 @@ bool DatabaseModule::PrepareFavoriteTable()
 	return bResult;
 }
 
+HICON	DatabaseModule::GetFavoriteIcon( wstring wstrFavoriteUrl)
+{
+	bool bResult = false;
+	try
+	{
+		OpenFavoriteDB();
+		if(!m_dbFavorite.IsOpen())
+			return NULL;
+
+		bResult = PrepareFavoriteTable() ;
+		if (bResult != true)
+			return NULL;
+
+		// 对表格进行查询
+		string	strSql = "SELECT data FROM fav_icon";
+		strSql += " WHERE url='" + StringHelper::UnicodeToANSI(wstrFavoriteUrl) + string("'");
+		
+		CppSQLite3Query query = m_dbFavorite.execQuery(strSql.c_str());
+
+		// 找到对应的Icon图标
+		if (!query.eof())
+		{
+			int nDataLen = 0;
+			const unsigned char* pData = query.getBlobField("data", nDataLen);
+			if( nDataLen == 0)
+			{
+				query.finalize();
+				return NULL;
+			}
+
+			CBinaryBuffer binaryBuffer;
+			SQLite3EncodeBlob2Buffer(pData, binaryBuffer);
+
+			HICON hIcon = ImageHelper::CreateIconFromBuffer((LPBYTE) binaryBuffer.m_binaryBuffer, 
+				binaryBuffer.m_uiBufferLen, 16);
+			query.finalize();
+			return hIcon;
+		}
+		// 没有找到对应的 ICON图标
+		query.finalize();
+		return NULL;
+	}
+	catch (CppSQLite3Exception& e)
+	{
+		m_dbFavorite.close();
+	}
+	catch(...)
+	{
+	}
+}
 
 void DatabaseModule::OnEvent_SaveFavoriteIcon(Event* evt)
 {
 	bool bResult = false;
-
 	try
 	{
-		CppSQLite3DB &db = OpenFavoriteDB();
-		if(!db.IsOpen())
+		OpenFavoriteDB();
+		if(!m_dbFavorite.IsOpen())
 			return;
 
 		bResult = PrepareFavoriteTable() ;
@@ -164,16 +244,38 @@ void DatabaseModule::OnEvent_SaveFavoriteIcon(Event* evt)
 		wstring wstrUrl = pE->szFavoriteUrl;
 
 		// 将当前的URL和HICON插入数据库
+		string strSql = "INSERT INTO fav_icon(url, data) values('" + StringHelper::UnicodeToANSI(wstrUrl) + "',";
+		strSql += " ? )";
 
+		CppSQLite3Statement stmt = m_dbFavorite.compileStatement(strSql.c_str());
+
+		///绑定编译sql语句中的Blob参数
+		CppSQLite3Binary blob;
+		const unsigned char *ptrBuffer = (const unsigned char *)pE->pIconData;
+
+		///设置Blob对象的缓冲区和长度
+ 		blob.setBinary(ptrBuffer, pE->nIconDataLen);
+		stmt.bind(1, (const char *)blob.getEncoded());
+		stmt.execDML();
+		stmt.reset();
 	}
 	catch (CppSQLite3Exception& e)
 	{
-		CppSQLite3DB &db = OpenFavoriteDB();
-		db.close();
-		bResult =  false;
+		m_dbFavorite.close();
 	}
 	catch(...)
 	{
-		bResult =  false;
 	}
+}
+
+int32 DatabaseModule:: OnService_GetFavoriteIcon(ServiceValue lService, param lparam)
+{
+	Database_GetFavoriteIconService* pGetFavoriteIconService = (Database_GetFavoriteIconService*)lparam;
+	ASSERT( pGetFavoriteIconService != NULL);
+
+	wstring wstrUrl = pGetFavoriteIconService->szFavoriteUrl;
+	HICON hIcon = GetFavoriteIcon(wstrUrl);
+	pGetFavoriteIconService->hcon = hIcon;
+
+	return -1;
 }

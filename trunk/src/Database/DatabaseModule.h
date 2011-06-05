@@ -6,6 +6,8 @@
 #include "PlugIn.h"
 #include <vector>
 #include <CppSQLite3/CppSQLite3.h>
+#include "DatabaseDefine.h"
+#include "Database.h"
 
 using namespace std;
 
@@ -72,11 +74,26 @@ protected:
 
 	void OnEvent_SaveFavoriteIcon(Event* evt);
 
+protected:
+
+	int32 OnService_GetFavoriteIcon(ServiceValue lService, param wparam);
+
 
 protected:
 
-	CppSQLite3DB&	OpenFavoriteDB();	
+	void	OpenFavoriteDB();	
 	bool	PrepareFavoriteTable();
+	HICON	GetFavoriteIcon( wstring wstrFavoriteUrl);
+
+private:
+
+	/** 将Sqlite3的encode的Blob指针转换成CBinaryBuffer结构
+	@return void.
+	*/
+	void SQLite3EncodeBlob2Buffer(
+		const void * ptrBlobBuffer, 
+		CBinaryBuffer &binaryBuffer
+		);
 
 protected:
 
