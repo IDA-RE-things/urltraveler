@@ -9,70 +9,126 @@ using namespace std;
 using namespace DuiLib;
 
 #define WM_TIPCLOSE    (WM_USER + 1)
+#define POPTIP_TIMEOUT 1
 
-class CTipWnd : public CWindowWnd, public INotifyUI, public IThreadEvent
+class CTipWnd : public CWindowWnd, public INotifyUI
 {
 public:
-    CTipWnd() : m_pOwner(NULL) { };
+    CTipWnd() : m_pOwner(NULL), m_nEventId(0) { };
 	~CTipWnd()
 	{
 		::SendMessage(m_pOwner->GetManager()->GetPaintWindow(), WM_TIPCLOSE, 0, 0);
 		int i = 0;
 	}
-    void Init(CControlUI* pOwner, CRect rc, CStdString strTip) {
+    void Init(CControlUI* pOwner) {
         if( pOwner == NULL ) return;
         m_pOwner = pOwner;
 
-        MONITORINFO oMonitor = {};
-        oMonitor.cbSize = sizeof(oMonitor);
-        ::GetMonitorInfo(::MonitorFromWindow(*this, MONITOR_DEFAULTTOPRIMARY), &oMonitor);
-        CRect rcWork = oMonitor.rcWork;
-        int nWidth = rc.GetWidth();
-        int nHeight = rc.GetHeight();
-        if( rc.bottom > rcWork.bottom ) {
-            if( nHeight >= rcWork.GetHeight() ) {
-                rc.top = 0;
-                rc.bottom = nHeight;
-            }
-            else {
-                rc.bottom = rcWork.bottom;
-                rc.top = rc.bottom - nHeight;
-            }
-        }
-        if( rc.right > rcWork.right ) {
-            if( nWidth >= rcWork.GetWidth() ) {
-                rc.left = 0;
-                rc.right = nWidth;
-            }
-            else {
-                rc.right = rcWork.right;
-                rc.left = rc.right - nWidth;
-            }
-        }
+        CRect rc;
 
-		m_strTip = strTip;
-		m_pThis = this;
+		rc.left = 0;
+		rc.top = 0;
+		rc.right = 0;
+		rc.bottom = 0;
 
         Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP, WS_EX_TOOLWINDOW, rc);
         HWND hWndParent = m_hWnd;
         while( ::GetParent(hWndParent) != NULL ) hWndParent = ::GetParent(hWndParent);
-        ::ShowWindow(m_hWnd, SW_SHOW);
-        ::SendMessage(hWndParent, WM_NCACTIVATE, TRUE, 0L);
+
+		m_hParent = hWndParent;
     }
+
+	void ShowTips(int nDelayMilliseconds, CStdString strTip)
+	{
+		if (IsWindow(m_hWnd) == FALSE)
+		{
+			return;
+		}
+
+		m_strTip = strTip;
+
+		if (nDelayMilliseconds == 0)
+		{
+			POINT pt1;
+			GetCursorPos(&pt1);
+
+			//::ClientToScreen(m_hWnd, &pt1);
+
+			CRect rc;
+			rc.left = pt1.x;
+			rc.top = pt1.y;
+			rc.right = pt1.x + 400;
+			rc.bottom = pt1.y + 100;
+
+			MONITORINFO oMonitor = {};
+			oMonitor.cbSize = sizeof(oMonitor);
+			::GetMonitorInfo(::MonitorFromWindow(*this, MONITOR_DEFAULTTOPRIMARY), &oMonitor);
+			CRect rcWork = oMonitor.rcWork;
+			int nWidth = rc.GetWidth();
+			int nHeight = rc.GetHeight();
+			if( rc.bottom > rcWork.bottom ) {
+				if( nHeight >= rcWork.GetHeight() ) {
+					rc.top = 0;
+					rc.bottom = nHeight;
+				}
+				else {
+					rc.bottom = rcWork.bottom;
+					rc.top = rc.bottom - nHeight;
+				}
+			}
+			if( rc.right > rcWork.right ) {
+				if( nWidth >= rcWork.GetWidth() ) {
+					rc.left = 0;
+					rc.right = nWidth;
+				}
+				else {
+					rc.right = rcWork.right;
+					rc.left = rc.right - nWidth;
+				}
+			}
+
+			SetWindowPos(m_hWnd, HWND_TOPMOST, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, 0);
+
+			CTextUI *pTip = static_cast<CTextUI *>(m_pm.FindControl(_T("tips")));
+			if (pTip)
+			{
+				pTip->SetText(m_strTip);
+			}
+
+			::ShowWindow(m_hWnd, SW_SHOW);
+			::SendMessage(m_hParent, WM_NCACTIVATE, TRUE, 0L);
+
+			return;
+		}
+
+		m_nEventId = SetTimer(m_hWnd, POPTIP_TIMEOUT, nDelayMilliseconds, NULL);
+	}
+
+	void HideTip()
+	{
+		if (m_nEventId != 0)
+		{
+			KillTimer(m_hWnd, m_nEventId);
+			m_nEventId = 0;
+		}
+
+		::ShowWindow(m_hWnd, SW_HIDE);
+		::SendMessage(m_hParent, WM_ACTIVATE, TRUE, 0L);
+	}
 
     LPCTSTR GetWindowClassName() const { return _T("TipWnd"); };
     void OnFinalMessage(HWND /*hWnd*/) { delete this; };
 
     void Notify(TNotifyUI& msg)
     {
-		if (msg.sType == L"link")
+		/*if (msg.sType == L"link")
 		{
 			CAPTURECALLBACK cb;
 			cb.fn1 = OnCaptureFinish;
 			cb.fn2 = OnQueryCaptureSize;
 			Capture(m_pOwner->GetManager()->GetPaintWindow(), L"http://www.baidu.com", &cb);
 			m_pThreadObj->CreateThread(this);
-		}
+		}*/
     }
 
     LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -85,11 +141,6 @@ public:
         m_pm.AttachDialog(pRoot);
         m_pm.AddNotifier(this);
         m_pm.SetRoundCorner(3, 3);
-
-		CTextUI *pTip = static_cast<CTextUI *>(m_pm.FindControl(_T("tips")));
-		pTip->SetText(m_strTip);
-
-		m_pThreadObj = CreateThreadObject();
 
         return 0;
     }
@@ -104,6 +155,22 @@ public:
         if( wParam == VK_ESCAPE ) Close();
         return 0;
     }
+
+    LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		if (wParam == m_nEventId)
+		{
+			if (m_nEventId != 0)
+			{
+				KillTimer(m_hWnd, m_nEventId);
+				m_nEventId = 0;
+			}
+
+			ShowTips(0, m_strTip);
+		}
+
+		return FALSE;
+	}
 
     LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
@@ -132,6 +199,7 @@ public:
         case WM_KEYDOWN:       lRes = OnKeyDown(uMsg, wParam, lParam, bHandled); break;
         case WM_MOUSEWHEEL:    break;
         case WM_SIZE:          lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
+		case WM_TIMER:         lRes = OnTimer(uMsg, wParam, lParam, bHandled); break;
         default:
             bHandled = FALSE;
         }
@@ -141,14 +209,7 @@ public:
     }
 
 public:
-	//! 进入线程虚函数
-	virtual void OnThreadEntry()
-	{
-
-	}
-
-	//! RUN
-	static void OnCaptureFinish(HBITMAP hBitmap)
+	/*static void OnCaptureFinish(HBITMAP hBitmap)
 	{
 		CControlUI *pRoot = NULL;
 		m_pThis->m_pm.RemoveImage(L"shuoluetu");
@@ -162,28 +223,13 @@ public:
 		m_pThis->m_nImageHeight = *pnHeight;
 		m_pThis->m_nImageWidth = *pnWidth;
 		m_pThis->ResizeClient(430, 400);
-	}
-
-	virtual int Run()
-	{
-		
-		return 0;
-	}
-	//! 线程退出虚函数
-	virtual void OnThreadExit()
-	{
-
-	}
-
-	// Event处理函数
-
+	}*/
 public:
     CPaintManagerUI m_pm;
     CControlUI* m_pOwner;
+	HWND        m_hParent;
     bool bFlag; // 菜单Notify中尽量不要调用MessageBox函数，如果确实需要调用，使用此变量修正
 	CStdString m_strTip;
-	IThreadObject*      m_pThreadObj;
-	int m_nImageWidth;
-	int m_nImageHeight;
-	static CTipWnd *m_pThis;
+	int m_nEventId;
+	CRect       m_rc;
 };
