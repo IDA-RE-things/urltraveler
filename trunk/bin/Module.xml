@@ -15,4 +15,7 @@
 	<Module Name="PlugInManagerd.dll">
 		<IModule Id="8" desc="MODULE_ID_PLUGIN"/>
 	</Module>
+	<Module Name="Databased.dll">
+		<IModule Id="9" desc="MODULE_ID_DATABASE"/>
+	</Module>
 </ModuleManager>
