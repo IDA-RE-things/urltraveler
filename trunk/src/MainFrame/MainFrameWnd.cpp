@@ -431,10 +431,10 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 				strIconName += szRow;
 				strIconName += L".ico>";
 
+				strIconName += m_vFavoriteNode[iIndex]->szTitle;
 				return _wcsdup(strIconName.c_str());
 			}
-			if( iSubItem == 1 ) return m_vFavoriteNode[iIndex]->szTitle;
-			if( iSubItem == 2 ) return m_vFavoriteNode[iIndex]->szUrl;
+			if( iSubItem == 1 ) return m_vFavoriteNode[iIndex]->szUrl;
 		}
 
     }
@@ -448,7 +448,7 @@ bool CMainFrameWnd::GetRemoteIcon(wstring strUrl, int nRow)
 	if( pszDomainUrl == NULL)
 		return false;
 
-	wstring wstrDomainUrl = pszDomainUrl + wstring(L"\\favicon.ico");
+	wstring wstrDomainUrl = pszDomainUrl + wstring(L"/favicon.ico");
 	string strIconBuffer = CurlHttp::Instance()->RequestGet(wstrDomainUrl);
 	int nSize = strIconBuffer.size();
 
