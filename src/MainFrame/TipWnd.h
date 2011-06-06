@@ -18,7 +18,6 @@ public:
 	~CTipWnd()
 	{
 		::SendMessage(m_pOwner->GetManager()->GetPaintWindow(), WM_TIPCLOSE, 0, 0);
-		int i = 0;
 	}
     void Init(CControlUI* pOwner) {
         if( pOwner == NULL ) return;
@@ -108,6 +107,12 @@ public:
 				m_pIcon->SetText(m_strIcon);
 			}
 
+			SIZE sz = {9999, 9999};
+
+			CRect rcTip = m_pTip->GetPos();
+			sz = m_pTip->EstimateSize(sz);
+			this->ResizeClient(sz.cx + rcTip.left, sz.cy);
+
 			::ShowWindow(m_hWnd, SW_SHOW);
 			::SendMessage(m_hParent, WM_NCACTIVATE, TRUE, 0L);
 
@@ -134,14 +139,7 @@ public:
 
     void Notify(TNotifyUI& msg)
     {
-		/*if (msg.sType == L"link")
-		{
-			CAPTURECALLBACK cb;
-			cb.fn1 = OnCaptureFinish;
-			cb.fn2 = OnQueryCaptureSize;
-			Capture(m_pOwner->GetManager()->GetPaintWindow(), L"http://www.baidu.com", &cb);
-			m_pThreadObj->CreateThread(this);
-		}*/
+		
     }
 
     LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -222,23 +220,6 @@ public:
         if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
         return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
     }
-
-public:
-	/*static void OnCaptureFinish(HBITMAP hBitmap)
-	{
-		CControlUI *pRoot = NULL;
-		m_pThis->m_pm.RemoveImage(L"shuoluetu");
-		m_pThis->m_pm.AddImage(L"shuoluetu", hBitmap, m_pThis->m_nImageWidth, m_pThis->m_nImageHeight);
-		pRoot = m_pThis->m_pm.GetRoot();
-		CTextUI *image = static_cast<CTextUI *>(m_pThis->m_pm.FindControl(L"TextUI1"));
-		image->SetBkImage(L"shuoluetu");
-	}
-	static void OnQueryCaptureSize(long *pnWidth, long *pnHeight)
-	{
-		m_pThis->m_nImageHeight = *pnHeight;
-		m_pThis->m_nImageWidth = *pnWidth;
-		m_pThis->ResizeClient(430, 400);
-	}*/
 public:
     CPaintManagerUI m_pm;
     CControlUI* m_pOwner;
