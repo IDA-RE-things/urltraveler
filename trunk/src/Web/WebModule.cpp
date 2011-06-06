@@ -43,12 +43,15 @@ void	ReleaseModuleFactory( IModuleFactory* p)
 
 WebModule::WebModule()
 {
-
+	m_pRequestManager = new CRequestManager;
 }
 
 WebModule::~WebModule()
 {
-
+	if (m_pRequestManager)
+	{
+		delete m_pRequestManager;
+	}
 }
 
 BEGIN_EVENT_MAP(WebModule)
