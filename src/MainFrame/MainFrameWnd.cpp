@@ -460,7 +460,6 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 				return _wcsdup(strUrl.c_str());
 			}
 		}
-
     }
 
     return _T("");
@@ -499,7 +498,6 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 		free(pszDomainUrl);
 		return true;
 	}
-
 
 	string strIconBuffer = CurlHttp::Instance()->RequestGet(wstrDomainUrl);
 	int nSize = strIconBuffer.size();
