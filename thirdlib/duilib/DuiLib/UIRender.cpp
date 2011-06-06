@@ -1633,34 +1633,37 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 					{
 						LPTSTR pstrTemp = new TCHAR[cchSize];
 						memcpy(pstrTemp, pstrText, cchSize * sizeof(TCHAR));
+						
+						do
+						{
+							if (cchSize == 0)
+							{
+								break;
+							}
 
-						if (cchSize >= 3)
-						{
-							pstrTemp[cchSize - 1] = _T('.');
-							pstrTemp[cchSize - 2] = _T('.');
-							pstrTemp[cchSize - 3] = _T('.');
-						}
-						else if(cchSize == 2)
-						{
-							pstrTemp[cchSize - 1] = _T('.');
-							pstrTemp[cchSize - 2] = _T('.');
-						}
-						else
-						{
-							pstrTemp[cchSize - 1] = _T('.');
-						}
+							if (cchSize >= 3)
+							{
+								pstrTemp[cchSize - 1] = _T('.');
+								pstrTemp[cchSize - 2] = _T('.');
+								pstrTemp[cchSize - 3] = _T('.');
+							}
+							else if(cchSize == 2)
+							{
+								pstrTemp[cchSize - 1] = _T('.');
+								pstrTemp[cchSize - 2] = _T('.');
+							}
+							else
+							{
+								pstrTemp[cchSize - 1] = _T('.');
+							}
 
-		                ::GetTextExtentPoint32(hDC, pstrTemp, cchSize, &szText);
-						while(pt.x + szText.cx >= rc.right && cchSize >= 3)
-						{
-							cchSize -= 1;
-							pstrTemp[cchSize - 1] = _T('.');
-							pstrTemp[cchSize - 2] = _T('.');
-							pstrTemp[cchSize - 3] = _T('.');
 			                ::GetTextExtentPoint32(hDC, pstrTemp, cchSize, &szText);
-						}
+							cchSize -= 1;
+							
+						}while(pt.x + szText.cx >= rc.right);
 
-						::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrTemp, cchSize);
+
+						::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrTemp, cchSize + 1);
 
 						if (pstrTemp)
 						{
