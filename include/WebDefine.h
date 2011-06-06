@@ -131,7 +131,7 @@ namespace web
 		Web_GetFavIconEvent()
 		{
 			eventValue	=	 EVENT_VALUE_WEB_GET_FAVICON;
-			ZeroMemory(szFavoriteUrl, MAX_PATH);
+			ZeroMemory(szFavoriteUrl, MAX_PATH * sizeof(wchar_t));
 		}
 
 		// ÊÕ²Ø¼ÐÍ¼±êµÄURL
