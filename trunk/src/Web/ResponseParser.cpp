@@ -53,8 +53,8 @@ void CResponseParser::ParseGetFavIcon( HTTPCONTEXT* pContext)
 	NEW_RESP(Web_GetFavIconRespEvent, pEvent);
 	STRNCPY(pEvent->szFavoriteUrl, StringHelper::ANSIToUnicode(pContext->strURL).c_str());
 	pEvent->nIconSize = pContext->strContentData.size();
-	pEvent->pIconData = (char*)pContext->strContentData.c_str();
-
+	pEvent->pIconData = new char[pEvent->nIconSize];
+	memcpy(pEvent->pIconData, pContext->strContentData.c_str(), pEvent->nIconSize);
 	g_WebModule->GetModuleManager()->PushEvent(*pEvent);
 }
 

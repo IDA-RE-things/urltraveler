@@ -158,6 +158,17 @@ namespace web
 			pIconData = NULL;
 		}
 
+		~Web_GetFavIconRespEvent()
+		{
+			if( pIconData != NULL)
+			{
+				nIconSize = 0;
+
+				delete pIconData;
+				pIconData = NULL;
+			}
+		}
+
 		wchar_t	szFavoriteUrl[MAX_PATH];		//	URL
 		int nIconSize;
 		char*	pIconData;

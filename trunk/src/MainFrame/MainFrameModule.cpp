@@ -6,10 +6,12 @@
 #include "DataCenterDefine.h"
 #include "PlugInDefine.h"
 #include "DatabaseDefine.h"
+#include "WebDefine.h"
 
 using namespace mainframe;
 using namespace datacenter;
 using namespace plugin;
+using namespace web;
 
 HMODULE	g_hModule = NULL;
 
@@ -38,6 +40,7 @@ BEGIN_EVENT_MAP(MainFrameModule)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_CLOSE, OnEvent_CloseMainDlg)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_SHOW, OnEvent_ShowMainDlg)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_HIDE, OnEvent_HideMainDlg)
+	ON_EVENT(EVENT_VALUE_WEB_GET_FAVICON_RESP, OnEvent_FavoriteIconArrive)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(MainFrameModule)
@@ -129,6 +132,19 @@ void MainFrameModule::OnEvent_ShowMainDlg(Event* pEvent)
 void MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
 {
 	m_pMainFrame->ShowWindow(FALSE);
+}
+
+void	MainFrameModule::OnEvent_FavoriteIconArrive(Event* pEvent)
+{
+	Web_GetFavIconRespEvent*	pGetFavIconRespEvent = (Web_GetFavIconRespEvent*)pEvent->m_pstExtraInfo;
+	if( pGetFavIconRespEvent == NULL)
+		return;
+
+	int nIconSize = pGetFavIconRespEvent->nIconSize;
+	wstring	wstrUrl = pGetFavIconRespEvent->szFavoriteUrl;
+	char* pIconData = pGetFavIconRespEvent->pIconData;
+
+
 }
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)
