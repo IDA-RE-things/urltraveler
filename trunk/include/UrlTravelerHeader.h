@@ -306,7 +306,13 @@ struct  MakeEvent
 // 额外的附加消息，由各个模块自行去实现对应的Event。释放由各个模块自行释放
 struct ExtraInfo : public Event
 {
+	ExtraInfo()
+	{
+		this->m_pstExtraInfo = this;
+	}
+
 	virtual ~ExtraInfo(){} ;
+
 };
 
 

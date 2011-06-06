@@ -61,10 +61,10 @@ public:
 	int32 CallDirect(const param lparam, param wparam);
 };
 
-class CSettingModuleFactory : public ModuleFactoryImpl<SettingModule>{};
+class SettingModuleFactory : public ModuleFactoryImpl<SettingModule>{};
 
 namespace setting
 {
 	extern SettingModule*	g_SettingModule;
-	extern CSettingModuleFactory*	g_SettingModuleFactory;
+	extern SettingModuleFactory*	g_SettingModuleFactory;
 }

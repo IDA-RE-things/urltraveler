@@ -5,18 +5,19 @@
 #include <vector>
 #include "WebModule.h"
 #include "assert.h"
+#include "StringHelper.h"
 
 
-#define NEW_RESP( RESP, pE) \
-	RESP* pE = new RESP;  \
-	pE->param0 = WEB_RET_SUCCESS; \
-	pE->param1 = pContext->nSpeed; \
+#define NEW_RESP( Response, pEvent) \
+	Response* pEvent = new Response;  \
+	pEvent->param0 = WEB_RET_SUCCESS; \
+	pEvent->param1 = pContext->nSpeed; \
 	std::map<uint32, uint32>::iterator itr = g_WebModule->m_mapSeqNo2ModuleId.find(pContext->nReqSeq);	\
 	if( itr != g_WebModule->m_mapSeqNo2ModuleId.end()) \
 	{ \
-	pE->desMId = itr->second;	\
+	pEvent->desMId = itr->second;	\
 	} \
-	pE->param2 = pContext->nReqSeq; \
+	pEvent->param2 = pContext->nReqSeq; \
 
 
 
@@ -41,7 +42,6 @@ CResponseParser::ConvertCharVector( CHAR_VECTOR* pVector)
 	return strData;
 }
 
-
 void	
 CResponseParser::SetReuqestManager( CRequestManager*	pRequestManager)
 {
@@ -50,15 +50,14 @@ CResponseParser::SetReuqestManager( CRequestManager*	pRequestManager)
 
 void CResponseParser::ParseGetFavIcon( HTTPCONTEXT* pContext)
 {
+	NEW_RESP(Web_GetFavIconRespEvent, pEvent);
+	STRNCPY(pEvent->szFavoriteUrl, StringHelper::ANSIToUnicode(pContext->strURL).c_str());
+	pEvent->nIconSize = pContext->strContentData.size();
+	pEvent->pIconData = (char*)pContext->strContentData.c_str();
+
+	g_WebModule->GetModuleManager()->PushEvent(*pEvent);
 }
 
-/**
-* Function		根据给定的EventValue值对返回的响应进行解析
-* @param		nEventValue 对应的事件值
-* @param		lpszContentData 对应的内容
-* @param		dwContentSize 读取的报文的长度
-* @return 
-**/
 void	
 CResponseParser::ParseResponse( HTTPCONTEXT* pContext )
 {

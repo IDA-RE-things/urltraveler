@@ -6,32 +6,11 @@ using namespace setting;
 namespace setting
 {
 	SettingModule*	g_SettingModule = NULL;
-	CSettingModuleFactory*	g_SettingModuleFactory = NULL;
+	SettingModuleFactory*	g_SettingModuleFactory = NULL;
 }
 
-// 导出借口实现
-IModuleFactory*	GetModuleFactory()
-{
-	if( g_SettingModuleFactory == NULL)
-	{
-		g_SettingModuleFactory = new CSettingModuleFactory();
-		g_SettingModuleFactory->QueryModulePoint(1, (IModule*&)g_SettingModule);
-		
-		ASSERT( g_SettingModule != NULL);
-	}
-
-	return g_SettingModuleFactory;
-}
-
-void	ReleaseModuleFactory( IModuleFactory* p)
-{
-	ASSERT( g_SettingModuleFactory == p);
-	if( g_SettingModuleFactory  != NULL)
-	{
-		delete g_SettingModuleFactory;
-		g_SettingModuleFactory = NULL;
-	}
-}
+EXPORT_GETMODULEFACTORY(SettingModule)
+EXPORT_RELEASEMODULEFACTORY(SettingModule)
 
 SettingModule::SettingModule()
 {

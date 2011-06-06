@@ -23,6 +23,7 @@ namespace web
 	{
 		// Favicon对应的图标
 		EVENT_VALUE_WEB_GET_FAVICON = EVENT_VALUE_WEB_BEGIN,		// 通知去拉取Favorite图标
+		EVENT_VALUE_WEB_GET_FAVICON_RESP,							// 获取到图标的响应事件
 	};
 
 	// Web能够可能对外发送的广播消息
@@ -114,21 +115,29 @@ namespace web
 	//============================================================================//
 	//                   Web中所使用到的event结构  			              //
 	//============================================================================//
-	struct WebEvent	:	public ExtraInfo
+	struct WebReqEvent	:	public ExtraInfo
 	{
-		WebEvent()
+		WebReqEvent()
 		{
 			srcMId	=	MODULE_ID_INVALID;
 			desMId	=	MODULE_ID_WEB;
+		}
+	};
 
-			m_pstExtraInfo = this;
+	struct WebRespEvent	:	public ExtraInfo
+	{
+		WebRespEvent()
+		{
+			srcMId	=	MODULE_ID_WEB;
+			desMId	=	MODULE_ID_INVALID;
+			param0	=	WEB_RET_SUCCESS;
 		}
 	};
 
 	// 向网络请求收藏夹ICON图标
-	struct Web_GetFavIconEvent	:	public WebEvent
+	struct Web_GetFavIconReqEvent	:	public WebReqEvent
 	{
-		Web_GetFavIconEvent()
+		Web_GetFavIconReqEvent()
 		{
 			eventValue	=	 EVENT_VALUE_WEB_GET_FAVICON;
 			ZeroMemory(szFavoriteUrl, MAX_PATH * sizeof(wchar_t));
@@ -136,5 +145,21 @@ namespace web
 
 		// 收藏夹图标的URL
 		wchar_t	szFavoriteUrl[MAX_PATH];		//	URL
+	};
+
+	// 网络中返回的响应数据
+	struct Web_GetFavIconRespEvent	:	public WebRespEvent
+	{
+		Web_GetFavIconRespEvent()
+		{
+			eventValue	=	 EVENT_VALUE_WEB_GET_FAVICON_RESP;
+
+			nIconSize = 0;
+			pIconData = NULL;
+		}
+
+		wchar_t	szFavoriteUrl[MAX_PATH];		//	URL
+		int nIconSize;
+		char*	pIconData;
 	};
 };

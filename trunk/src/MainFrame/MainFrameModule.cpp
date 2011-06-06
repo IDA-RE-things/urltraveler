@@ -20,29 +20,8 @@ namespace mainframe
 	MainFrameModuleFactory*	g_MainFrameModuleFactory = NULL;
 }
 
-// 导出借口实现
-IModuleFactory*	GetModuleFactory()
-{
-	if( g_MainFrameModuleFactory == NULL)
-	{
-		g_MainFrameModuleFactory = new MainFrameModuleFactory();
-		g_MainFrameModuleFactory->QueryModulePoint(1, (IModule*&)g_MainFrameModule);
-
-		ASSERT( g_MainFrameModule != NULL);
-	}
-
-	return g_MainFrameModuleFactory;
-}
-
-void	ReleaseModuleFactory( IModuleFactory* p)
-{
-	ASSERT( g_MainFrameModuleFactory == p);
-	if( g_MainFrameModuleFactory  != NULL)
-	{
-		delete g_MainFrameModuleFactory;
-		g_MainFrameModuleFactory = NULL;
-	}
-}
+EXPORT_GETMODULEFACTORY(MainFrameModule)
+EXPORT_RELEASEMODULEFACTORY(MainFrameModule)
 
 MainFrameModule::MainFrameModule()
 {

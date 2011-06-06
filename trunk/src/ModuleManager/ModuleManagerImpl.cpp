@@ -32,7 +32,8 @@ ModuleManagerImpl::~ModuleManagerImpl()
 //----------------------------------------------------------------------------------------
 BOOL ModuleManagerImpl::PushEvent(const Event& evt )
 {
-	ASSERT(evt.srcMId != MODULE_ID_INVALID && evt.desMId != MODULE_ID_INVALID);
+	ASSERT(evt.srcMId != (uint16)MODULE_ID_INVALID && evt.desMId != (uint16)MODULE_ID_INVALID);
+
 	if( m_eventMsgBuf.size() > 10000)
 	{
 		ASSERT("ModuleManagerImpl::PushEvent: circle buffer is full, please wait a while");

@@ -9,29 +9,9 @@ namespace datacenter
 	DataCenterModuleFactory*	g_DataCenterModuleFactory = NULL;
 }
 
-// 导出借口实现
-IModuleFactory*	GetModuleFactory()
-{
-	if( g_DataCenterModuleFactory == NULL)
-	{
-		g_DataCenterModuleFactory = new DataCenterModuleFactory();
-		g_DataCenterModuleFactory->QueryModulePoint(1, (IModule*&)g_DataCenterModule);
-		
-		ASSERT( g_DataCenterModule != NULL);
-	}
 
-	return g_DataCenterModuleFactory;
-}
-
-void	ReleaseModuleFactory( IModuleFactory* p)
-{
-	ASSERT( g_DataCenterModuleFactory == p);
-	if( g_DataCenterModuleFactory  != NULL)
-	{
-		delete g_DataCenterModuleFactory;
-		g_DataCenterModuleFactory = NULL;
-	}
-}
+EXPORT_GETMODULEFACTORY(DataCenterModule)
+EXPORT_RELEASEMODULEFACTORY(DataCenterModule)
 
 DataCenterModule::DataCenterModule()
 {

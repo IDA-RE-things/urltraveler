@@ -13,32 +13,11 @@ using namespace trayicon;
 namespace trayicon
 {
 	TrayIconModule*	g_TrayIconModule = NULL;
-	CTrayIconModuleFactory*	g_TrayIconModuleFactory = NULL;
+	TrayIconModuleFactory*	g_TrayIconModuleFactory = NULL;
 }
 
-// 导出借口实现
-IModuleFactory*	GetModuleFactory()
-{
-	if( g_TrayIconModuleFactory == NULL)
-	{
-		g_TrayIconModuleFactory = new CTrayIconModuleFactory();
-		g_TrayIconModuleFactory->QueryModulePoint(1, (IModule*&)g_TrayIconModule);
-
-		ASSERT( g_TrayIconModule != NULL);
-	}
-
-	return g_TrayIconModuleFactory;
-}
-
-void	ReleaseModuleFactory( IModuleFactory* p)
-{
-	ASSERT( g_TrayIconModuleFactory == p);
-	if( g_TrayIconModuleFactory  != NULL)
-	{
-		delete g_TrayIconModuleFactory;
-		g_TrayIconModuleFactory = NULL;
-	}
-}
+EXPORT_GETMODULEFACTORY(TrayIconModule)
+EXPORT_RELEASEMODULEFACTORY(TrayIconModule)
 
 TrayIconModule::TrayIconModule()
 {
