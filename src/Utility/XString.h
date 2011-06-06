@@ -303,10 +303,10 @@ public:
 	//描述: 从当前的字符串尾部的给定偏移nOffset开始反向查找第一个出现的chToFind字符
 	//参数: 
 	//	@param	chToFind	需要查找的字符
-	//	@param	nOffset	查找的起始偏移，默认是0，即从头开始查找
+	//	@param	nOffset	查找的起始偏移，默认是NPOS，即从尾部开始查找
 	//返回: 目标字符的索引，如果没有找到，则返回-1；
 	//----------------------------------------------------------------------------------------
-	int	FindLastCharOf(TCHAR chToFind,  uint16 nOffset = 0);
+	int	FindLastCharOf(TCHAR chToFind,  uint16 nOffset = NPOS);
 
 	//----------------------------------------------------------------------------------------
 	//名称: FindLastCharOf
@@ -452,7 +452,7 @@ public:
 	//返回: 替换后的字符串，当前的字符串内容也会被更改
 	//返回: 返回分割后的字符串数组指针
 	//----------------------------------------------------------------------------------------	
-	String*	Split(TCHAR chSplit, uint16& nNum);
+	void Split(TCHAR chSplit, String* pString, uint16& nNum);
 
 private:
 

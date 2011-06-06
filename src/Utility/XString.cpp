@@ -801,8 +801,11 @@ bool	String::IsNumeric()
 //返回: 替换后的字符串，当前的字符串内容也会被更改
 //返回: 返回分割后的字符串数组指针
 //----------------------------------------------------------------------------------------	
-String*	String::Split(TCHAR chSplit, uint16& nNum)
+void String::Split(TCHAR chSplit, String* pString, uint16& nNum)
 {
+	if( pString == NULL)
+		return;
+
 	vector<String> vResult;
 
 	String	strSrc = m_strString.c_str();
@@ -828,12 +831,10 @@ String*	String::Split(TCHAR chSplit, uint16& nNum)
 		}
 	}
 
-	String* pSplitArray = new String[vResult.size()];
 	for( int i =0; i< vResult.size(); i++)
 	{
-		pSplitArray[i]	=	vResult[i];		
+		pString[i]	=	vResult[i];		
 	}
 
 	nNum = vResult.size();
-	return pSplitArray;
 }

@@ -27,8 +27,8 @@ BEGIN_EVENT_MAP(DataCenterModule)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(DataCenterModule)
-	ON_SERVICE(SERVICE_VALUE__DATACENTER_GET_FAVORITE_VECTOR, OnService_GetFavoriteVector)
-	ON_SERVICE(SERVICE_VALUE__DATACENTER_GET_FAVORITE_DATA,OnService_GetFavoriteData)
+	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR, OnService_GetFavoriteVector)
+	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,OnService_GetFavoriteData)
 END_SERVICE_MAP()
 
 //----------------------------------------------------------------------------------------
@@ -102,4 +102,13 @@ void DataCenterModule::OnService_GetFavoriteData(ServiceValue lServiceValue, par
 
 	pGetFavoriteDataService->pFavoriteData = &m_vFavoriteLineData[0];
 	pGetFavoriteDataService->nNum = m_vFavoriteLineData.size();
+}
+
+void	DataCenterModule::OnService_GetFavoriteIcon(ServiceValue lServiceValue, param lParam)
+{
+	DataCenter_GetFavoriteIconService* pGetFavoriteIconService = (DataCenter_GetFavoriteIconService*)lParam;
+	ASSERT(pGetFavoriteIconService != NULL);
+
+	wstring	wstrDomain = pGetFavoriteIconService->szDomain;
+
 }
