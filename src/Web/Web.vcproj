@@ -181,7 +181,31 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\HttpClient.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpContext.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RequestManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ResponseParser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SafeSTL.h"
 				>
 			</File>
 			<File
@@ -194,6 +218,10 @@
 			</File>
 			<File
 				RelativePath=".\Web.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WebData.h"
 				>
 			</File>
 			<File
@@ -233,6 +261,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\HttpClient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpHandler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RequestManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ResponseParser.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SafeSTL.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -254,6 +302,10 @@
 			</File>
 			<File
 				RelativePath=".\Web.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WebData.cpp"
 				>
 			</File>
 			<File
