@@ -140,11 +140,11 @@ void	MainFrameModule::OnEvent_FavoriteIconArrive(Event* pEvent)
 	if( pGetFavIconRespEvent == NULL)
 		return;
 
-	int nIconSize = pGetFavIconRespEvent->nIconSize;
 	wstring	wstrUrl = pGetFavIconRespEvent->szFavoriteUrl;
+	int nIconSize = pGetFavIconRespEvent->nIconSize;
 	char* pIconData = pGetFavIconRespEvent->pIconData;
 
-
+	m_pMainFrame->UpdateFavoriteIcon((wchar_t*)wstrUrl.c_str(), nIconSize, pIconData);
 }
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)

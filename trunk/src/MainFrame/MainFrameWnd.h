@@ -47,6 +47,10 @@ public:
 	LRESULT OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+	// 更新指定网站的收藏夹图标
+	void	UpdateFavoriteIcon(wchar_t*	pszUrl, int nIconSize, const char* pIconData);
+
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);
 public:
@@ -60,7 +64,6 @@ private:
 	int m_nFavoriteNum;
 	FAVORITELINEDATA*	m_pFavoriteData;
 	CTipWnd*            m_pTipWnd;
-
 
 	// 保存某个目录结点下的所有的叶子结点
 	std::vector<FAVORITELINEDATA*>		m_vFavoriteNode;
