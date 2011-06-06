@@ -1601,8 +1601,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                 }
                 if( pt.x + szText.cx > rc.right ) {
                     if( pt.x + szText.cx > rc.right && pt.x != rc.left) {
-                        cchChars--;
-                        cchSize -= (int)(pstrNext - p);
+                        //cchChars--;
+                        //cchSize -= (int)(pstrNext - p);
                     }
                     if( (uStyle & DT_WORDBREAK) != 0 && cchLastGoodWord > 0 ) {
                         cchChars = cchLastGoodWord;
@@ -1631,13 +1631,33 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                 if( bDraw && bLineDraw ) {
 					if (pt.x + szText.cx>= rc.right && uStyle & DT_END_ELLIPSIS)
 					{
-						::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize - 2);
-						::TextOut(hDC, rc.right - 20, ptPos.y, _T("..."), 3);
+						LPTSTR pstrTemp = new TCHAR[cchSize];
+						memcpy(pstrTemp, pstrText, cchSize * sizeof(TCHAR));
+
+						pstrTemp[cchSize - 1] = _T('.');
+						pstrTemp[cchSize - 2] = _T('.');
+						pstrTemp[cchSize - 3] = _T('.');
+
+		                ::GetTextExtentPoint32(hDC, pstrTemp, cchSize, &szText);
+						while(pt.x + szText.cx >= rc.right && cchSize >= 3)
+						{
+							cchSize -= 1;
+							pstrTemp[cchSize - 1] = _T('.');
+							pstrTemp[cchSize - 2] = _T('.');
+							pstrTemp[cchSize - 3] = _T('.');
+			                ::GetTextExtentPoint32(hDC, pstrTemp, cchSize, &szText);
+						}
+
+						::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrTemp, cchSize);
+
+						if (pstrTemp)
+						{
+							delete []pstrTemp;
+						}
 					}
 					else
 					{
 						::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize);
-						if( pt.x + szText.cx>= rc.right && (uStyle & DT_END_ELLIPSIS) != 0 ) ::TextOut(hDC, rc.right - 20, ptPos.y, _T("..."), 3);
 					}
                 }
                 pt.x += szText.cx;
