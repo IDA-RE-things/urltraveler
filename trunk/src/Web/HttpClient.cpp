@@ -19,9 +19,9 @@ using namespace web;
 
 #define	END_FLAG_LENGTH		256
 
-HttpClient* HttpClient::Singleton = 0;
+CHttpClient* CHttpClient::Singleton = 0;
 
-HttpClient::HttpClient( )
+CHttpClient::CHttpClient( )
 {
 	m_pTransferManager = NULL;
 	m_pTransferManager = TranferManager::getInstance();
@@ -49,74 +49,77 @@ HttpClient::HttpClient( )
 }
 
 void	
-HttpClient::SetProxy( ProxyInfo* pProxyInfo)
+CHttpClient::SetProxy( PROXYDATA* pProxyData)
 {
-	if( pProxyInfo)
+	if( pProxyData)
 	{
-		Proxy_t proxyInfo;
+		Proxy_t PROXYDATA;
 
 		int nIndex = 0;
-		if( pProxyInfo->arrDetail[0].eType != pProxyInfo->eLastUsed)	
+		if( pProxyData->arrDetail[0].eType != pProxyData->eLastUsed)	
 			nIndex = 1;
 
-		if( pProxyInfo->eLastUsed == PROXY_HTTP)
+		if( pProxyData->eLastUsed == HTTPDOWN_PROXY_HTTP)
 		{
-			proxyInfo.type = HTTPDOWN_PROXY_HTTP;
-			proxyInfo.host = string_helper::from(pProxyInfo->arrDetail[nIndex].strServer);
-			proxyInfo.port = StringHelper::ConvertToInt(pProxyInfo->arrDetail[nIndex].strPort);
-			proxyInfo.user = string_helper::from(pProxyInfo->arrDetail[nIndex].strUserName);
-			proxyInfo.pwd = string_helper::from( pProxyInfo->arrDetail[nIndex].strPassword);
-			proxyInfo.domain = string_helper::from( pProxyInfo->arrDetail[nIndex].strDomain);
+			PROXYDATA.type = HTTPDOWN_PROXY_HTTP;
+			PROXYDATA.host = StringHelper::UnicodeToANSI(pProxyData->arrDetail[nIndex].strServer);
+			PROXYDATA.port = StringHelper::ConvertToInt(StringHelper::UnicodeToANSI(pProxyData->arrDetail[nIndex].strPort));
+			PROXYDATA.user = StringHelper::UnicodeToANSI(pProxyData->arrDetail[nIndex].strUserName);
+			PROXYDATA.pwd = StringHelper::UnicodeToANSI( pProxyData->arrDetail[nIndex].strPassword);
+			PROXYDATA.domain = StringHelper::UnicodeToANSI( pProxyData->arrDetail[nIndex].strDomain);
 		}
-		else if( pProxyInfo->eLastUsed == PROXY_SOCK5)
+		else if( pProxyData->eLastUsed == PROXY_SOCK5)
 		{
-			proxyInfo.type = HTTPDOWN_PROXY_SOCK5;
-			proxyInfo.host = string_helper::from(pProxyInfo->arrDetail[nIndex].strServer);
-			proxyInfo.port = wstring_helper::from_string(pProxyInfo->arrDetail[nIndex].strPort);
-			proxyInfo.user = string_helper::from(pProxyInfo->arrDetail[nIndex].strUserName);
-			proxyInfo.pwd = string_helper::from( pProxyInfo->arrDetail[nIndex].strPassword);
+			PROXYDATA.type = HTTPDOWN_PROXY_SOCK5;
+			PROXYDATA.host = StringHelper::UnicodeToANSI(pProxyData->arrDetail[nIndex].strServer);
+			PROXYDATA.port = StringHelper::ConvertToInt(StringHelper::UnicodeToANSI(pProxyData->arrDetail[nIndex].strPort));
+			PROXYDATA.user = StringHelper::UnicodeToANSI(pProxyData->arrDetail[nIndex].strUserName);
+			PROXYDATA.pwd = StringHelper::UnicodeToANSI( pProxyData->arrDetail[nIndex].strPassword);
 		}
-		else if( pProxyInfo->eLastUsed == PROXY_IE)
+		else if( pProxyData->eLastUsed == PROXY_IE)
 		{
-			proxyInfo.type = HTTPDOWN_PROXY_HTTP;
+/*
+			PROXYDATA.type = HTTPDOWN_PROXY_HTTP;
 
 			WINHTTP_PROXY_INFO winHttpProxy;
 			BOOL bRet = DetectIEProxySettings(&winHttpProxy);
 			if(bRet == TRUE)
 			{
 				vector<wstring> vProxyString = wstring_helper::split_string_by_delimiter( winHttpProxy.lpszProxy,':');
-				proxyInfo.host = string_helper::from(vProxyString[0]);
-				proxyInfo.port = wstring_helper::from_string(vProxyString[1]);
+				PROXYDATA.host = string_helper::from(vProxyString[0]);
+				PROXYDATA.port = wstring_helper::from_string(vProxyString[1]);
 				::GlobalFree( winHttpProxy.lpszProxy);
 				::GlobalFree( winHttpProxy.lpszProxyBypass);
 
-				proxyInfo.user		= string_helper::from(pProxyInfo->arrDetail[PROXY_HTTP].strUserName);
-				proxyInfo.pwd		= string_helper::from(pProxyInfo->arrDetail[PROXY_HTTP].strPassword);
-				proxyInfo.domain	= string_helper::from(pProxyInfo->arrDetail[PROXY_HTTP].strDomain);
+				PROXYDATA.user		= string_helper::from(pProxyData->arrDetail[PROXY_HTTP].strUserName);
+				PROXYDATA.pwd		= string_helper::from(pProxyData->arrDetail[PROXY_HTTP].strPassword);
+				PROXYDATA.domain	= string_helper::from(pProxyData->arrDetail[PROXY_HTTP].strDomain);
 			}
 			else
 			{
-				proxyInfo.host = "";
-				proxyInfo.port = 0;
+				PROXYDATA.host = "";
+				PROXYDATA.port = 0;
 			}
+*/
 		}
 
-		if( ( pProxyInfo->eLastUsed == PROXY_HTTP || pProxyInfo->eLastUsed == PROXY_SOCK5)
-			|| ( pProxyInfo->eLastUsed == PROXY_IE &&( proxyInfo.host != "" && proxyInfo.port != 0)))
+		if( ( pProxyData->eLastUsed == PROXY_HTTP || pProxyData->eLastUsed == PROXY_SOCK5)
+			|| ( pProxyData->eLastUsed == PROXY_IE &&( PROXYDATA.host != "" && PROXYDATA.port != 0)))
 		{
 			m_pTransferManager = TranferManager::getInstance();
-			m_pTransferManager->setProxy( proxyInfo);
+			m_pTransferManager->setProxy( PROXYDATA);
 		}
 		else
 		{
 			m_pTransferManager = TranferManager::getInstance();
-			proxyInfo.type = HTTPDOWN_PROXY_BUTT;
-			m_pTransferManager->setProxy(proxyInfo);
+			PROXYDATA.type = HTTPDOWN_PROXY_BUTT;
+			m_pTransferManager->setProxy(PROXYDATA);
 		}
 	}
 }
 
-HttpClient::~HttpClient()
+
+CHttpClient::~CHttpClient()
 {
 	if( m_pTransferManager)
 	{
@@ -142,10 +145,10 @@ HttpClient::~HttpClient()
 	Singleton = NULL;
 }
 
-HttpClient*	HttpClient::Instance()
+CHttpClient*	CHttpClient::Instance()
 {
 	if( Singleton == NULL)
-		Singleton = new HttpClient();
+		Singleton = new CHttpClient();
 
 	assert( Singleton != 0);
 
@@ -153,7 +156,7 @@ HttpClient*	HttpClient::Instance()
 }
 
 void	
-HttpClient::ClearSeqIdMap( uint32 nSeqNo)
+CHttpClient::ClearSeqIdMap( uint32 nSeqNo)
 {
 	std::map< uint32, int32>::iterator itr = m_mapSeqNo2TaskId.find( nSeqNo);
 	if( itr != m_mapSeqNo2TaskId.end())
@@ -167,7 +170,7 @@ HttpClient::ClearSeqIdMap( uint32 nSeqNo)
 }
 
 void    
-HttpClient::DeleteSeqNo( uint32 nSeqNo)
+CHttpClient::DeleteSeqNo( uint32 nSeqNo)
 {
 	ClearSeqIdMap( nSeqNo);
 
@@ -188,7 +191,7 @@ HttpClient::DeleteSeqNo( uint32 nSeqNo)
 }
 
 void	
-HttpClient::CleanAll()
+CHttpClient::CleanAll()
 {
 	map<uint32, HTTPCONTEXT*>::iterator itr = m_mapRequest.begin();
 	for( ;itr != m_mapRequest.end(); itr++)
@@ -215,7 +218,7 @@ HttpClient::CleanAll()
 
 
 HTTPCONTEXT*	
-HttpClient::GetContext( unsigned int nSeqNo)
+CHttpClient::GetContext( unsigned int nSeqNo)
 {
 	std::map< unsigned int, HTTPCONTEXT*>::iterator itr = m_mapRequest.find( nSeqNo);
 	if( itr == m_mapRequest.end())
@@ -229,7 +232,7 @@ HttpClient::GetContext( unsigned int nSeqNo)
 * @return 
 **/
 void 
-HttpClient::Cleanup( HTTPCONTEXT* pContext)
+CHttpClient::Cleanup( HTTPCONTEXT* pContext)
 {
 	m_Lock.Lock();
 	m_lstResult.push_back( *pContext);
@@ -237,7 +240,7 @@ HttpClient::Cleanup( HTTPCONTEXT* pContext)
 }
 
 int32	
-HttpClient::ReqURL( HTTPCONTEXT* pContext)
+CHttpClient::ReqURL( HTTPCONTEXT* pContext)
 {
 	if( pContext == NULL)
 	{
@@ -284,14 +287,13 @@ HttpClient::ReqURL( HTTPCONTEXT* pContext)
 }
 
 int32 
-HttpClient::ReReqURL( HTTPCONTEXT* pContext)
+CHttpClient::ReReqURL( HTTPCONTEXT* pContext)
 {
 	if( pContext == NULL)
 		return -1;
 
 	if( m_pTransferManager == NULL)
 	{
-		_LOG( N() << L"ReqURL_m_pTransferManager为空" << OVER);
 		return -1;
 	}
 
@@ -333,14 +335,13 @@ HttpClient::ReReqURL( HTTPCONTEXT* pContext)
 }
 
 int32	
-HttpClient::ReqPostUrl( HTTPCONTEXT* pContext)
+CHttpClient::ReqPostUrl( HTTPCONTEXT* pContext)
 {
 	if( pContext == NULL)
 		return -1;
 
 	if( m_pTransferManager == NULL)
 	{
-		_LOG( N() << L"ReqURL_m_pTransferManager为空" << OVER);
 		return -1;
 	}
 
@@ -396,14 +397,13 @@ HttpClient::ReqPostUrl( HTTPCONTEXT* pContext)
 }
 
 int32 
-HttpClient::ReReqPostUrl( HTTPCONTEXT* pContext)
+CHttpClient::ReReqPostUrl( HTTPCONTEXT* pContext)
 {
 	if( pContext == NULL)
 		return -1;
 
 	if( m_pTransferManager == NULL)
 	{
-		_LOG( N() << L"ReqURL_m_pTransferManager为空" << OVER);
 		return -1;
 	}
 
@@ -460,7 +460,7 @@ HttpClient::ReReqPostUrl( HTTPCONTEXT* pContext)
 }
 
 void	
-HttpClient::CancelTask( uint32 nSeqNo)
+CHttpClient::CancelTask( uint32 nSeqNo)
 {
 	HTTPCONTEXT* pContext = GetContext(nSeqNo);
 	if( pContext && pContext->hFileHandle)
@@ -492,7 +492,7 @@ HttpClient::CancelTask( uint32 nSeqNo)
 * stContext中的数据是无效数据
 **/
 HTTPCONTEXT 
-HttpClient::RetriveResp( )
+CHttpClient::RetriveResp( )
 {
 	HTTPCONTEXT stContext;
 	stContext.uOpPolicy = INVALID_RESP;
@@ -509,7 +509,7 @@ HttpClient::RetriveResp( )
 }
 
 int32	
-HttpClient::GetSeqNo( int32	nTaskId)
+CHttpClient::GetSeqNo( int32	nTaskId)
 {
 	std::map< int32, uint32 >::iterator itr = m_mapTaskid2Seqno.find( nTaskId);
 	if( itr == m_mapTaskid2Seqno.end())

@@ -2,16 +2,13 @@
 
 #include <string>
 #include "WebDefine.h"
+#include "HttpClient.h"
 #include "ResponseParser.h"
-#include "SafeSTL.h"
-#include "XSync.h"
 #include "httpmanager.h"
-#include "optiondefine.h"
 #include "HttpContext.h"
 
 using namespace std;
 
-class HttpClient;
 /**************************************************************
 * ClassName:   CRequestManager
 * Author:	   Zhang Z.Q
@@ -21,21 +18,19 @@ class HttpClient;
 * Verion:
 *		Created			2007,12,12
 **************************************************************/
-
-class CWebData;
-
+class CHttpClient;
 class CRequestManager
 {
 public:
 
-	CRequestManager( CWebData* pWebData);
+	CRequestManager( );
 	~CRequestManager();
 
-	void		Init( ProxyInfo* pProxyInfo);
-	void		ChangeProxy( ProxyInfo* pProxyInfo);
+	void		Init( PROXYDATA* pProxyData);
+	void		ChangeProxy( PROXYDATA* pProxyData);
 	void		Clear();
 	static int	GetRetCodeByStatus( int nStatusCode);
-	void		SetProxyInfo( ProxyInfo* pProxyInfo);
+	void		SetProxyData( PROXYDATA* pProxyData);
 
 	/**
 	 * 将给定的URL放入到延迟发送请求队列中
@@ -78,9 +73,6 @@ public:
 
 	HTTPCONTEXT		ProcessResp( );
 
-	void		SetWebData( CWebData*	pWebData ){ m_pWebData = pWebData;}
-	CWebData*	GetWebData() { return m_pWebData;}
-
 	/**
 	 * Function		查询给定下载任务的状态
 	 * @param		nSeqNo	任务的序列号，通过CallService返回
@@ -101,9 +93,9 @@ public:
 
 public:
 
-	HttpClient*		m_pHttpClient;
+	CHttpClient*		m_pHttpClient;
 	CResponseParser	m_ResponseParser;				// 对响应报文进行解析
+
 	unsigned int	m_nReqSeq;
 	std::vector< HTTPCONTEXT*>	m_vRequestQueue;	//	保存所有的请求
-	CWebData*		m_pWebData;
 };

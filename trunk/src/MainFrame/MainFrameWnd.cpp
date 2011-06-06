@@ -8,6 +8,7 @@
 #include "DatabaseDefine.h"
 #include "MiscHelper.h"
 #include "StringHelper.h"
+#include "WebDefine.h"
 
 using namespace database;
 using namespace mainframe;
@@ -457,6 +458,11 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 
 bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 {
+	web::Web_GetFavIconEvent* pGetFavIconEvent = new web::Web_GetFavIconEvent();
+	STRNCPY(pGetFavIconEvent->szFavoriteUrl, L"http://www.baidu.com/favicon.ico");
+	g_MainFrameModule->GetModuleManager()->PushEvent(*pGetFavIconEvent);
+
+
 	wchar_t* pszDomainUrl = MiscHelper::GetDomainFromUrl(strUrl.c_str());
 	if( pszDomainUrl == NULL)
 		return false;

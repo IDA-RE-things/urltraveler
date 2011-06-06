@@ -11,7 +11,6 @@
 #include "WebDefine.h"
 #include <string>
 #include <map>
-#include "ximage.h"
 #include "httpmanager.h"
 #include "HttpContext.h"
 
@@ -26,19 +25,64 @@ using namespace web;
 											// 比如对于用户形象照的获取就应该返回该值
 #define RET_SUCCESS				7			// 执行成功，数据解析后放入到数据中心
 
+// Event处理映射函数
+#define	DECLEAR_HANDLER_MAP(ModuleClass)  \
+private:   \
+	typedef void (ModuleClass##::*PParserHandler)(HTTPCONTEXT* pContext );     \
+	typedef struct _EventHanderMapEntries   \
+	{   \
+		EventValue		nEventValue;   \
+		PParserHandler		pfEventHandler;   \
+	} ParserHandlerMapEntries;   \
+	static ParserHandlerMapEntries m_eventMap[];  \
+	\
+	static const ParserHandlerMapEntries* GetThisEventMap()  \
+	{   \
+		return &m_eventMap[0];  \
+	};
 
-class CWebData;
+#define	BEGIN_HANDLER_MAP( ModuleClass ) \
+	ModuleClass##::ParserHandlerMapEntries ModuleClass##::m_eventMap[] ={ \
+
+#define	ON_HANDLER( event_value, event_handler)  \
+	{ event_value,  (PParserHandler)&event_handler },
+
+#define	END_HANDLER_MAP() \
+	{ 0, (PParserHandler)NULL}};
+
+
+
+#define PROCESS_HANDLER(evt) \
+	EventValue ev = evt.eventValue;   \
+	ASSERT( ev != HANDLER_VALUE_INVALID);    \
+	\
+	const ParserHandlerMapEntries* pEntry = GetThisEventMap();   \
+	while( pEntry)   \
+	{   \
+		if(  pEntry->nEventValue == HANDLER_VALUE_INVALID ||   \
+			pEntry->nEventValue == 0)   \
+			break;   \
+			\
+		if( pEntry->nEventValue == ev   \
+			&& pEntry->pfEventHandler != NULL)   \
+		{   \
+			(this->*pEntry->pfEventHandler)(&evt);   \
+			return;   \
+		}   \
+		++pEntry;   \
+	}
+
+
 class CRequestManager;
 class CResponseParser
 {
+	DECLEAR_HANDLER_MAP(CResponseParser)
+
 public:
 	CResponseParser(void);
 	~CResponseParser(void);
 
 	static string	ConvertCharVector( CHAR_VECTOR* pVector);
-
-	void			SetWebData( CWebData* pWebData);
-	CWebData*	GetWebData( );
 
 	void				SetReuqestManager( CRequestManager*	pRequestManager);
 	CRequestManager*	GetRequestManager() { return m_pRequestManager;}
@@ -55,24 +99,13 @@ public:
 	void	ParseResponse( HTTPCONTEXT* pContext);
 
 private:
+
 	//==========================================================
 	//              内部使用的辅助函数
 	//==========================================================
-	//static void	ParseGetUpdateConfigXml( CResponseParser* pParser, HTTPCONTEXT* pContext);
+	void	ParseGetFavIcon( HTTPCONTEXT* pContext);
 
 private:
 
 	CRequestManager*	m_pRequestManager;		// 处理器在获取到图片URL的时候需要调用CReuqestManager，
-												// 请求其返回图片数据
-	CWebData*			m_pWebData;				// 数据中心
-
-	// 处理句柄指针
-	typedef void (*ParseHandler)( CResponseParser* pParser, HTTPCONTEXT* pContext );
-	typedef struct _HanderTable
-	{
-		EventValue		m_nEventValue;		//	对应的事件值
-		ParseHandler	m_hHandler;			//	处理句柄
-
-	} HandlerTableEntry;
-	static HandlerTableEntry m_tableDriven[];
 };

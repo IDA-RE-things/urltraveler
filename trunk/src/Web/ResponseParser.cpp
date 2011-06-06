@@ -6,8 +6,6 @@
 #include "WebModule.h"
 #include "assert.h"
 
-#pragma comment(lib,"shlwapi.lib")
-
 
 #define NEW_RESP( RESP, pE) \
 	RESP* pE = new RESP;  \
@@ -16,48 +14,33 @@
 	std::map<uint32, uint32>::iterator itr = g_WebModule->m_mapSeqNo2ModuleId.find(pContext->nReqSeq);	\
 	if( itr != g_WebModule->m_mapSeqNo2ModuleId.end()) \
 	{ \
-		pE->desMId = itr->second;	\
+	pE->desMId = itr->second;	\
 	} \
 	pE->param2 = pContext->nReqSeq; \
 
 
-CResponseParser::HandlerTableEntry CResponseParser::m_tableDriven[] =
-{
-	//{ event_value_web_get_update_config_xml_req,				CResponseParser::ParseGetUpdateConfigXml },
-	{ 0, NULL}
-};
 
 CResponseParser::CResponseParser(void)
 {
 	m_pRequestManager = NULL;
-	m_pWebData = NULL;
 }
 
 CResponseParser::~CResponseParser(void)
 {
 }
 
+BEGIN_HANDLER_MAP(CResponseParser)
+	ON_HANDLER(EVENT_VALUE_WEB_GET_FAVICON, ParseGetFavIcon)
+END_HANDLER_MAP(CResponseParser)
+
 string 
 CResponseParser::ConvertCharVector( CHAR_VECTOR* pVector)
 {
 	string strData;
 	strData.append( (*pVector).begin(), (*pVector).end());
-
 	return strData;
 }
 
-
-void 
-CResponseParser::SetWebData( CWebData* pWebData)
-{
-	m_pWebData = pWebData;
-}
-
-CWebData*	
-CResponseParser::GetWebData( )
-{
-	return m_pWebData;
-}
 
 void	
 CResponseParser::SetReuqestManager( CRequestManager*	pRequestManager)
@@ -65,13 +48,39 @@ CResponseParser::SetReuqestManager( CRequestManager*	pRequestManager)
 	m_pRequestManager = pRequestManager;
 }
 
-void	
-CResponseParser::ParseGetUpdateConfigXml(CResponseParser* pParser, HTTPCONTEXT* pContext)
+void CResponseParser::ParseGetFavIcon( HTTPCONTEXT* pContext)
 {
-	LOG_RESP();
-	NEW_RESP(get_update_config_xml_event_resp, pE);
-	pE->strUpdateXml = string_helper::from_utf8( pContext->strContentData);
-	pE->m_pstExtraInfo = (ExtraInfo*)pE;
+}
 
-	PUSH_EVENT(*pE);
+/**
+* Function		根据给定的EventValue值对返回的响应进行解析
+* @param		nEventValue 对应的事件值
+* @param		lpszContentData 对应的内容
+* @param		dwContentSize 读取的报文的长度
+* @return 
+**/
+void	
+CResponseParser::ParseResponse( HTTPCONTEXT* pContext )
+{
+	if( pContext == NULL)
+		return;
+
+	if( pContext == NULL)
+		return;
+
+	const ParserHandlerMapEntries* pEntry = GetThisEventMap();   
+	while( pEntry)   
+	{   
+		if(  pEntry->nEventValue == EVENT_VALUE_INVALID ||   
+			pEntry->nEventValue == 0)   
+			break;   
+
+		if( pEntry->nEventValue == pContext->nEventValue   
+			&& pEntry->pfEventHandler != NULL)   
+		{   
+			(this->*pEntry->pfEventHandler)(pContext);   
+			return;   
+		}   
+		++pEntry;   
+	}
 }
