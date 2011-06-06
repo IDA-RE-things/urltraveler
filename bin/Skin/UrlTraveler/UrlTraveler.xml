@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <Window roundcorner="10,10" size="850,600" sizebox="0,0,800,30" caption="0,0,0,30">
     <Font name="宋体" size="13" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="true" italic="false" />
@@ -42,10 +42,10 @@
                         <HorizontalLayout name="HorizontalLayoutUI9" pos="305,0,580,0" width="275">
                             <Edit name="EditUI2" text="搜索收藏夹" float="true" pos="9,6,115,25" bkcolor="#FFFFFFFF" bordercolor="#006D6754" textpadding="4,3,4,3" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                             <Button name="ButtonUI4" float="true" pos="121,3,147,29" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="icon_06.png" />
-                            <Label name="LabelUI7" float="true" pos="159,7,173,20" bkimage="button_d.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                            <Label name="LabelUI8" float="true" pos="218,7,232,20" bkimage="button_l.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                            <Label name="LabelUI9" float="true" pos="252,7,266,20" bkimage="button_p.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                            <Label name="LabelUI10" float="true" pos="190,7,204,21" bkimage="button_u.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                            <Label name="LabelUI7" float="true" pos="158,3,182,27" bkimage="button_d.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                            <Label name="LabelUI8" float="true" pos="216,4,240,28" bkimage="button_l.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                            <Label name="LabelUI9" float="true" pos="245,4,269,28" bkimage="button_p.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                            <Label name="LabelUI10" float="true" pos="187,4,211,28" bkimage="button_u.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                         </HorizontalLayout>
                     </HorizontalLayout>
                     <HorizontalLayout name="HorizontalLayoutUI4">
