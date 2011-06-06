@@ -2,6 +2,7 @@
 #include "XString.h"
 #include "algorithm"
 #include "tchar.h"
+#include <vector>
 
 using namespace std;
 
@@ -651,6 +652,29 @@ String	String::Right(uint16 nLength) const
 	return SubStr( nLeftNumber, nLength);
 }
 
+//----------------------------------------------------------------------------------------
+//名称: BeginWith
+//返回: 检测当前字符串是否以特定的字符串开始。
+//----------------------------------------------------------------------------------------
+BOOL	String::BeginWith(String	strBegin) const
+{
+	if( Left(strBegin.GetLength()) == strBegin)
+		return TRUE;
+
+	return FALSE;
+}
+
+//----------------------------------------------------------------------------------------
+//名称: EndWith
+//返回: 检测当前字符串是否以特定的字符串为结尾。
+//----------------------------------------------------------------------------------------
+BOOL	String::EndWith(String	strEnd) const
+{
+	if( Right(strEnd.GetLength()) == strEnd)
+		return TRUE;
+
+	return FALSE;
+}
 
 //----------------------------------------------------------------------------------------
 //名称: ToUpper和ToLower
@@ -766,4 +790,50 @@ int __cdecl String::SmallFormat(LPCTSTR pstrFormat, ...)
 bool	String::IsNumeric()
 {
 	return m_strString.find_first_not_of(_T("0123456789.")) == string::npos;
+}
+
+//----------------------------------------------------------------------------------------
+//名称: Split
+//描述: 对当前的字符串按照给定的字符进行分割
+//参数: 
+//	@param	pszSplitString		需要被分割的字符串
+//	@param	nNum		分割后的字符串的数目
+//返回: 替换后的字符串，当前的字符串内容也会被更改
+//返回: 返回分割后的字符串数组指针
+//----------------------------------------------------------------------------------------	
+String*	String::Split(TCHAR chSplit, uint16& nNum)
+{
+	vector<String> vResult;
+
+	String	strSrc = m_strString.c_str();
+	for( int i = 0 ; i < strSrc.GetLength(); i++)
+	{
+		if( strSrc[i] == chSplit)
+		{
+			String new_str = strSrc.SubStr( 0, i);
+			vResult.push_back( new_str);
+
+			strSrc = strSrc.SubStr( i+1, strSrc.GetLength()- i);
+			i = -1;
+		}
+		else
+		{
+			// 判断是否已经到末尾
+			if( i == strSrc.GetLength() -1 )
+			{
+				String new_str = strSrc.SubStr( 0, strSrc.GetLength());
+				vResult.push_back( new_str);
+				break;
+			}
+		}
+	}
+
+	String* pSplitArray = new String[vResult.size()];
+	for( int i =0; i< vResult.size(); i++)
+	{
+		pSplitArray[i]	=	vResult[i];		
+	}
+
+	nNum = vResult.size();
+	return pSplitArray;
 }

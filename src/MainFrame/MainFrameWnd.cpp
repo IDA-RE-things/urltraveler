@@ -9,6 +9,7 @@
 #include "MiscHelper.h"
 #include "StringHelper.h"
 #include "WebDefine.h"
+#include "XString.h"
 
 using namespace database;
 using namespace mainframe;
@@ -446,6 +447,7 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 				_ltow(iIndex, szRow, 10);
 				strIconName = L"<x 4><i favicon";
 				strIconName += szRow;
+				//strIconName += L"default";
 				strIconName += L".ico><x 4>";
 
 				strIconName += m_vFavoriteNode[iIndex]->szTitle;
@@ -467,11 +469,12 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 
 bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 {
+/*
 	web::Web_GetFavIconReqEvent* pGetFavIconEvent = new web::Web_GetFavIconReqEvent();
 	pGetFavIconEvent->srcMId = MODULE_ID_MAINFRAME;
 	STRNCPY(pGetFavIconEvent->szFavoriteUrl, L"http://www.baidu.com/favicon.ico");
 	g_MainFrameModule->GetModuleManager()->PushEvent(*pGetFavIconEvent);
-
+*/
 
 	wchar_t* pszDomainUrl = MiscHelper::GetDomainFromUrl(strUrl.c_str());
 	if( pszDomainUrl == NULL)
@@ -569,4 +572,9 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 	}
 
 	return false;
+}
+
+void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, int nIconSize, const char* pIconData )
+{
+
 }
