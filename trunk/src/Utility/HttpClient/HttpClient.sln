@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HttpClient", "src\HttpClient.vcproj", "{B22C30A9-0017-42A0-8DDC-3B5BB588B8A9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HttpClientTest", "test\HttpClientTest.vcproj", "{ADD3DE0D-4F41-470B-ADF1-8F73545913B0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B22C30A9-0017-42A0-8DDC-3B5BB588B8A9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B22C30A9-0017-42A0-8DDC-3B5BB588B8A9}.Debug|Win32.Build.0 = Debug|Win32
+		{B22C30A9-0017-42A0-8DDC-3B5BB588B8A9}.Release|Win32.ActiveCfg = Release|Win32
+		{B22C30A9-0017-42A0-8DDC-3B5BB588B8A9}.Release|Win32.Build.0 = Release|Win32
+		{ADD3DE0D-4F41-470B-ADF1-8F73545913B0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ADD3DE0D-4F41-470B-ADF1-8F73545913B0}.Debug|Win32.Build.0 = Debug|Win32
+		{ADD3DE0D-4F41-470B-ADF1-8F73545913B0}.Release|Win32.ActiveCfg = Release|Win32
+		{ADD3DE0D-4F41-470B-ADF1-8F73545913B0}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
