@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="sqlite3070603d.lib libcurl_mdd.lib Ws2_32.lib utils-mt-gd.lib"
+				AdditionalDependencies="sqlite3070603d.lib libcurl_mdd.lib Ws2_32.lib"
 				OutputFile="..\..\bin\Utilityd.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib;..\Utility\HttpClient\lib"
@@ -281,6 +281,10 @@
 				RelativePath=".\XString.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\XSync.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
@@ -349,6 +353,10 @@
 			</File>
 			<File
 				RelativePath=".\XString.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XSync.h"
 				>
 			</File>
 		</Filter>
@@ -539,6 +547,70 @@
 			</File>
 			<File
 				RelativePath=".\json\writer.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="httpclient"
+			>
+			<File
+				RelativePath=".\HttpClient\include\HttpCli.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\httpmanager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\httptransfer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\log.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\log_stun.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\ntlmproxy.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\Socket.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\SockProxy.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\task.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\transferworker.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\Types.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\Url.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HttpClient\include\Utils.h"
 				>
 			</File>
 		</Filter>
