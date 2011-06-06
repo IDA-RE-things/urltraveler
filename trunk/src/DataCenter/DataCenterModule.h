@@ -71,6 +71,7 @@ protected:
 
 	void	OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam);
 	void	OnService_GetFavoriteData(ServiceValue lServiceValue, param	lParam);
+	void	OnService_GetFavoriteIcon(ServiceValue lServiceValue, param lParam);
 
 
 protected:

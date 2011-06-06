@@ -29,8 +29,9 @@ namespace datacenter
 	// DataCenter能够处理的直接调用
 	enum E_DataCenterServiceValue
 	{
-		SERVICE_VALUE__DATACENTER_GET_FAVORITE_VECTOR	=	SERVICE_VALUE_DATACENTER_BEGIN,
-		SERVICE_VALUE__DATACENTER_GET_FAVORITE_DATA,
+		SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR	=	SERVICE_VALUE_DATACENTER_BEGIN,
+		SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
+		SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON,		//	获取给定Domain对应的URL
 	};
 
 	//===========================================//
@@ -132,26 +133,46 @@ namespace datacenter
 	//===========================================//
 	//                   DataCenter中所使用到的Service结构			              //
 	//===========================================//
-	struct DataCenter_GetFavoriteVectorService
+	struct DataCenter_GetFavoriteVectorService : public Service
 	{
 		DataCenter_GetFavoriteVectorService()
 		{
+			serviceId	=	SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR;
 			pvFavoriteData = NULL;
 		}
 
 		std::vector<FAVORITELINEDATA>*	pvFavoriteData;
 	};
 
-	struct DataCenter_GetFavoriteService
+	struct DataCenter_GetFavoriteService : public Service
 	{
 		DataCenter_GetFavoriteService()
 		{
+			serviceId = SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA;
 			nNum = 0;
 			pFavoriteData	=	NULL;
 		}
 
 		int nNum;										//	
 		FAVORITELINEDATA*		pFavoriteData;			//	收藏夹的数据	
+	};
+
+	// 获取给定的URL 域对应的ICON
+	struct DataCenter_GetFavoriteIconService : public Service
+	{
+		DataCenter_GetFavoriteIconService()
+		{
+			serviceId = SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON;
+
+			ZEROMEM(szDomain);
+			nIconSize = 0;
+			pIconData = NULL;
+		}
+
+		wchar_t	szDomain[MAX_PATH];
+
+		int nIconSize;	
+		char*	pIconData;
 	};
 
 };

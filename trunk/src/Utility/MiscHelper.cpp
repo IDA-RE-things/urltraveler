@@ -49,7 +49,11 @@ wchar_t*	MiscHelper::GetTopDomainUrl(const wchar_t* pszUrl)
 	if( pszUrl == NULL)
 		return NULL;
 
-	String	strUrl = pszUrl;
+	wchar_t* szUrl = GetDomainFromUrl(pszUrl);
+	if( szUrl == NULL)
+		return NULL;
+
+	String	strUrl = szUrl;
 	strUrl = strUrl.ToLower();
 
 	if( strUrl.Left(7) == L"http://")
@@ -84,9 +88,18 @@ wchar_t*	MiscHelper::GetTopDomainUrl(const wchar_t* pszUrl)
 	};
 
 	// 找到第一个.
+	for(int i=0; i<sizeof(szDomain)/2/MAX_PATH; i++)
+	{
+		if( strUrl.EndWith(szDomain[i]) == TRUE)
+		{
+			String strDomainName = strUrl.SubStr(0, strUrl.GetLength() - wcslen(szDomain[i]));
+			int nIndex = strDomainName.FindLastCharOf(L'.', String::NPOS);
+			strDomainName = strDomainName.SubStr(nIndex+1, strDomainName.GetLength() - nIndex);
+			strDomainName += szDomain[i];
 
-
-
+			return wcsdup(strDomainName.GetData());
+		}
+	}
 
 	return NULL;
 }

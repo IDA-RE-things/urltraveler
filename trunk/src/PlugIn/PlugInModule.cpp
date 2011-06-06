@@ -352,7 +352,7 @@ void PlugInModule::OnThreadEntry()
 int PlugInModule::Run()
 {
 	DataCenter_GetFavoriteVectorService favoriteVectorService;
-	m_pModuleManager->CallService(SERVICE_VALUE__DATACENTER_GET_FAVORITE_VECTOR, (param)&favoriteVectorService);
+	m_pModuleManager->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR, (param)&favoriteVectorService);
 	std::vector<FAVORITELINEDATA>*	pvFavoriteData = favoriteVectorService.pvFavoriteData;
 
 	CoInitialize(NULL);

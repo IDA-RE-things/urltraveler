@@ -187,7 +187,7 @@ void MainFrameModule::OnMessage_PlugInLoaded(Message* pMessage)
 {
 	// 在界面上显示整个收藏夹树
 	DataCenter_GetFavoriteService favoriteData;
-	m_pModuleManager->CallService(SERVICE_VALUE__DATACENTER_GET_FAVORITE_DATA,(param)&favoriteData); 
+	m_pModuleManager->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,(param)&favoriteData); 
 
 	if( favoriteData.nNum > 0)
 	{
