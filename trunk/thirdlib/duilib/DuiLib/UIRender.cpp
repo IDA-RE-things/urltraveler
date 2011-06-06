@@ -1609,8 +1609,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         cchSize = cchLastGoodSize;                 
                     }
                     if( (uStyle & DT_END_ELLIPSIS) != 0 && cchChars > 2 ) {
-                        //cchChars = cchLastGoodWord - 3;
-                        //cchSize = cchLastGoodSize + 1;
+                        //cchChars = cchLastGoodWord;
+                        //cchSize = cchLastGoodSize;
                     }
                     bLineEnd = true;
                     cxMaxWidth = MAX(cxMaxWidth, pt.x);
