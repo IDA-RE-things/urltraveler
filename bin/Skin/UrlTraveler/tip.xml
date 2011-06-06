@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <Window size="388,65" sizebox="4,4,6,6" caption="0,0,0,30">
     <VerticalLayout name="VerticalLayoutUI1" pos="0,0,430,64" width="430" height="64" bkcolor="#FFFFFFE1" bordercolor="#00010100">
-        <Text name="tips" text="VC2005从开发MFC Active Ocx控件" float="true" pos="30,4,385,61" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-        <Text name="icon" float="true" pos="7,3,30,25" align="wrap" showhtml="true"/>
+        <Text name="tips" text="VC2005从开发MFC Active Ocx控件" float="true" pos="30,3,385,61" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+        <Text name="icon" float="true" pos="7,3,30,25" textpadding="2,0,2,0" showhtml="true" align="wrap" />
     </VerticalLayout>
 </Window>
