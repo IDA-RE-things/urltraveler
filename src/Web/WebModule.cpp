@@ -17,33 +17,16 @@ namespace web
 	WebModuleFactory*	g_WebModuleFactory = NULL;
 }
 
-// 导出借口实现
-IModuleFactory*	GetModuleFactory()
-{
-	if( g_WebModuleFactory == NULL)
-	{
-		g_WebModuleFactory = new WebModuleFactory();
-		g_WebModuleFactory->QueryModulePoint(1, (IModule*&)g_WebModule);
-		
-		ASSERT( g_WebModule != NULL);
-	}
+EXPORT_GETMODULEFACTORY(WebModule)
+EXPORT_RELEASEMODULEFACTORY(WebModule)
 
-	return g_WebModuleFactory;
-}
-
-void	ReleaseModuleFactory( IModuleFactory* p)
-{
-	ASSERT( g_WebModuleFactory == p);
-	if( g_WebModuleFactory  != NULL)
-	{
-		delete g_WebModuleFactory;
-		g_WebModuleFactory = NULL;
-	}
-}
 
 WebModule::WebModule()
 {
 	m_pRequestManager = new CRequestManager;
+
+	m_unCookie = 0;
+	m_pRequestManager->m_pHttpClient = CHttpClient::Instance();
 }
 
 WebModule::~WebModule()
@@ -51,6 +34,7 @@ WebModule::~WebModule()
 	if (m_pRequestManager)
 	{
 		delete m_pRequestManager;
+		m_pRequestManager = NULL;
 	}
 }
 
@@ -64,6 +48,28 @@ END_SERVICE_MAP()
 BEGIN_MESSAGE_MAP(WebModule)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_CYCLE_TRIGGER, OnMessage_CycleTrigged)
 END_MESSAGE_MAP()
+
+
+BOOL 
+WebModule::Unload()
+{
+	std::map<Cookie, Event*>::iterator itr = m_mapCookie2Event.begin();
+	for( ; itr != m_mapCookie2Event.end(); itr++)
+	{
+		if( itr->second)
+		{
+			Event* pE = itr->second;
+
+			// 在使用中，发现m_mapCookie2Event中会有多个同样的地址，原因尚未明确
+			// 未防止崩溃，做预先检查
+			delete itr->second;
+			itr->second = NULL;
+		}
+	}
+	m_mapCookie2Event.clear();
+
+	return TRUE;
+}
 
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
@@ -107,6 +113,7 @@ void WebModule::ProcessEvent(const Event& evt)
 //----------------------------------------------------------------------------------------
 void WebModule::ProcessMessage(const Message& msg) 
 {
+	PROCESS_MESSAGE(msg);
 }
 
 //----------------------------------------------------------------------------------------
@@ -209,7 +216,7 @@ void WebModule::ProcessSendUrl( )
 
 void WebModule::OnEvent_GetFavoriteIcon(Event* pEvent)
 {
-	Web_GetFavIconEvent* pE = (Web_GetFavIconEvent*)pEvent->m_pstExtraInfo;
+	Web_GetFavIconReqEvent* pE = (Web_GetFavIconReqEvent*)pEvent->m_pstExtraInfo;
 	if( pE == NULL)
 	{
 		ASSERT(0);

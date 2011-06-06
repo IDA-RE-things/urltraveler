@@ -49,29 +49,7 @@ private:   \
 
 #define	END_HANDLER_MAP() \
 	{ 0, (PParserHandler)NULL}};
-
-
-
-#define PROCESS_HANDLER(evt) \
-	EventValue ev = evt.eventValue;   \
-	ASSERT( ev != HANDLER_VALUE_INVALID);    \
-	\
-	const ParserHandlerMapEntries* pEntry = GetThisEventMap();   \
-	while( pEntry)   \
-	{   \
-		if(  pEntry->nEventValue == HANDLER_VALUE_INVALID ||   \
-			pEntry->nEventValue == 0)   \
-			break;   \
-			\
-		if( pEntry->nEventValue == ev   \
-			&& pEntry->pfEventHandler != NULL)   \
-		{   \
-			(this->*pEntry->pfEventHandler)(&evt);   \
-			return;   \
-		}   \
-		++pEntry;   \
-	}
-
+ 
 
 class CRequestManager;
 class CResponseParser

@@ -18,29 +18,8 @@ namespace database
 	DatabaseModuleFactory*	g_DatabaseModuleFactory = NULL;
 }
 
-// 导出借口实现
-IModuleFactory*	GetModuleFactory()
-{
-	if( g_DatabaseModuleFactory == NULL)
-	{
-		g_DatabaseModuleFactory = new DatabaseModuleFactory();
-		g_DatabaseModuleFactory->QueryModulePoint(1, (IModule*&)g_DatabaseModule);
-		
-		ASSERT( g_DatabaseModule != NULL);
-	}
-
-	return g_DatabaseModuleFactory;
-}
-
-void	ReleaseModuleFactory( IModuleFactory* p)
-{
-	ASSERT( g_DatabaseModuleFactory == p);
-	if( g_DatabaseModuleFactory  != NULL)
-	{
-		delete g_DatabaseModuleFactory;
-		g_DatabaseModuleFactory = NULL;
-	}
-}
+EXPORT_GETMODULEFACTORY(DatabaseModule)
+EXPORT_RELEASEMODULEFACTORY(DatabaseModule)
 
 DatabaseModule::DatabaseModule()
 {

@@ -89,7 +89,7 @@ CRequestManager::PushUrl(EventValue nEventValue, int64 nParam0, wstring strUrl, 
 	pCxt->bAllowRepeated = bAllowRepeated;
 	pCxt->nReqSeq = ++m_nReqSeq;
 
-	//m_vRequestQueue.push_back( pCxt);
+	m_vRequestQueue.push_back( pCxt);
 
 	return pCxt->nReqSeq;
 }

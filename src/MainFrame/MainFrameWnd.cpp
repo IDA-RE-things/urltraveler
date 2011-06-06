@@ -468,7 +468,8 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 
 bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 {
-	web::Web_GetFavIconEvent* pGetFavIconEvent = new web::Web_GetFavIconEvent();
+	web::Web_GetFavIconReqEvent* pGetFavIconEvent = new web::Web_GetFavIconReqEvent();
+	pGetFavIconEvent->srcMId = MODULE_ID_MAINFRAME;
 	STRNCPY(pGetFavIconEvent->szFavoriteUrl, L"http://www.baidu.com/favicon.ico");
 	g_MainFrameModule->GetModuleManager()->PushEvent(*pGetFavIconEvent);
 
@@ -518,12 +519,12 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 	}
 
 	database::Database_FavIconSaveEvent* pSaveIconEvent = new database::Database_FavIconSaveEvent();
+	pSaveIconEvent->srcMId = MODULE_ID_MAINFRAME;
 	STRNCPY(pSaveIconEvent->szFavoriteUrl, pszDomainUrl);
 	pSaveIconEvent->nIconDataLen = strIconBuffer.size();
 	pSaveIconEvent->pIconData = new char[pSaveIconEvent->nIconDataLen];
 	memcpy((void*)pSaveIconEvent->pIconData,strIconBuffer.c_str(), pSaveIconEvent->nIconDataLen);
 
-	pSaveIconEvent->m_pstExtraInfo = pSaveIconEvent;
 	g_MainFrameModule->GetModuleManager()->PushEvent(*pSaveIconEvent);
 
 	free(pszDomainUrl);

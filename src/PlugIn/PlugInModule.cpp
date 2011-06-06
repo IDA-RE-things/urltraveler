@@ -17,29 +17,9 @@ namespace plugin
 	PlugInModuleFactory*	g_PlugInModuleFactory = NULL;
 }
 
-// 导出借口实现
-IModuleFactory*	GetModuleFactory()
-{
-	if( g_PlugInModuleFactory == NULL)
-	{
-		g_PlugInModuleFactory = new PlugInModuleFactory();
-		g_PlugInModuleFactory->QueryModulePoint(1, (IModule*&)g_PlugInModule);
-		
-		ASSERT( g_PlugInModule != NULL);
-	}
 
-	return g_PlugInModuleFactory;
-}
-
-void	ReleaseModuleFactory( IModuleFactory* p)
-{
-	ASSERT( g_PlugInModuleFactory == p);
-	if( g_PlugInModuleFactory  != NULL)
-	{
-		delete g_PlugInModuleFactory;
-		g_PlugInModuleFactory = NULL;
-	}
-}
+EXPORT_GETMODULEFACTORY(PlugInModule)
+EXPORT_RELEASEMODULEFACTORY(PlugInModule)
 
 
 PlugInModule::PlugInModule()

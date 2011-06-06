@@ -234,6 +234,35 @@ private:   \
 	}  \
 	return -1; 
 
+
+// 导出借口实现
+#define EXPORT_GETMODULEFACTORY(ModuleName) \
+	IModuleFactory*	GetModuleFactory()	 \
+	{   \
+		if( g_##ModuleName##Factory == NULL)	    \
+		{		    \
+			g_##ModuleName##Factory = new ModuleName##Factory();  \
+			g_##ModuleName##Factory->QueryModulePoint(1, (IModule*&)g_##ModuleName);  \
+			 \
+			ASSERT( g_##ModuleName != NULL);   \
+		}   \
+		 \
+		return g_##ModuleName##Factory;    \
+	}
+
+
+#define EXPORT_RELEASEMODULEFACTORY(ModuleName) \
+	void	ReleaseModuleFactory( IModuleFactory* p) \
+	{    \
+		ASSERT( g_##ModuleName##Factory == p);    \
+		if( g_##ModuleName##Factory  != NULL)  \
+		{	  \
+			delete g_##ModuleName##Factory;	  \
+			g_##ModuleName##Factory = NULL; \
+		} \
+	}
+
+
 //----------------------------------------------------------------------------------------
 //名称: IModuleFactory
 //描述: 一个DLL中可以包含多个IModule，通过IModuleFactory，总线可以知晓当前Dll中的

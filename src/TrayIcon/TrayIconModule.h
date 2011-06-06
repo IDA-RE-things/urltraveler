@@ -93,7 +93,8 @@ public:
 	// Event处理函数
 protected:
 
-	void	OnEvent_ShowTrayIcon(Event* pEvent);	
+	void OnEvent_ShowTrayIcon(Event* pEvent);
+
 public:
 
 	void OnEvent_ShowAboutDialog(Event *pEvent);
@@ -105,7 +106,7 @@ protected:
 	void	OnMessage_PreExit(Message* pMessage);		
 
 private:
-	void	CreatTrayIconMsgWnd();
+	void CreatTrayIconMsgWnd();
 	void DestroyTrayIconMsgWnd();
 
 private:
@@ -114,10 +115,10 @@ private:
 	HWND			m_hMsgWnd;		 //	内部的隐藏窗口，用来接收菜单的消息
 };
 
-class CTrayIconModuleFactory : public ModuleFactoryImpl<TrayIconModule>{};
+class TrayIconModuleFactory : public ModuleFactoryImpl<TrayIconModule>{};
 
 namespace trayicon
 {
 	extern TrayIconModule*	g_TrayIconModule;
-	extern CTrayIconModuleFactory*	g_TrayIconModuleFactory;
+	extern TrayIconModuleFactory*	g_TrayIconModuleFactory;
 }
