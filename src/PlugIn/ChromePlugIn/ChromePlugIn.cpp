@@ -12,6 +12,7 @@
 #include <string>
 #include <stack>
 #include <fstream>
+#include <algorithm>
 #include "json/json.h"
 
 #pragma comment(lib, "shlwapi.lib")
@@ -23,12 +24,14 @@ CChromePlugIn::CChromePlugIn(void) : m_nMaxDepth(0)
 {
 	m_mapDepthInfo.clear();
 	m_mapPidInfo.clear();
+	m_mapPidNodeInfo.clear();
 }
 
 CChromePlugIn::~CChromePlugIn(void)
 {
 	m_mapDepthInfo.clear();
 	m_mapPidInfo.clear();
+	m_mapPidNodeInfo.clear();
 }
 
 BOOL CChromePlugIn::Load()
@@ -237,16 +240,9 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 
 		m_mapPidInfo.insert(MAP_PID_INFO::value_type(pData[i].nPid, nDepth));
 		m_mapDepthInfo.insert(MAP_DEPTH_INFO::value_type(nDepth, i));
-
-		if (pData[i].bFolder == true)
-		{
-		
-		}
-		else
-		{
-
-		}
 	}
+
+	TraverseNode(pData, m_nMaxDepth);
 
 	roots.append(other);
 	std::ofstream outfile(strTmpPath.c_str());
@@ -442,30 +438,64 @@ BOOL CChromePlugIn::EnumNode(Json::Value& folder_obj, int32& nCount)
 	return TRUE;
 }
 
-BOOL CChromePlugIn::MergeNode(PFAVORITELINEDATA pData, Json::Value& node_obj, int32 nDepth)
-{
-	Json::Value array_obj;
 
-	for (int32 k = nDepth; k >= 0; --k)
+BOOL CChromePlugIn::TraverseNode(PFAVORITELINEDATA pData, int32 nDepth)
+{
+	if (nDepth >= 0)
 	{
-		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(k); it != m_mapDepthInfo.upper_bound(k); ++it)
+		std::vector<int32> vecPidList;
+		std::multimap<int32, NODEINFO> mapPidObj;
+		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(nDepth); it != m_mapDepthInfo.upper_bound(nDepth); ++it)
 		{
+			NODEINFO stNodeInfo = {0};	
 			if (pData[(*it).second].bFolder == true)
 			{
 				Json::Value folder_obj;
 				MakeFolderNode(pData[(*it).second], folder_obj, ++m_nIndex);
-				m_vecNodeList.push_back(folder_obj);
+				stNodeInfo.nIndex = (*it).second;
+				stNodeInfo.node_obj = folder_obj;
+				mapPidObj.insert(std::multimap<int32, NODEINFO>::value_type(pData[(*it).second].nPid, stNodeInfo));
 			}
 			else
 			{
 				Json::Value url_obj;
 				MakeUrlNode(pData[(*it).second], url_obj, ++m_nIndex);
-				m_vecNodeList.push_back(url_obj);
+				stNodeInfo.nIndex = (*it).second;
+				stNodeInfo.node_obj = url_obj;
+				mapPidObj.insert(std::multimap<int32, NODEINFO>::value_type(pData[(*it).second].nPid, stNodeInfo));
 			}
+
+			std::vector<int32>::iterator itPidList = std::find(vecPidList.begin(), vecPidList.end(), pData[(*it).second].nPid);
+			if (itPidList != vecPidList.end())
+			{
+				vecPidList.push_back(pData[(*it).second].nPid);
+			}	
 		}
+		
+		std::vector<int32>::iterator itrPid;
+		for (itrPid = vecPidList.begin(); itrPid != vecPidList.end(); ++itrPid)
+		{
+			Json::Value array_obj;
+			for (std::multimap<int32, NODEINFO>::iterator itr = mapPidObj.lower_bound(*itrPid); itr != mapPidObj.upper_bound(*itrPid); ++itr)
+			{
+				if (pData[(*itr).second.nIndex].bFolder)
+				{
+					MAP_PID_NODE_INFO::iterator it = m_mapPidNodeInfo.find(pData[(*itr).second.nIndex].nId);
+					if (it != m_mapPidNodeInfo.end())
+					{
+						(*itr).second.node_obj["children"] = (*it).second;
+						m_mapPidNodeInfo.erase(pData[(*itr).second.nIndex].nId);
+					}
+					
+				}
+				array_obj.append((*itr).second.node_obj);
+			}
 
-
+			m_mapPidNodeInfo.insert(MAP_PID_NODE_INFO::value_type(*itrPid, array_obj));
+		}
 	}
+
+	TraverseNode(pData, --nDepth);
 
 	return TRUE;
 }
