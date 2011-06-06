@@ -14,7 +14,7 @@ using namespace DuiLib;
 class CTipWnd : public CWindowWnd, public INotifyUI
 {
 public:
-    CTipWnd() : m_pOwner(NULL), m_nEventId(0) { };
+    CTipWnd() : m_pOwner(NULL), m_nEventId(0),m_pTip(NULL), m_pIcon(NULL) { };
 	~CTipWnd()
 	{
 		::SendMessage(m_pOwner->GetManager()->GetPaintWindow(), WM_TIPCLOSE, 0, 0);
@@ -38,7 +38,17 @@ public:
 		m_hParent = hWndParent;
     }
 
-	void ShowTips(int nDelayMilliseconds, CStdString strTip)
+	const TImageInfo *AddIcon16(LPCTSTR szIconName, HICON hIcon)
+	{
+		return m_pm.AddIcon16(szIconName, hIcon);
+	}
+
+	bool RemoveImage(LPCTSTR bitmap)
+	{
+		return m_pm.RemoveImage(bitmap);
+	}
+
+	void ShowTips(int nDelayMilliseconds, CStdString strTip, CStdString strIcon)
 	{
 		if (IsWindow(m_hWnd) == FALSE)
 		{
@@ -46,13 +56,12 @@ public:
 		}
 
 		m_strTip = strTip;
+		m_strIcon = strIcon;
 
 		if (nDelayMilliseconds == 0)
 		{
 			POINT pt1;
 			GetCursorPos(&pt1);
-
-			//::ClientToScreen(m_hWnd, &pt1);
 
 			CRect rc;
 			rc.left = pt1.x + 10;
@@ -89,10 +98,14 @@ public:
 
 			SetWindowPos(m_hWnd, HWND_TOPMOST, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, 0);
 
-			CTextUI *pTip = static_cast<CTextUI *>(m_pm.FindControl(_T("tips")));
-			if (pTip)
+			if (m_pTip)
 			{
-				pTip->SetText(m_strTip);
+				m_pTip->SetText(m_strTip);
+			}
+
+			if (m_pIcon)
+			{
+				m_pIcon->SetText(m_strIcon);
 			}
 
 			::ShowWindow(m_hWnd, SW_SHOW);
@@ -141,6 +154,8 @@ public:
         m_pm.AttachDialog(pRoot);
         m_pm.AddNotifier(this);
         m_pm.SetRoundCorner(3, 3);
+		m_pIcon = static_cast<CTextUI *>(m_pm.FindControl(_T("icon")));
+		m_pTip = static_cast<CTextUI *>(m_pm.FindControl(_T("tips")));
 
         return 0;
     }
@@ -166,7 +181,7 @@ public:
 				m_nEventId = 0;
 			}
 
-			ShowTips(0, m_strTip);
+			ShowTips(0, m_strTip, m_strIcon);
 		}
 
 		return FALSE;
@@ -230,6 +245,9 @@ public:
 	HWND        m_hParent;
     bool bFlag; // 菜单Notify中尽量不要调用MessageBox函数，如果确实需要调用，使用此变量修正
 	CStdString m_strTip;
+	CStdString m_strIcon;
 	int m_nEventId;
 	CRect       m_rc;
+	CTextUI    *m_pTip;
+	CTextUI    *m_pIcon;
 };

@@ -209,13 +209,23 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 				FAVORITELINEDATA *pData = (FAVORITELINEDATA *)pItem->GetTag();
 				
 				CStdString strTips;
+				CStdString strIcon;
 
 				strTips += pData->szTitle;
 				strTips += L"\n";
 				strTips += L"<y 20><a>";
 				strTips += pData->szUrl;
 				strTips += L"</a>";
-				m_pTipWnd->ShowTips(1000, strTips);
+
+
+				wstring strIconName;
+				wchar_t szRow[5] = {0};
+				_ltow(pItem->GetIndex(), szRow, 10);
+				strIcon = L"<i favicon";
+				strIcon += szRow;
+				strIcon += L".ico></i>";
+
+				m_pTipWnd->ShowTips(1000, strTips, strIcon);
 			}
 		}
 	}
@@ -477,12 +487,14 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 	wstring strRow = StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nRow));
 	wstring wstrIconName = wstring(L"favicon") + strRow + L".ico";
 	m_pm.RemoveImage(wstrIconName.c_str());
+	m_pTipWnd->RemoveImage(wstrIconName.c_str());
 
 	// 该icon数据库中已经存在
 	bool bOk = false;
 	if( getFavoriteService.hcon != NULL)
 	{
 		bOk = m_pm.AddIcon16(wstrIconName.c_str(), getFavoriteService.hcon) != NULL;
+		 m_pTipWnd->AddIcon16(wstrIconName.c_str(), getFavoriteService.hcon);
 		free(pszDomainUrl);
 		return true;
 	}
@@ -494,12 +506,14 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 	{
 		 HICON hIcon = ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 16);
 		 bOk = m_pm.AddIcon16(wstrIconName.c_str(), hIcon) != NULL;
+		 m_pTipWnd->AddIcon16(wstrIconName.c_str(), hIcon);
 
 		 if (bOk == false)
 		 {
 			 HICON hIcon16 = ImageHelper::Convert32x32IconTo16x16(
 				 ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 32));
 			 bOk = m_pm.AddIcon16(wstrIconName.c_str(), hIcon16) != NULL;
+			 m_pTipWnd->AddIcon16(wstrIconName.c_str(), hIcon16);
 		 }
 	}
 
@@ -552,6 +566,7 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 		};
 		HICON hIcon = ImageHelper::CreateIconFromBuffer((LPBYTE)szDefaultIcon, sizeof(szDefaultIcon), 16);
 		m_pm.AddIcon16(wstrIconName.c_str(), hIcon) != NULL;
+		m_pTipWnd->AddIcon16(wstrIconName.c_str(), hIcon);
 	}
 
 	return false;
