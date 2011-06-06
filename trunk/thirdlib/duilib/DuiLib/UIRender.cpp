@@ -1629,14 +1629,26 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             if( cchChars > 0 ) {				
                 ::GetTextExtentPoint32(hDC, pstrText, cchSize, &szText);
                 if( bDraw && bLineDraw ) {
-					if (pt.x + szText.cx>= rc.right && uStyle & DT_END_ELLIPSIS)
+					if (pt.x + szText.cx>= rc.right && uStyle & DT_END_ELLIPSIS && cchSize > 0)
 					{
 						LPTSTR pstrTemp = new TCHAR[cchSize];
 						memcpy(pstrTemp, pstrText, cchSize * sizeof(TCHAR));
 
-						pstrTemp[cchSize - 1] = _T('.');
-						pstrTemp[cchSize - 2] = _T('.');
-						pstrTemp[cchSize - 3] = _T('.');
+						if (cchSize >= 3)
+						{
+							pstrTemp[cchSize - 1] = _T('.');
+							pstrTemp[cchSize - 2] = _T('.');
+							pstrTemp[cchSize - 3] = _T('.');
+						}
+						else if(cchSize == 2)
+						{
+							pstrTemp[cchSize - 1] = _T('.');
+							pstrTemp[cchSize - 2] = _T('.');
+						}
+						else
+						{
+							pstrTemp[cchSize - 1] = _T('.');
+						}
 
 		                ::GetTextExtentPoint32(hDC, pstrTemp, cchSize, &szText);
 						while(pt.x + szText.cx >= rc.right && cchSize >= 3)
