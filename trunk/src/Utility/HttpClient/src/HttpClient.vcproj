@@ -64,7 +64,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/NODEFAULTLIB:library"
-				AdditionalDependencies="wsock32.lib Ws2_32.lib utils-mt-gd.lib"
+				AdditionalDependencies="wsock32.lib Ws2_32.lib"
 				OutputFile="..\..\..\..\bin\Debug\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\lib"
@@ -142,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib Ws2_32.lib utils-mt-gd.lib"
+				AdditionalDependencies="wsock32.lib Ws2_32.lib"
 				OutputFile="..\..\..\..\bin\Release\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\lib"
