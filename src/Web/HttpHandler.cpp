@@ -2,7 +2,7 @@
 #include "HttpClient.h"
 #include "shlwapi.h"
 #include "Log.h"
-#include "string_helper.h"
+#include "StringHelper.h"
 #include "WebModule.h"
 #include "XSync.h"
 #include "assert.h"
@@ -28,7 +28,7 @@ INT32 handle_init(INT32 taskid, const TaskInfo* taskinfo)
 
 INT32 handle_headcomplete(INT32 taskid, const TaskInfo* taskinfo)
 {
-	HttpClient* pHttpClient = HttpClient::Instance();
+	CHttpClient* pHttpClient = CHttpClient::Instance();
 	int32 nSeqNo = pHttpClient->GetSeqNo(taskid);
 
 	if( nSeqNo != -1)
@@ -51,7 +51,7 @@ INT32 handle_process(INT32 taskid, const TaskInfo* taskinfo)
 	static int threadid = GetCurrentThreadId();
 	if(threadid != GetCurrentThreadId())
 	{
-		assert(L"老兄，回调真的不是在同一个线程进行的哦!!!");
+		ASSERT(0);
 	}
 
 	if( taskinfo == NULL )
@@ -59,7 +59,7 @@ INT32 handle_process(INT32 taskid, const TaskInfo* taskinfo)
 		return -1;
 	}
 
-	HttpClient* pHttpClient = HttpClient::Instance();
+	CHttpClient* pHttpClient = CHttpClient::Instance();
 	int32 nSeqNo = pHttpClient->GetSeqNo(taskid);
 
 	if( nSeqNo != -1)
@@ -142,8 +142,7 @@ INT32 handle_finish(INT32 taskid, const TaskInfo* taskinfo)
 	static int threadid = GetCurrentThreadId();
 	if(threadid != GetCurrentThreadId())
 	{
-		assert(L"老兄，回调真的不是在同一个线程进行的哦!!!");
-		_LOG2( N() << L"老兄，回调真的不是在同一个线程进行的哦!!!" <<  OVER);
+		ASSERT(0);
 	}
 
 	if( taskinfo == NULL || taskinfo->respData == NULL)
@@ -151,7 +150,7 @@ INT32 handle_finish(INT32 taskid, const TaskInfo* taskinfo)
 		return -1;
 	}
 
-	HttpClient* pHttpClient = HttpClient::Instance();
+	CHttpClient* pHttpClient = CHttpClient::Instance();
 	int32 nSeqNo = pHttpClient->GetSeqNo(taskid);
 
 	if( nSeqNo != -1)
@@ -241,10 +240,10 @@ INT32 handle_error(INT32 taskid, const TaskInfo* taskinfo)
 	static int threadid = GetCurrentThreadId();
 	if(threadid != GetCurrentThreadId())
 	{
-		assert(L"老兄，回调真的不是在同一个线程进行的哦!!!");
+		ASSERT(0);
 	}
 
-	HttpClient* pHttpClient = HttpClient::Instance();
+	CHttpClient* pHttpClient = CHttpClient::Instance();
 	int32 nSeqNo = pHttpClient->GetSeqNo(taskid);
 	if( nSeqNo != -1)
 	{

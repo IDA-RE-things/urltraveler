@@ -126,7 +126,7 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
-				WarningLevel="3"
+				WarningLevel="0"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="sqlite3070603d.lib libcurl_mdd.lib Ws2_32.lib utils-mt-gd.lib"
+				AdditionalDependencies="sqlite3070603d.lib libcurl_mdd.lib Ws2_32.lib"
 				OutputFile="..\..\bin\Utility.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../lib"
@@ -553,66 +553,146 @@
 		<Filter
 			Name="httpclient"
 			>
-			<File
-				RelativePath=".\HttpClient\include\HttpCli.h"
+			<Filter
+				Name="include"
 				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\httpmanager.h"
+				<File
+					RelativePath=".\HttpClient\include\HttpCli.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\httpmanager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\httptransfer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\log.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\log_stun.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\ntlmproxy.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\Socket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\SockProxy.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\stdafx.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\targetver.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\task.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\transferworker.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\Types.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\Url.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\include\Utils.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="src"
 				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\httptransfer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\log.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\log_stun.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\ntlmproxy.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\Socket.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\SockProxy.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\targetver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\task.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\transferworker.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\Types.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\Url.h"
-				>
-			</File>
-			<File
-				RelativePath=".\HttpClient\include\Utils.h"
-				>
-			</File>
+				<File
+					RelativePath=".\HttpClient\src\Base64Coding.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\Base64Coding.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\HttpCli.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\HttpClient.rc"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\httpmanager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\Makefile"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\ntlmproxy.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\ReadMe.txt"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\resource.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\Socket.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\SockProxy.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\stdafx.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\stdafx.h"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\task.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\transferworker.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\Types.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\Url.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\HttpClient\src\Utils.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"

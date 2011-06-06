@@ -7,14 +7,11 @@
 
 using namespace web;
 
-CRequestManager::CRequestManager( CWebData* pWebData )
+CRequestManager::CRequestManager()
 {
 	m_pHttpClient = NULL;
 	m_ResponseParser.SetReuqestManager(this);
-	m_nReqSeq = 100;			//	ÐòºÅ´Ó100¿ªÊ¼
-
-	SetWebData( m_pWebData);
-	m_ResponseParser.SetWebData( pWebData);
+	m_nReqSeq = 100;
 }
 
 CRequestManager::~CRequestManager()
@@ -27,17 +24,17 @@ CRequestManager::~CRequestManager()
 }
 
 void 
-CRequestManager::Init( ProxyInfo* pProxyInfo )
+CRequestManager::Init( PROXYDATA* pProxyData )
 {
-	m_pHttpClient->SetProxy( pProxyInfo);
+	m_pHttpClient->SetProxy( pProxyData);
 }
 
 void		
-CRequestManager::ChangeProxy( ProxyInfo* pProxyInfo)
+CRequestManager::ChangeProxy( PROXYDATA* pProxyData)
 {
 	if( m_pHttpClient)
 	{
-		m_pHttpClient->SetProxy( pProxyInfo);
+		m_pHttpClient->SetProxy( pProxyData);
 	}
 }
 
@@ -53,7 +50,6 @@ CRequestManager::GetRetCodeByStatus( int nStatusCode)
 {
 	switch( nStatusCode)
 	{
-/*
 		case 200: 	return WEB_RET_SUCCESS;
 		case 401:	return WEB_RET_COMMON_NO_AUTH;
 		case 403:	return WEB_RET_COMMON_NO_PERMIT;
@@ -63,15 +59,14 @@ CRequestManager::GetRetCodeByStatus( int nStatusCode)
 		case 407:	return WEB_RET_COMMON_PROXY_NEED_AUTH;
 		case 501:	return WEB_RET_COMMON_SERVER_NOT_IMPL;
 		case 503:	return WEB_RET_COMMON_SERVER_NOT_AVAIL;
-*/
 		default:	return WEB_RET_COMMON_ERROR_INTERNAL;
 	}
 }
+
 void 
-CRequestManager::SetProxyInfo( ProxyInfo* pProxyInfo)
+CRequestManager::SetProxyData( PROXYDATA* pProxyData)
 {
 }
-
 
 uint32 
 CRequestManager::PushUrl(EventValue nEventValue, int64 nParam0, wstring strUrl, POST_PARAMS* pArgument, 
@@ -94,7 +89,7 @@ CRequestManager::PushUrl(EventValue nEventValue, int64 nParam0, wstring strUrl, 
 	pCxt->bAllowRepeated = bAllowRepeated;
 	pCxt->nReqSeq = ++m_nReqSeq;
 
-	m_vRequestQueue.push_back( pCxt);
+	//m_vRequestQueue.push_back( pCxt);
 
 	return pCxt->nReqSeq;
 }

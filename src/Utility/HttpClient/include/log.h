@@ -227,26 +227,18 @@ namespace utils
 #define LOG_4 LOG_TRACE
 #define LOG_5 LOG_DEBUG
 
-#define LOG_FATAL utils::Log::global_log.log_fatal
-#define LOG_ERROR utils::Log::global_log.log_error
-#define LOG_WARN utils::Log::global_log.log_warn
-#define LOG_INFO utils::Log::global_log.log_info
-#define LOG_TRACE utils::Log::global_log.log_trace
-#define LOG_DEBUG utils::Log::global_log.log_debug
+#define LOG_FATAL 
+#define LOG_ERROR 
+#define LOG_WARN
+#define LOG_INFO
+#define LOG_TRACE 
+#define LOG_DEBUG 
 
-#define LOG_HEX(data, len, level) utils::Log::global_log.log_hex((unsigned char *)(data), (len), (level))
-
-#define LOG_INIT(name, size, level) \
-    utils::Log::global_log.set_file_name(name); \
-    utils::Log::global_log.set_max_size(size); \
-    utils::Log::global_log.set_max_level((utils::LogLevel)(level))
-
-#define LOG_OPEN() utils::Log::global_log.open()
-
-#define LOG_CLOSE() utils::Log::global_log.close()
-
-#define LOG_SET_LEVEL(level) utils::Log::global_log.set_max_level((utils::LogLevel)(level))
-
-#define LOG_GET_LEVEL() utils::Log::global_log.get_max_level()
+#define LOG_HEX(data, len, level) 
+#define LOG_INIT(name, size, level) 
+#define LOG_OPEN() 
+#define LOG_CLOSE() 
+#define LOG_SET_LEVEL(level) 
+#define LOG_GET_LEVEL() 
 
 #endif

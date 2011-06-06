@@ -676,7 +676,6 @@ void TranferManager::setLogPath( char* local_log_path)
 			HTTPTRANSFER_LOG_LEVEL);
 #endif
 	}
-	int ret = LOG_OPEN();
 #endif
 
 }
@@ -739,7 +738,6 @@ INT32 TranferManager::start()
 			HTTPTRANSFER_LOG_LEVEL);
 #endif
 	}
-	int ret = LOG_OPEN();
 #endif
 
 	LOG_INFO("[start]begin.\n");

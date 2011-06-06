@@ -8,18 +8,19 @@
 #include "XSync.h"
 #include "httpmanager.h"
 #include "RequestManager.h"
+#include "HttpContext.h"
 
 using namespace std;
 using namespace web;
 
-class HttpClient  
+class CHttpClient  
 {
 public:
-	virtual ~HttpClient( );
+	virtual ~CHttpClient( );
 
-	void	SetProxy( ProxyInfo* pProxyInfo);
+	void	SetProxy( PROXYDATA* pProxyData);
 
-	static	HttpClient*	Instance();
+	static	CHttpClient*	Instance();
 
 	/**
 	*	设置和获取某一序列的上下文
@@ -62,7 +63,7 @@ public:
 	* Function		通过任务taskid获取该任务对应的内部序列号
 	* @param		
 	*/
-	int32 GetSeqNo( int32	nTaskId);
+	int32	GetSeqNo( int32	nTaskId);
 	void	ClearSeqIdMap( uint32 nSeqNo);
 
 	void	Cleanup( HTTPCONTEXT* pSession);
@@ -71,8 +72,8 @@ public:
 
 
 private:
-	HttpClient( );
-	static HttpClient*	Singleton;
+	CHttpClient( );
+	static CHttpClient*	Singleton;
 
 private:
 

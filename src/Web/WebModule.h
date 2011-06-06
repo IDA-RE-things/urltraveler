@@ -5,9 +5,10 @@
 #include "ModuleImpl.h"
 #include <vector>
 #include "WebDefine.h"
-#include "Web.h"
+#include <map>
 
 using namespace std;
+using namespace web;
 
 
 extern "C" 
@@ -16,10 +17,12 @@ extern "C"
 	DLLEXPORT void	ReleaseModuleFactory( IModuleFactory*);
 }
 
+class CRequestManager;
 class WebModule : public ModuleImpl
 {
 	DECLEAR_SERVICE_MAP(WebModule)
 	DECLEAR_EVENT_MAP(WebModule)
+	DECLEAR_MESSAGE_MAP(WebModule)
 
 public:
 	WebModule();
@@ -70,11 +73,30 @@ public:
 
 protected:
 
-	void OnEvent_SaveFavoriteIcon(Event* evt);
+	void OnEvent_GetFavoriteIcon(Event* pEvent);
 
 protected:
 
 	int32 OnService_GetFavoriteIcon(ServiceValue lService, param wparam);
+
+protected:
+	void OnMessage_CycleTrigged(Message* pMessage);
+
+private:
+
+	void	ProcessGetResponse();
+	void	ProcessSendUrl( );
+
+protected:
+
+	PROXYDATA			m_ProxyData;
+
+	CRequestManager*	m_pRequestManager;				// 对HTTP请求的管理，负责向后台的Web服务器发送请求，
+
+	Cookie	m_unCookie;
+	std::map<Cookie, Event*> m_mapCookie2Event;				// 支持Event事件
+
+	std::map<uint32, uint32>	m_mapSeqNo2ModuleId;	//	请求序列号与模块ID的对应关系
 };
 
 class WebModuleFactory : public ModuleFactoryImpl<WebModule>{};
