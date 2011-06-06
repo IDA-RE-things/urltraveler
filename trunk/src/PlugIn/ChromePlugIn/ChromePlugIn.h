@@ -98,18 +98,24 @@ private:
 	BOOL MakeSpecialFolderNode(wchar_t *pszName, int32& nIndex, Json::Value& folder_obj);
 	BOOL EnumNode(Json::Value& folder_obj, int32& nCount);
 
-	BOOL MergeNode(PFAVORITELINEDATA pData, Json::Value& node_obj, int32 nDepth);
+	BOOL TraverseNode(PFAVORITELINEDATA pData, int32 nDepth);
 
 private:
+	typedef struct NodeInfo
+	{
+		int32 nIndex;
+		Json::Value node_obj;
+	} NODEINFO, *PNODEINFO;
 
 	int32 m_nMaxDepth;
 	int32 m_nIndex;
-	typedef std::vector<Json::Value> VEC_NODE_LIST;
-	VEC_NODE_LIST m_vecNodeList;
 
 	typedef std::multimap<int32, int32> MAP_DEPTH_INFO;
 	MAP_DEPTH_INFO m_mapDepthInfo;
 
 	typedef std::map<int32, int32> MAP_PID_INFO;
 	MAP_PID_INFO m_mapPidInfo;
+
+	typedef std::map<int32, Json::Value> MAP_PID_NODE_INFO;
+	MAP_PID_NODE_INFO m_mapPidNodeInfo;
 };
