@@ -121,8 +121,14 @@ void	DataCenterModule::OnEvent_FavoriteIconArrive(Event* pEvent)
 		pSaveIconEvent->pIconData = new char[pSaveIconEvent->nIconDataLen];
 		memcpy((void*)pSaveIconEvent->pIconData,pIconData, pSaveIconEvent->nIconDataLen);
 		m_pModuleManager->PushEvent(*pSaveIconEvent);
-	}
 
+		// 通知主界面
+		DataCenter_FavoriteIconArriveEvent*	pFavoriteIconArriveEvent = new DataCenter_FavoriteIconArriveEvent();
+		pFavoriteIconArriveEvent->desMId = MODULE_ID_MAINFRAME;
+		STRNCPY(pFavoriteIconArriveEvent->szDomain, wstrDomain.c_str());
+		pFavoriteIconArriveEvent->hIcon = hIcon;
+		m_pModuleManager->PushEvent(*pFavoriteIconArriveEvent);
+	}
 }
 
 void	DataCenterModule::OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam)

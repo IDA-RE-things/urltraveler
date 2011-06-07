@@ -442,16 +442,12 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 		{
 			if( iSubItem == 0 )
 			{
-				wstring strIconName;
-				wchar_t szRow[5] = {0};
-				_ltow(iIndex, szRow, 10);
-				strIconName = L"<x 4><i favicon";
-				strIconName += szRow;
-				//strIconName += L"default";
-				strIconName += L".ico><x 4>";
+				wstring wstrDomain = MiscHelper::GetTopDomainUrl(m_vFavoriteNode[iIndex]->szUrl);
 
-				strIconName += m_vFavoriteNode[iIndex]->szTitle;
-				return _wcsdup(strIconName.c_str());
+				wstring strTitle = wstring(L"<x 4><i ") + wstrDomain;
+				strTitle += L".ico><x 4>";
+				strTitle += m_vFavoriteNode[iIndex]->szTitle;
+				return _wcsdup(strTitle.c_str());
 			}
 			if( iSubItem == 1 )
 			{
@@ -474,8 +470,13 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 	STRNCPY(getFavoriteIconService.szDomain, strUrl.c_str());
 	g_MainFrameModule->GetModuleManager()->CallService(getFavoriteIconService.serviceId, (param)&getFavoriteIconService);
 
-	wstring strRow = StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nRow));
-	wstring wstrIconName = wstring(L"favicon") + strRow + L".ico";
+	wstring wstrIconName = L"";
+	if( getFavoriteIconService.hIcon != NULL)
+	{
+		wstring wstrDomain = MiscHelper::GetTopDomainUrl(strUrl.c_str());
+		wstrIconName = wstrDomain + L".ico";
+	}
+
 	m_pm.RemoveImage(wstrIconName.c_str());
 	m_pTipWnd->RemoveImage(wstrIconName.c_str());
 
@@ -487,36 +488,6 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 		m_pTipWnd->AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon);
 		return true;
 	}
-
-/*
-	string strIconBuffer = CurlHttp::Instance()->RequestGet(wstrDomainUrl);
-	int nSize = strIconBuffer.size();
-	if (nSize != 0)
-	{
-		 HICON hIcon = ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 16);
-		 bOk = m_pm.AddIcon16(wstrIconName.c_str(), hIcon) != NULL;
-		 m_pTipWnd->AddIcon16(wstrIconName.c_str(), hIcon);
-
-		 if (bOk == false)
-		 {
-			 HICON hIcon16 = ImageHelper::Convert32x32IconTo16x16(
-				 ImageHelper::CreateIconFromBuffer((LPBYTE)strIconBuffer.c_str(), nSize, 32));
-			 bOk = m_pm.AddIcon16(wstrIconName.c_str(), hIcon16) != NULL;
-			 m_pTipWnd->AddIcon16(wstrIconName.c_str(), hIcon16);
-		 }
-	}
-*/
-
-/*
-	database::Database_FavIconSaveEvent* pSaveIconEvent = new database::Database_FavIconSaveEvent();
-	pSaveIconEvent->srcMId = MODULE_ID_MAINFRAME;
-	STRNCPY(pSaveIconEvent->szFavoriteUrl, pszDomainUrl);
-	pSaveIconEvent->nIconDataLen = strIconBuffer.size();
-	pSaveIconEvent->pIconData = new char[pSaveIconEvent->nIconDataLen];
-	memcpy((void*)pSaveIconEvent->pIconData,strIconBuffer.c_str(), pSaveIconEvent->nIconDataLen);
-
-	g_MainFrameModule->GetModuleManager()->PushEvent(*pSaveIconEvent);
-*/
 
 	if (bOk == false)
 	{
@@ -562,7 +533,28 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 	return false;
 }
 
-void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, int nIconSize, const char* pIconData )
+void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, HICON hIcon )
 {
+	if( pszUrl == NULL)
+		return;
 
+	wstring wstrIconName = L"";
+	if( hIcon != NULL)
+	{
+		wstrIconName = pszUrl + wstring(L".ico");
+	}
+
+	m_pm.RemoveImage(wstrIconName.c_str());
+	m_pTipWnd->RemoveImage(wstrIconName.c_str());
+
+	// 该icon数据库中已经存在
+	bool bOk = false;
+	if( hIcon != NULL)
+	{
+		bOk = m_pm.AddIcon16(wstrIconName.c_str(), hIcon) != NULL;
+		m_pTipWnd->AddIcon16(wstrIconName.c_str(), hIcon);
+	}
+
+	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	pUserList->Invalidate();
 }
