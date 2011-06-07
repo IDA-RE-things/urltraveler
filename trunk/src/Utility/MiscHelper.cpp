@@ -47,11 +47,11 @@ wchar_t*	MiscHelper::GetDomainFromUrl(const wchar_t*	pszUrl)
 wchar_t*	MiscHelper::GetTopDomainUrl(const wchar_t* pszUrl)
 {
 	if( pszUrl == NULL)
-		return NULL;
+		return L"";
 
 	wchar_t* szUrl = GetDomainFromUrl(pszUrl);
 	if( szUrl == NULL)
-		return NULL;
+		return L"";
 
 	String	strUrl = szUrl;
 	strUrl = strUrl.ToLower();
@@ -101,5 +101,5 @@ wchar_t*	MiscHelper::GetTopDomainUrl(const wchar_t* pszUrl)
 		}
 	}
 
-	return NULL;
+	return L"";
 }
