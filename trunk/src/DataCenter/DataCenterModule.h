@@ -90,6 +90,7 @@ protected:
 
 	//	保存Domain与对应的收藏夹图标之间的关系
 	std::map<wstring, HICON>	m_mapDomain2Icon;
+	HICON                       m_hDefaultIcon;
 };
 
 class DataCenterModuleFactory : public ModuleFactoryImpl<DataCenterModule>{};
