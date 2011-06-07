@@ -290,7 +290,6 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 						// 叶子结点
 						if( pData->nPid == nId && pData->bFolder == false)
 						{
-							// 测试代码，此处从服务器拉取http://www.baidu.com/favicon.ico
 							GetWebSiteFavIcon(pData->szUrl, j);
 
 							CListTextElementUI* pListElement = new CListTextElementUI;
@@ -561,7 +560,7 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 		{
 			if( iSubItem == 0 )
 			{
-				wstring wstrDomain = MiscHelper::GetTopDomainUrl(m_vFavoriteNode[iIndex]->szUrl);
+				wstring wstrDomain = MiscHelper::GetDomainFromUrl(m_vFavoriteNode[iIndex]->szUrl, FALSE);
 
 				wstring strTitle = wstring(L"<x 4><i ") + wstrDomain;
 				strTitle += L".ico><x 4>";
@@ -584,20 +583,19 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 
 bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 {
+	if( strUrl == L"")
+		return false;
+
 	// 向数据库查找Icon数据
 	datacenter::DataCenter_GetFavoriteIconService getFavoriteIconService;
 	STRNCPY(getFavoriteIconService.szDomain, strUrl.c_str());
 	g_MainFrameModule->GetModuleManager()->CallService(getFavoriteIconService.serviceId, (param)&getFavoriteIconService);
 
-	wstring wstrIconName = L"";
-	//if( getFavoriteIconService.hIcon != NULL)
-	{
-		wstring wstrDomain = MiscHelper::GetTopDomainUrl(strUrl.c_str());
-		wstrIconName = wstrDomain + L".ico";
-	}
-
+	wstring wstrIconName =  MiscHelper::GetDomainFromUrl(strUrl.c_str(),FALSE) + wstring(L".ico");
+/*
 	m_pm.RemoveImage(wstrIconName.c_str());
 	m_pTipWnd->RemoveImage(wstrIconName.c_str());
+*/
 
 	// 该icon数据库中已经存在
 	bool bOk = false;
@@ -627,11 +625,13 @@ void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, HICON hIcon )
 	wstring wstrIconName = L"";
 	if( hIcon != NULL)
 	{
-		wstrIconName = pszUrl + wstring(L".ico");
+		wstrIconName = MiscHelper::GetDomainFromUrl(pszUrl, FALSE) + wstring(L".ico");
 	}
 
+/*
 	m_pm.RemoveImage(wstrIconName.c_str());
 	m_pTipWnd->RemoveImage(wstrIconName.c_str());
+*/
 
 	// 该icon数据库中已经存在
 	bool bOk = false;

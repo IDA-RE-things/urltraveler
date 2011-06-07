@@ -110,7 +110,7 @@ void	DataCenterModule::OnEvent_FavoriteIconArrive(Event* pEvent)
 	if( hIcon != NULL)
 	{
 		// 将该ICON加入内存
-		wstring wstrDomain = MiscHelper::GetTopDomainUrl(wstrUrl.c_str());
+		wstring wstrDomain = MiscHelper::GetDomainFromUrl(wstrUrl.c_str());
 		m_mapDomain2Icon[wstrDomain] = hIcon;
 
 		//	通知Database模块
@@ -154,7 +154,10 @@ void	DataCenterModule::OnService_GetFavoriteIcon(ServiceValue lServiceValue, par
 	ASSERT(pGetFavoriteIconService != NULL);
 
 	wstring	wstrDomain = pGetFavoriteIconService->szDomain;
-	wstrDomain = MiscHelper::GetTopDomainUrl((wchar_t*)wstrDomain.c_str());
+	if( wstrDomain == L"")
+		return;
+
+	wstrDomain = MiscHelper::GetDomainFromUrl((wchar_t*)wstrDomain.c_str());
 
 	// 检查m_mapDomain2Icon是否存在该Domain对应的HICON
 	std::map<wstring, HICON>::iterator itr = m_mapDomain2Icon.find(wstrDomain.c_str());
@@ -179,7 +182,7 @@ void	DataCenterModule::OnService_GetFavoriteIcon(ServiceValue lServiceValue, par
 	web::Web_GetFavIconReqEvent* pGetFavIconEvent = new web::Web_GetFavIconReqEvent();
 	pGetFavIconEvent->srcMId = MODULE_ID_DATACENTER;
 
-	wstring	wstrFavIconUrl = wstring(L"http://www.") + wstrDomain + wstring(L"/favicon.ico");
+	wstring	wstrFavIconUrl = wstrDomain + wstring(L"/favicon.ico");
 	STRNCPY(pGetFavIconEvent->szFavoriteUrl, wstrFavIconUrl.c_str());
 	m_pModuleManager->PushEvent(*pGetFavIconEvent);
 }

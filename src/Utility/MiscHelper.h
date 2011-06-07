@@ -16,8 +16,9 @@ private:
 public:
 
 	// 从给定的URL中获取域名地址，比如http://www.baidu.com/index.html
-	// 返回http://www.baidu.com
-	static wchar_t*	GetDomainFromUrl(const wchar_t*	pszUrl);
+	// 返回http://www.baidu.com或者www.baidu.com
+	//	bIncludePrefix 返回结果中是否要包含http://或者https://。默认是返回
+	static wchar_t*	GetDomainFromUrl(const wchar_t*	pszUrl, BOOL bIncludePrefix = TRUE);
 
 	// 获取给定域名的顶级域名。比如www.baidu.com，返回baidu.com
 	// weiba.baidu.com，则返回baidu.com

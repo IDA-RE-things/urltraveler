@@ -14,15 +14,15 @@ MiscHelper::~MiscHelper()
 
 // 从给定的URL中获取域名地址，比如http://www.baidu.com/index.html
 // 返回http://www.baidu.com
-wchar_t*	MiscHelper::GetDomainFromUrl(const wchar_t*	pszUrl)
+wchar_t*	MiscHelper::GetDomainFromUrl(const wchar_t*	pszUrl, BOOL bIncludePrefix)
 {
 	if( pszUrl == NULL)
-		return NULL;
+		return L"";
 
 	// 检查前面七个字符是否是http://
 	String strUrl = pszUrl;
 	if( strUrl.Left(7) != L"http://" && strUrl.Left(8) != L"https://")
-		return NULL;
+		return L"";
 
 	String strDomain = L"";
 	if( strUrl.Left(7) == L"http://")
@@ -32,14 +32,28 @@ wchar_t*	MiscHelper::GetDomainFromUrl(const wchar_t*	pszUrl)
 
 	int nIndex = strDomain.FindFirstCharOf(L"\\/");
 	if( nIndex == String::NPOS)
-		return wcsdup((wchar_t*)strUrl.GetData());
+	{
+		if( bIncludePrefix == TRUE)
+		{
+			if( strUrl.Left(7) == L"http://")
+				strDomain = String(L"http://") + strDomain;
+			else if( strDomain.Left(8) == L"https://")
+				strDomain = String(L"https://") + strDomain;
+		}
 
-	if( strUrl.Left(7) == L"http://")
-		nIndex += 7;
-	else if( strUrl.Left(8) == L"https://")
-		nIndex += 8;
+		return wcsdup((wchar_t*)strDomain.GetData());
+	}
 
-	strDomain = strUrl.SubStr(0, nIndex);
+	strDomain = strDomain.SubStr(0, nIndex);
+
+	if( bIncludePrefix == TRUE)
+	{
+		if( strUrl.Left(7) == L"http://")
+			strDomain = String(L"http://") + strDomain;
+		else if( strDomain.Left(8) == L"https://")
+			strDomain = String(L"https://") + strDomain;
+	}
+
 	return wcsdup((wchar_t*)strDomain.GetData());
 }
 
@@ -64,16 +78,112 @@ wchar_t*	MiscHelper::GetTopDomainUrl(const wchar_t* pszUrl)
 	// .com.cn|.net.cn|.org.cn|.gov.cn|.com|.net|.cn|.org|.cc|.me|.tel|.mobi|.asia|.biz|.info|.name|.tv|.hk|.公司|.中国|.网络
 	wchar_t szDomain[][MAX_PATH] = 
 	{
+		L".com.at",			//	奥地利
+		L".com.au",		//	澳大利亚
+		L".com.be",		//	比利时
+		L".com.dk",		//	丹麦
+		L".com.es",			//	西班牙
+		L".com.us",
+		L".com.de",
+		L".com.uk",
+		L".com.fr",
+		L".com.eu",
+		L".com.gb",
+		L".com.ie",			//	爱尔兰
+		L".com.il",			//	以色列
+		L".com.in",			//	印度
+		L".com.it",			//	意大利
+		L".com.jp",			//	日本
+		L".com.kp",		//	朝鲜
+		L".com.kr",			//	韩国
+		L".com.se",			//	瑞典
+		L".com.vn",			//	越南
 		L".com.cn",
+		L".com.hk",
+		L".com.mo",
+		L".com.tw",
+
+		L".net.at",			//	奥地利
+		L".net.au",		//	澳大利亚
+		L".net.be",		//	比利时
+		L".net.dk",		//	丹麦
+		L".net.es",			//	西班牙
+		L".net.us",
+		L".net.de",
+		L".net.uk",
+		L".net.fr",
+		L".net.eu",
+		L".net.gb",
+		L".net.ie",			//	爱尔兰
+		L".net.il",			//	以色列
+		L".net.in",			//	印度
+		L".net.it",			//	意大利
+		L".net.jp",			//	日本
+		L".net.kp",		//	朝鲜
+		L".net.kr",			//	韩国
+		L".net.se",			//	瑞典
+		L".net.vn",			//	越南
 		L".net.cn",
+		L".net.hk",
+		L".net.mo",
+		L".net.tw",
+
+		L".org.at",			//	奥地利
+		L".org.au",		//	澳大利亚
+		L".org.be",		//	比利时
+		L".org.dk",		//	丹麦
+		L".org.es",			//	西班牙
+		L".org.us",
+		L".org.de",
+		L".org.uk",
+		L".org.fr",
+		L".org.eu",
+		L".org.gb",
+		L".org.ie",			//	爱尔兰
+		L".org.il",			//	以色列
+		L".org.in",			//	印度
+		L".org.it",			//	意大利
+		L".org.jp",			//	日本
+		L".org.kp",		//	朝鲜
+		L".org.kr",			//	韩国
+		L".org.se",			//	瑞典
+		L".org.vn",			//	越南
 		L".org.cn",
+		L".org.hk",
+		L".org.mo",
+		L".org.tw",
+
+		L".gov.at",			//	奥地利
+		L".gov.au",		//	澳大利亚
+		L".gov.be",		//	比利时
+		L".gov.dk",		//	丹麦
+		L".gov.es",			//	西班牙
+		L".gov.us",
+		L".gov.de",
+		L".gov.uk",
+		L".gov.fr",
+		L".gov.eu",
+		L".gov.gb",
+		L".gov.ie",			//	爱尔兰
+		L".gov.il",			//	以色列
+		L".gov.in",			//	印度
+		L".gov.it",			//	意大利
+		L".gov.jp",			//	日本
+		L".gov.kp",		//	朝鲜
+		L".gov.kr",			//	韩国
+		L".gov.se",			//	瑞典
+		L".gov.vn",			//	越南
 		L".gov.cn",
+		L".gov.hk",
+		L".gov.mo",
+		L".gov.tw",
+
 		L".com",
 		L".net",
 		L".cn",
 		L".org",
 		L".cc",
-		L"me",
+		L".me",
 		L".tel",
 		L".mobile",
 		L".asia",
