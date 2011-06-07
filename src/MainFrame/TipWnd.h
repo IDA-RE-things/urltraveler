@@ -111,7 +111,7 @@ public:
 
 			CRect rcTip = m_pTip->GetPos();
 			sz = m_pTip->EstimateSize(sz);
-			this->ResizeClient(sz.cx + rcTip.left + 10, sz.cy);
+			this->ResizeClient(sz.cx + rcTip.left + 20, sz.cy);
 
 			::ShowWindow(m_hWnd, SW_SHOW);
 			::SendMessage(m_hParent, WM_NCACTIVATE, TRUE, 0L);
