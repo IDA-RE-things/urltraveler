@@ -70,6 +70,11 @@ public:
 
 protected:
 
+	void	OnEvent_FavoriteIconArrive(Event* pEvent);		//	网址对应的ICON图标达到
+
+
+protected:
+
 	void	OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam);
 	void	OnService_GetFavoriteData(ServiceValue lServiceValue, param	lParam);
 	void	OnService_GetFavoriteIcon(ServiceValue lServiceValue, param lParam);

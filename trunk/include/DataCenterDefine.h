@@ -165,14 +165,11 @@ namespace datacenter
 			serviceId = SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON;
 
 			ZEROMEM(szDomain);
-			nIconSize = 0;
-			pIconData = NULL;
+			hIcon = NULL;
 		}
 
 		wchar_t	szDomain[MAX_PATH];
-
-		int nIconSize;	
-		char*	pIconData;
+		HICON	hIcon;
 	};
 
 };
