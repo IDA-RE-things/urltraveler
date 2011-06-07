@@ -8,13 +8,14 @@
 #include "stdafx.h"
 #include <exdisp.h>
 #include <comdef.h>
-#include "ControlEx.h"
+#include "TreeList.h"
 #include "resource.h"
 #include "LoginFrameWnd.h"
 #include "PlugIn.h"
 #include <map>
 #include <vector>
 #include "TipWnd.h"
+#include "Menu.h"
 
 using namespace std;
 using namespace DuiLib;
@@ -68,4 +69,7 @@ private:
 
 	// 保存某个目录结点下的所有的叶子结点
 	std::vector<FAVORITELINEDATA*>		m_vFavoriteNode;
+
+	// 收藏夹列表中的菜单
+	CMenuWnd*	m_pFavoriteListMenu;
 };

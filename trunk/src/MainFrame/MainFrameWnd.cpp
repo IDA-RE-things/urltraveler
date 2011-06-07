@@ -10,6 +10,7 @@
 #include "StringHelper.h"
 #include "WebDefine.h"
 #include "XString.h"
+#include "Menu.h"
 
 using namespace datacenter;
 using namespace mainframe;
@@ -22,6 +23,8 @@ CMainFrameWnd::CMainFrameWnd()
 	m_pFavoriteData	= NULL;
 	m_pTipWnd = NULL;
 	m_pTipWnd = new CTipWnd();
+
+	m_pFavoriteListMenu	=	 NULL;
 }
 
 CMainFrameWnd::~CMainFrameWnd()
@@ -29,6 +32,11 @@ CMainFrameWnd::~CMainFrameWnd()
 	if (m_pTipWnd)
 	{
 		m_pTipWnd->SendMessage(WM_CLOSE, 0, 0);
+	}
+
+	if( m_pFavoriteListMenu )
+	{
+		m_pFavoriteListMenu->SendMessage(WM_CLOSE, 0, 0);
 	}
 }
 
@@ -134,6 +142,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	}
 	else if( msg.sType == _T("itemclick") ) 
 	{
+		// 点击收藏夹目录的响应代码
 	    TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
 	    if( pFavoriteTree->GetItemIndex(msg.pSender) != -1 )
 	    {
@@ -188,6 +197,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			}
 		}
 
+		// 点击收藏夹条目的响应代码
 		if (msg.pSender->GetParent()->GetParent()->GetName() == L"favoritefilelist")
 		{
 			if (m_pTipWnd)
@@ -217,7 +227,6 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 				strTips += pData->szUrl;
 				strTips += L"</a>";
 
-
 				wstring strIconName;
 				strIcon = L"<i ";
 				strIcon = strIcon + wstrDomain;
@@ -236,6 +245,29 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 				m_pTipWnd->HideTip();
 			}
 		}
+	}
+	else if(msg.sType == L"menu") 
+	{
+		if( msg.pSender->GetName() != _T("favoritefilelist") ) 
+			return;
+
+		if( m_pFavoriteListMenu == NULL)
+		{
+			m_pFavoriteListMenu = new CMenuWnd();
+
+			POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
+			::ClientToScreen(*this, &pt);
+			m_pFavoriteListMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 120, pt.y + 82));
+			return;
+		}
+
+/*
+		POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
+		::ClientToScreen(*this, &pt);
+		m_pFavoriteListMenu->Show(CRect(pt.x, pt.y, pt.x + 120, pt.y + 82));
+*/
+
+		return;
 	}
 }
 
