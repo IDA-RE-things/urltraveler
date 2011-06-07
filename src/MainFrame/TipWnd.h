@@ -107,11 +107,11 @@ public:
 				m_pIcon->SetText(m_strIcon);
 			}
 
-			SIZE sz = {9999, 9999};
+			SIZE sz = {0, 0};
 
 			CRect rcTip = m_pTip->GetPos();
 			sz = m_pTip->EstimateSize(sz);
-			this->ResizeClient(sz.cx + rcTip.left, sz.cy);
+			this->ResizeClient(sz.cx + rcTip.left + 10, sz.cy);
 
 			::ShowWindow(m_hWnd, SW_SHOW);
 			::SendMessage(m_hParent, WM_NCACTIVATE, TRUE, 0L);
