@@ -1765,7 +1765,7 @@ const TImageInfo *CPaintManagerUI::AddIcon16(LPCTSTR szIconName, HICON hIcon)
 
 	data = new TImageInfo;
 	data->hBitmap = NULL;//csIconInfo.hbmColor;
-	data->hIcon = hIcon;
+	data->hIcon = CopyIcon(hIcon);
 	data->nX = 16;
 	data->nY = 16;
 	data->alphaChannel = false;
@@ -1792,7 +1792,7 @@ const TImageInfo* CPaintManagerUI::AddIcon32( LPCTSTR szIconName, HICON hIcon )
 
 	data = new TImageInfo;
 	data->hBitmap = NULL;//csIconInfo.hbmColor;
-	data->hIcon = hIcon;
+	data->hIcon = CopyIcon(hIcon);
 	data->nX = 32;
 	data->nY = 32;
 	data->alphaChannel = false;
