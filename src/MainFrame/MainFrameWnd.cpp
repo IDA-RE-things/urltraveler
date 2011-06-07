@@ -207,7 +207,9 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 				FAVORITELINEDATA *pData = (FAVORITELINEDATA *)pItem->GetTag();
 				
 				CStdString strTips;
-				CStdString strIcon;
+				wstring strIcon;
+
+				wstring wstrDomain = MiscHelper::GetDomainFromUrl(m_vFavoriteNode[pItem->GetIndex()]->szUrl, FALSE);
 
 				strTips += pData->szTitle;
 				strTips += L"\n";
@@ -217,13 +219,11 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 
 
 				wstring strIconName;
-				wchar_t szRow[5] = {0};
-				_ltow(pItem->GetIndex(), szRow, 10);
-				strIcon = L"<i favicon";
-				strIcon += szRow;
+				strIcon = L"<i ";
+				strIcon = strIcon + wstrDomain;
 				strIcon += L".ico></i>";
 
-				m_pTipWnd->ShowTips(1000, strTips, strIcon);
+				m_pTipWnd->ShowTips(1000, strTips, strIcon.c_str());
 			}
 		}
 	}
@@ -471,7 +471,6 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 	g_MainFrameModule->GetModuleManager()->CallService(getFavoriteIconService.serviceId, (param)&getFavoriteIconService);
 
 	wstring wstrIconName =  MiscHelper::GetDomainFromUrl(strUrl.c_str(),FALSE) + wstring(L".ico");
-	// 该icon数据库中已经存在
 	bool bOk = false;
 	bOk = m_pm.AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon) != NULL;
 	m_pTipWnd->AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon);
@@ -489,16 +488,12 @@ void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, HICON hIcon )
 	{
 		wstrIconName = MiscHelper::GetDomainFromUrl(pszUrl, FALSE) + wstring(L".ico");
 	}
-
-/*
-	m_pm.RemoveImage(wstrIconName.c_str());
-	m_pTipWnd->RemoveImage(wstrIconName.c_str());
-*/
-
 	// 该icon数据库中已经存在
 	bool bOk = false;
 	if( hIcon != NULL)
 	{
+		m_pm.RemoveImage(wstrIconName.c_str());
+		m_pTipWnd->RemoveImage(wstrIconName.c_str());
 		bOk = m_pm.AddIcon16(wstrIconName.c_str(), hIcon) != NULL;
 		m_pTipWnd->AddIcon16(wstrIconName.c_str(), hIcon);
 	}
