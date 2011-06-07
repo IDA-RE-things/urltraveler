@@ -15,12 +15,13 @@
 #include <algorithm>
 #include "json/json.h"
 
+
 #pragma comment(lib, "shlwapi.lib")
 
 using namespace chromeplugin;
 
 
-CChromePlugIn::CChromePlugIn(void) : m_nMaxDepth(0)
+CChromePlugIn::CChromePlugIn(void) : m_nMaxDepth(0), m_nIndex(0)
 {
 	m_mapDepthInfo.clear();
 	m_mapPidInfo.clear();
@@ -132,8 +133,8 @@ int32 CChromePlugIn::GetFavoriteCount()
 	Json::Reader reader;
 	if (reader.parse(infile, chrome_bookmarks))
 	{
- 		EnumNode(chrome_bookmarks["roots"]["bookmark_bar"], nFavoriteCount);
- 		EnumNode(chrome_bookmarks["roots"]["other"], nFavoriteCount);
+ 		EnumNode(chrome_bookmarks["roots"]["bookmark_bar"]["children"], nFavoriteCount);
+ 		EnumNode(chrome_bookmarks["roots"]["other"]["children"], nFavoriteCount);
 	}
 
 	infile.close();
@@ -203,17 +204,14 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 		return FALSE;
 	}
 
-	Json::Value roots;
+	Json::Value root;
 	Json::Value bookmark_bar;
 	Json::Value other;
-	Json::Value curr_node;
-	int32 nIndex = 0;
+	uint32 nIndex = 0;
 	int32 nDepth = 0;
 
-	MakeSpecialFolderNode(L"roots", nIndex, roots);
-	MakeSpecialFolderNode(L"bookmark_bar", nIndex, bookmark_bar);
-	MakeSpecialFolderNode(L"other", nIndex, other);
-	curr_node = roots.append(bookmark_bar);
+	MakeSpecialFolderNode(L"书签栏", nIndex, bookmark_bar);
+	MakeSpecialFolderNode(L"其他书签", nIndex, other);
 
 	for (int32 i = 0; i < nDataNum; ++i)
 	{
@@ -238,16 +236,32 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 			m_nMaxDepth = nDepth;
 		}
 
-		m_mapPidInfo.insert(MAP_PID_INFO::value_type(pData[i].nPid, nDepth));
+		if (pData[i].bFolder)
+		{
+			m_mapPidInfo.insert(MAP_PID_INFO::value_type(pData[i].nId, nDepth));
+		}
+		
 		m_mapDepthInfo.insert(MAP_DEPTH_INFO::value_type(nDepth, i));
 	}
 
 	TraverseNode(pData, m_nMaxDepth);
+	if (m_mapPidNodeInfo.size() == 1)
+	{
+		bookmark_bar["children"] = m_mapPidNodeInfo.begin()->second;
+	}
+	else
+	{
+		return FALSE;
+	}
+	
+	root["checksum"] = "9f25063887d5c6aa96b4d606b8dfdbcb";
+	root["roots"]["bookmark_bar"] = bookmark_bar;
+	root["roots"]["other"] = other;
+	root["version"] = "1";
 
-	roots.append(other);
 	std::ofstream outfile(strTmpPath.c_str());
 	Json::StyledStreamWriter writer;
-	writer.write(outfile, roots);
+	writer.write(outfile, root);
 	outfile.close();
 
 	return TRUE;
@@ -265,37 +279,63 @@ BOOL CChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITEL
 		return FALSE;
 	}
 
-	pData[nDataNum].nId = nDataNum + ID_VALUE_CHROME_BEGIN;
-	pData[nDataNum].bFolder = true;
-	pData[nDataNum].bDelete = false;
-	TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(folder_obj["date_added"].asString()).c_str()),  \
-		pData[nDataNum].nAddTimes);
-	TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(folder_obj["date_modified"].asString()).c_str()),  \
-		pData[nDataNum].nLastModifyTime);
-	pData[nDataNum].nPid = nPid;
-
-	wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str());
-	pData[nDataNum].szUrl[0] = 0;
-	pData[nDataNum].nCatId = 0;
-	
-	CCRCHash ojbCrcHash;
-	ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t),  \
-		(BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
-	
-	nDataNum++;
-
-	Json::Value children_nodes = folder_obj["children"];
-	int32 nNodeCount = children_nodes.size();
-	for (int32 i = 0; i < nNodeCount; ++i)
+	if (!wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"书签栏") 
+		|| !wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"其他书签"))
 	{
-		Json::Value new_val = children_nodes[i];
-		if (new_val["type"].asString() == std::string("url"))
+		Json::Value children_nodes = folder_obj["children"];
+		int32 nNodeCount = children_nodes.size();
+		for (int32 i = 0; i < nNodeCount; ++i)
 		{
-			ExportUrl(new_val, nDataNum -1 + ID_VALUE_CHROME_BEGIN, pData, nDataNum);
+			Json::Value new_val = children_nodes[i];
+			if (new_val["type"].asString() == std::string("url"))
+			{
+				ExportUrl(new_val, nPid, pData, nDataNum);
+			}
+			else if(new_val["type"].asString() == std::string("folder"))
+			{
+				ExportFolder(new_val, nPid, pData, nDataNum);
+			}
 		}
-		else if(new_val["type"].asString() == std::string("folder"))
+	}
+	else
+	{
+		pData[nDataNum].nId = nDataNum + ID_VALUE_CHROME_BEGIN;
+		pData[nDataNum].bFolder = true;
+		pData[nDataNum].bDelete = false;
+
+		StringToInt64(folder_obj["date_added"].asString(), pData[nDataNum].nAddTimes);
+		StringToInt64(folder_obj["date_added"].asString(), pData[nDataNum].nLastModifyTime);
+
+// 		TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(folder_obj["date_added"].asString()).c_str()),  \
+// 			pData[nDataNum].nAddTimes);
+// 		TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(folder_obj["date_modified"].asString()).c_str()),  \
+// 			pData[nDataNum].nLastModifyTime);
+		pData[nDataNum].nPid = nPid;
+
+		wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str());
+		pData[nDataNum].szUrl[0] = 0;
+		pData[nDataNum].nCatId = 0;
+
+		CCRCHash ojbCrcHash;
+		ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t),  \
+			(BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
+
+		nDataNum++;
+
+		Json::Value children_nodes = folder_obj["children"];
+		int32 nNodeCount = children_nodes.size();
+		int32 nCurrPid = nDataNum;
+		for (int32 i = 0; i < nNodeCount; ++i)
 		{
-			ExportFolder(new_val, nDataNum -1 + ID_VALUE_CHROME_BEGIN, pData, nDataNum);
+			Json::Value new_val = children_nodes[i];
+			if (new_val["type"].asString() == std::string("url"))
+			{
+				ExportUrl(new_val, nCurrPid -1 + ID_VALUE_CHROME_BEGIN, pData, nDataNum);
+			}
+			else if(new_val["type"].asString() == std::string("folder"))
+			{
+				ExportFolder(new_val, nCurrPid -1 + ID_VALUE_CHROME_BEGIN, pData, nDataNum);
+			}
 		}
 	}
 
@@ -312,8 +352,9 @@ BOOL CChromePlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDAT
 	pData[nDataNum].nId = nDataNum + ID_VALUE_CHROME_BEGIN;
 	pData[nDataNum].bFolder = false;
 	pData[nDataNum].bDelete = false;
-	TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(url_obj["date_added"].asString()).c_str()),  \
-		pData[nDataNum].nAddTimes);
+// 	TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(url_obj["date_added"].asString()).c_str()),  \
+// 		pData[nDataNum].nAddTimes);
+	StringToInt64(url_obj["date_added"].asString(), pData[nDataNum].nAddTimes);
 	pData[nDataNum].nLastModifyTime =  0;
 	pData[nDataNum].nPid = nPid;
 	pData[nDataNum].nCatId = 0;
@@ -332,12 +373,12 @@ BOOL CChromePlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDAT
 }
 
 
-BOOL CChromePlugIn::MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_obj, int32& nIndex)
+BOOL CChromePlugIn::MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_obj, uint32& nIndex)
 {
 	wchar_t szFormat[] = L" { \"children\": [ ],\
 				  \"date_added\": \"%s\",\
 				  \"date_modified\": \"%s\",\
-				  \"id\": \"%d\",\
+				  \"id\": \"%u\",\
 				  \"name\": \"%s\",\
 				  \"type\": \"folder\" }";
 
@@ -357,11 +398,11 @@ BOOL CChromePlugIn::MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_
 	return TRUE;
 }
 
-BOOL CChromePlugIn::MakeUrlNode(FAVORITELINEDATA stData, Json::Value& url_obj, int32& nIndex)
+BOOL CChromePlugIn::MakeUrlNode(FAVORITELINEDATA stData, Json::Value& url_obj, uint32& nIndex)
 {
 	wchar_t szFormat[] = L" {\
 				 \"date_added\": \"%s\",\
-				 \"id\": \"%d\",\
+				 \"id\": \"%u\",\
 				 \"name\": \"%s\",\
 				 \"type\": \"url\",\
 				 \"url\": \"%s\"}";
@@ -380,11 +421,11 @@ BOOL CChromePlugIn::MakeUrlNode(FAVORITELINEDATA stData, Json::Value& url_obj, i
 	return TRUE;
 }
 
-BOOL CChromePlugIn::MakeSpecialFolderNode(wchar_t *pszName, int32& nIndex, Json::Value& folder_obj)
+BOOL CChromePlugIn::MakeSpecialFolderNode(wchar_t *pszName, uint32& nIndex, Json::Value& folder_obj)
 {
 	wchar_t szFormat[] = L" { \"date_added\": \"0\",\
 						  \"date_modified\": \"%s\",\
-						  \"id\": \"%d\",\
+						  \"id\": \"%u\",\
 						  \"name\": \"%s\",\
 						  \"type\": \"folder\" }";
 
@@ -451,7 +492,7 @@ BOOL CChromePlugIn::TraverseNode(PFAVORITELINEDATA pData, int32 nDepth)
 			if (pData[(*it).second].bFolder == true)
 			{
 				Json::Value folder_obj;
-				MakeFolderNode(pData[(*it).second], folder_obj, ++m_nIndex);
+				MakeFolderNode(pData[(*it).second], folder_obj, m_nIndex);
 				stNodeInfo.nIndex = (*it).second;
 				stNodeInfo.node_obj = folder_obj;
 				mapPidObj.insert(std::multimap<int32, NODEINFO>::value_type(pData[(*it).second].nPid, stNodeInfo));
@@ -459,14 +500,14 @@ BOOL CChromePlugIn::TraverseNode(PFAVORITELINEDATA pData, int32 nDepth)
 			else
 			{
 				Json::Value url_obj;
-				MakeUrlNode(pData[(*it).second], url_obj, ++m_nIndex);
+				MakeUrlNode(pData[(*it).second], url_obj, m_nIndex);
 				stNodeInfo.nIndex = (*it).second;
 				stNodeInfo.node_obj = url_obj;
 				mapPidObj.insert(std::multimap<int32, NODEINFO>::value_type(pData[(*it).second].nPid, stNodeInfo));
 			}
 
 			std::vector<int32>::iterator itPidList = std::find(vecPidList.begin(), vecPidList.end(), pData[(*it).second].nPid);
-			if (itPidList != vecPidList.end())
+			if (itPidList == vecPidList.end())
 			{
 				vecPidList.push_back(pData[(*it).second].nPid);
 			}	
@@ -493,9 +534,52 @@ BOOL CChromePlugIn::TraverseNode(PFAVORITELINEDATA pData, int32 nDepth)
 
 			m_mapPidNodeInfo.insert(MAP_PID_NODE_INFO::value_type(*itrPid, array_obj));
 		}
+
+		TraverseNode(pData, --nDepth);
 	}
 
-	TraverseNode(pData, --nDepth);
+	return TRUE;
+}
+
+std::string CChromePlugIn::MD5ToBase16(byte* pbyData)
+{
+	static char const szEncode[] = "0123456789abcdef";
+
+	std::string strRet;
+	strRet.resize(32);
+
+	int j = 0;
+	for (int i = 0; i < 16; i ++) 
+	{
+		int a = pbyData[i];
+		strRet[j++] = szEncode[(a >> 4) & 0xf];
+		strRet[j++] = szEncode[a & 0xf];
+	}
+
+	return strRet;
+}
+
+BOOL CChromePlugIn::StringToInt64(std::string strTime, int64& nTime)
+{
+	for (std::string::iterator it = strTime.begin(); it != strTime.end(); ++it)
+	{
+		uint8 nNum = 0;
+		if ((*it >= '0') && (*it <= '9'))
+		{
+			nNum = *it - '0';
+		}
+		else
+		{
+			return FALSE;
+		}
+
+		if (it != strTime.begin())
+		{
+			nTime *= 10;
+		}
+
+		nTime += nNum;
+	}
 
 	return TRUE;
 }
