@@ -65,6 +65,17 @@ namespace database
 			pIconData = NULL;
 		}
 
+		~Database_FavIconSaveEvent()
+		{
+			if( pIconData != NULL)
+			{
+				delete pIconData;
+				pIconData = NULL;
+			}
+
+			nIconDataLen = 0;
+		}
+
 		wchar_t	szFavoriteUrl[MAX_PATH];		//	URL
 		int	nIconDataLen;					//	Icon缓冲区的产度
 		const char*	pIconData;			//	ICON数据

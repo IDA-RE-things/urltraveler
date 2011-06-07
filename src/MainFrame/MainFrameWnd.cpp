@@ -5,13 +5,13 @@
 #include "MainFrameModule.h"
 #include "TipWnd.h"
 #include "ImageHelper.h"
-#include "DatabaseDefine.h"
+#include "DataCenterDefine.h"
 #include "MiscHelper.h"
 #include "StringHelper.h"
 #include "WebDefine.h"
 #include "XString.h"
 
-using namespace database;
+using namespace datacenter;
 using namespace mainframe;
 
 #define WM_TIPCLOSE    (WM_USER + 1)
@@ -469,23 +469,10 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 
 bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 {
-/*
-	web::Web_GetFavIconReqEvent* pGetFavIconEvent = new web::Web_GetFavIconReqEvent();
-	pGetFavIconEvent->srcMId = MODULE_ID_MAINFRAME;
-	STRNCPY(pGetFavIconEvent->szFavoriteUrl, L"http://www.baidu.com/favicon.ico");
-	g_MainFrameModule->GetModuleManager()->PushEvent(*pGetFavIconEvent);
-*/
-
-	wchar_t* pszDomainUrl = MiscHelper::GetDomainFromUrl(strUrl.c_str());
-	if( pszDomainUrl == NULL)
-		return false;
-
-	wstring wstrDomainUrl = pszDomainUrl + wstring(L"/favicon.ico");
-
 	// 向数据库查找Icon数据
-	database::Database_GetFavoriteIconService getFavoriteService;
-	STRNCPY(getFavoriteService.szFavoriteUrl, pszDomainUrl);
-	g_MainFrameModule->GetModuleManager()->CallService(getFavoriteService.serviceId, (param)&getFavoriteService);
+	datacenter::DataCenter_GetFavoriteIconService getFavoriteIconService;
+	STRNCPY(getFavoriteIconService.szDomain, strUrl.c_str());
+	g_MainFrameModule->GetModuleManager()->CallService(getFavoriteIconService.serviceId, (param)&getFavoriteIconService);
 
 	wstring strRow = StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nRow));
 	wstring wstrIconName = wstring(L"favicon") + strRow + L".ico";
@@ -494,14 +481,14 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 
 	// 该icon数据库中已经存在
 	bool bOk = false;
-	if( getFavoriteService.hcon != NULL)
+	if( getFavoriteIconService.hIcon != NULL)
 	{
-		bOk = m_pm.AddIcon16(wstrIconName.c_str(), getFavoriteService.hcon) != NULL;
-		 m_pTipWnd->AddIcon16(wstrIconName.c_str(), getFavoriteService.hcon);
-		free(pszDomainUrl);
+		bOk = m_pm.AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon) != NULL;
+		m_pTipWnd->AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon);
 		return true;
 	}
 
+/*
 	string strIconBuffer = CurlHttp::Instance()->RequestGet(wstrDomainUrl);
 	int nSize = strIconBuffer.size();
 	if (nSize != 0)
@@ -518,7 +505,9 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 			 m_pTipWnd->AddIcon16(wstrIconName.c_str(), hIcon16);
 		 }
 	}
+*/
 
+/*
 	database::Database_FavIconSaveEvent* pSaveIconEvent = new database::Database_FavIconSaveEvent();
 	pSaveIconEvent->srcMId = MODULE_ID_MAINFRAME;
 	STRNCPY(pSaveIconEvent->szFavoriteUrl, pszDomainUrl);
@@ -527,8 +516,7 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 	memcpy((void*)pSaveIconEvent->pIconData,strIconBuffer.c_str(), pSaveIconEvent->nIconDataLen);
 
 	g_MainFrameModule->GetModuleManager()->PushEvent(*pSaveIconEvent);
-
-	free(pszDomainUrl);
+*/
 
 	if (bOk == false)
 	{

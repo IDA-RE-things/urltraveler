@@ -1,8 +1,13 @@
 #include "stdafx.h"
 #include "DataCenterModule.h"
 #include "MiscHelper.h"
+#include "DatabaseDefine.h"
+#include "WebDefine.h"
+#include "ImageHelper.h"
 
 using namespace datacenter;
+using namespace database;
+using namespace web;
 
 namespace datacenter
 {
@@ -25,11 +30,13 @@ DataCenterModule::~DataCenterModule()
 }
 
 BEGIN_EVENT_MAP(DataCenterModule)
+	ON_EVENT(EVENT_VALUE_WEB_GET_FAVICON_RESP, OnEvent_FavoriteIconArrive)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(DataCenterModule)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR, OnService_GetFavoriteVector)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,OnService_GetFavoriteData)
+	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON,OnService_GetFavoriteIcon)
 END_SERVICE_MAP()
 
 //----------------------------------------------------------------------------------------
@@ -62,6 +69,7 @@ uint32 const DataCenterModule::GetModuleId()
 //----------------------------------------------------------------------------------------
 void DataCenterModule::ProcessEvent(const Event& evt)
 {
+	PROCESS_EVENT(evt);
 }
 
 //----------------------------------------------------------------------------------------
@@ -86,6 +94,35 @@ void DataCenterModule::ProcessMessage(const Message& msg)
 int32 DataCenterModule::CallDirect(const ServiceValue lServiceValue, param wparam) 
 {
 	CALL_DIRECT(lServiceValue, wparam);
+}
+
+void	DataCenterModule::OnEvent_FavoriteIconArrive(Event* pEvent)
+{
+	Web_GetFavIconRespEvent*	pGetFavIconRespEvent = (Web_GetFavIconRespEvent*)pEvent->m_pstExtraInfo;
+	if( pGetFavIconRespEvent == NULL)
+		return;
+
+	wstring	wstrUrl = pGetFavIconRespEvent->szFavoriteUrl;
+	int nIconSize = pGetFavIconRespEvent->nIconSize;
+	char* pIconData = pGetFavIconRespEvent->pIconData;
+
+	HICON hIcon = ImageHelper::CreateIconFromBuffer((LPBYTE)pIconData, nIconSize, 16);
+	if( hIcon != NULL)
+	{
+		// 将该ICON加入内存
+		wstring wstrDomain = MiscHelper::GetTopDomainUrl(wstrUrl.c_str());
+		m_mapDomain2Icon[wstrDomain] = hIcon;
+
+		//	通知Database模块
+		database::Database_FavIconSaveEvent* pSaveIconEvent = new database::Database_FavIconSaveEvent();
+		pSaveIconEvent->srcMId = MODULE_ID_DATACENTER;
+		STRNCPY(pSaveIconEvent->szFavoriteUrl, wstrDomain.c_str());
+		pSaveIconEvent->nIconDataLen = nIconSize;
+		pSaveIconEvent->pIconData = new char[pSaveIconEvent->nIconDataLen];
+		memcpy((void*)pSaveIconEvent->pIconData,pIconData, pSaveIconEvent->nIconDataLen);
+		m_pModuleManager->PushEvent(*pSaveIconEvent);
+	}
+
 }
 
 void	DataCenterModule::OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam)
@@ -114,4 +151,29 @@ void	DataCenterModule::OnService_GetFavoriteIcon(ServiceValue lServiceValue, par
 	wstrDomain = MiscHelper::GetTopDomainUrl((wchar_t*)wstrDomain.c_str());
 
 	// 检查m_mapDomain2Icon是否存在该Domain对应的HICON
+	std::map<wstring, HICON>::iterator itr = m_mapDomain2Icon.find(wstrDomain.c_str());
+	if( itr != m_mapDomain2Icon.end())
+	{
+		pGetFavoriteIconService->hIcon = itr->second;
+		return;
+	}
+
+	// 如果内存里面没有找到，则向数据库中进行查找，找到后加载到内存中
+	database::Database_GetFavoriteIconService getDBFavoriteIconService;
+	STRNCPY(getDBFavoriteIconService.szFavoriteUrl, (wchar_t*)wstrDomain.c_str());
+	m_pModuleManager->CallService(getDBFavoriteIconService.serviceId, (param)&getDBFavoriteIconService);
+	if( getDBFavoriteIconService.hcon != NULL)
+	{
+		m_mapDomain2Icon[wstrDomain] = getDBFavoriteIconService.hcon;
+		pGetFavoriteIconService->hIcon = getDBFavoriteIconService.hcon;
+		return;
+	}
+
+	// 如果数据库中也不存在，则从网络拉取，执行Web模块
+	web::Web_GetFavIconReqEvent* pGetFavIconEvent = new web::Web_GetFavIconReqEvent();
+	pGetFavIconEvent->srcMId = MODULE_ID_DATACENTER;
+
+	wstring	wstrFavIconUrl = wstring(L"http://www.") + wstrDomain + wstring(L"/favicon.ico");
+	STRNCPY(pGetFavIconEvent->szFavoriteUrl, wstrFavIconUrl.c_str());
+	m_pModuleManager->PushEvent(*pGetFavIconEvent);
 }
