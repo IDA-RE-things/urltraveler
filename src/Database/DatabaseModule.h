@@ -11,7 +11,6 @@
 
 using namespace std;
 
-
 extern "C" 
 {
 	DLLEXPORT IModuleFactory*	GetModuleFactory();

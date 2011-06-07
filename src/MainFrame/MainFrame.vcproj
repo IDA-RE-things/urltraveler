@@ -251,10 +251,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\ControlEx.h"
-				>
-			</File>
-			<File
 				RelativePath=".\LoginFrameWnd.h"
 				>
 			</File>
@@ -282,10 +278,22 @@
 				RelativePath=".\targetver.h"
 				>
 			</File>
-			<File
-				RelativePath=".\TipWnd.h"
+			<Filter
+				Name="DuiEx"
 				>
-			</File>
+				<File
+					RelativePath=".\Menu.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TipWnd.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TreeList.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
