@@ -40,7 +40,7 @@ BEGIN_EVENT_MAP(MainFrameModule)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_CLOSE, OnEvent_CloseMainDlg)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_SHOW, OnEvent_ShowMainDlg)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_HIDE, OnEvent_HideMainDlg)
-	ON_EVENT(EVENT_VALUE_WEB_GET_FAVICON_RESP, OnEvent_FavoriteIconArrive)
+	ON_EVENT(EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE, OnEvent_FavoriteIconArrive)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(MainFrameModule)
@@ -136,15 +136,13 @@ void MainFrameModule::OnEvent_HideMainDlg(Event* pEvent)
 
 void	MainFrameModule::OnEvent_FavoriteIconArrive(Event* pEvent)
 {
-	Web_GetFavIconRespEvent*	pGetFavIconRespEvent = (Web_GetFavIconRespEvent*)pEvent->m_pstExtraInfo;
+	DataCenter_FavoriteIconArriveEvent*	pGetFavIconRespEvent = (DataCenter_FavoriteIconArriveEvent*)pEvent->m_pstExtraInfo;
 	if( pGetFavIconRespEvent == NULL)
 		return;
 
-	wstring	wstrUrl = pGetFavIconRespEvent->szFavoriteUrl;
-	int nIconSize = pGetFavIconRespEvent->nIconSize;
-	char* pIconData = pGetFavIconRespEvent->pIconData;
-
-	m_pMainFrame->UpdateFavoriteIcon((wchar_t*)wstrUrl.c_str(), nIconSize, pIconData);
+	wstring	wstrDomainUrl = pGetFavIconRespEvent->szDomain;
+	HICON hIcon = pGetFavIconRespEvent->hIcon;
+	m_pMainFrame->UpdateFavoriteIcon((wchar_t*)wstrDomainUrl.c_str(), hIcon);
 }
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)

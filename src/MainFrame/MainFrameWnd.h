@@ -49,7 +49,7 @@ public:
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	// 更新指定网站的收藏夹图标
-	void	UpdateFavoriteIcon(wchar_t*	pszUrl, int nIconSize, const char* pIconData);
+	void	UpdateFavoriteIcon(wchar_t*	pszUrl, HICON hIcon);
 
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);

@@ -15,8 +15,7 @@ namespace datacenter
 	enum E_DataCenterEventValue
 	{
 		EVENT_VALUE_DATACENTER_OPEN = EVENT_VALUE_DATACENTER_BEGIN,		//打开主界面
-		EVENT_VALUE_DATACENTER_HIDE,							//	隐藏当前主界面
-		EVENT_VALUE_DATACENTER_CLOSE,						//	关闭当前主界面
+		EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE,										//收藏夹图标已经就绪
 
 		EVENT_VALUE_DATACENTER_END = EVENT_VALUE_DATACENTER_END ,			//所有的事件结束
 	};
@@ -125,9 +124,20 @@ namespace datacenter
 	public:
 		DataCenterEvent()
 		{
-			srcMId	=	MODULE_ID_INVALID;
-			desMId	=	MODULE_ID_DATACENTER;
+			srcMId	=	MODULE_ID_DATACENTER;
+			desMId	=	MODULE_ID_INVALID;
 		}
+	};
+
+	struct DataCenter_FavoriteIconArriveEvent	: DataCenterEvent 
+	{
+		DataCenter_FavoriteIconArriveEvent()
+		{
+			eventValue	=	EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE;
+		}
+
+		wchar_t	szDomain[MAX_PATH];
+		HICON	hIcon;
 	};
 
 	//===========================================//
