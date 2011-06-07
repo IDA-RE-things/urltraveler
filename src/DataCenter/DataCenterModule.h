@@ -5,6 +5,7 @@
 #include "ModuleImpl.h"
 #include "PlugIn.h"
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -82,7 +83,8 @@ protected:
 	//	用以保存所有的历史数据
 	std::vector<HISTORYLINEDATA>	m_vHistoryLineData;
 
-
+	//	保存Domain与对应的收藏夹图标之间的关系
+	std::map<wstring, HICON>	m_mapDomain2Icon;
 };
 
 class DataCenterModuleFactory : public ModuleFactoryImpl<DataCenterModule>{};
