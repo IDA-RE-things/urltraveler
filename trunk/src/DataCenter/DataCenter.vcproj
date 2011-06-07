@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include"
+				AdditionalIncludeDirectories="..\..\include;..\Utility"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;DATACENTER_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,8 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Utilityd.lib"
 				OutputFile="..\..\bin\$(ProjectName)d.dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
@@ -118,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\include"
+				AdditionalIncludeDirectories="..\..\include;..\Utility"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;DATACENTER_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -137,8 +139,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Utility.lib"
 				OutputFile="..\..\bin\$(ProjectName).dll"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"

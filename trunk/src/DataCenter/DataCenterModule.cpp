@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DataCenterModule.h"
+#include "MiscHelper.h"
 
 using namespace datacenter;
 
@@ -110,5 +111,7 @@ void	DataCenterModule::OnService_GetFavoriteIcon(ServiceValue lServiceValue, par
 	ASSERT(pGetFavoriteIconService != NULL);
 
 	wstring	wstrDomain = pGetFavoriteIconService->szDomain;
+	wstrDomain = MiscHelper::GetTopDomainUrl((wchar_t*)wstrDomain.c_str());
 
+	// 检查m_mapDomain2Icon是否存在该Domain对应的HICON
 }
