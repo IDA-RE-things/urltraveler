@@ -92,13 +92,15 @@ public:
 private:
 	BOOL ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum);
 	BOOL ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum);
-	BOOL MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_obj, int32& nIndex);
-	BOOL MakeUrlNode(FAVORITELINEDATA stData, Json::Value& url_obj, int32& nIndex);
+	BOOL MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_obj, uint32& nIndex);
+	BOOL MakeUrlNode(FAVORITELINEDATA stData, Json::Value& url_obj, uint32& nIndex);
 
-	BOOL MakeSpecialFolderNode(wchar_t *pszName, int32& nIndex, Json::Value& folder_obj);
+	BOOL MakeSpecialFolderNode(wchar_t *pszName, uint32& nIndex, Json::Value& folder_obj);
 	BOOL EnumNode(Json::Value& folder_obj, int32& nCount);
 
 	BOOL TraverseNode(PFAVORITELINEDATA pData, int32 nDepth);
+	BOOL StringToInt64(std::string strTime, int64& nTime);
+	std::string MD5ToBase16(byte* pbyData);
 
 private:
 	typedef struct NodeInfo
@@ -108,7 +110,7 @@ private:
 	} NODEINFO, *PNODEINFO;
 
 	int32 m_nMaxDepth;
-	int32 m_nIndex;
+	uint32 m_nIndex;
 
 	typedef std::multimap<int32, int32> MAP_DEPTH_INFO;
 	MAP_DEPTH_INFO m_mapDepthInfo;
