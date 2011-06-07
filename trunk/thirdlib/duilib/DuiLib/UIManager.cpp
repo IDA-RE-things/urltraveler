@@ -1771,7 +1771,7 @@ const TImageInfo *CPaintManagerUI::AddIcon16(LPCTSTR szIconName, HICON hIcon)
 	data->alphaChannel = false;
 
 	if( !m_mImageHash.Insert(szIconName, data) ) {
-		DestroyIcon(hIcon);
+		DestroyIcon(data->hIcon);
 		delete data;
 		data = NULL;
 	}
@@ -1798,7 +1798,7 @@ const TImageInfo* CPaintManagerUI::AddIcon32( LPCTSTR szIconName, HICON hIcon )
 	data->alphaChannel = false;
 
 	if( !m_mImageHash.Insert(szIconName, data) ) {
-		DestroyIcon(hIcon);
+		DestroyIcon(data->hIcon);
 		delete data;
 		data = NULL;
 	}
