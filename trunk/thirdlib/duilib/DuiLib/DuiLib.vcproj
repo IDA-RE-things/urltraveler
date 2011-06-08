@@ -226,6 +226,10 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
+				RelativePath=".\IconBox.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stb_image.c"
 				>
 				<FileConfiguration
@@ -513,6 +517,10 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl"
 			>
+			<File
+				RelativePath=".\IconBox.h"
+				>
+			</File>
 			<File
 				RelativePath="StdAfx.h"
 				>
