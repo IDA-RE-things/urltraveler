@@ -10,7 +10,8 @@
 #include "StringHelper.h"
 #include "WebDefine.h"
 #include "XString.h"
-#include "Menu.h"
+#include "FavoriteListMenu.h"
+#include "TreeListMenu.h"
 
 using namespace datacenter;
 using namespace mainframe;
@@ -21,7 +22,6 @@ CMainFrameWnd::CMainFrameWnd()
 
 	m_nFavoriteNum = 0;
 	m_pFavoriteData	= NULL;
-	m_pTipWnd = NULL;
 	m_pTipWnd = new CTipWnd();
 }
 
@@ -43,14 +43,14 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 	m_nFavoriteNum = nNum;
 	m_pFavoriteData = pFavoriteData;
 
-	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
+	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
 
 	wstring wstrText = L"{x 4}{x 4}";
 	wstrText += L"收藏夹";
 
-	TreeListUI::Node* pNode = pFavoriteTree->AddNode(wstrText.c_str());
-	m_mapIdNode[0] = pNode;
-	m_mapNodeId[pNode] = 0;
+	TreeListUI::Node* pRootNode = pFavoriteTree->AddNode(wstrText.c_str());
+	m_mapIdNode[0] = pRootNode;
+	m_mapNodeId[pRootNode] = 0;
 
 	for( int i=0; i<m_nFavoriteNum; i++)
 	{
@@ -85,12 +85,13 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
     pUserList->SetTextCallback(this);     
 
 	// 显示根结点下的所有的收藏夹记录
-	ShowFavoriteList(0);
+	m_pCurrentTreeNode	=	pRootNode;
+	ShowFavoriteTreeList(0);
 }
 
-void	CMainFrameWnd::ShowFavoriteList(int nId)
+void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 {
-	m_vFavoriteNode.clear();
+	m_vFavoriteNodeAtTreeNode.clear();
 
 	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	pUserList->RemoveAllItems();
@@ -108,7 +109,7 @@ void	CMainFrameWnd::ShowFavoriteList(int nId)
 			CListTextElementUI* pListElement = new CListTextElementUI;
 			pListElement->SetTag((UINT_PTR)pData);
 			pUserList->Add(pListElement);
-			m_vFavoriteNode.push_back(pData);
+			m_vFavoriteNodeAtTreeNode.push_back(pData);
 			j++;
 		}
 	}
@@ -170,7 +171,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	else if( msg.sType == _T("itemclick") ) 
 	{
 		// 点击收藏夹目录的响应代码
-	    TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritelist")));
+	    TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
 	    if( pFavoriteTree->GetItemIndex(msg.pSender) != -1 )
 	    {
 			if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) 
@@ -191,7 +192,8 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 				if( itr != m_mapNodeId.end())
 				{
 					int nId = itr->second;
-					ShowFavoriteList(nId);
+					m_pCurrentTreeNode	=	itr->first;
+					ShowFavoriteTreeList(nId);
 				}
 			}
 		}
@@ -218,7 +220,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 				CStdString strTips;
 				wstring strIcon;
 
-				wstring wstrDomain = MiscHelper::GetDomainFromUrl(m_vFavoriteNode[pItem->GetIndex()]->szUrl, FALSE);
+				wstring wstrDomain = MiscHelper::GetDomainFromUrl(m_vFavoriteNodeAtTreeNode[pItem->GetIndex()]->szUrl, FALSE);
 
 				strTips += pData->szTitle;
 				strTips += L"\n";
@@ -247,15 +249,22 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	}
 	else if(msg.sType == L"menu") 
 	{
-		if( msg.pSender->GetName() != _T("favoritefilelist") ) 
-			return;
-
-        CMenuWnd* pMenu = new CMenuWnd();
-        if( pMenu == NULL ) { return; }
-        POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
-        ::ClientToScreen(*this, &pt);
-        pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 152));
-
+		if( msg.pSender->GetName() == _T("favoritefilelist") ) 
+		{
+			CFavoriteListMenu* pMenu = new CFavoriteListMenu(L"list_menu.xml");
+			if( pMenu == NULL ) { return; }
+			POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
+			::ClientToScreen(*this, &pt);
+			pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 152));
+		}
+		else 	if( msg.pSender->GetName() == _T("favoritetreelist") ) 
+		{
+			CTreeListMenu* pMenu = new CTreeListMenu(L"tree_menu.xml");
+			if( pMenu == NULL ) { return; }
+			POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
+			::ClientToScreen(*this, &pt);
+			pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 125));
+		}
 		return;
 	}
 }
@@ -453,25 +462,25 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 {
     if( pControl->GetParent()->GetParent()->GetName() == _T("favoritefilelist") ) 
 	{
-		if( m_vFavoriteNode.size() == 0)
+		if( m_vFavoriteNodeAtTreeNode.size() == 0)
 			return L"";
 
-		if( iIndex <= m_vFavoriteNode.size() -1)
+		if( iIndex <= m_vFavoriteNodeAtTreeNode.size() -1)
 		{
 			if( iSubItem == 0 )
 			{
-				wstring wstrDomain = MiscHelper::GetDomainFromUrl(m_vFavoriteNode[iIndex]->szUrl, FALSE);
+				wstring wstrDomain = MiscHelper::GetDomainFromUrl(m_vFavoriteNodeAtTreeNode[iIndex]->szUrl, FALSE);
 
 				wstring strTitle = wstring(L"<x 4><i ") + wstrDomain;
 				strTitle += L".ico><x 4>";
-				strTitle += m_vFavoriteNode[iIndex]->szTitle;
+				strTitle += m_vFavoriteNodeAtTreeNode[iIndex]->szTitle;
 				return _wcsdup(strTitle.c_str());
 			}
 			if( iSubItem == 1 )
 			{
 				wstring strUrl;
 				strUrl += L"<x 4>";
-				strUrl += m_vFavoriteNode[iIndex]->szUrl;
+				strUrl += m_vFavoriteNodeAtTreeNode[iIndex]->szUrl;
 
 				return _wcsdup(strUrl.c_str());
 			}
@@ -521,4 +530,21 @@ void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, HICON hIcon )
 
 	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	pUserList->Invalidate();
+}
+
+void	CMainFrameWnd::DeleteFavorite(int nIndex)
+{
+	wchar_t* pDeleteUrl = m_vFavoriteNodeAtTreeNode[nIndex]->szUrl;
+
+	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(m_pCurrentTreeNode);
+	if( itr == m_mapNodeId.end())
+		return;
+
+	int nId = itr->second;
+	// 通知数据中心从nId的目录中删除pDeleteUrl
+	DataCenter_DeleteFavoriteEvent* pEvent = new DataCenter_DeleteFavoriteEvent();
+	pEvent->desMId = MODULE_ID_DATACENTER;
+	pEvent->nFavoriteId = nId;
+	STRNCPY(pEvent->szUrl, pDeleteUrl);
+	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 }

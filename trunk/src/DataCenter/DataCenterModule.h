@@ -71,6 +71,7 @@ public:
 protected:
 
 	void	OnEvent_FavoriteIconArrive(Event* pEvent);		//	网址对应的ICON图标达到
+	void	OnEvent_DeleteFavorite(Event* pEvent);			//	删除特定的URL
 
 
 protected:

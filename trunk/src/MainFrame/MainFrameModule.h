@@ -75,6 +75,7 @@ protected:
 	void	OnEvent_HideMainDlg(Event* pEvent);		// 响应EVENT_VALUE_MAINFRAME_HIDE事件，隐藏主界面	
 
 	void	OnEvent_FavoriteIconArrive(Event* pEvent);		//	网址对应的ICON图标达到
+	void	OnEvent_DeleteFavorite(Event* pEvent);			//	删除给定的收藏记录
 
 	// Message处理函数
 protected:

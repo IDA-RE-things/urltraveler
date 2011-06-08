@@ -15,7 +15,6 @@
 #include <map>
 #include <vector>
 #include "TipWnd.h"
-#include "Menu.h"
 
 using namespace std;
 using namespace DuiLib;
@@ -51,10 +50,11 @@ public:
 
 	// 更新指定网站的收藏夹图标
 	void	UpdateFavoriteIcon(wchar_t*	pszUrl, HICON hIcon);
+	void	DeleteFavorite(int nIndex);
 
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);
-	void	ShowFavoriteList(int nId);
+	void	ShowFavoriteTreeList(int nId);
 
 public:
 	CPaintManagerUI m_pm;
@@ -64,10 +64,13 @@ private:
 	std::map<int, TreeListUI::Node*>	m_mapIdNode;	//	id到node的关联关系
 	std::map<TreeListUI::Node*, int>	m_mapNodeId;	//	node到map的映射
 
+	// 当前选中的TreeNode结点
+	TreeListUI::Node*	m_pCurrentTreeNode;
+
 	int m_nFavoriteNum;
 	FAVORITELINEDATA*	m_pFavoriteData;
 	CTipWnd*            m_pTipWnd;
 
 	// 保存某个目录结点下的所有的叶子结点
-	std::vector<FAVORITELINEDATA*>		m_vFavoriteNode;
+	std::vector<FAVORITELINEDATA*>		m_vFavoriteNodeAtTreeNode;
 };

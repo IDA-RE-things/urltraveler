@@ -14,8 +14,9 @@ namespace mainframe
 		EVENT_VALUE_MAINFRAME_CLOSE,						//	关闭当前主界面
 		EVENT_VALUE_MAINFRAME_SHOW,						//	显示主对话框
 		EVENT_VALUE_MAINFRAME_HIDE,							//	隐藏当前主界面
-
-		EVENT_VALUE_MAINFRAME_OPENLOGIN,					//	打开登录对话框
+		EVENT_VALUE_MAINFRAME_OPENLOGIN,				//	打开登录对话框
+		EVENT_VALUE_MAINFRAME_DELETE_FAVORITE,		//	删除某个给定的收藏夹记录
+		EVENT_VALUE_MAINFRAME_DELETE_FAVORITE_FOLD,	//	删除某个给定的收藏夹目录
 
 		EVENT_VALUE_MAINFRAME_END = EVENT_VALUE_MAINFRAME_END ,			//所有的事件结束
 	};
@@ -41,8 +42,8 @@ namespace mainframe
 	public:
 		MainFrameEvent()
 		{
-			srcMId	=	MODULE_ID_INVALID;
-			desMId	=	MODULE_ID_MAINFRAME;
+			srcMId	=	MODULE_ID_MAINFRAME;
+			desMId	=	MODULE_ID_INVALID;
 		}
 	};
 
@@ -65,6 +66,19 @@ namespace mainframe
 		E_MainFrameTab	eTabType;			//	指定打开后显示哪一个Tab页面
 	};
 
+	// 删除某个收藏记录
+	struct MainFrame_DeleteFavoriteEvent	:	public MainFrameEvent
+	{
+		MainFrame_DeleteFavoriteEvent()
+		{
+			 eventValue	=	EVENT_VALUE_MAINFRAME_DELETE_FAVORITE;
+			 nDeleteIndex = -1;
+		}
+
+		//	需要删除的URL的索引
+		int nDeleteIndex;	
+	};
+
 	//===========================================//
 	//                   MainFrame中所使用到的Service							 	  //
 	//===========================================//
@@ -72,6 +86,4 @@ namespace mainframe
 	{
 		void*		pBaseWnd;			//	当前主窗口的句柄
 	};
-
-
 };

@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 #include "UIlib.h"
+#include <string>
+#include "assert.h"
 
 using namespace std;
 using namespace DuiLib;
@@ -9,7 +11,13 @@ using namespace DuiLib;
 class CMenuWnd : public CWindowWnd, public INotifyUI
 {
 public:
-    CMenuWnd() : m_pOwner(NULL) { };
+	CMenuWnd(){}
+
+    CMenuWnd(wchar_t* pSkinXml) : m_pOwner(NULL)
+	{ 
+		assert( pSkinXml != NULL);
+		m_strSkinXml	=	 pSkinXml;
+	};
 
     void Init(CControlUI* pOwner, CRect rc) {
         if( pOwner == NULL ) return;
@@ -56,31 +64,13 @@ public:
 
     void Notify(TNotifyUI& msg)
     {
-        if( msg.sType == _T("itemselect") ) {
-            Close();
-        }
-        else if( msg.sType == _T("itemclick") ) {
-            if( msg.pSender->GetName() == _T("menu_Delete") ) {
-                if( m_pOwner ) {
-                    CListUI* pList = static_cast<CListUI*>(m_pOwner);
-                    int nSel = pList->GetCurSel();
-                    if( nSel < 0 ) return;
-/*
-                    pList->RemoveAt(nSel);
-                    domain.erase(domain.begin() + nSel);
-                    desc.erase(desc.begin() + nSel);
-*/
-                    MessageBox( _T("测试"), _T("测试"), MB_OK);
-                }
-            }
-        }
     }
 
     LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
         m_pm.Init(m_hWnd);
         CDialogBuilder builder;
-        CControlUI* pRoot = builder.Create(_T("menu.xml"), (UINT)0, NULL, &m_pm);
+        CControlUI* pRoot = builder.Create(m_strSkinXml.c_str(), (UINT)0, NULL, &m_pm);
         ASSERT(pRoot && "Failed to parse XML");
         m_pm.AttachDialog(pRoot);
         m_pm.AddNotifier(this);
@@ -146,4 +136,5 @@ public:
     CPaintManagerUI m_pm;
     CControlUI* m_pOwner;
     bool bFlag; // 菜单Notify中尽量不要调用MessageBox函数，如果确实需要调用，使用此变量修正
+	std::wstring	m_strSkinXml;	//	皮肤文件的xml
 };

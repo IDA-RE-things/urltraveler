@@ -41,6 +41,7 @@ BEGIN_EVENT_MAP(MainFrameModule)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_SHOW, OnEvent_ShowMainDlg)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_HIDE, OnEvent_HideMainDlg)
 	ON_EVENT(EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE, OnEvent_FavoriteIconArrive)
+	ON_EVENT(EVENT_VALUE_MAINFRAME_DELETE_FAVORITE, OnEvent_DeleteFavorite)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(MainFrameModule)
@@ -143,6 +144,16 @@ void	MainFrameModule::OnEvent_FavoriteIconArrive(Event* pEvent)
 	wstring	wstrDomainUrl = pGetFavIconRespEvent->szDomain;
 	HICON hIcon = pGetFavIconRespEvent->hIcon;
 	m_pMainFrame->UpdateFavoriteIcon((wchar_t*)wstrDomainUrl.c_str(), hIcon);
+}
+
+void	MainFrameModule::OnEvent_DeleteFavorite(Event* pEvent)
+{
+	MainFrame_DeleteFavoriteEvent* pDeleteFavoriteEvent = (MainFrame_DeleteFavoriteEvent*)pEvent->m_pstExtraInfo;
+	if( pDeleteFavoriteEvent == NULL)
+		return;
+
+	int nDeleteIndex = pDeleteFavoriteEvent->nDeleteIndex;
+	m_pMainFrame->DeleteFavorite(nDeleteIndex);
 }
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)

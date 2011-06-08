@@ -16,7 +16,8 @@ namespace datacenter
 	{
 		EVENT_VALUE_DATACENTER_OPEN = EVENT_VALUE_DATACENTER_BEGIN,		//打开主界面
 		EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE,										//收藏夹图标已经就绪
-
+		EVENT_VALUE_DATACENTER_DELETE_FAVORITE,												//删除某个收藏的URL
+		
 		EVENT_VALUE_DATACENTER_END = EVENT_VALUE_DATACENTER_END ,			//所有的事件结束
 	};
 
@@ -138,6 +139,19 @@ namespace datacenter
 
 		wchar_t	szDomain[MAX_PATH];
 		HICON	hIcon;
+	};
+
+	struct DataCenter_DeleteFavoriteEvent	: DataCenterEvent 
+	{
+		DataCenter_DeleteFavoriteEvent()
+		{
+			eventValue	=	EVENT_VALUE_DATACENTER_DELETE_FAVORITE;
+			nFavoriteId = 0;
+			ZEROMEM(szUrl);
+		}
+
+		int nFavoriteId;
+		wchar_t	szUrl[MAX_PATH];
 	};
 
 	//===========================================//
