@@ -248,7 +248,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
         if( pMenu == NULL ) { return; }
         POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
         ::ClientToScreen(*this, &pt);
-        pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 120, pt.y + 82));
+        pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 152));
 
 		return;
 	}

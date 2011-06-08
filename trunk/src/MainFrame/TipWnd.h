@@ -19,6 +19,7 @@ public:
 	{
 		::SendMessage(m_pOwner->GetManager()->GetPaintWindow(), WM_TIPCLOSE, 0, 0);
 	}
+
     void Init(CControlUI* pOwner) {
         if( pOwner == NULL ) return;
         m_pOwner = pOwner;
