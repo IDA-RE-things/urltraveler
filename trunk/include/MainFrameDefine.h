@@ -72,11 +72,11 @@ namespace mainframe
 		MainFrame_DeleteFavoriteEvent()
 		{
 			 eventValue	=	EVENT_VALUE_MAINFRAME_DELETE_FAVORITE;
-			 nDeleteIndex = -1;
+			 nDeleteNodeId = -1;
 		}
 
 		//	需要删除的URL的索引
-		int nDeleteIndex;	
+		int nDeleteNodeId;	
 	};
 
 	//===========================================//

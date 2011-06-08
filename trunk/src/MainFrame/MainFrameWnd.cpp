@@ -102,7 +102,7 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 		FAVORITELINEDATA* pData = &m_pFavoriteData[i];
 
 		// 叶子结点
-		if( pData->nPid == nId && pData->bFolder == false)
+		if( pData->nPid == nId && pData->bFolder == false && pData->bDelete == false)
 		{
 			GetWebSiteFavIcon(pData->szUrl, j);
 
@@ -532,31 +532,32 @@ void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, HICON hIcon )
 	pUserList->Invalidate();
 }
 
-void	CMainFrameWnd::DeleteFavorite(int nIndex)
+void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 {
-	wchar_t* pDeleteUrl = m_vFavoriteNodeAtTreeNode[nIndex]->szUrl;
 	for( int i=0; i<m_vFavoriteNodeAtTreeNode.size(); i++)
 	{
 		FAVORITELINEDATA* pData = m_vFavoriteNodeAtTreeNode[i];
-		if( wstring(pData->szUrl) == wstring(pDeleteUrl))
+		if( pData->nId == nDeleteNodeId)
 		{
 			m_vFavoriteNodeAtTreeNode.erase(m_vFavoriteNodeAtTreeNode.begin() + i);
+			//目前只支持单删除
+			break;
 		}
 	}
 
 	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	pUserList->Invalidate();
 
-	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(m_pCurrentTreeNode);
-	if( itr == m_mapNodeId.end())
-		return;
+	//std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(m_pCurrentTreeNode);
+	//if( itr == m_mapNodeId.end())
+	//	return;
 
-	int nId = itr->second;
+	//int nId = itr->second;
 
 	// 通知数据中心从nId的目录中删除pDeleteUrl
-	DataCenter_DeleteFavoriteEvent* pEvent = new DataCenter_DeleteFavoriteEvent();
+	/*DataCenter_DeleteFavoriteEvent* pEvent = new DataCenter_DeleteFavoriteEvent();
 	pEvent->desMId = MODULE_ID_DATACENTER;
 	pEvent->nFavoriteId = nId;
 	STRNCPY(pEvent->szUrl, pDeleteUrl);
-	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);*/
 }

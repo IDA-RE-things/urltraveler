@@ -152,8 +152,8 @@ void	MainFrameModule::OnEvent_DeleteFavorite(Event* pEvent)
 	if( pDeleteFavoriteEvent == NULL)
 		return;
 
-	int nDeleteIndex = pDeleteFavoriteEvent->nDeleteIndex;
-	m_pMainFrame->DeleteFavorite(nDeleteIndex);
+	int nDeleteNodeId = pDeleteFavoriteEvent->nDeleteNodeId;
+	m_pMainFrame->DeleteFavorite(nDeleteNodeId);
 }
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)
