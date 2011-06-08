@@ -42,6 +42,8 @@ BEGIN_EVENT_MAP(MainFrameModule)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_HIDE, OnEvent_HideMainDlg)
 	ON_EVENT(EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE, OnEvent_FavoriteIconArrive)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_DELETE_FAVORITE, OnEvent_DeleteFavorite)
+	ON_EVENT(EVENT_VALUE_MAINFRAME_OPEN_URL, OnEvent_OpenUrl)
+	ON_EVENT(EVENT_VALUE_MAINFRAME_COPY_URL, OnEvent_CopyUrl)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(MainFrameModule)
@@ -154,6 +156,20 @@ void	MainFrameModule::OnEvent_DeleteFavorite(Event* pEvent)
 
 	int nDeleteNodeId = pDeleteFavoriteEvent->nDeleteNodeId;
 	m_pMainFrame->DeleteFavorite(nDeleteNodeId);
+}
+
+void	MainFrameModule::OnEvent_OpenUrl(Event* pEvent)
+{
+	if( pEvent == NULL)
+		return;
+
+	int nSel = pEvent->param0;
+	m_pMainFrame->OpenUrl(nSel);
+}
+
+void	MainFrameModule::OnEvent_CopyUrl(Event* pEvent)
+{
+
 }
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)

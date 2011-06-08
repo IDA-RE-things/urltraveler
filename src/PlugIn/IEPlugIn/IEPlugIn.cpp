@@ -460,6 +460,9 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 			}
 
 			::SHGetFileInfo(lpszFileName, NULL, &fileInfo, sizeof(fileInfo), SHGFI_ATTRIBUTES|SHGFI_TYPENAME);
+			if( wcscmp(fileInfo.szDisplayName, L"") == 0)
+				continue;
+
 			if ((fileInfo.dwAttributes & SFGAO_FOLDER) && wcscmp(fileInfo.szTypeName, L"Channel Shortcut") != 0)
 			{
 				// 如果是目录需要递归遍历
@@ -482,7 +485,10 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 
 					wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, lpszName);
 					pData[nDataNum].szUrl[0] = 0;
-					ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), (BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
+					ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, 
+						wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), 
+						(BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
+
 					pData[nDataNum].nCatId = 0;
 				}
 
@@ -511,7 +517,9 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 						wcscpy_s(pData[nDataNum].szUrl, 1024 - 1, lpszURL);
 						pData[nDataNum].szUrl[1023] = 0;
 
-						ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), (BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
+						ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, 
+							wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t),
+							(BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
 						pData[nDataNum].nCatId = 0;
 						wcscpy_s(pData[nDataNum].szUrl, 1024 - 1, lpszURL);
 					}
