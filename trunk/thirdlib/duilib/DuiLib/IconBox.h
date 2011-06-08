@@ -20,8 +20,8 @@ public:
 	bool DelBitmap(HBITMAP hBitmap);
 	int  GetIconCount();
 	/*设置icon大小*/
-	void SetIconSize(SIZE sz)
-	SIZE GetIconSize(SIZE)
+	void SetIconSize(SIZE sz);
+	SIZE GetIconSize();
 
 	/*绘画相关*/
 	void DoPaint(HDC hDC, const RECT& rcPaint);;
