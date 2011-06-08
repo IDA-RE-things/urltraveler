@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window bktrans="true">
+<Font name="宋体" size="13" bold="false"/>
+<Font name="宋体" size="12"/>
+<VerticalLayout bkimage="file='menu_bk.png' corner='40,8,8,8'" hole="false">
+	<List header="hidden" inset="8,8,8,8" itemhotimage="file='menu_hot_bk.png' corner='2,2,2,2'" itemdisabledbkcolor="#20000000">
+		<ListContainerElement name="menu_Open" height="22" inset="40,0,0,0">
+			<Label text="打开网站"/>
+		</ListContainerElement>
+		<Container name="VerticalLayoutUI13" padding="23,-1,0,3" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8" />
+		<ListContainerElement name="menu_Edit" height="22" inset="40,0,0,0">
+			<Label text="编辑收藏"/>
+		</ListContainerElement>
+		<ListContainerElement name="menu_Rename" height="22" inset="40,0,0,0">
+			<Label text="重命名"/>
+		</ListContainerElement>
+		<ListContainerElement name="menu_CopyUrl" height="22" inset="40,0,0,0">
+			<Label text="复制网址URL"/>
+		</ListContainerElement>
+		<ListContainerElement name="menu_Delete" height="22" inset="40,0,0,0">
+			<Label text="删除收藏"/>
+		</ListContainerElement>
+		<Container name="VerticalLayoutUI13" padding="23,-1,0,3" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8" />
+		<ListContainerElement name="menu_Share" height="22" inset="40,0,0,0">
+			<Label text="分享该网址"/>
+		</ListContainerElement>
+	</List>
+</VerticalLayout>
+</Window>
