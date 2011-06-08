@@ -265,7 +265,8 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			if( pMenu == NULL ) { return; }
 			POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
 			::ClientToScreen(*this, &pt);
-			pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 152));
+			if (((CListUI *)msg.pSender)->GetCurSel() >= 0)
+				pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 152));
 		}
 		else 	if( msg.pSender->GetName() == _T("favoritetreelist") ) 
 		{
