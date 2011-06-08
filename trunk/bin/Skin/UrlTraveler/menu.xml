@@ -5,13 +5,22 @@
 <VerticalLayout bkimage="file='menu_bk.png' corner='40,8,8,8'" hole="false">
 	<List header="hidden" inset="8,8,8,8" itemhotimage="file='menu_hot_bk.png' corner='2,2,2,2'" itemdisabledbkcolor="#20000000">
 		<ListContainerElement name="menu_Open" height="22" inset="40,0,0,0">
-			<Label text="打开"/>
+			<Label text="打开网站"/>
+		</ListContainerElement>
+		<ListContainerElement name="menu_Open" height="22" inset="40,0,0,0">
+			<Label text="编辑收藏"/>
+		</ListContainerElement>
+		<ListContainerElement name="menu_Open" height="22" inset="40,0,0,0">
+			<Label text="重命名"/>
+		</ListContainerElement>
+		<ListContainerElement name="menu_Open" height="22" inset="40,0,0,0">
+			<Label text="复制网址URL"/>
 		</ListContainerElement>
 		<ListContainerElement name="menu_Mark" height="22" inset="40,0,0,0">
-			<Label text="标注"/>
+			<Label text="删除收藏"/>
 		</ListContainerElement>
 		<ListContainerElement name="menu_Delete" height="22" inset="40,0,0,0">
-			<Label text="删除"/>
+			<Label text="分享该网址"/>
 		</ListContainerElement>
 	</List>
 </VerticalLayout>
