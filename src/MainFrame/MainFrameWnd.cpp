@@ -23,8 +23,6 @@ CMainFrameWnd::CMainFrameWnd()
 	m_pFavoriteData	= NULL;
 	m_pTipWnd = NULL;
 	m_pTipWnd = new CTipWnd();
-
-	m_pFavoriteListMenu	=	 NULL;
 }
 
 CMainFrameWnd::~CMainFrameWnd()
@@ -32,11 +30,6 @@ CMainFrameWnd::~CMainFrameWnd()
 	if (m_pTipWnd)
 	{
 		m_pTipWnd->SendMessage(WM_CLOSE, 0, 0);
-	}
-
-	if( m_pFavoriteListMenu )
-	{
-		m_pFavoriteListMenu->SendMessage(WM_CLOSE, 0, 0);
 	}
 }
 
@@ -251,21 +244,11 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		if( msg.pSender->GetName() != _T("favoritefilelist") ) 
 			return;
 
-		if( m_pFavoriteListMenu == NULL)
-		{
-			m_pFavoriteListMenu = new CMenuWnd();
-
-			POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
-			::ClientToScreen(*this, &pt);
-			m_pFavoriteListMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 120, pt.y + 82));
-			return;
-		}
-
-/*
-		POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
-		::ClientToScreen(*this, &pt);
-		m_pFavoriteListMenu->Show(CRect(pt.x, pt.y, pt.x + 120, pt.y + 82));
-*/
+        CMenuWnd* pMenu = new CMenuWnd();
+        if( pMenu == NULL ) { return; }
+        POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
+        ::ClientToScreen(*this, &pt);
+        pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 120, pt.y + 82));
 
 		return;
 	}

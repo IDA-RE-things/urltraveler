@@ -6,7 +6,6 @@
 using namespace std;
 using namespace DuiLib;
 
-
 class CMenuWnd : public CWindowWnd, public INotifyUI
 {
 public:
@@ -52,48 +51,8 @@ public:
         ::SendMessage(hWndParent, WM_NCACTIVATE, TRUE, 0L);
     }
 
-    void Show(CRect rc) {
-
-        MONITORINFO oMonitor = {};
-        oMonitor.cbSize = sizeof(oMonitor);
-        ::GetMonitorInfo(::MonitorFromWindow(*this, MONITOR_DEFAULTTOPRIMARY), &oMonitor);
-        CRect rcWork = oMonitor.rcWork;
-        int nWidth = rc.GetWidth();
-        int nHeight = rc.GetHeight();
-        if( rc.bottom > rcWork.bottom ) {
-            if( nHeight >= rcWork.GetHeight() ) {
-                rc.top = 0;
-                rc.bottom = nHeight;
-            }
-            else {
-                rc.bottom = rcWork.bottom;
-                rc.top = rc.bottom - nHeight;
-            }
-        }
-        if( rc.right > rcWork.right ) {
-            if( nWidth >= rcWork.GetWidth() ) {
-                rc.left = 0;
-                rc.right = nWidth;
-            }
-            else {
-                rc.right = rcWork.right;
-                rc.left = rc.right - nWidth;
-            }
-        }
-
-        //Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP, WS_EX_TOOLWINDOW, rc);
-		MoveWindow(m_hWnd, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, TRUE);
-
-		HWND hWndParent = m_hWnd;
-        while( ::GetParent(hWndParent) != NULL ) 
-			hWndParent = ::GetParent(hWndParent);
-
-        ::ShowWindow(m_hWnd, SW_SHOW);
-        ::SendMessage(hWndParent, WM_NCACTIVATE, TRUE, 0L);
-    }
-
     LPCTSTR GetWindowClassName() const { return _T("MenuWnd"); };
-    void OnFinalMessage(HWND /*hWnd*/) { delete this; };
+    void OnFinalMessage(HWND /*hWnd*/){	delete this; };
 
     void Notify(TNotifyUI& msg)
     {
