@@ -164,6 +164,8 @@ public:
 
     void PaintText(HDC hDC);
 
+	void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
+
 protected:
     enum { MAX_LINK = 8 };
     int m_nLinks;
