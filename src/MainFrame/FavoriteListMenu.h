@@ -19,13 +19,14 @@ public:
 			CListUI* pList = static_cast<CListUI*>(m_pOwner);
 			int nSel = pList->GetCurSel();
 			if( nSel < 0 ) return;
+			FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)(pList->GetSubItem(nSel)->GetTag());
+			pSelNode->bDelete = true;
 			pList->RemoveAt(nSel);
-			pList->Invalidate();
 
 			// 从数据中心中删除该Item
 			MainFrame_DeleteFavoriteEvent* pEvent = new MainFrame_DeleteFavoriteEvent();
 			pEvent->desMId = MODULE_ID_MAINFRAME;
-			pEvent->nDeleteIndex = nSel;
+			pEvent->nDeleteNodeId = pSelNode->nId;
 			g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 		 }
 	}

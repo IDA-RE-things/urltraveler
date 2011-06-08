@@ -50,7 +50,7 @@ public:
 
 	// 更新指定网站的收藏夹图标
 	void	UpdateFavoriteIcon(wchar_t*	pszUrl, HICON hIcon);
-	void	DeleteFavorite(int nIndex);
+	void	DeleteFavorite(int nDeleteNodeId);
 
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);
