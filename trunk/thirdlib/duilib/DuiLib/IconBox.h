@@ -19,6 +19,9 @@ public:
 	bool AddBitmap(HBITMAP hBitmap);
 	bool DelBitmap(HBITMAP hBitmap);
 	int  GetIconCount();
+	/*设置icon大小*/
+	void SetIconSize(SIZE sz)
+	SIZE GetIconSize(SIZE)
 
 	/*绘画相关*/
 	void DoPaint(HDC hDC, const RECT& rcPaint);;
