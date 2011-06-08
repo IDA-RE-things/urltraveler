@@ -15,8 +15,13 @@ namespace mainframe
 		EVENT_VALUE_MAINFRAME_SHOW,						//	显示主对话框
 		EVENT_VALUE_MAINFRAME_HIDE,							//	隐藏当前主界面
 		EVENT_VALUE_MAINFRAME_OPENLOGIN,				//	打开登录对话框
-		EVENT_VALUE_MAINFRAME_DELETE_FAVORITE,		//	删除某个给定的收藏夹记录
+		EVENT_VALUE_MAINFRAME_DELETE_FAVORITE,				//	删除某个给定的收藏夹记录
 		EVENT_VALUE_MAINFRAME_DELETE_FAVORITE_FOLD,	//	删除某个给定的收藏夹目录
+		EVENT_VALUE_MAINFRAME_OPEN_URL,				//	param0 为需要打开的URL的index
+		EVENT_VALUE_MAINFRAME_COPY_URL,				//	param0 为需要拷贝的URL的index
+		EVENT_VALUE_MAINFRAME_EDIT_URL,
+		EVENT_VALUE_MAINFRAME_RENAME_URL,
+		EVENT_VALUE_MAINFRAME_SHARE_URL,
 
 		EVENT_VALUE_MAINFRAME_END = EVENT_VALUE_MAINFRAME_END ,			//所有的事件结束
 	};
@@ -71,8 +76,8 @@ namespace mainframe
 	{
 		MainFrame_DeleteFavoriteEvent()
 		{
-			 eventValue	=	EVENT_VALUE_MAINFRAME_DELETE_FAVORITE;
-			 nDeleteNodeId = -1;
+			eventValue	=	EVENT_VALUE_MAINFRAME_DELETE_FAVORITE;
+			nDeleteNodeId = -1;
 		}
 
 		//	需要删除的URL的索引
