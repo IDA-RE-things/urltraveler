@@ -69,7 +69,4 @@ private:
 
 	// 保存某个目录结点下的所有的叶子结点
 	std::vector<FAVORITELINEDATA*>		m_vFavoriteNode;
-
-	// 收藏夹列表中的菜单
-	CMenuWnd*	m_pFavoriteListMenu;
 };
