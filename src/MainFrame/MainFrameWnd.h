@@ -54,6 +54,7 @@ public:
 
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);
+	void	ShowFavoriteList(int nId);
 
 public:
 	CPaintManagerUI m_pm;

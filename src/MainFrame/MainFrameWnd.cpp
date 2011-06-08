@@ -82,9 +82,43 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 	}
 
 	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-    pUserList->SetTextCallback(this);      
+    pUserList->SetTextCallback(this);     
+
+	// 显示根结点下的所有的收藏夹记录
+	ShowFavoriteList(0);
 }
 
+void	CMainFrameWnd::ShowFavoriteList(int nId)
+{
+	m_vFavoriteNode.clear();
+
+	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	pUserList->RemoveAllItems();
+	int j = 0;
+	
+	for( int i=0; i<m_nFavoriteNum; i++)
+	{
+		FAVORITELINEDATA* pData = &m_pFavoriteData[i];
+
+		// 叶子结点
+		if( pData->nPid == nId && pData->bFolder == false)
+		{
+			GetWebSiteFavIcon(pData->szUrl, j);
+
+			CListTextElementUI* pListElement = new CListTextElementUI;
+			pListElement->SetTag((UINT_PTR)pData);
+			pUserList->Add(pListElement);
+			m_vFavoriteNode.push_back(pData);
+			j++;
+		}
+	}
+
+	if( pUserList)
+	{						
+		pUserList->SetItemTextStyle(pUserList->GetItemTextStyle() & ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
+		pUserList->Invalidate();
+	}
+}
 
 void CMainFrameWnd::Notify(TNotifyUI& msg)
 {
@@ -157,35 +191,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 				if( itr != m_mapNodeId.end())
 				{
 					int nId = itr->second;
-
-					m_vFavoriteNode.clear();
-
-					CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-					pUserList->RemoveAllItems();
-					int j = 0;
-					
-					for( int i=0; i<m_nFavoriteNum; i++)
-					{
-						FAVORITELINEDATA* pData = &m_pFavoriteData[i];
-
-						// 叶子结点
-						if( pData->nPid == nId && pData->bFolder == false)
-						{
-							GetWebSiteFavIcon(pData->szUrl, j);
-
-							CListTextElementUI* pListElement = new CListTextElementUI;
-							pListElement->SetTag((UINT_PTR)pData);
-							pUserList->Add(pListElement);
-							m_vFavoriteNode.push_back(pData);
-							j++;
-						}
-					}
-
-					if( pUserList)
-					{						
-						pUserList->SetItemTextStyle(pUserList->GetItemTextStyle() & ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
-						pUserList->Invalidate();
-					}
+					ShowFavoriteList(nId);
 				}
 			}
 		}
