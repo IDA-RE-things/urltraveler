@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <Window roundcorner="10,10" size="850,600" sizebox="0,0,800,30" caption="0,0,0,30">
     <Font name="宋体" size="13" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="true" italic="false" />
@@ -49,17 +49,17 @@
                         </HorizontalLayout>
                     </HorizontalLayout>
                     <HorizontalLayout name="HorizontalLayoutUI4">
-                        <VerticalLayout name="VerticalLayoutUI7" pos="0,309,471,619" width="471" height="310" padding="0,-1,0,0" bordercolor="#00B4BFB5">
-    						<List name="favoritefilelist" inset="1,0,1,0" bordersize="1" itemshowhtml="true" itemalign="center" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1'" itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemshowhtml="true" vscrollbar="true" hscrollbar="true" headerbkimage="headerctrl_normal.bmp" menu="true">
-								<ListHeader />
-    							<ListHeaderItem text="名称" width="270" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="list_header_sep.png"  sepimage="Headerctrl_Sperator.bmp"/>
-    							<ListHeaderItem text="网址" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" dragable="false"/>
-    						</List>    						
-                            <Text name="FavoriteNum" text="hello" float="true" pos="309,312,466,334" bkimage="button_u.png" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                        <VerticalLayout name="VerticalLayoutUI7" width="471" padding="0,-1,0,0" bordercolor="#00B4BFB5">
+    			    <List name="favoritefilelist" bordercolor="#00B4BFB5" inset="1,0,1,0" bordersize="1" itemshowhtml="true" itemalign="center" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1'" itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemshowhtml="true" vscrollbar="true" hscrollbar="true" headerbkimage="headerctrl_normal.bmp" menu="true">
+				<ListHeader />
+    				<ListHeaderItem text="名称" width="270" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="list_header_sep.png"  sepimage="Headerctrl_Sperator.bmp"/>
+    				<ListHeaderItem text="网址" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" dragable="false"/>
+    			    </List>    						
+                            <Text name="FavoriteNum" padding="0,0,0,1" showhtml="true" text="该目录中有20项" height="20" textpadding="4,4,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
                         </VerticalLayout>
                         <VerticalLayout name="VerticalLayoutUI14" pos="0,0,200,0" width="160" padding="-1,-1,0,0" bordercolor="#00B4BFB5">
-							<TreeList name="favoritetreelist" padding="0,0,0,1" bkcolor="#FFF6F9FF" inset="1,1,1,1" bordercolor="#00B4BFB5" bordersize="1" header="hidden" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1' " itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemlinecolor="#FFE4EAF2" itemshowhtml="true" vscrollbar="true" hscrollbar="true" menu="true">
-							</TreeList>
+				<TreeList name="favoritetreelist" padding="0,0,0,1" bkcolor="#FFF6F9FF" inset="1,1,1,1" bordercolor="#00B4BFB5" bordersize="1" header="hidden" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1' " itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemlinecolor="#FFE4EAF2" itemshowhtml="true" vscrollbar="true" hscrollbar="true" menu="true">
+				</TreeList>
                         </VerticalLayout>
                     </HorizontalLayout>
                 </VerticalLayout>
