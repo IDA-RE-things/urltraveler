@@ -19,8 +19,46 @@ public:
 	bool AddBitmap(HBITMAP hBitmap);
 	bool DelBitmap(HBITMAP hBitmap);
 	int  GetIconCount();
+
+	bool IsButton1Show();
+	void ShowButton1(bool bShow);
+	LPCTSTR GetButton1NormalImage();
+	void SetButton1NormalImage(LPCTSTR pStrImage);
+	LPCTSTR GetButton1HotImage();
+	void SetButton1HotImage(LPCTSTR pStrImage);
+	LPCTSTR GetButton1PushedImage();
+	void SetButton1PushedImage(LPCTSTR pStrImage);
+	LPCTSTR GetButton1DisabledImage();
+	void SetButton1DisabledImage(LPCTSTR pStrImage);
+
+	bool IsButton2Show();
+	void ShowButton2(bool bShow);
+	LPCTSTR GetButton2NormalImage();
+	void SetButton2NormalImage(LPCTSTR pStrImage);
+	LPCTSTR GetButton2HotImage();
+	void SetButton2HotImage(LPCTSTR pStrImage);
+	LPCTSTR GetButton2PushedImage();
+	void SetButton2PushedImage(LPCTSTR pStrImage);
+	LPCTSTR GetButton2DisabledImage();
+	void SetButton2DisabledImage(LPCTSTR pStrImage);
 private:
 	CStdPtrArray m_arrIcons;
 	CStdPtrArray m_arrBitmaps;
+    /*×ó±ß°´Å¥µÄ×´Ì¬*/
+	bool m_bShowButton1;
+	RECT m_rcButton1;
+	UINT m_uButton1State;
+	CStdString m_sButton1NormalImage;
+	CStdString m_sButton1HotImage;
+	CStdString m_sButton1PushedImage;
+	CStdString m_sButton1DisabledImage;
+	/*ÓÒ±ß°´Å¥µÄ×´Ì¬*/
+	bool m_bShowButton2;
+	RECT m_rcButton2;
+	UINT m_uButton2State;
+	CStdString m_sButton2NormalImage;
+	CStdString m_sButton2HotImage;
+	CStdString m_sButton2PushedImage;
+	CStdString m_sButton2DisabledImage;
 };
 }
