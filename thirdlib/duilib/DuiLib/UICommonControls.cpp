@@ -820,6 +820,24 @@ void CTextUI::DoEvent(TEventUI& event)
     CLabelUI::DoEvent(event);
 }
 
+void CTextUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
+{
+	if( _tcscmp(pstrName, _T("wordwrap")) == 0 ) {
+		if( _tcsstr(pstrValue, _T("wordbreak")) != NULL ) {
+			m_uTextStyle &= ~DT_SINGLELINE;
+			m_uTextStyle |= DT_WORDBREAK;
+		}
+		else if( _tcsstr(pstrValue, _T("normal")) != NULL ) {
+			m_uTextStyle &= ~DT_WORDBREAK;
+			m_uTextStyle |= DT_SINGLELINE;
+		}
+	}
+	else
+	{
+		CLabelUI::SetAttribute(pstrName, pstrValue);
+	}
+}
+
 SIZE CTextUI::EstimateSize(SIZE szAvailable)
 {
     RECT rcText = { 0, 0, MAX(szAvailable.cx, m_cxyFixed.cx), 9999 };
