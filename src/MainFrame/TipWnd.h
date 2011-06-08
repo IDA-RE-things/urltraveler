@@ -132,7 +132,7 @@ public:
 		}
 
 		::ShowWindow(m_hWnd, SW_HIDE);
-		::SendMessage(m_hParent, WM_ACTIVATE, TRUE, 0L);
+		//::SendMessage(m_hParent, WM_ACTIVATE, TRUE, 0L);
 	}
 
     LPCTSTR GetWindowClassName() const { return _T("TipWnd"); };
