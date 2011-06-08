@@ -3,6 +3,7 @@
 #include "json/json.h"
 #include <vector>
 #include <map>
+#include "md5.h"
 
 class CChromePlugIn : public PlugInImp
 {
@@ -100,7 +101,14 @@ private:
 
 	BOOL TraverseNode(PFAVORITELINEDATA pData, int32 nDepth);
 	BOOL StringToInt64(std::string strTime, int64& nTime);
-	std::string MD5ToBase16(byte* pbyData);
+	BOOL Int64ToString(int64 nTime, std::string& strTime);
+
+	void InitializeChecksum();
+	void UpdateChecksum(const std::string& str);
+	void UpdateChecksum(const std::wstring& str);
+	void UpdateChecksumWithUrlNode(const std::string& id, const std::wstring& title, const std::string& url);
+	void UpdateChecksumWithFolderNode(const std::string& id, const std::wstring& title); 
+	void FinalizeChecksum();
 
 private:
 	typedef struct NodeInfo
@@ -120,4 +128,7 @@ private:
 
 	typedef std::map<int32, Json::Value> MAP_PID_NODE_INFO;
 	MAP_PID_NODE_INFO m_mapPidNodeInfo;
+
+	MD5Context m_szMd5Context;
+	std::string m_strCheckSum;
 };

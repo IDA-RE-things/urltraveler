@@ -211,6 +211,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\md5.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -242,6 +246,10 @@
 			</File>
 			<File
 				RelativePath=".\ChromePlugInFactory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\md5.h"
 				>
 			</File>
 			<File
