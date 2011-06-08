@@ -243,7 +243,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		{
 			if (m_pTipWnd)
 			{
-				m_pTipWnd->HideTip();
+				//m_pTipWnd->HideTip();
 			}
 		}
 	}
