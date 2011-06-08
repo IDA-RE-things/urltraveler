@@ -2582,7 +2582,7 @@ void CScrollBarUI::PaintButton1(HDC hDC)
     }
 
     DWORD dwBorderColor = 0xFF85E4FF;
-    int nBorderSize = 2;
+    int nBorderSize = 1;
     CRenderEngine::DrawRect(hDC, m_rcButton1, nBorderSize, dwBorderColor);
 }
 
@@ -2620,7 +2620,7 @@ void CScrollBarUI::PaintButton2(HDC hDC)
     }
 
     DWORD dwBorderColor = 0xFF85E4FF;
-    int nBorderSize = 2;
+    int nBorderSize = 1;
     CRenderEngine::DrawRect(hDC, m_rcButton2, nBorderSize, dwBorderColor);
 }
 
@@ -2659,7 +2659,7 @@ void CScrollBarUI::PaintThumb(HDC hDC)
     }
 
     DWORD dwBorderColor = 0xFF85E4FF;
-    int nBorderSize = 2;
+    int nBorderSize = 1;
     CRenderEngine::DrawRect(hDC, m_rcThumb, nBorderSize, dwBorderColor);
 }
 
