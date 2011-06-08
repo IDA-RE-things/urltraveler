@@ -135,6 +135,6 @@ public:
 public:
     CPaintManagerUI m_pm;
     CControlUI* m_pOwner;
-    bool bFlag; // 菜单Notify中尽量不要调用MessageBox函数，如果确实需要调用，使用此变量修正
+    bool bFlag;							// 菜单Notify中尽量不要调用MessageBox函数，如果确实需要调用，使用此变量修正
 	std::wstring	m_strSkinXml;	//	皮肤文件的xml
 };

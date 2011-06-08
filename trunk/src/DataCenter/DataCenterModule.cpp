@@ -268,7 +268,7 @@ void	DataCenterModule::OnEvent_DeleteFavorite(Event* pEvent)
 		FAVORITELINEDATA* pData = &m_vFavoriteLineData[i]	;
 		if( pData->nPid == nId && wstrUrl == pData->szUrl)
 		{
-			m_vFavoriteLineData.erase(m_vFavoriteLineData.begin() + i);
+			pData->bDelete = true;
 		}
 	}
 }
