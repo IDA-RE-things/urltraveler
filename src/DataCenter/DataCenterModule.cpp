@@ -153,6 +153,7 @@ DataCenterModule::~DataCenterModule()
 
 BEGIN_EVENT_MAP(DataCenterModule)
 	ON_EVENT(EVENT_VALUE_WEB_GET_FAVICON_RESP, OnEvent_FavoriteIconArrive)
+	ON_EVENT(EVENT_VALUE_DATACENTER_DELETE_FAVORITE, OnEvent_DeleteFavorite)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(DataCenterModule)
@@ -250,6 +251,25 @@ void	DataCenterModule::OnEvent_FavoriteIconArrive(Event* pEvent)
 		STRNCPY(pFavoriteIconArriveEvent->szDomain, wstrDomain.c_str());
 		pFavoriteIconArriveEvent->hIcon = hIcon;
 		m_pModuleManager->PushEvent(*pFavoriteIconArriveEvent);
+	}
+}
+
+void	DataCenterModule::OnEvent_DeleteFavorite(Event* pEvent)
+{
+	DataCenter_DeleteFavoriteEvent* pDeleteFavoriteEvent = (DataCenter_DeleteFavoriteEvent*)pEvent->m_pstExtraInfo;
+	if( pDeleteFavoriteEvent == NULL)
+		return;
+
+	int nId = pDeleteFavoriteEvent->nFavoriteId;
+	wstring	wstrUrl = pDeleteFavoriteEvent->szUrl;
+
+	for( int i = 0; i<m_vFavoriteLineData.size(); i++)
+	{
+		FAVORITELINEDATA* pData = &m_vFavoriteLineData[i]	;
+		if( pData->nPid == nId && wstrUrl == pData->szUrl)
+		{
+			m_vFavoriteLineData.erase(m_vFavoriteLineData.begin() + i);
+		}
 	}
 }
 

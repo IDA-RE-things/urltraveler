@@ -282,6 +282,10 @@
 				Name="DuiEx"
 				>
 				<File
+					RelativePath=".\FavoriteListMenu.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Menu.h"
 					>
 				</File>
@@ -291,6 +295,10 @@
 				</File>
 				<File
 					RelativePath=".\TreeList.h"
+					>
+				</File>
+				<File
+					RelativePath=".\TreeListMenu.h"
 					>
 				</File>
 			</Filter>
