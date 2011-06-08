@@ -535,12 +535,24 @@ void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, HICON hIcon )
 void	CMainFrameWnd::DeleteFavorite(int nIndex)
 {
 	wchar_t* pDeleteUrl = m_vFavoriteNodeAtTreeNode[nIndex]->szUrl;
+	for( int i=0; i<m_vFavoriteNodeAtTreeNode.size(); i++)
+	{
+		FAVORITELINEDATA* pData = m_vFavoriteNodeAtTreeNode[i];
+		if( wstring(pData->szUrl) == wstring(pDeleteUrl))
+		{
+			m_vFavoriteNodeAtTreeNode.erase(m_vFavoriteNodeAtTreeNode.begin() + i);
+		}
+	}
+
+	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	pUserList->Invalidate();
 
 	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(m_pCurrentTreeNode);
 	if( itr == m_mapNodeId.end())
 		return;
 
 	int nId = itr->second;
+
 	// 通知数据中心从nId的目录中删除pDeleteUrl
 	DataCenter_DeleteFavoriteEvent* pEvent = new DataCenter_DeleteFavoriteEvent();
 	pEvent->desMId = MODULE_ID_DATACENTER;
