@@ -20,6 +20,12 @@ public:
 	bool DelBitmap(HBITMAP hBitmap);
 	int  GetIconCount();
 
+	/*ªÊª≠œ‡πÿ*/
+	void DoPaint(HDC hDC, const RECT& rcPaint);;
+	void PaintIcon(HDC hDC);
+	void PaintButton1(HDC hDC);
+	void PaintButton2(HDC hDC);
+
 	bool IsButton1Show();
 	void ShowButton1(bool bShow);
 	LPCTSTR GetButton1NormalImage();
@@ -60,5 +66,7 @@ private:
 	CStdString m_sButton2HotImage;
 	CStdString m_sButton2PushedImage;
 	CStdString m_sButton2DisabledImage;
+
+	CStdString m_sImageModify;
 };
 }
