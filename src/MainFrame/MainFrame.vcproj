@@ -282,14 +282,6 @@
 				Name="DuiEx"
 				>
 				<File
-					RelativePath=".\IconBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\IconBox.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Menu.h"
 					>
 				</File>
