@@ -547,17 +547,4 @@ void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 
 	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	pUserList->Invalidate();
-
-	//std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(m_pCurrentTreeNode);
-	//if( itr == m_mapNodeId.end())
-	//	return;
-
-	//int nId = itr->second;
-
-	// 通知数据中心从nId的目录中删除pDeleteUrl
-	/*DataCenter_DeleteFavoriteEvent* pEvent = new DataCenter_DeleteFavoriteEvent();
-	pEvent->desMId = MODULE_ID_DATACENTER;
-	pEvent->nFavoriteId = nId;
-	STRNCPY(pEvent->szUrl, pDeleteUrl);
-	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);*/
 }
