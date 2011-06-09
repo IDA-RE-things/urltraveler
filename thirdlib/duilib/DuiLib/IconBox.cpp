@@ -13,6 +13,9 @@ CIconBoxUI::CIconBoxUI()
 
 	m_uButton1State = 0;
 	m_uButton2State = 0;
+
+	m_dwIconBolderColor = 0xFF85E4FF;
+	m_nIconBolderSize = 1;
 }
 
 CIconBoxUI::~CIconBoxUI()
@@ -40,6 +43,30 @@ void CIconBoxUI::SetAttribute( LPCTSTR pstrName, LPCTSTR pstrValue )
 	else if( _tcscmp(pstrName, _T("button2hotimage")) == 0 ) SetButton2HotImage(pstrValue);
 	else if( _tcscmp(pstrName, _T("button2pushedimage")) == 0 ) SetButton2PushedImage(pstrValue);
 	else if( _tcscmp(pstrName, _T("button2disabledimage")) == 0 ) SetButton2DisabledImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("iconsize")) == 0 )
+	{
+		LPTSTR pstr = NULL;
+		m_stIconSize.cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+		m_stIconSize.cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
+	}
+	else if( _tcscmp(pstrName, _T("distanceoficon")) == 0 )
+	{
+		LPTSTR pstr = NULL;
+
+		m_nDistanceOfEachIcon = _tcstol(pstrValue, &pstr, 10);
+	}
+	else if( _tcscmp(pstrName, _T("iconboldercolor")) == 0 )
+	{
+		LPTSTR pstr = NULL;
+
+		m_nDistanceOfEachIcon = _tcstol(pstrValue, &pstr, 10);
+	}
+	else if( _tcscmp(pstrName, _T("iconboldersize")) == 0 )
+	{
+		LPTSTR pstr = NULL;
+
+		m_nIconBolderSize = _tcstol(pstrValue, &pstr, 10);
+	}
 	else CControlUI::SetAttribute(pstrName, pstrValue);
 }
 
@@ -100,9 +127,28 @@ void CIconBoxUI::DoEvent( TEventUI& event )
 	}
 	else if(event.Type == UIEVENT_BUTTONUP)
 	{
-		m_uButton1State = 0;
-		m_uButton2State = 0;
-		Invalidate();
+
+
+		if( ::PtInRect(&m_rcButton1, event.ptMouse) ) {
+			m_uButton1State = 0;
+			m_uButton2State = 0;
+
+			if (m_nShowIndex > 0)
+			{
+				m_nShowIndex -= 1;
+				Invalidate();
+			}
+		}
+		if( ::PtInRect(&m_rcButton2, event.ptMouse) ) {
+			m_uButton1State = 0;
+			m_uButton2State = 0;
+
+			if (m_nShowIndex < GetIconCount() - 1)
+			{
+				m_nShowIndex += 1;
+				Invalidate();
+			}
+		}
 	}
 	else if(event.Type == UIEVENT_MOUSELEAVE)
 	{
@@ -284,14 +330,8 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 		rcIconBolder.top -= m_nDistanceOfEachIcon / 2;
 		rcIconBolder.bottom += m_nDistanceOfEachIcon / 2;
 
-		DWORD dwBorderColor = 0xFF85E4FF;
-		int nBorderSize = 1;
-		CRenderEngine::DrawRect(hDC, rcIconBolder, nBorderSize, dwBorderColor);
+		CRenderEngine::DrawRect(hDC, rcIconBolder, m_nIconBolderSize, m_dwIconBolderColor);
 	}
-
-	/*DWORD dwBorderColor = 0xFF85E4FF;
-	int nBorderSize = 1;
-	CRenderEngine::DrawRect(hDC, m_rcItem, nBorderSize, dwBorderColor);*/
 }
 
 void CIconBoxUI::PaintButton1(HDC hDC)
