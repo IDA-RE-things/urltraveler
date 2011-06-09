@@ -59,7 +59,7 @@ void CIconBoxUI::DoEvent( TEventUI& event )
 			}
 		}
 	}
-	else if(event.Type == UIEVENT_MOUSEHOVER)
+	else if(event.Type == UIEVENT_MOUSEMOVE)
 	{
 		//如果显示左右按钮，则先判断鼠标是否落入在按钮区域
 		int nIndex = 0;
@@ -71,7 +71,6 @@ void CIconBoxUI::DoEvent( TEventUI& event )
 		{
 			nIndex = (event.ptMouse.x - m_rcItem.left) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
 		}
-
 		m_nSelectIndex = nIndex;
 
 		ICONITEMINFO *pIconInfo = (ICONITEMINFO *)m_arrIcons.GetAt(nIndex + m_nShowIndex);
