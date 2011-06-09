@@ -137,7 +137,17 @@ void CIconBoxUI::DoPaint(HDC hDC, const RECT& rcPaint)
 {
 	 if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
 
+	 PaintIcon(hDC);
 
+	 if (m_bShowButton1)
+	 {
+		 PaintButton1(hDC);
+	 }
+
+	 if (m_bShowButton2)
+	 {
+		 PaintButton2(hDC);
+	 }
 }
 
 void CIconBoxUI::PaintIcon(HDC hDC)
@@ -219,6 +229,45 @@ void CIconBoxUI::PaintButton2(HDC hDC)
 	DWORD dwBorderColor = 0xFF85E4FF;
 	int nBorderSize = 2;
 	CRenderEngine::DrawRect(hDC, m_rcButton2, nBorderSize, dwBorderColor);
+}
+
+bool CIconBoxUI::AddIcon( HICON hIcon )
+{
+	return m_arrIcons.Add((LPVOID)hIcon);
+}
+
+bool CIconBoxUI::DelIcon( HICON hIcon )
+{
+	int nIndex = m_arrIcons.Find((LPVOID)hIcon);
+
+	if (nIndex != -1)
+	{
+		return m_arrIcons.Remove(nIndex);
+	}
+
+	return false;
+}
+
+bool CIconBoxUI::AddBitmap( HBITMAP hBitmap )
+{
+	return m_arrBitmaps.Add((LPVOID)hBitmap);
+}
+
+bool CIconBoxUI::DelBitmap( HBITMAP hBitmap )
+{
+	int nIndex = m_arrBitmaps.Find((LPVOID)hBitmap);
+
+	if (nIndex != -1)
+	{
+		return m_arrBitmaps.Remove(nIndex);
+	}
+
+	return false;
+}
+
+int CIconBoxUI::GetIconCount()
+{
+	return m_arrBitmaps.GetSize() + m_arrIcons.GetSize();
 }
 
 }
