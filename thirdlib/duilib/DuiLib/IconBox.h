@@ -16,11 +16,9 @@ public:
 	/*iocn box相关属性*/
 	bool AddIcon(HICON hIcon);
 	bool DelIcon(HICON hIcon);
-	bool AddBitmap(HBITMAP hBitmap);
-	bool DelBitmap(HBITMAP hBitmap);
 	int  GetIconCount();
 	/*设置icon大小*/
-	void SetIconSize(SIZE sz);
+	void SetIconSize(SIZE stIconSize);
 	SIZE GetIconSize();
 
 	/*绘画相关*/
@@ -52,7 +50,6 @@ public:
 	void SetButton2DisabledImage(LPCTSTR pStrImage);
 private:
 	CStdPtrArray m_arrIcons;
-	CStdPtrArray m_arrBitmaps;
     /*左边按钮的状态*/
 	bool m_bShowButton1;
 	RECT m_rcButton1;
@@ -71,5 +68,7 @@ private:
 	CStdString m_sButton2DisabledImage;
 
 	CStdString m_sImageModify;
+	SIZE       m_stIconSize;
+	int        m_nDistanceOfEachIcon;
 };
 }

@@ -5,7 +5,9 @@ namespace DuiLib {
 
 CIconBoxUI::CIconBoxUI()
 {
-
+	m_nDistanceOfEachIcon = 5;
+	m_stIconSize.cx = 32;
+	m_stIconSize.cy = 32;
 }
 
 CIconBoxUI::~CIconBoxUI()
@@ -25,7 +27,15 @@ LPCTSTR CIconBoxUI::GetClass() const
 
 void CIconBoxUI::SetAttribute( LPCTSTR pstrName, LPCTSTR pstrValue )
 {
-
+	if( _tcscmp(pstrName, _T("button1normalimage")) == 0 ) SetButton1NormalImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("button1hotimage")) == 0 ) SetButton1HotImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("button1pushedimage")) == 0 ) SetButton1PushedImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("button1disabledimage")) == 0 ) SetButton1DisabledImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("button2normalimage")) == 0 ) SetButton2NormalImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("button2hotimage")) == 0 ) SetButton2HotImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("button2pushedimage")) == 0 ) SetButton2PushedImage(pstrValue);
+	else if( _tcscmp(pstrName, _T("button2disabledimage")) == 0 ) SetButton2DisabledImage(pstrValue);
+	else CControlUI::SetAttribute(pstrName, pstrValue);
 }
 
 void CIconBoxUI::DoEvent( TEventUI& event )
@@ -152,7 +162,35 @@ void CIconBoxUI::DoPaint(HDC hDC, const RECT& rcPaint)
 
 void CIconBoxUI::PaintIcon(HDC hDC)
 {
+	//获取box的宽度
+	int nWidth = GetWidth();
+	int nHoldIcons = nWidth / (m_stIconSize.cx + m_nDistanceOfEachIcon);
+	CRect rc;
 
+	rc = GetPos();
+
+	if (nHoldIcons > GetIconCount())
+	{
+		m_bShowButton1 = false;
+		m_bShowButton2 = false;
+		rc.left += m_nDistanceOfEachIcon;
+	}
+	else
+	{
+		m_bShowButton1 = true;
+		m_bShowButton2 = true;
+		rc.left += (m_rcButton1.right - m_rcButton1.left) + m_nDistanceOfEachIcon;
+	}
+
+	int nIcons = m_arrIcons.GetSize();
+
+	for (int i = 0; i < nIcons && i < nHoldIcons; i++)
+	{
+		HICON hIcon = (HICON)m_arrIcons.GetAt(i);
+		DrawIconEx(hDC, rc.left, rc.top, hIcon, m_stIconSize.cx, m_stIconSize.cy, 1, NULL, DI_NORMAL);
+
+		rc.left += m_stIconSize.cx + m_nDistanceOfEachIcon;
+	}
 }
 
 void CIconBoxUI::PaintButton1(HDC hDC)
@@ -233,7 +271,14 @@ void CIconBoxUI::PaintButton2(HDC hDC)
 
 bool CIconBoxUI::AddIcon( HICON hIcon )
 {
-	return m_arrIcons.Add((LPVOID)hIcon);
+	bool bRet = m_arrIcons.Add((LPVOID)hIcon);
+
+	if (bRet)
+	{
+		Invalidate();
+	}
+
+	return bRet;
 }
 
 bool CIconBoxUI::DelIcon( HICON hIcon )
@@ -248,26 +293,20 @@ bool CIconBoxUI::DelIcon( HICON hIcon )
 	return false;
 }
 
-bool CIconBoxUI::AddBitmap( HBITMAP hBitmap )
-{
-	return m_arrBitmaps.Add((LPVOID)hBitmap);
-}
-
-bool CIconBoxUI::DelBitmap( HBITMAP hBitmap )
-{
-	int nIndex = m_arrBitmaps.Find((LPVOID)hBitmap);
-
-	if (nIndex != -1)
-	{
-		return m_arrBitmaps.Remove(nIndex);
-	}
-
-	return false;
-}
 
 int CIconBoxUI::GetIconCount()
 {
-	return m_arrBitmaps.GetSize() + m_arrIcons.GetSize();
+	return m_arrIcons.GetSize();
+}
+
+void CIconBoxUI::SetIconSize( SIZE stIconSize )
+{
+	m_stIconSize = stIconSize;
+}
+
+SIZE CIconBoxUI::GetIconSize()
+{
+	return m_stIconSize;
 }
 
 }
