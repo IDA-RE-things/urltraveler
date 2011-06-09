@@ -51,6 +51,7 @@ public:
 	// 更新指定网站的收藏夹图标
 	void	UpdateFavoriteIcon(wchar_t*	pszUrl, HICON hIcon);
 	void	DeleteFavorite(int nDeleteNodeId);
+	void	AddUrl();
 	void	OpenUrl(int nIndex);
 	void	CopyUrl(int nIndex);
 
@@ -67,6 +68,7 @@ private:
 	std::map<TreeListUI::Node*, int>	m_mapNodeId;	//	node到map的映射
 
 	// 当前选中的TreeNode结点
+	int m_nTreeNodeId;
 	TreeListUI::Node*	m_pCurrentTreeNode;
 
 	int m_nFavoriteNum;

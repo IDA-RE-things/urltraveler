@@ -41,6 +41,7 @@ BEGIN_EVENT_MAP(MainFrameModule)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_SHOW, OnEvent_ShowMainDlg)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_HIDE, OnEvent_HideMainDlg)
 	ON_EVENT(EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE, OnEvent_FavoriteIconArrive)
+	ON_EVENT(EVENT_VALUE_MAINFRAME_ADD_URL, OnEvent_AddUrl)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_DELETE_FAVORITE, OnEvent_DeleteFavorite)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_OPEN_URL, OnEvent_OpenUrl)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_COPY_URL, OnEvent_CopyUrl)
@@ -146,6 +147,13 @@ void	MainFrameModule::OnEvent_FavoriteIconArrive(Event* pEvent)
 	wstring	wstrDomainUrl = pGetFavIconRespEvent->szDomain;
 	HICON hIcon = pGetFavIconRespEvent->hIcon;
 	m_pMainFrame->UpdateFavoriteIcon((wchar_t*)wstrDomainUrl.c_str(), hIcon);
+}
+
+void MainFrameModule::OnEvent_AddUrl(Event* pEvent)
+{
+	ASSERT( pEvent->eventValue == EVENT_VALUE_MAINFRAME_ADD_URL);
+
+	m_pMainFrame->AddUrl();
 }
 
 void	MainFrameModule::OnEvent_DeleteFavorite(Event* pEvent)
