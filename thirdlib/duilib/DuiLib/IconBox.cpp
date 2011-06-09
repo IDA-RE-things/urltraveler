@@ -247,6 +247,7 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 		rc.left += m_stIconSize.cx + m_nDistanceOfEachIcon;
 	}
 
+	//用户有选中icon，且选中的Icon不能超过当前显示的Icon数 且选中的Icon不能抽IconBox所能容纳的Icons数
 	if (m_nSelectIndex != -1 && m_nSelectIndex < nIcons - m_nShowIndex && m_nSelectIndex < nHoldIcons)
 	{
 		rcIconBolder.left += m_nSelectIndex * m_nDistanceOfEachIcon + m_nSelectIndex * m_stIconSize.cx;
