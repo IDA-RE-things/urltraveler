@@ -247,7 +247,7 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 		rc.left += m_stIconSize.cx + m_nDistanceOfEachIcon;
 	}
 
-	if (m_nSelectIndex != -1)
+	if (m_nSelectIndex != -1 && m_nSelectIndex < nIcons - m_nShowIndex && m_nSelectIndex < nHoldIcons)
 	{
 		rcIconBolder.left += m_nSelectIndex * m_nDistanceOfEachIcon + m_nSelectIndex * m_stIconSize.cx;
 
