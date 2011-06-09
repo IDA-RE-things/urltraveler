@@ -208,7 +208,7 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 
 	int nIcons = m_arrIcons.GetSize();
 
-	for (; i < nIcons && i < nHoldIcons; i++)
+	for (; i < nIcons && i < nHoldIcons + m_nShowIndex; i++)
 	{
 		HICON hIcon = (HICON)m_arrIcons.GetAt(i);
 		DrawIconEx(hDC, rc.left, rc.top, hIcon, m_stIconSize.cx, m_stIconSize.cy, 1, NULL, DI_NORMAL);
