@@ -3,7 +3,7 @@
 
 namespace DuiLib {
 
-class CIconBoxUI : public CControlUI 
+class UILIB_API CIconBoxUI : public CControlUI 
 {
 public:
 	CIconBoxUI();
@@ -24,6 +24,8 @@ public:
 	/*ªÊª≠œ‡πÿ*/
 	void DoPaint(HDC hDC, const RECT& rcPaint);;
 	void PaintIcon(HDC hDC);
+	void SetPos(RECT rc);
+
 	void PaintButton1(HDC hDC);
 	void PaintButton2(HDC hDC);
 
@@ -70,5 +72,6 @@ private:
 	CStdString m_sImageModify;
 	SIZE       m_stIconSize;
 	int        m_nDistanceOfEachIcon;
+	int        m_nShowIndex;
 };
 }
