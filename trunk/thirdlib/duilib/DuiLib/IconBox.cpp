@@ -462,7 +462,6 @@ bool CIconBoxUI::DelIcon( HICON hIcon )
 	return false;
 }
 
-
 int CIconBoxUI::GetIconCount()
 {
 	return m_arrIcons.GetSize();
