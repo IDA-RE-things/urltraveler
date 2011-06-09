@@ -58,7 +58,25 @@ void CIconBoxUI::DoEvent( TEventUI& event )
 			}
 		}
 	}
+	else if(event.Type == UIEVENT_MOUSEHOVER)
+	{
+		//如果显示左右按钮，则先判断鼠标是否落入在按钮区域
+		int nIndex = 0;
+		if (m_bShowButton1 && m_bShowButton2)
+		{
+			nIndex = (event.ptMouse.x - m_rcButton1.right) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
+		}
+		else
+		{
+			nIndex = (event.ptMouse.x - m_rcItem.left) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
+		}
 
+		ICONITEMINFO *pIconInfo = (ICONITEMINFO *)m_arrIcons.GetAt(nIndex + m_nShowIndex);
+		if (pIconInfo)
+		{
+			SetToolTip(pIconInfo->szTip);
+		}
+	}
 }
 
 bool CIconBoxUI::IsButton1Show()
@@ -210,8 +228,8 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 
 	for (; i < nIcons && i < nHoldIcons + m_nShowIndex; i++)
 	{
-		HICON hIcon = (HICON)m_arrIcons.GetAt(i);
-		DrawIconEx(hDC, rc.left, rc.top, hIcon, m_stIconSize.cx, m_stIconSize.cy, 1, NULL, DI_NORMAL);
+		ICONITEMINFO *pIconInfo = (ICONITEMINFO *)m_arrIcons.GetAt(i);
+		DrawIconEx(hDC, rc.left, rc.top, pIconInfo->hIcon, m_stIconSize.cx, m_stIconSize.cy, 1, NULL, DI_NORMAL);
 
 		rc.left += m_stIconSize.cx + m_nDistanceOfEachIcon;
 	}
@@ -314,11 +332,15 @@ void CIconBoxUI::PaintButton2(HDC hDC)
 	CRenderEngine::DrawRect(hDC, m_rcButton2, nBorderSize, dwBorderColor);
 }
 
-bool CIconBoxUI::AddIcon( HICON hIcon )
+bool CIconBoxUI::AddIcon( HICON hIcon, LPCTSTR lpszTip, BOOL bRepaint)
 {
-	bool bRet = m_arrIcons.Add((LPVOID)hIcon);
+	ICONITEMINFO *pIconInfo = new ICONITEMINFO;
 
-	if (bRet)
+	pIconInfo->hIcon = hIcon;
+	_tcscpy_s(pIconInfo->szTip, MAX_PATH - 1, lpszTip);
+	bool bRet = m_arrIcons.Add((LPVOID)pIconInfo);
+
+	if (bRet && bRepaint)
 	{
 		Invalidate();
 	}
@@ -328,11 +350,17 @@ bool CIconBoxUI::AddIcon( HICON hIcon )
 
 bool CIconBoxUI::DelIcon( HICON hIcon )
 {
-	int nIndex = m_arrIcons.Find((LPVOID)hIcon);
+	int nSize = m_arrIcons.GetSize();
 
-	if (nIndex != -1)
+	for (int i = 0; i < nSize; i++)
 	{
-		return m_arrIcons.Remove(nIndex);
+		ICONITEMINFO *pIconInfo = (ICONITEMINFO *)m_arrIcons.GetAt(i);
+
+		if (pIconInfo && pIconInfo->hIcon == hIcon)
+		{
+			m_arrIcons.Remove(i);
+			return true;
+		}
 	}
 
 	return false;

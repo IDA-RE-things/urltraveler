@@ -3,6 +3,12 @@
 
 namespace DuiLib {
 
+typedef struct _IconItemInfo
+{
+	HICON   hIcon;
+	TCHAR   szTip[MAX_PATH];
+}ICONITEMINFO, *PICONITEMINFO;
+
 class UILIB_API CIconBoxUI : public CControlUI 
 {
 public:
@@ -14,7 +20,7 @@ public:
 	void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 	void DoEvent(TEventUI& event);
 	/*iocn box相关属性*/
-	bool AddIcon(HICON hIcon);
+	bool AddIcon(HICON hIcon, LPCTSTR lpszTip, BOOL bRepaint);
 	bool DelIcon(HICON hIcon);
 	int  GetIconCount();
 	/*设置icon大小*/

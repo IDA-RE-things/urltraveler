@@ -520,7 +520,7 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 
 	if (pIconBox)
 	{
-		pIconBox->AddIcon(getFavoriteIconService.hIcon);
+		pIconBox->AddIcon(getFavoriteIconService.hIcon, strUrl.c_str(), FALSE);
 	}
 	bOk = m_pm.AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon) != NULL;
 	m_pTipWnd->AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon);
