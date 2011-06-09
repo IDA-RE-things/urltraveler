@@ -10,6 +10,9 @@ CIconBoxUI::CIconBoxUI()
 	m_stIconSize.cy = 16;
 	m_nShowIndex = 0;
 	m_nSelectIndex = -1;
+
+	m_uButton1State = 0;
+	m_uButton2State = 0;
 }
 
 CIconBoxUI::~CIconBoxUI()
@@ -62,27 +65,63 @@ void CIconBoxUI::DoEvent( TEventUI& event )
 	else if(event.Type == UIEVENT_MOUSEMOVE)
 	{
 		//如果显示左右按钮，则先判断鼠标是否落入在按钮区域
-		int nIndex = 0;
-		if (m_bShowButton1 && m_bShowButton2)
+		if (::PtInRect(&m_rcButton1, event.ptMouse))
 		{
-			nIndex = (event.ptMouse.x - m_rcButton1.right) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
+			m_nSelectIndex = -1;
+			m_uButton1State |= UISTATE_HOT;
+		}
+		else if (::PtInRect(&m_rcButton2, event.ptMouse))
+		{
+			m_nSelectIndex = -1;
+			m_uButton2State |= UISTATE_HOT;
 		}
 		else
 		{
-			nIndex = (event.ptMouse.x - m_rcItem.left) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
-		}
-		m_nSelectIndex = nIndex;
+			int nIndex = 0;
+			if (m_bShowButton1 && m_bShowButton2)
+			{
+				nIndex = (event.ptMouse.x - m_rcButton1.right) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
+			}
+			else
+			{
+				nIndex = (event.ptMouse.x - m_rcItem.left) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
+			}
+			m_nSelectIndex = nIndex;
 
-		ICONITEMINFO *pIconInfo = (ICONITEMINFO *)m_arrIcons.GetAt(nIndex + m_nShowIndex);
-		if (pIconInfo)
-		{
-			SetToolTip(pIconInfo->szTip);
+			ICONITEMINFO *pIconInfo = (ICONITEMINFO *)m_arrIcons.GetAt(nIndex + m_nShowIndex);
+			if (pIconInfo)
+			{
+				SetToolTip(pIconInfo->szTip);
+			}
 		}
 
 		Invalidate();
 	}
+	else if(event.Type == UIEVENT_BUTTONDOWN)
+	{
+		if (::PtInRect(&m_rcButton1, event.ptMouse))
+		{
+			m_uButton1State = 0;
+			m_uButton1State |= UISTATE_PUSHED;
+		}
+
+		if (::PtInRect(&m_rcButton2, event.ptMouse))
+		{
+			m_uButton2State = 0;
+			m_uButton2State |= UISTATE_PUSHED;
+		}
+		Invalidate();
+	}
+	else if(event.Type == UIEVENT_BUTTONUP)
+	{
+		m_uButton1State = 0;
+		m_uButton2State = 0;
+		Invalidate();
+	}
 	else if(event.Type == UIEVENT_MOUSELEAVE)
 	{
+		m_uButton1State = 0;
+		m_uButton2State = 0;
 		m_nSelectIndex = -1;
 		Invalidate();
 	}
