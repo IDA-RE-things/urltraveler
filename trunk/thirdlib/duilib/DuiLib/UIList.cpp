@@ -1751,7 +1751,9 @@ LPCTSTR CListLabelElementUI::GetClass() const
 
 LPVOID CListLabelElementUI::GetInterface(LPCTSTR pstrName)
 {
-    if( _tcscmp(pstrName, _T("ListLabelElement")) == 0 ) return static_cast<CListLabelElementUI*>(this);
+    if( _tcscmp(pstrName, _T("ListLabelElement")) == 0 ) 
+		return static_cast<CListLabelElementUI*>(this);
+
     return CListElementUI::GetInterface(pstrName);
 }
 
@@ -1895,7 +1897,9 @@ LPCTSTR CListTextElementUI::GetClass() const
 
 LPVOID CListTextElementUI::GetInterface(LPCTSTR pstrName)
 {
-    if( _tcscmp(pstrName, _T("ListTextElement")) == 0 ) return static_cast<CListTextElementUI*>(this);
+    if( _tcscmp(pstrName, _T("ListTextElement")) == 0 ) 
+		return static_cast<CListTextElementUI*>(this);
+
     return CListLabelElementUI::GetInterface(pstrName);
 }
 
@@ -2047,6 +2051,41 @@ void CListTextElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
     }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////
+//
+//
+
+CListTextEditElementUI::CListTextEditElementUI()
+{
+	m_bEditState = false;
+}
+
+CListTextEditElementUI::~CListTextEditElementUI()
+{
+}
+
+LPCTSTR CListTextEditElementUI::GetClass() const
+{
+    return _T("ListTextEditElementUI");
+}
+
+LPVOID CListTextEditElementUI::GetInterface(LPCTSTR pstrName)
+{
+    if( _tcscmp(pstrName, _T("ListTextEditElementUI")) == 0 ) 
+		return static_cast<CListTextEditElementUI*>(this);
+
+    return CListTextElementUI::GetInterface(pstrName);
+}
+
+UINT CListTextEditElementUI::GetControlFlags() const
+{
+    return UIFLAG_WANTRETURN ;
+}
+
+void CListTextEditElementUI::DoEvent(TEventUI& event)
+{
+	__super::DoEvent(event);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////
 //

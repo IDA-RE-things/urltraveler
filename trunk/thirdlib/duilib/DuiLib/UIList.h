@@ -401,37 +401,25 @@ protected:
 //									允许对List中的Item进行编辑
 //		双击Item，则对该Item进行编辑
 
-/*
+
 class UILIB_API CListTextEditElementUI : public CListTextElementUI
 {
 public:
-    CListTextElementUI();
-    ~CListTextElementUI();
+    CListTextEditElementUI();
+    ~CListTextEditElementUI();
 
     LPCTSTR GetClass() const;
     LPVOID GetInterface(LPCTSTR pstrName);
     UINT GetControlFlags() const;
 
-    LPCTSTR GetText(int iIndex) const;
-    void SetText(int iIndex, LPCTSTR pstrText);
-
-    void SetOwner(CControlUI* pOwner);
-    CStdString* GetLinkContent(int iIndex);
-
     void DoEvent(TEventUI& event);
-    SIZE EstimateSize(SIZE szAvailable);
-
-    void DrawItemText(HDC hDC, const RECT& rcItem);
 
 protected:
-    enum { MAX_LINK = 8 };
-    int m_nLinks;
-    RECT m_rcLinks[MAX_LINK];
-    CStdString m_sLinks[MAX_LINK];
-    int m_nHoverLink;
-    IListUI* m_pOwner;
-    CStdPtrArray m_aTexts;
-};*/
+
+	BOOL m_bEditState;		//	是否是编辑状态
+    CEditUI*	m_pEditUI;			//	编辑框，用来对给定的列编辑
+};
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////
