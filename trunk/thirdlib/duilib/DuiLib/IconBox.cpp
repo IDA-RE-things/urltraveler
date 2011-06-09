@@ -6,8 +6,9 @@ namespace DuiLib {
 CIconBoxUI::CIconBoxUI()
 {
 	m_nDistanceOfEachIcon = 5;
-	m_stIconSize.cx = 32;
-	m_stIconSize.cy = 32;
+	m_stIconSize.cx = 16;
+	m_stIconSize.cy = 16;
+	m_nShowIndex = 0;
 }
 
 CIconBoxUI::~CIconBoxUI()
@@ -40,6 +41,23 @@ void CIconBoxUI::SetAttribute( LPCTSTR pstrName, LPCTSTR pstrValue )
 
 void CIconBoxUI::DoEvent( TEventUI& event )
 {
+	if( event.Type == UIEVENT_BUTTONUP )
+	{
+		if( ::PtInRect(&m_rcButton1, event.ptMouse) ) {
+			if (m_nShowIndex > 0)
+			{
+				m_nShowIndex -= 1;
+				Invalidate();
+			}
+		}
+		if( ::PtInRect(&m_rcButton2, event.ptMouse) ) {
+			if (m_nShowIndex < GetIconCount() - 1)
+			{
+				m_nShowIndex += 1;
+				Invalidate();
+			}
+		}
+	}
 
 }
 
@@ -166,8 +184,10 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 	int nWidth = GetWidth();
 	int nHoldIcons = nWidth / (m_stIconSize.cx + m_nDistanceOfEachIcon);
 	CRect rc;
+	int i = 0;
 
 	rc = GetPos();
+	rc.top += (GetHeight() - m_stIconSize.cy) / 2;
 
 	if (nHoldIcons > GetIconCount())
 	{
@@ -180,17 +200,25 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 		m_bShowButton1 = true;
 		m_bShowButton2 = true;
 		rc.left += (m_rcButton1.right - m_rcButton1.left) + m_nDistanceOfEachIcon;
+		nHoldIcons = (nWidth - (m_rcButton1.right - m_rcButton1.left + m_rcButton2.right - m_rcButton2.left)) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
+
+		nHoldIcons += 1;
+		i = m_nShowIndex;
 	}
 
 	int nIcons = m_arrIcons.GetSize();
 
-	for (int i = 0; i < nIcons && i < nHoldIcons; i++)
+	for (; i < nIcons && i < nHoldIcons; i++)
 	{
 		HICON hIcon = (HICON)m_arrIcons.GetAt(i);
 		DrawIconEx(hDC, rc.left, rc.top, hIcon, m_stIconSize.cx, m_stIconSize.cy, 1, NULL, DI_NORMAL);
 
 		rc.left += m_stIconSize.cx + m_nDistanceOfEachIcon;
 	}
+
+	DWORD dwBorderColor = 0xFF85E4FF;
+	int nBorderSize = 1;
+	CRenderEngine::DrawRect(hDC, m_rcItem, nBorderSize, dwBorderColor);
 }
 
 void CIconBoxUI::PaintButton1(HDC hDC)
@@ -225,10 +253,27 @@ void CIconBoxUI::PaintButton1(HDC hDC)
 		if( !DrawImage(hDC, (LPCTSTR)m_sButton1NormalImage, (LPCTSTR)m_sImageModify) ) m_sButton1NormalImage.Empty();
 		else return;
 	}
+	//DWORD dwBorderColor = 0xFF85E4FF;
+	//int nBorderSize = 2;
+	//CRenderEngine::DrawRect(hDC, m_rcButton1, nBorderSize, dwBorderColor);
+}
 
-	DWORD dwBorderColor = 0xFF85E4FF;
-	int nBorderSize = 2;
-	CRenderEngine::DrawRect(hDC, m_rcButton1, nBorderSize, dwBorderColor);
+void CIconBoxUI::SetPos(RECT rc)
+{
+	CControlUI::SetPos(rc);
+	rc = m_rcItem;
+
+	int cx = rc.right - rc.left;
+	m_rcButton1.left = rc.left;
+	m_rcButton1.top = rc.top;
+
+	m_rcButton1.right = rc.left + m_cxyFixed.cy / 3;
+	m_rcButton1.bottom = rc.top + m_cxyFixed.cy;
+
+	m_rcButton2.top = rc.top;
+	m_rcButton2.right = rc.right;
+	m_rcButton2.left = rc.right - m_cxyFixed.cy / 3;
+	m_rcButton2.bottom = rc.top + m_cxyFixed.cy;
 }
 
 void CIconBoxUI::PaintButton2(HDC hDC)
