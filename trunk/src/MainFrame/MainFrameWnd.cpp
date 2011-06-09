@@ -117,12 +117,13 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 	}
 
 	CTextUI* pFavoriteNumber = static_cast<CTextUI*>(m_pm.FindControl(_T("FavoriteNum")));
+	pFavoriteNumber->SetShowHtml();
 
 	if (pFavoriteNumber)
 	{
 		TCHAR szFavoriteNum[MAX_PATH] = {0};
 
-		_stprintf_s(szFavoriteNum, MAX_PATH - 1, _T("该目录下存在%d个结点"), j);
+		_stprintf_s(szFavoriteNum, MAX_PATH - 1, _T("该目录下存在 {b}{c #FF0000}%d{/c}{/b} 个结点"), j);
 		//pFavoriteNumber->SetTextStyle(DT_SINGLELINE | DT_RIGHT);
 		pFavoriteNumber->SetText(szFavoriteNum);
 	}
