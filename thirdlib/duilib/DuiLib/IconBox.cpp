@@ -9,6 +9,7 @@ CIconBoxUI::CIconBoxUI()
 	m_stIconSize.cx = 16;
 	m_stIconSize.cy = 16;
 	m_nShowIndex = 0;
+	m_nSelectIndex = -1;
 }
 
 CIconBoxUI::~CIconBoxUI()
@@ -71,11 +72,20 @@ void CIconBoxUI::DoEvent( TEventUI& event )
 			nIndex = (event.ptMouse.x - m_rcItem.left) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
 		}
 
+		m_nSelectIndex = nIndex;
+
 		ICONITEMINFO *pIconInfo = (ICONITEMINFO *)m_arrIcons.GetAt(nIndex + m_nShowIndex);
 		if (pIconInfo)
 		{
 			SetToolTip(pIconInfo->szTip);
 		}
+
+		Invalidate();
+	}
+	else if(event.Type == UIEVENT_MOUSELEAVE)
+	{
+		m_nSelectIndex = -1;
+		Invalidate();
 	}
 }
 
@@ -199,6 +209,7 @@ void CIconBoxUI::DoPaint(HDC hDC, const RECT& rcPaint)
 void CIconBoxUI::PaintIcon(HDC hDC)
 {
 	//获取box的宽度
+	CRect rcIconBolder;
 	int nWidth = GetWidth();
 	int nHoldIcons = nWidth / (m_stIconSize.cx + m_nDistanceOfEachIcon);
 	CRect rc;
@@ -221,6 +232,10 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 		nHoldIcons = (nWidth - (m_rcButton1.right - m_rcButton1.left + m_rcButton2.right - m_rcButton2.left)) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
 	}
 
+	rcIconBolder.left = rc.left;
+	rcIconBolder.top = rc.top;
+	rcIconBolder.bottom = rcIconBolder.top + m_stIconSize.cy;
+
 	i = m_nShowIndex;
 
 	int nIcons = m_arrIcons.GetSize();
@@ -231,6 +246,22 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 		DrawIconEx(hDC, rc.left, rc.top, pIconInfo->hIcon, m_stIconSize.cx, m_stIconSize.cy, 1, NULL, DI_NORMAL);
 
 		rc.left += m_stIconSize.cx + m_nDistanceOfEachIcon;
+	}
+
+	if (m_nSelectIndex != -1)
+	{
+		rcIconBolder.left += m_nSelectIndex * m_nDistanceOfEachIcon + m_nSelectIndex * m_stIconSize.cx;
+
+		rcIconBolder.right = rcIconBolder.left + m_stIconSize.cx;
+
+		rcIconBolder.left -= m_nDistanceOfEachIcon / 2;
+		rcIconBolder.right += m_nDistanceOfEachIcon / 2;
+		rcIconBolder.top -= m_nDistanceOfEachIcon / 2;
+		rcIconBolder.bottom += m_nDistanceOfEachIcon / 2;
+
+		DWORD dwBorderColor = 0xFF85E4FF;
+		int nBorderSize = 1;
+		CRenderEngine::DrawRect(hDC, rcIconBolder, nBorderSize, dwBorderColor);
 	}
 
 	DWORD dwBorderColor = 0xFF85E4FF;
