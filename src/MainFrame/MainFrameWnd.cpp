@@ -516,6 +516,12 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 
 	wstring wstrIconName =  MiscHelper::GetDomainFromUrl(strUrl.c_str(),FALSE) + wstring(L".ico");
 	bool bOk = false;
+	CIconBoxUI *pIconBox = (CIconBoxUI *)m_pm.FindControl(L"BrowserBox");
+
+	if (pIconBox)
+	{
+		pIconBox->AddIcon(getFavoriteIconService.hIcon);
+	}
 	bOk = m_pm.AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon) != NULL;
 	m_pTipWnd->AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon);
 
@@ -533,6 +539,7 @@ void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, HICON hIcon )
 		wstrIconName = MiscHelper::GetDomainFromUrl(pszUrl, FALSE) + wstring(L".ico");
 	}
 	// 该icon数据库中已经存在
+	
 	bool bOk = false;
 	if( hIcon != NULL)
 	{
