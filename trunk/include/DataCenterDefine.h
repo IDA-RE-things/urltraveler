@@ -69,6 +69,9 @@ namespace datacenter
 			nHashId	=	0;
 			nOrder	=	0;
 			bDelete =   false;
+
+			ZEROMEM(szTitle);
+			ZEROMEM(szUrl);
 		}
 
 		bool operator < (const FavoriteLineData& x)const

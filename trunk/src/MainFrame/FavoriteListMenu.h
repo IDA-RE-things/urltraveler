@@ -12,6 +12,12 @@ public:
 	{
 	}
 
+	void OnAdd()
+	{
+		g_MainFrameModule->GetModuleManager()->PushEvent(
+			MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_MAINFRAME_ADD_URL, MODULE_ID_MAINFRAME));
+	}
+
 	void	OnDelete()
 	{
 		if( m_pOwner ) 
@@ -59,7 +65,11 @@ public:
 			Close();
 		}
 		else if( msg.sType == _T("itemclick") ) {
-			if( msg.pSender->GetName() == _T("menu_Delete") ) 
+			if( msg.pSender->GetName() == _T("menu_Add") ) 
+			{
+				OnAdd();
+			}
+			else if( msg.pSender->GetName() == _T("menu_Delete") ) 
 			{
 				OnDelete();
 			}

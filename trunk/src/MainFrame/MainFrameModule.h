@@ -75,6 +75,7 @@ protected:
 	void	OnEvent_HideMainDlg(Event* pEvent);		// 响应EVENT_VALUE_MAINFRAME_HIDE事件，隐藏主界面	
 
 	void	OnEvent_FavoriteIconArrive(Event* pEvent);		//	网址对应的ICON图标达到
+	void	OnEvent_AddUrl(Event*	pEvent);						//	增加一个新的URL
 	void	OnEvent_DeleteFavorite(Event* pEvent);			//	删除给定的收藏记录
 	void	OnEvent_OpenUrl(Event* pEvent);			//	打开给定的收藏网址
 	void	OnEvent_CopyUrl(Event* pEvent);			//	拷贝网址
