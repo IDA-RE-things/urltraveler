@@ -303,9 +303,9 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 		CRenderEngine::DrawRect(hDC, rcIconBolder, nBorderSize, dwBorderColor);
 	}
 
-	DWORD dwBorderColor = 0xFF85E4FF;
+	/*DWORD dwBorderColor = 0xFF85E4FF;
 	int nBorderSize = 1;
-	CRenderEngine::DrawRect(hDC, m_rcItem, nBorderSize, dwBorderColor);
+	CRenderEngine::DrawRect(hDC, m_rcItem, nBorderSize, dwBorderColor);*/
 }
 
 void CIconBoxUI::PaintButton1(HDC hDC)
