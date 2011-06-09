@@ -88,14 +88,15 @@ void CIconBoxUI::DoEvent( TEventUI& event )
 		{
 			m_uButton1State = 0;
 			m_uButton1State |= UISTATE_PUSHED;
+			Invalidate();
 		}
 
 		if (::PtInRect(&m_rcButton2, event.ptMouse))
 		{
 			m_uButton2State = 0;
 			m_uButton2State |= UISTATE_PUSHED;
+			Invalidate();
 		}
-		Invalidate();
 	}
 	else if(event.Type == UIEVENT_BUTTONUP)
 	{
