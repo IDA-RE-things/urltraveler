@@ -108,7 +108,7 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 		{
 			GetWebSiteFavIcon(pData->szUrl, j);
 
-			CListTextElementUI* pListElement = new CListTextElementUI;
+			CListTextEditElementUI* pListElement = new CListTextEditElementUI;
 			pListElement->SetTag((UINT_PTR)pData);
 			pUserList->Add(pListElement);
 			m_vFavoriteNodeAtTreeNode.push_back(pData);
