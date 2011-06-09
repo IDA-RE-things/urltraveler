@@ -822,8 +822,8 @@ void CTextUI::DoEvent(TEventUI& event)
 
 void CTextUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
-	if( _tcscmp(pstrName, _T("wordwrap")) == 0 ) {
-		if( _tcsstr(pstrValue, _T("wordbreak")) != NULL ) {
+	if( _tcscmp(pstrName, _T("wordbreak")) == 0 ) {
+		if( _tcsstr(pstrValue, _T("breakall")) != NULL ) {
 			m_uTextStyle &= ~DT_SINGLELINE;
 			m_uTextStyle |= DT_WORDBREAK;
 		}
