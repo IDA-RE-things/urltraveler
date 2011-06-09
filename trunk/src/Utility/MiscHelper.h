@@ -25,4 +25,6 @@ public:
 	// 传入的pszDomainUrl必须为 "www.baidu.com"格式，不能包含http
 	//	尾部也不能包含"/"或者"\"
 	static wchar_t*	GetTopDomainUrl(const wchar_t* pszDomainUrl);
+
+	static BOOL	SaveTextToClipboard(const char*	lpszText);
 };
