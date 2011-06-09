@@ -106,6 +106,11 @@ int CListUI::GetRowCount() const
 	return m_pList->GetCount();
 }
 
+int CListUI::GetColumnCount() const
+{
+	return m_ListInfo.nColumns;
+}
+										
 bool CListUI::Add(CControlUI* pControl)
 {
     // Override the Add() method so we can add items specifically to
@@ -1812,10 +1817,12 @@ SIZE CListLabelElementUI::EstimateSize(SIZE szAvailable)
         RECT rcText = { 0, 0, 9999, cXY.cy };
         if( pInfo->bShowHtml ) {
             int nLinks = 0;
-            CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, NULL, NULL, nLinks, DT_SINGLELINE | DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+            CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 
+				0, NULL, NULL, nLinks, DT_SINGLELINE | DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
         }
         else {
-            CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, pInfo->nFont, DT_SINGLELINE | DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+            CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, 
+				pInfo->nFont, DT_SINGLELINE | DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
         }
         cXY.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right;        
     }
@@ -2009,8 +2016,6 @@ void CListTextElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
         iTextColor = pInfo->dwDisabledTextColor;
     }
     IListCallbackUI* pCallback = m_pOwner->GetTextCallback();
-    //ASSERT(pCallback);
-    //if( pCallback == NULL ) return;
 
     m_nLinks = 0;
     int nLinks = lengthof(m_rcLinks);
@@ -2035,6 +2040,7 @@ void CListTextElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
         m_nLinks += nLinks;
         nLinks = lengthof(m_rcLinks) - m_nLinks; 
     }
+
     for( int i = m_nLinks; i < lengthof(m_rcLinks); i++ ) {
         ::ZeroMemory(m_rcLinks + i, sizeof(RECT));
         ((CStdString*)(m_sLinks + i))->Empty();

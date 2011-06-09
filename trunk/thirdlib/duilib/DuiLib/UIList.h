@@ -111,6 +111,8 @@ public:
     int GetCount() const;
 	// get num of rows of list [5/1/2011 linjinming]
 	int GetRowCount() const;
+	// get num of columns [6/8/2011 zhangzhongqing]
+	int GetColumnCount() const;
     bool Add(CControlUI* pControl);
     bool AddAt(CControlUI* pControl, int iIndex);
     bool Remove(CControlUI* pControl);
@@ -186,6 +188,7 @@ public:
     void EnableScrollBar(bool bEnableVertical = true, bool bEnableHorizontal = false);
     virtual CScrollBarUI* GetVerticalScrollBar() const;
     virtual CScrollBarUI* GetHorizontalScrollBar() const;
+
 	// 增加删除所有Item接口 [6/2/2011 linjinming]
 	void RemoveAllItems();
 	CListElementUI* GetSubItem(int nIndex);
@@ -393,6 +396,42 @@ protected:
     IListUI* m_pOwner;
     CStdPtrArray m_aTexts;
 };
+
+/////////////////////////////////////////////////////////////////////////////////////
+//									允许对List中的Item进行编辑
+//		双击Item，则对该Item进行编辑
+
+/*
+class UILIB_API CListTextEditElementUI : public CListTextElementUI
+{
+public:
+    CListTextElementUI();
+    ~CListTextElementUI();
+
+    LPCTSTR GetClass() const;
+    LPVOID GetInterface(LPCTSTR pstrName);
+    UINT GetControlFlags() const;
+
+    LPCTSTR GetText(int iIndex) const;
+    void SetText(int iIndex, LPCTSTR pstrText);
+
+    void SetOwner(CControlUI* pOwner);
+    CStdString* GetLinkContent(int iIndex);
+
+    void DoEvent(TEventUI& event);
+    SIZE EstimateSize(SIZE szAvailable);
+
+    void DrawItemText(HDC hDC, const RECT& rcItem);
+
+protected:
+    enum { MAX_LINK = 8 };
+    int m_nLinks;
+    RECT m_rcLinks[MAX_LINK];
+    CStdString m_sLinks[MAX_LINK];
+    int m_nHoverLink;
+    IListUI* m_pOwner;
+    CStdPtrArray m_aTexts;
+};*/
 
 
 /////////////////////////////////////////////////////////////////////////////////////
