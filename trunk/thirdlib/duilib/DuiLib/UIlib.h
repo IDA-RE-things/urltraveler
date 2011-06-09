@@ -29,4 +29,5 @@
 #include "UIMarkup.h"
 #include "UIDlgBuilder.h"
 #include "UIRender.h"
+#include "IconBox.h"
 
