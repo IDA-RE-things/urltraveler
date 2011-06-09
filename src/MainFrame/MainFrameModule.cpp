@@ -169,7 +169,11 @@ void	MainFrameModule::OnEvent_OpenUrl(Event* pEvent)
 
 void	MainFrameModule::OnEvent_CopyUrl(Event* pEvent)
 {
+	if( pEvent == NULL)
+		return;
 
+	int nSel = pEvent->param0;
+	m_pMainFrame->CopyUrl(nSel);
 }
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)

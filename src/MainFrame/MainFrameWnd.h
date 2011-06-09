@@ -52,6 +52,7 @@ public:
 	void	UpdateFavoriteIcon(wchar_t*	pszUrl, HICON hIcon);
 	void	DeleteFavorite(int nDeleteNodeId);
 	void	OpenUrl(int nIndex);
+	void	CopyUrl(int nIndex);
 
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);

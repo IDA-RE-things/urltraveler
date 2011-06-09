@@ -213,3 +213,38 @@ wchar_t*	MiscHelper::GetTopDomainUrl(const wchar_t* pszUrl)
 
 	return L"";
 }
+
+BOOL	MiscHelper::SaveTextToClipboard(const char*	lpszText)
+{
+	if( lpszText == NULL)
+		return FALSE;
+
+	int nlen = strlen(lpszText);
+	if (nlen == 0)
+		return FALSE;
+
+	// 将szText中的内容复制到剪贴板
+	HGLOBAL hglbCopy;
+	LPTSTR  lptstrCopy;
+	if (!::OpenClipboard(NULL))
+		return FALSE;
+
+	hglbCopy = GlobalAlloc(GMEM_DDESHARE, 
+		(nlen + 1) * sizeof(char)); 
+	if (hglbCopy == NULL) 
+	{ 
+		CloseClipboard(); 
+		return FALSE; 
+	} 
+
+	EmptyClipboard();
+	lptstrCopy = (LPTSTR)GlobalLock(hglbCopy); 
+	memcpy(lptstrCopy, lpszText, nlen);
+	lptstrCopy[nlen] = (TCHAR) 0;    // null character 
+	GlobalUnlock(lptstrCopy); 
+
+	SetClipboardData(CF_TEXT, hglbCopy);
+	CloseClipboard();
+
+	return TRUE;
+}

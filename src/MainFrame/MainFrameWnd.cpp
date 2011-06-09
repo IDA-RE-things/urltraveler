@@ -12,6 +12,7 @@
 #include "XString.h"
 #include "FavoriteListMenu.h"
 #include "TreeListMenu.h"
+#include "MiscHelper.h"
 
 using namespace datacenter;
 using namespace mainframe;
@@ -571,4 +572,20 @@ void	CMainFrameWnd::OpenUrl(int nIndex)
 		return;
 
 	ShellExecute(NULL, L"open",pData->szUrl, NULL,NULL,SW_SHOWMAXIMIZED);
+}
+
+void	CMainFrameWnd::CopyUrl(int nIndex)
+{
+	if( nIndex > m_vFavoriteNodeAtTreeNode.size() - 1 || nIndex <0)
+		return;
+
+	FAVORITELINEDATA* pData = m_vFavoriteNodeAtTreeNode[nIndex];
+	if( wcscmp(pData->szUrl, L"") == 0)
+		return;
+
+	BOOL bRet = MiscHelper::SaveTextToClipboard(StringHelper::UnicodeToANSI(pData->szUrl).c_str());
+	if( bRet == TRUE)
+	{
+		MessageBox(L"URL地址已经成功复制到剪贴板", L"复制成功", MB_OK);
+	}
 }
