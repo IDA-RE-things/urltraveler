@@ -79,5 +79,6 @@ private:
 	SIZE       m_stIconSize;
 	int        m_nDistanceOfEachIcon;
 	int        m_nShowIndex;
+	int        m_nSelectIndex;
 };
 }
