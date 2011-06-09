@@ -219,10 +219,9 @@ void CIconBoxUI::PaintIcon(HDC hDC)
 		m_bShowButton2 = true;
 		rc.left += (m_rcButton1.right - m_rcButton1.left) + m_nDistanceOfEachIcon;
 		nHoldIcons = (nWidth - (m_rcButton1.right - m_rcButton1.left + m_rcButton2.right - m_rcButton2.left)) / (m_stIconSize.cx + m_nDistanceOfEachIcon);
-
-		nHoldIcons += 1;
-		i = m_nShowIndex;
 	}
+
+	i = m_nShowIndex;
 
 	int nIcons = m_arrIcons.GetSize();
 
@@ -271,9 +270,9 @@ void CIconBoxUI::PaintButton1(HDC hDC)
 		if( !DrawImage(hDC, (LPCTSTR)m_sButton1NormalImage, (LPCTSTR)m_sImageModify) ) m_sButton1NormalImage.Empty();
 		else return;
 	}
-	//DWORD dwBorderColor = 0xFF85E4FF;
-	//int nBorderSize = 2;
-	//CRenderEngine::DrawRect(hDC, m_rcButton1, nBorderSize, dwBorderColor);
+	DWORD dwBorderColor = 0xFF85E4FF;
+	int nBorderSize = 1;
+	CRenderEngine::DrawRect(hDC, m_rcButton1, nBorderSize, dwBorderColor);
 }
 
 void CIconBoxUI::SetPos(RECT rc)
@@ -285,12 +284,12 @@ void CIconBoxUI::SetPos(RECT rc)
 	m_rcButton1.left = rc.left;
 	m_rcButton1.top = rc.top;
 
-	m_rcButton1.right = rc.left + m_cxyFixed.cy / 3;
+	m_rcButton1.right = rc.left + m_cxyFixed.cy / 2;
 	m_rcButton1.bottom = rc.top + m_cxyFixed.cy;
 
 	m_rcButton2.top = rc.top;
 	m_rcButton2.right = rc.right;
-	m_rcButton2.left = rc.right - m_cxyFixed.cy / 3;
+	m_rcButton2.left = rc.right - m_cxyFixed.cy / 2;
 	m_rcButton2.bottom = rc.top + m_cxyFixed.cy;
 }
 
@@ -328,7 +327,7 @@ void CIconBoxUI::PaintButton2(HDC hDC)
 	}
 
 	DWORD dwBorderColor = 0xFF85E4FF;
-	int nBorderSize = 2;
+	int nBorderSize = 1;
 	CRenderEngine::DrawRect(hDC, m_rcButton2, nBorderSize, dwBorderColor);
 }
 
