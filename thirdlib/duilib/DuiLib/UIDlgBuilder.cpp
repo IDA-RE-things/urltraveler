@@ -254,6 +254,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
         case 7:
             if( _tcscmp(pstrClass, _T("Control")) == 0 )                pControl = new CControlUI;
             else if( _tcscmp(pstrClass, _T("ActiveX")) == 0 )           pControl = new CActiveXUI;
+			else if(_tcscmp(pstrClass, _T("IconBox")) == 0)             pControl = new CIconBoxUI;
             break;
         case 8:
             if( _tcscmp(pstrClass, _T("Progress")) == 0 )               pControl = new CProgressUI;
