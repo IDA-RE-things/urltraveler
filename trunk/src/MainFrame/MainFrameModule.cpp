@@ -204,7 +204,7 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 
 	m_pMainFrame = new CMainFrameWnd();
 	if( m_pMainFrame == NULL ) return;
-	m_pMainFrame->Create(NULL, L"ÍøÖ·ÂþÓÎ", UI_WNDSTYLE_DIALOG, 0);
+	m_pMainFrame->Create(NULL, L"ÍøÖ·ÂþÓÎ", UI_WNDSTYLE_FRAME/*UI_WNDSTYLE_DIALOG*/, 0);
 	m_pMainFrame->CenterWindow();
 	m_pMainFrame->ShowWindow(true);
 

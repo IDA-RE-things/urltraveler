@@ -348,8 +348,8 @@ LRESULT CMainFrameWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 		&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) {
 			CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(pt));
 			if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
-				_tcscmp(pControl->GetClass(), _T("OptionUI")) != 0 &&
-				_tcscmp(pControl->GetClass(), _T("TextUI")) != 0 )
+				_tcscmp(pControl->GetClass(), _T("OptionUI")) != 0// &&
+				/*_tcscmp(pControl->GetClass(), _T("TextUI")) != 0*/ )
 				return HTCAPTION;
 	}
 
@@ -399,6 +399,7 @@ LRESULT CMainFrameWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 		bHandled = TRUE;
 		return 0;
 	}
+
 	BOOL bZoomed = ::IsZoomed(*this);
 	LRESULT lRes = CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 	if( ::IsZoomed(*this) != bZoomed ) {
