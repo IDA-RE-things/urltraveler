@@ -367,6 +367,8 @@ void CIconBoxUI::SetPos(RECT rc)
 	CControlUI::SetPos(rc);
 	rc = m_rcItem;
 
+	m_nShowIndex = 0;
+
 	int cx = rc.right - rc.left;
 	m_rcButton1.left = rc.left;
 	m_rcButton1.top = rc.top;

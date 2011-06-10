@@ -126,7 +126,7 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 	if (pFavoriteNumber)
 	{
 		TCHAR szFavoriteNum[MAX_PATH] = {0};
-		_stprintf_s(szFavoriteNum, MAX_PATH - 1, _T("该目录下存在 {b}{c #FF0000}%d{/c}{/b} 个结点"), j);
+		_stprintf_s(szFavoriteNum, MAX_PATH - 1, _T("该文件夹下共有 {b}{c #FF0000}%d{/c}{/b} 个收藏"), j);
 		pFavoriteNumber->SetText(szFavoriteNum);
 	}
 
@@ -407,6 +407,29 @@ LRESULT CMainFrameWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 			if( pControl ) pControl->SetVisible(false);
 			pControl = static_cast<CControlUI*>(m_pm.FindControl(_T("restorebtn")));
 			if( pControl ) pControl->SetVisible(true);
+
+			// 最大化的时候需要修改IconBox的宽度
+			CIconBoxUI *pIconBox = (CIconBoxUI *)m_pm.FindControl(L"BrowserBox");
+			if (pIconBox)
+			{
+				pIconBox->SetFixedWidth(880);
+				pIconBox->Invalidate();
+			}
+
+			// 调整list的宽度
+			CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+			if( pUserList)
+			{
+				CListHeaderUI* pHeader = pUserList->GetHeader();
+				RECT rc0 = pHeader->GetItemAt(0)->GetPos();
+				rc0.right += 200;
+				pHeader->GetItemAt(0)->SetPos(rc0);
+
+				RECT rc1 = pHeader->GetItemAt(1)->GetPos();
+				rc1.right -= 200;
+				pHeader->GetItemAt(1)->SetPos(rc1);
+				pUserList->Invalidate();
+			}
 		}
 		else {
 			CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(_T("maxbtn")));
