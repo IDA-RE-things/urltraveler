@@ -363,11 +363,14 @@ String String::ValueOf(bool bValue)
 //名称: TrimLeft
 //描述: 剔除最左侧的空格、 Tab等内容
 //----------------------------------------------------------------------------------------
-String String::TrimLeft()
+String String::TrimLeft(TCHAR ch)
 {
 	if ( !m_strString.empty())
 	{
-		m_strString.erase( 0, m_strString.find_first_not_of(_T(" \r\n\t")));
+		if( ch == _T(' '))
+			m_strString.erase( 0, m_strString.find_first_not_of(_T(" \r\n\t")));
+		else
+			m_strString.erase( 0, m_strString.find_first_not_of(ch));
 	}
 
 	return (LPCTSTR)m_strString.c_str();
@@ -377,11 +380,14 @@ String String::TrimLeft()
 //名称: TrimRight
 //描述: 剔除最的空右侧格、 Tab等内容
 //----------------------------------------------------------------------------------------
-String String::TrimRight()
+String String::TrimRight(TCHAR ch)
 {
 	if (!m_strString.empty())
 	{
-		m_strString.erase( m_strString.find_last_not_of(_T(" \r\n\t")) + 1, m_strString.length()-1);
+		if( ch == _T(' '))
+			m_strString.erase( m_strString.find_last_not_of(_T(" \r\n\t")) + 1, m_strString.length()-1);
+		else
+			m_strString.erase( m_strString.find_last_not_of(ch) + 1, m_strString.length()-1);
 	}
 
 	return (LPCTSTR)m_strString.c_str();
@@ -391,10 +397,10 @@ String String::TrimRight()
 //名称: Trim
 //描述: 剔除左右两边的空格
 //----------------------------------------------------------------------------------------
-String String::Trim()
+String String::Trim(TCHAR ch)
 {
-	TrimLeft();
-	TrimRight();
+	TrimLeft(ch);
+	TrimRight(ch);
 
 	return (LPCTSTR)m_strString.c_str();
 }
