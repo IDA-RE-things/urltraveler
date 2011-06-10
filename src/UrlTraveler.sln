@@ -3,6 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MainFrame", "MainFrame\MainFrame.vcproj", "{B83776FC-B030-4711-95C5-51CD257098BC}"
 	ProjectSection(ProjectDependencies) = postProject
+		{B85451AF-107C-4AA3-AC3B-0D65D38D819E} = {B85451AF-107C-4AA3-AC3B-0D65D38D819E}
 		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
 		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E} = {E106ACD7-4E53-4AEE-942B-D0DD426DB34E}
 	EndProjectSection
@@ -10,6 +11,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DuiLib", "..\thirdlib\duilib\DuiLib\DuiLib.vcproj", "{E106ACD7-4E53-4AEE-942B-D0DD426DB34E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IEPlugIn", "PlugIn\IEPlugIn\IEPlugIn.vcproj", "{93120B45-F782-457F-8AB6-4A00B7665F01}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModuleManager", "ModuleManager\ModuleManager.vcproj", "{14FEB1EA-CBFF-4852-8941-DAE4730E4676}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -31,16 +35,31 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModuleManager", "ModuleMana
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OptionSetting", "OptionSetting\OptionSetting.vcproj", "{BF482DF9-AA3E-4B45-A6EF-88D7D6EBD8BD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Utility", "Utility\Utility.vcproj", "{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}"
+	ProjectSection(ProjectDependencies) = postProject
+		{336215A3-65DA-42BC-80D3-341D7F0CF515} = {336215A3-65DA-42BC-80D3-341D7F0CF515}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrayIcon", "TrayIcon\TrayIcon.vcproj", "{9D1B70E9-0BEE-437C-8EB5-CD5295688421}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UIDesigner", "..\thirdlib\duilib\UIDesigner\UIDesigner.vcproj", "{8CC28A8B-CD88-44A7-8994-066CCD8938CB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataCenter", "DataCenter\DataCenter.vcproj", "{ABE57414-A0F6-407B-B276-4DE706BC0169}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Login", "Login\Login.vcproj", "{F1A41B7F-0663-4ADD-80A9-357ADB2D6033}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SogouPlugIn", "PlugIn\SogouPlugIn\SogouPlugIn.vcproj", "{5978BFFE-B3AF-41B0-8C43-BFB79812250F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -49,28 +68,57 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SogouPlugIn", "PlugIn\Sogou
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlugInManager", "PlugIn\PlugIn.vcproj", "{D4F3F13E-4CAD-4038-A5B2-D1212174C3BF}"
 	ProjectSection(ProjectDependencies) = postProject
+		{F857BA31-88C6-4658-8251-59345A9DEFBA} = {F857BA31-88C6-4658-8251-59345A9DEFBA}
 		{93120B45-F782-457F-8AB6-4A00B7665F01} = {93120B45-F782-457F-8AB6-4A00B7665F01}
 		{7985C876-85C6-454A-B8F6-BAF3F8BA399A} = {7985C876-85C6-454A-B8F6-BAF3F8BA399A}
+		{9A7CD87D-C517-4736-9849-9B694492E058} = {9A7CD87D-C517-4736-9849-9B694492E058}
+		{EA32F7C1-6CA0-4006-90EB-A11B363D005B} = {EA32F7C1-6CA0-4006-90EB-A11B363D005B}
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+		{60BF2AFC-09A0-4A97-8D6E-CB2505703E5E} = {60BF2AFC-09A0-4A97-8D6E-CB2505703E5E}
 		{5978BFFE-B3AF-41B0-8C43-BFB79812250F} = {5978BFFE-B3AF-41B0-8C43-BFB79812250F}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MaxthonPlugIn", "PlugIn\MaxthonPlugIn\MaxthonPlugIn.vcproj", "{7985C876-85C6-454A-B8F6-BAF3F8BA399A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "360PlugIn", "PlugIn\360SE\360SE.vcproj", "{F857BA31-88C6-4658-8251-59345A9DEFBA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FireFoxPlugIn", "PlugIn\FireFox\FireFox.vcproj", "{EA32F7C1-6CA0-4006-90EB-A11B363D005B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uCapture", "uCapture\uCapture.vcproj", "{B85451AF-107C-4AA3-AC3B-0D65D38D819E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3070603", "..\thirdlib\sqlite3070603\sqlite3070603\sqlite3070603.vcproj", "{336215A3-65DA-42BC-80D3-341D7F0CF515}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChromePlugIn", "PlugIn\ChromePlugIn\ChromePlugIn.vcproj", "{9A7CD87D-C517-4736-9849-9B694492E058}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QQPlugIn", "PlugIn\QQPlugIn\QQ.vcproj", "{60BF2AFC-09A0-4A97-8D6E-CB2505703E5E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Database", "Database\Database.vcproj", "{D930E47C-3075-423B-9E32-928BEFB0B62B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Web", "Web\Web.vcproj", "{109670E5-DDE1-40E8-863E-5045250284C3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
