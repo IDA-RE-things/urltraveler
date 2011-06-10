@@ -120,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\include;..\Utility"
+				AdditionalIncludeDirectories="..\..\include;..\Utility;..\Utility\HttpClient\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TRAYICON_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
