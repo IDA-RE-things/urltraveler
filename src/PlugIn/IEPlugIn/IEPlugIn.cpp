@@ -477,7 +477,7 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 			}
 
 			::SHGetFileInfo(lpszFileName, NULL, &fileInfo, sizeof(fileInfo), SHGFI_ATTRIBUTES|SHGFI_TYPENAME);
-			if( wcscmp(fileInfo.szDisplayName, L"") == 0)
+			if( wcscmp(fileInfo.szTypeName, L"") == 0)
 				continue;
 
 			if ((fileInfo.dwAttributes & SFGAO_FOLDER) && wcscmp(fileInfo.szTypeName, L"Channel Shortcut") != 0)
