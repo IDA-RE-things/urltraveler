@@ -76,13 +76,13 @@ void CIconBoxUI::DoEvent( TEventUI& event )
 	if(event.Type == UIEVENT_MOUSEMOVE)
 	{
 		//如果显示左右按钮，则先判断鼠标是否落入在按钮区域
-		if (::PtInRect(&m_rcButton1, event.ptMouse))
+		if (::PtInRect(&m_rcButton1, event.ptMouse) && m_bShowButton1)
 		{
 			m_nSelectIndex = -1;
 			SetToolTip(L"");
 			m_uButton1State |= UISTATE_HOT;
 		}
-		else if (::PtInRect(&m_rcButton2, event.ptMouse))
+		else if (::PtInRect(&m_rcButton2, event.ptMouse) && m_bShowButton2)
 		{
 			m_nSelectIndex = -1;
 			SetToolTip(L"");
