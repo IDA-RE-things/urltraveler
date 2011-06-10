@@ -165,11 +165,6 @@ bool CIconBoxUI::IsButton1Show()
 	return m_bShowButton1;
 }
 
-void CIconBoxUI::ShowButton1( bool bShow )
-{
-	m_bShowButton1 = bShow;
-}
-
 LPCTSTR CIconBoxUI::GetButton1NormalImage()
 {
 	return m_sButton1NormalImage;
@@ -213,11 +208,6 @@ void CIconBoxUI::SetButton1DisabledImage( LPCTSTR pStrImage )
 bool CIconBoxUI::IsButton2Show()
 {
 	return m_bShowButton2;
-}
-
-void CIconBoxUI::ShowButton2( bool bShow )
-{
-	m_bShowButton2 = bShow;
 }
 
 LPCTSTR CIconBoxUI::GetButton2NormalImage()
