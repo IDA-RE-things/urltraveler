@@ -32,7 +32,7 @@
                 <VerticalLayout name="VerticalLayoutUI8" bkcolor="#FFFFFFFF" bordercolor="#00B5BFB4">
                     <HorizontalLayout name="HorizontalLayoutUI1" pos="0,0,0,104" height="104" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#00B4BFB5">
                         <HorizontalLayout name="HorizontalLayoutUI10">
-                            <Text name="TextUI2" text="{p}所有浏览器的收藏夹已经自动整理合并在下面的列表中，通过一键同步，你可以把这些浏览器列表同步到收藏夹中{y 20}{/p}" float="true" pos="7,54,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                            <Text name="favtip" text="{p}所有浏览器的收藏夹已经自动整理合并在下面的列表中，通过一键同步，你可以把这些浏览器列表同步到收藏夹中{y 20}{/p}" float="true" pos="7,54,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
 							<Text name="TextUI3" text="{f 3}{b}您安装的{f 4}{c #F27D30}8{/c}{/f}种浏览器：{/b}{/f}" float="true" pos="10,10,170,42" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
 							<IconBox name="BrowserBox" iconsize="32, 32" iconboldersize="1" iconboldercolor="#ACACB4" distanceoficon="5" button1normalimage="left_normal.png" button2normalimage="right_normal.png" button1hotimage="left_hover.png" button2hotimage="right_hover.png" button1pushedimage="left_down.png" button2pushedimage="right_down.png" float="true" pos="155,5,460,47"/>    
                         </HorizontalLayout>
