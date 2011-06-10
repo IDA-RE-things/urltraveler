@@ -248,7 +248,9 @@ public:
 	{
 		if( !node || node == _root ) return;
 
-		for( int i = 0; i < node->num_children(); ++i )
+		//需要倒扫删除，不然会崩溃  [6/11/2011 linjinming]
+		int nChildNum = node->num_children();
+		for( int i = nChildNum - 1; i >= 0; --i )
 		{
 			Node* child = node->child(i);
 			RemoveNode(child);
