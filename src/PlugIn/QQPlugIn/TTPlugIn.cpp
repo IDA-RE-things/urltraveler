@@ -39,7 +39,7 @@ int32 TTPlugIn::GetPlugInVersion()
 
 const wchar_t* TTPlugIn::GetBrowserName()
 {
-	return L"QQBrowser";
+	return L"ÌÚÑ¶TTä¯ÀÀÆ÷";
 }
 
 wchar_t* TTPlugIn::GetInstallPath()
@@ -48,7 +48,7 @@ wchar_t* TTPlugIn::GetInstallPath()
 	DWORD   dwSize = sizeof(szPath); 
 
 	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\QQBrowser",
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Tencent Traveler",
 		L"DisplayIcon", 
 		SRRF_RT_REG_SZ, 
 		NULL, 

@@ -47,15 +47,17 @@ BEGIN_EVENT_MAP(MainFrameModule)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_COPY_URL, OnEvent_CopyUrl)
 END_EVENT_MAP()
 
+
 BEGIN_MESSAGE_MAP(MainFrameModule)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_BEGIN_SHOW, OnMessage_Show)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_CYCLE_TRIGGER, OnMessage_CycleTrigged)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_PRE_APP_EXIT, OnMessage_PreExit)
-	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED, OnMessage_PlugInLoaded)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED, OnMessage_FavoriteLoaded)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED, OnMessage_PlugInLoaded)
 END_MESSAGE_MAP()
 
 BEGIN_SERVICE_MAP(MainFrameModule)
-	ON_SERVICE(SERVICE_VALUE_GET_MAINWND, OnService_GetMainWnd)
+	ON_SERVICE(SERVICE_VALUE_MAINFRAME_GET_MAINWND, OnService_GetMainWnd)
 END_SERVICE_MAP();
 
 //----------------------------------------------------------------------------------------
@@ -220,7 +222,7 @@ void MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
 {
 }
 
-void MainFrameModule::OnMessage_PlugInLoaded(Message* pMessage)
+void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 {
 	// 在界面上显示整个收藏夹树
 	DataCenter_GetFavoriteService favoriteData;
@@ -230,6 +232,13 @@ void MainFrameModule::OnMessage_PlugInLoaded(Message* pMessage)
 	{
 		m_pMainFrame->LoadFavoriteTree(favoriteData.pFavoriteData, favoriteData.nNum);
 	}
+}
+
+
+void MainFrameModule::OnMessage_PlugInLoaded( Message* pMessage )
+{
+	// 通知MainFrame读取	
+	m_pMainFrame->GetAvailableBrowser();
 }
 
 int32 MainFrameModule::OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam)

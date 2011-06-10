@@ -93,7 +93,7 @@ int32 Maxthon3PlugIn::GetPlugInVersion()
 
 const wchar_t* Maxthon3PlugIn::GetBrowserName()
 {
-	return L"Maxthon";
+	return L"Maxthon 3";
 }
 
 wchar_t* Maxthon3PlugIn::GetInstallPath()
@@ -103,7 +103,7 @@ wchar_t* Maxthon3PlugIn::GetInstallPath()
 
 	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
 		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Maxthon3",
-		L"DisplayIcon", 
+		L"InstallLocation", 
 		SRRF_RT_REG_SZ, 
 		NULL, 
 		szPath, 
@@ -111,7 +111,7 @@ wchar_t* Maxthon3PlugIn::GetInstallPath()
 	{
 		if (PathRemoveFileSpec(szPath))
 		{
-			wcscat(szPath, L"\\Maxthon.exe");
+			wcscat(szPath, L"\\bin\\Maxthon.exe");
 			return _wcsdup(szPath);
 		}
 	}

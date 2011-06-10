@@ -263,7 +263,7 @@ void TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
 void TrayIconModule::OnEvent_ShowAboutDialog( Event *pEvent )
 {
 	mainframe::MainFrame_GetWndService stGetWnd;
-	m_pModuleManager->CallService(mainframe::SERVICE_VALUE_GET_MAINWND, (param)&stGetWnd);
+	m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWnd);
 
 	CWindowWnd* pParentWnd = reinterpret_cast<CWindowWnd*>(stGetWnd.pBaseWnd);
 	ASSERT(pParentWnd != NULL);

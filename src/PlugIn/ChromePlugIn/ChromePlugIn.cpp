@@ -84,7 +84,8 @@ wchar_t* CChromePlugIn::GetInstallPath()
 	{
 		if (::PathRemoveFileSpec(szPath))
 		{
-			return _wcsdup(szPath);
+			wstring wstrPath = wstring(szPath) + L"\\Application\\chrome.exe";
+			return _wcsdup(wstrPath.c_str());
 		}
 	}
 

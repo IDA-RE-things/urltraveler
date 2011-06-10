@@ -2084,7 +2084,73 @@ UINT CListTextEditElementUI::GetControlFlags() const
 
 void CListTextEditElementUI::DoEvent(TEventUI& event)
 {
-	__super::DoEvent(event);
+    if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
+        if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
+        else CListLabelElementUI::DoEvent(event);
+        return;
+    }
+
+    // When you hover over a link
+    if( event.Type == UIEVENT_SETCURSOR ) {
+        for( int i = 0; i < m_nLinks; i++ ) {
+            if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
+                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+                return;
+            }
+        }      
+    }
+    if( event.Type == UIEVENT_BUTTONUP && IsEnabled() ) {
+        for( int i = 0; i < m_nLinks; i++ ) {
+            if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
+                m_pManager->SendNotify(this, _T("link"), i);
+                return;
+            }
+        }
+    }
+
+    if( m_nLinks > 0 && event.Type == UIEVENT_MOUSEMOVE ) {
+        int nHoverLink = -1;
+        for( int i = 0; i < m_nLinks; i++ ) {
+            if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
+                nHoverLink = i;
+                break;
+            }
+        }
+
+        if(m_nHoverLink != nHoverLink) {
+            Invalidate();
+            m_nHoverLink = nHoverLink;
+        }
+    }
+
+    if( m_nLinks > 0 && event.Type == UIEVENT_MOUSELEAVE ) {
+        if(m_nHoverLink != -1) {
+            Invalidate();
+            m_nHoverLink = -1;
+        }
+    }
+
+    if( event.Type == UIEVENT_DBLCLICK ) {
+        if( m_bEditState == FALSE)
+			m_bEditState = TRUE;
+
+/*
+		int nCurrentColumn = 0;
+        for( int i = 0; i < m_sLinks.GetLength(); i++ ) {
+            if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
+                nCurrentColumn = i;
+				break;;
+            }
+        }
+
+		m_pEditUI = new CEditUI();
+		m_pEditUI->SetPos(m_rcLinks[nCurrentColumn]);
+		m_pEditUI->SetVisible();*/
+
+    }
+
+
+    CListTextElementUI::DoEvent(event);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

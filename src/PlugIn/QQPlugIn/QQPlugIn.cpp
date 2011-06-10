@@ -39,7 +39,7 @@ int32 QQPlugIn::GetPlugInVersion()
 
 const wchar_t* QQPlugIn::GetBrowserName()
 {
-	return L"QQBrowser";
+	return L"ÌÚÑ¶QQä¯ÀÀÆ÷";
 }
 
 wchar_t* QQPlugIn::GetInstallPath()

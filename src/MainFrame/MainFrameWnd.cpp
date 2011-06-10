@@ -1,18 +1,22 @@
 #include "stdafx.h"
 #include "MainFrameWnd.h"
 #include "MainFrameDefine.h"
-#include "CurlHttp.h"
 #include "MainFrameModule.h"
-#include "TipWnd.h"
-#include "ImageHelper.h"
+#include "PlugInDefine.h"
 #include "DataCenterDefine.h"
+#include "WebDefine.h"
+
+#include "ImageHelper.h"
 #include "MiscHelper.h"
 #include "StringHelper.h"
-#include "WebDefine.h"
+#include "MiscHelper.h"
 #include "XString.h"
+
+#include "CurlHttp.h"
+#include "TipWnd.h"
+
 #include "FavoriteListMenu.h"
 #include "TreeListMenu.h"
-#include "MiscHelper.h"
 
 using namespace datacenter;
 using namespace mainframe;
@@ -516,12 +520,6 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 
 	wstring wstrIconName =  MiscHelper::GetDomainFromUrl(strUrl.c_str(),FALSE) + wstring(L".ico");
 	bool bOk = false;
-	CIconBoxUI *pIconBox = (CIconBoxUI *)m_pm.FindControl(L"BrowserBox");
-
-	if (pIconBox)
-	{
-		pIconBox->AddIcon(getFavoriteIconService.hIcon, strUrl.c_str(), FALSE);
-	}
 	bOk = m_pm.AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon) != NULL;
 	m_pTipWnd->AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon);
 
@@ -615,5 +613,27 @@ void	CMainFrameWnd::CopyUrl(int nIndex)
 	if( bRet == TRUE)
 	{
 		MessageBox(L"URL地址已经成功复制到剪贴板", L"复制成功", MB_OK);
+	}
+}
+
+void CMainFrameWnd::GetAvailableBrowser()
+{
+	plugin::PlugIn_GetAvailablePlugInsService	getAvailablePlugInsService;
+	g_MainFrameModule->GetModuleManager()->CallService(getAvailablePlugInsService.serviceId, (param)&getAvailablePlugInsService);
+
+	std::vector<IPlugIn*>* pvPlugIn = getAvailablePlugInsService.pvPlugIns;
+	for( int i=0; i<pvPlugIn->size(); i++)
+	{
+		IPlugIn* pPlugIn = (*pvPlugIn)[i];
+		if( pPlugIn == NULL)
+			continue;
+
+		HICON hIcon = pPlugIn->GetBrowserIcon();
+		const wchar_t* pPlugInName = pPlugIn->GetBrowserName();
+		CIconBoxUI *pIconBox = (CIconBoxUI *)m_pm.FindControl(L"BrowserBox");
+		if (pIconBox)
+		{
+			pIconBox->AddIcon(hIcon, pPlugInName, FALSE);
+		}
 	}
 }
