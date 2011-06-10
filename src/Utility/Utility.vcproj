@@ -694,6 +694,18 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="MachineId"
+			>
+			<File
+				RelativePath=".\MachineId\MachineId.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MachineId\MachineId.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
