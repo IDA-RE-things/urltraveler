@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<Window roundcorner="10,10" size="850,600" sizebox="0,0,800,30" caption="0,0,0,30">
+<Window roundcorner="0,0" size="850,600" sizebox="0,0,800,30" caption="0,0,0,30">
     <Font name="宋体" size="13" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="false" italic="false" default="true" />
     <Font name="宋体" size="14" bold="true" italic="false" />
     <Font name="宋体" size="22" bold="true" italic="true" />
     <Font name="SimSun" size="12" bold="true" italic="false" />
-    <VerticalLayout name="VerticalLayoutUI1" borderround="10,10" bkimage="back.png" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
+    <VerticalLayout name="VerticalLayoutUI1" borderround="0,0" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
         <HorizontalLayout name="VerticalLayoutUI2" pos="0,0,0,110" height="110">
             <HorizontalLayout name="HorizontalLayoutUI7">
                 <Option name="examine" float="true" pos="20,30,80,90" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="nav_2.png" group="contenttab" selected="true" selectedimage="nav_2a.png" />
@@ -19,10 +19,12 @@
                 <Label name="LabelUI13" text="  设  置" float="true" pos="282,85,342,115" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                 <Text name="TextUI17" text="网址漫游精灵1.0" float="true" pos="10,7,159,22" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
             </HorizontalLayout>
-            <HorizontalLayout name="HorizontalLayoutUI8" pos="0,0,93,122" width="93" height="122">
-                <Button name="minbtn" padding="0,1,0,0" maxheight="23" maxwidth="35" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_02.png" />
-                <Button name="maxbtn" padding="0,1,0,0" maxheight="23" maxwidth="26" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_03.png" />
-                <Button name="closebtn" pos="0,0,39,23" width="39" height="23" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button_04.png" />
+            <HorizontalLayout name="HorizontalLayoutUI8" width="105" height="122">
+		<Button name="menubtn" padding="0,1,0,0" maxheight="16" maxwidth="26" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_menu.png' source='0,0,26,16'" hotimage="file='sys_dlg_menu.png' source='26,0,52,16'" pushedimage="file='sys_dlg_menu.png' source='52,0,78,16'"/>
+                <Button name="minbtn" padding="0,1,0,0" maxheight="16" maxwidth="26" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_min.png' source='0,0,26,16'" hotimage="file='sys_dlg_min.png' source='26,0,52,16'" pushedimage="file='sys_dlg_min.png' source='52,0,78,16'"/>
+                <Button name="maxbtn" padding="0,1,0,0" maxheight="16" maxwidth="26" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_max.png' source='0,0,26,16'" hotimage="file='sys_dlg_max.png' source='26,0,52,16'" pushedimage="file='sys_dlg_max.png' source='52,0,78,16'"/>
+                <Button name="restorebtn" visible="false" padding="0,1,0,0" maxheight="16" maxwidth="26" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_restore.png' source='0,0,26,16'" hotimage="file='sys_dlg_restore.png' source='26,0,52,16'" pushedimage="file='sys_dlg_restore.png' source='52,0,78,16'"/>
+                <Button name="closebtn" pos="0,0,39,23" width="26" height="16" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_max.png' source='0,0,26,16'" hotimage="file='sys_dlg_max.png' source='26,0,52,16'" pushedimage="file='sys_dlg_max.png' source='52,0,78,16'" />
             </HorizontalLayout>
         </HorizontalLayout>
         <TabLayout name="switch">
