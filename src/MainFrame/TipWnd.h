@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 #include "UIlib.h"
-#include "uCapture.h"
 #include "ThreadObject_i.h"
 
 using namespace std;

@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\uCapture;..\..\include;..\..\thirdlib\duilib\DuiLib\;..\Utility"
+				AdditionalIncludeDirectories="..\..\include;..\..\thirdlib\duilib\DuiLib\;..\Utility"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;MAINFRAME_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="DuiLib_ud.lib Utilityd.lib uCaptured.lib"
+				AdditionalDependencies="DuiLib_ud.lib Utilityd.lib"
 				OutputFile="..\..\bin\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\thirdlib\duilib\bin\;..\..\lib"
@@ -139,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="DuiLib_u.lib Utility.lib uCaptured.lib"
+				AdditionalDependencies="DuiLib_u.lib Utility.lib"
 				OutputFile="..\..\bin\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\thirdlib\duilib\bin\;..\..\lib"
