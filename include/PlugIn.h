@@ -309,7 +309,7 @@ public:
 		wchar_t *pszBrowserPath = GetInstallPath();
 		HICON    hIcon = NULL;
 
-		if (_wcsicmp(pszBrowserPath, _T("")) == 0)
+		if (pszBrowserPath != NULL && _wcsicmp(pszBrowserPath, _T("")) == 0)
 		{
 			free(pszBrowserPath);
 			return NULL;
