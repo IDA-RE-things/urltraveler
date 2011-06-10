@@ -36,7 +36,6 @@ public:
 	void PaintButton2(HDC hDC);
 
 	bool IsButton1Show();
-	void ShowButton1(bool bShow);
 	LPCTSTR GetButton1NormalImage();
 	void SetButton1NormalImage(LPCTSTR pStrImage);
 	LPCTSTR GetButton1HotImage();
@@ -47,7 +46,6 @@ public:
 	void SetButton1DisabledImage(LPCTSTR pStrImage);
 
 	bool IsButton2Show();
-	void ShowButton2(bool bShow);
 	LPCTSTR GetButton2NormalImage();
 	void SetButton2NormalImage(LPCTSTR pStrImage);
 	LPCTSTR GetButton2HotImage();
