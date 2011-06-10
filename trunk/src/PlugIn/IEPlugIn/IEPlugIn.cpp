@@ -146,12 +146,21 @@ wchar_t* IEPlugIn::GetInstallPath()
 		&dwSize))
 	{
 		String	strPath = szPath;
-		strPath = strPath.TrimRight(L';');
-		if (::PathRemoveFileSpec(szPath))
+
+		if (-1 != strPath.Find(L";"))
 		{
+			strPath = strPath.TrimRight(L';');
 			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", strPath.GetData(), L"iexplore.exe");
-			return _wcsdup(szPath);
 		}
+		else
+		{
+			if (::PathRemoveFileSpec(szPath))
+			{
+				swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", szPath, L"iexplore.exe");
+			}
+		}
+
+		return _wcsdup(szPath);
 	}
 
 	return NULL;
