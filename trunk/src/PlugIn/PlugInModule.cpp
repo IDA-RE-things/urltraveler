@@ -47,6 +47,7 @@ BEGIN_EVENT_MAP(PlugInModule)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(PlugInModule)
+	ON_SERVICE(SERVICE_VALUE_PLUGIN_GET_AVAILABLE_PLUGIN, OnService_GetAvailablePlugIns)
 END_SERVICE_MAP()
 //----------------------------------------------------------------------------------------
 //名称: Unload
@@ -246,7 +247,6 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 		m_vPlugInModuleInfo.push_back(stPlugInInfo);
 	}
 
-
 	// 调用各个模块的IsWorked方法，检查当前插件是否需要启用
 	m_pModuleManager->PushEvent(
 		MakeEvent<MODULE_ID_PLUGIN>()(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED,
@@ -270,7 +270,20 @@ void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 		}
 	}
 
+	// 发送广播消息，通知所有的插件已经加载并检查完毕
+	m_pModuleManager->PushMessage(
+		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED));
+
 	m_pThreadObj->CreateThread(static_cast<IThreadEvent *>(this));
+}
+
+void	PlugInModule::OnService_GetAvailablePlugIns(ServiceValue lServiceValue, param	lParam)
+{
+	PlugIn_GetAvailablePlugInsService* pService = (PlugIn_GetAvailablePlugInsService*)lParam;
+	ASSERT(pService != NULL);
+	ASSERT(pService->serviceId == SERVICE_VALUE_PLUGIN_GET_AVAILABLE_PLUGIN);
+
+	pService->pvPlugIns = &m_vPlugIns;
 }
 
 bool compare(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)

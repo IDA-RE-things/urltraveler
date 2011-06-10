@@ -62,7 +62,7 @@ BOOL Maxthon2PlugIn::UnLoad()
 
 BOOL Maxthon2PlugIn::IsWorked()
 {
-	return FALSE;
+	return TRUE;
 }
 
 int32 Maxthon2PlugIn::GetPlugInVersion()
@@ -72,7 +72,7 @@ int32 Maxthon2PlugIn::GetPlugInVersion()
 
 const wchar_t* Maxthon2PlugIn::GetBrowserName()
 {
-	return L"Maxthon2";
+	return L"╟асн2";
 }
 
 wchar_t* Maxthon2PlugIn::GetInstallPath()
@@ -81,8 +81,8 @@ wchar_t* Maxthon2PlugIn::GetInstallPath()
 	DWORD   dwSize = sizeof(szPath); 
 
 	if (ERROR_SUCCESS == SHRegGetValue(HKEY_LOCAL_MACHINE, 
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Maxthon3",
-		L"DisplayIcon", 
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Maxthon2",
+		L"InstallLocation", 
 		SRRF_RT_REG_SZ, 
 		NULL, 
 		szPath, 

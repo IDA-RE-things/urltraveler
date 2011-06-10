@@ -32,7 +32,6 @@ public:
 	void Init(){} ;
 	void OnPrepare(TNotifyUI& msg);
 	void Notify(TNotifyUI& msg);
-	void LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum);
 	LPCTSTR GetItemText(CControlUI* pControl, int iIndex, int iSubItem);
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -49,6 +48,8 @@ public:
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	// 更新指定网站的收藏夹图标
+	void	GetAvailableBrowser();
+	void	LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum);
 	void	UpdateFavoriteIcon(wchar_t*	pszUrl, HICON hIcon);
 	void	DeleteFavorite(int nDeleteNodeId);
 	void	AddUrl();

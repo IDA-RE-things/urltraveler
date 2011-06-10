@@ -35,9 +35,7 @@ namespace mainframe
 	// MainFrame能够处理的直接调用
 	enum E_MainFrameServiceValue
 	{
-		SERVICE_VALUE_TEST	=	SERVICE_VALUE_MAINFRAME_BEGIN,
-
-		SERVICE_VALUE_GET_MAINWND,				//	获取主窗口的句柄，一些模块需要指定主窗口为父窗口
+		SERVICE_VALUE_MAINFRAME_GET_MAINWND	=	SERVICE_VALUE_MAINFRAME_BEGIN,				//	获取主窗口的句柄，一些模块需要指定主窗口为父窗口
 	};
 
 	//===========================================//
@@ -88,8 +86,13 @@ namespace mainframe
 	//===========================================//
 	//                   MainFrame中所使用到的Service							 	  //
 	//===========================================//
-	struct MainFrame_GetWndService
+	struct MainFrame_GetWndService	:	public Service
 	{
+		MainFrame_GetWndService()
+		{
+			serviceId	=	SERVICE_VALUE_MAINFRAME_GET_MAINWND;
+		}
+
 		void*		pBaseWnd;			//	当前主窗口的句柄
 	};
 };

@@ -82,7 +82,7 @@ int32 SogouPlugIn::GetPlugInVersion()
 
 const wchar_t* SogouPlugIn::GetBrowserName()
 {
-	return L"SogouExplorer";
+	return L"ËÑ¹·ä¯ÀÀÆ÷";
 }
 
 wchar_t* SogouPlugIn::GetInstallPath()

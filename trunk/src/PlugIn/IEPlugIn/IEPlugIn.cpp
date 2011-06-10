@@ -80,6 +80,7 @@ int32 IEPlugIn::GetPlugInVersion()
 //----------------------------------------------------------------------------------------
 const wchar_t* IEPlugIn::GetBrowserName() 
 {
+/*
 	SHFILEINFO stFileInfo = {0};
 	HRESULT hr = ::SHGetFileInfo(GetInstallPath(), 0, &stFileInfo, sizeof(stFileInfo), SHGFI_DISPLAYNAME);
 
@@ -88,6 +89,9 @@ const wchar_t* IEPlugIn::GetBrowserName()
 		return stFileInfo.szDisplayName;
 	}
 	return NULL;
+*/
+
+	return L"IEä¯ÀÀÆ÷";
 }
 
 //----------------------------------------------------------------------------------------

@@ -107,6 +107,8 @@ protected:
 
 protected:
 
+	void	OnService_GetAvailablePlugIns(ServiceValue lServiceValue, param	lParam);
+
 private:
 
 	//	将pFavoriteData进行合并
