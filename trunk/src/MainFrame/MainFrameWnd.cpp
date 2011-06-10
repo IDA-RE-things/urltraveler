@@ -122,7 +122,6 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 
 	CTextUI* pFavoriteNumber = static_cast<CTextUI*>(m_pm.FindControl(_T("FavoriteNum")));
 	pFavoriteNumber->SetShowHtml();
-
 	if (pFavoriteNumber)
 	{
 		TCHAR szFavoriteNum[MAX_PATH] = {0};
@@ -646,6 +645,16 @@ void CMainFrameWnd::GetAvailableBrowser()
 	g_MainFrameModule->GetModuleManager()->CallService(getAvailablePlugInsService.serviceId, (param)&getAvailablePlugInsService);
 
 	std::vector<IPlugIn*>* pvPlugIn = getAvailablePlugInsService.pvPlugIns;
+
+	CTextUI* pFavoriteNumber = static_cast<CTextUI*>(m_pm.FindControl(_T("BrowserNum")));
+	pFavoriteNumber->SetShowHtml();
+	if (pFavoriteNumber)
+	{
+		TCHAR szFavoriteNum[MAX_PATH] = {0};
+		_stprintf_s(szFavoriteNum, MAX_PATH - 1, _T("{f 3}{b}您安装了{f 4}{c #F27D30}%d{/c}{/f}种浏览器：{/b}{/f}"), pvPlugIn->size());
+		pFavoriteNumber->SetText(szFavoriteNum);
+	}
+
 	for( int i=0; i<pvPlugIn->size(); i++)
 	{
 		IPlugIn* pPlugIn = (*pvPlugIn)[i];

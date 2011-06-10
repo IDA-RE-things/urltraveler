@@ -8,6 +8,7 @@
 #include "CRCHash.h"
 #include "TimeHelper.h"
 #include "IEPlugInFactory.h"
+#include "XString.h"
 
 #pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "ole32.lib")
@@ -127,9 +128,11 @@ wchar_t* IEPlugIn::GetInstallPath()
 		szPath, 
 		&dwSize))
 	{
+		String	strPath = szPath;
+		strPath = strPath.TrimRight(L';');
 		if (::PathRemoveFileSpec(szPath))
 		{
-			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", szPath, L"iexplorer.exe");
+			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", strPath.GetData(), L"iexplorer.exe");
 			return _wcsdup(szPath);
 		}
 	}
@@ -142,13 +145,14 @@ wchar_t* IEPlugIn::GetInstallPath()
 		szPath, 
 		&dwSize))
 	{
+		String	strPath = szPath;
+		strPath = strPath.TrimRight(L';');
 		if (::PathRemoveFileSpec(szPath))
 		{
-			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", szPath, L"iexplore.exe");
+			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", strPath.GetData(), L"iexplore.exe");
 			return _wcsdup(szPath);
 		}
 	}
-
 
 	return NULL;
 }
