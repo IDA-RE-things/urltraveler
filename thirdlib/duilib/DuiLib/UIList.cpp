@@ -880,7 +880,6 @@ CListElementUI* CListUI::GetSubItem( int nIndex )
 void CListUI::HideEditText()
 {
 	m_pEditUI->SetPos(CRect(0, 0, 0, 0));
-	//m_pEditUI->SetVisible(false);
 }
 
 void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
@@ -893,7 +892,6 @@ void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
 	}
 	m_pEditUI->SetPos(rc);
 	m_pEditUI->SetText(pstrText);
-	m_pEditUI->SetVisible(true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
