@@ -1358,6 +1358,11 @@ LRESULT CEditWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             ::InvalidateRect(m_hWnd, &rcClient, FALSE);
         }
     }
+	else if(uMsg == WM_CHAR)
+	{
+		CWindowWnd::HandleMessage(uMsg, wParam, lParam);
+		lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
+	}
     else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN ) {
         m_pOwner->GetManager()->SendNotify(m_pOwner, _T("return"));
     }
