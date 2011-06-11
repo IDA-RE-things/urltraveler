@@ -63,6 +63,8 @@ public:
     virtual void SetTextCallback(IListCallbackUI* pCallback) = 0;
     virtual bool ExpandItem(int iIndex, bool bExpand = true) = 0;
     virtual int GetExpandedItem() const = 0;
+	virtual void ShowEditText(LPCTSTR pstrText, CRect rc) = 0;
+	virtual void HideEditText() = 0;
 };
 
 class IListItemUI
@@ -193,6 +195,8 @@ public:
 	void RemoveAllItems();
 	CListElementUI* GetSubItem(int nIndex);
 
+	void ShowEditText(LPCTSTR pstrText, CRect rc);
+	void HideEditText();
 protected:
     bool m_bScrollSelect;
     int m_iCurSel;
@@ -201,6 +205,7 @@ protected:
     CListBodyUI* m_pList;
     CListHeaderUI* m_pHeader;
     TListInfoUI m_ListInfo;
+	CEditUI* m_pEditUI;			//	编辑框，用来对给定的列编辑
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -216,7 +221,7 @@ public:
     void SetScrollPos(SIZE szPos);
     void SetPos(RECT rc);
     void DoEvent(TEventUI& event);
-
+	
 protected:
     CListUI* m_pOwner;
 };
@@ -409,15 +414,13 @@ public:
     ~CListTextEditElementUI();
 
     LPCTSTR GetClass() const;
-    LPVOID GetInterface(LPCTSTR pstrName);
-    UINT GetControlFlags() const;
+    LPVOID  GetInterface(LPCTSTR pstrName);
+	BOOL    SetColomnEditable(int nColomnIndex, bool bEditable);
 
     void DoEvent(TEventUI& event);
 
 protected:
-
-	BOOL m_bEditState;		//	是否是编辑状态
-    CEditUI*	m_pEditUI;			//	编辑框，用来对给定的列编辑
+	bool*       m_bColomnEditable;
 };
 
 

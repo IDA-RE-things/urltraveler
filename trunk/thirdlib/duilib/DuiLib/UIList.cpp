@@ -11,8 +11,15 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
     m_pList = new CListBodyUI(this);
     m_pHeader = new CListHeaderUI;
 
-    Add(m_pHeader);
+	CVerticalLayoutUI::Add(m_pHeader);
     CVerticalLayoutUI::Add(m_pList);
+
+	m_pEditUI = new CEditUI;
+	m_pEditUI->SetFloat(true);
+	m_pEditUI->SetBorderSize(1);
+	m_pEditUI->SetBorderColor(0xff000000);
+	m_pEditUI->SetManager(m_pManager, this);
+	CVerticalLayoutUI::Add(m_pEditUI);
 
     m_ListInfo.nColumns = 0;
     m_ListInfo.nFont = -1;
@@ -53,6 +60,7 @@ LPVOID CListUI::GetInterface(LPCTSTR pstrName)
 CControlUI* CListUI::GetItemAt(int iIndex) const
 {
 	// 获取子控件 [5/1/2011 linjinming]
+	return m_pList->GetItemAt(iIndex);
 	return CVerticalLayoutUI::GetItemAt(iIndex);
 }
 
@@ -98,6 +106,7 @@ bool CListUI::SetItemIndex(CControlUI* pControl, int iIndex)
 
 int CListUI::GetCount() const
 {
+	return m_pList->GetCount();
 	return CVerticalLayoutUI::GetCount();
 }
 
@@ -129,7 +138,15 @@ bool CListUI::Add(CControlUI* pControl)
 		if (m_pList != pControl)
 		{
 			CVerticalLayoutUI::Remove(m_pList);
+			CVerticalLayoutUI::Remove(m_pEditUI);
 			m_pList = static_cast<CListBodyUI*>(pControl);
+
+			m_pEditUI = new CEditUI;
+			m_pEditUI->SetFloat(true);
+			m_pEditUI->SetBorderSize(1);
+			m_pEditUI->SetBorderColor(0xff000000);
+			m_pEditUI->SetManager(m_pManager, this);
+			CVerticalLayoutUI::Add(m_pEditUI);
 			return CVerticalLayoutUI::Add(pControl);
 		}
 	}
@@ -232,9 +249,7 @@ void CListUI::RemoveAll()
 {
     m_iCurSel = -1;
     m_iExpandedItem = -1;
-    //m_pList->RemoveAll();
 	CVerticalLayoutUI::RemoveAll();
-	//m_pHeader->RemoveAll();
 }
 
 void CListUI::SetPos(RECT rc)
@@ -359,6 +374,7 @@ int CListUI::GetCurSel() const
 
 bool CListUI::SelectItem(int iIndex)
 {
+	HideEditText();
     if( iIndex == m_iCurSel ) return true;
 
     // We should first unselect the currently selected item
@@ -853,12 +869,24 @@ CScrollBarUI* CListUI::GetHorizontalScrollBar() const
 void CListUI::RemoveAllItems()
 {
 	return m_pList->RemoveAll();
-
 }
 
 CListElementUI* CListUI::GetSubItem( int nIndex )
 {
 	return static_cast<CListElementUI *>(m_pList->GetItemAt(nIndex));
+}
+
+void CListUI::HideEditText()
+{
+	m_pEditUI->SetVisible(false);
+}
+
+void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
+{
+	m_items.Add(m_pEditUI);
+	m_pEditUI->SetText(pstrText);
+	m_pEditUI->SetVisible(true);
+	m_pEditUI->SetPos(rc);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -870,6 +898,8 @@ CListBodyUI::CListBodyUI(CListUI* pOwner) : m_pOwner(pOwner)
 {
     ASSERT(m_pOwner);
     SetInset(CRect(0,0,0,0));
+
+	
 }
 
 LPCTSTR CListBodyUI::GetClass() const
@@ -880,6 +910,8 @@ LPCTSTR CListBodyUI::GetClass() const
 
 void CListBodyUI::SetScrollPos(SIZE szPos)
 {
+	if (m_pOwner) m_pOwner->HideEditText();
+
     int cx = 0;
     int cy = 0;
     if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
@@ -2057,7 +2089,7 @@ void CListTextElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
 
 CListTextEditElementUI::CListTextEditElementUI()
 {
-	m_bEditState = false;
+	m_bColomnEditable = NULL;
 }
 
 CListTextEditElementUI::~CListTextEditElementUI()
@@ -2077,80 +2109,64 @@ LPVOID CListTextEditElementUI::GetInterface(LPCTSTR pstrName)
     return CListTextElementUI::GetInterface(pstrName);
 }
 
-UINT CListTextEditElementUI::GetControlFlags() const
-{
-    return UIFLAG_WANTRETURN ;
-}
-
 void CListTextEditElementUI::DoEvent(TEventUI& event)
 {
-    if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
-        if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
-        else CListLabelElementUI::DoEvent(event);
-        return;
-    }
+	if( m_pOwner == NULL ) return;
+	TListInfoUI* pInfo = m_pOwner->GetListInfo();
 
-    // When you hover over a link
-    if( event.Type == UIEVENT_SETCURSOR ) {
-        for( int i = 0; i < m_nLinks; i++ ) {
-            if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
-                ::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
-                return;
-            }
-        }      
-    }
-    if( event.Type == UIEVENT_BUTTONUP && IsEnabled() ) {
-        for( int i = 0; i < m_nLinks; i++ ) {
-            if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
-                m_pManager->SendNotify(this, _T("link"), i);
-                return;
-            }
-        }
-    }
+	if (event.Type == UIEVENT_DBLCLICK)
+	{
+		for (int i = 0; i < pInfo->nColumns; i++)
+		{
+			if (m_bColomnEditable != NULL && 
+				m_bColomnEditable[i] == TRUE)// &&
+				//PtInRect(&pInfo->rcColumn[i], event.ptMouse))
+			{
+				RECT rcItem = { pInfo->rcColumn[i].left, m_rcItem.top, pInfo->rcColumn[i].right, m_rcItem.bottom };
 
-    if( m_nLinks > 0 && event.Type == UIEVENT_MOUSEMOVE ) {
-        int nHoverLink = -1;
-        for( int i = 0; i < m_nLinks; i++ ) {
-            if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
-                nHoverLink = i;
-                break;
-            }
-        }
+				IListCallbackUI* pCallback = m_pOwner->GetTextCallback();
 
-        if(m_nHoverLink != nHoverLink) {
-            Invalidate();
-            m_nHoverLink = nHoverLink;
-        }
-    }
+				CListBodyUI *pListBody = (CListBodyUI *)GetParent();
 
-    if( m_nLinks > 0 && event.Type == UIEVENT_MOUSELEAVE ) {
-        if(m_nHoverLink != -1) {
-            Invalidate();
-            m_nHoverLink = -1;
-        }
-    }
+				LPCTSTR pstrText = NULL;
 
-    if( event.Type == UIEVENT_DBLCLICK ) {
-        if( m_bEditState == FALSE)
-			m_bEditState = TRUE;
+		        if( pCallback ) pstrText = pCallback->GetItemText(this, m_iIndex, i);
 
-/*
-		int nCurrentColumn = 0;
-        for( int i = 0; i < m_sLinks.GetLength(); i++ ) {
-            if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
-                nCurrentColumn = i;
-				break;;
-            }
-        }
+				m_pOwner->ShowEditText(pstrText, rcItem);
 
-		m_pEditUI = new CEditUI();
-		m_pEditUI->SetPos(m_rcLinks[nCurrentColumn]);
-		m_pEditUI->SetVisible();*/
+				break;
+			}
+		}
+	}
+	else
+	{
+		CListTextElementUI::DoEvent(event);
+	}
 
-    }
+}
 
+BOOL CListTextEditElementUI::SetColomnEditable( int nColomnIndex, bool bEditable )
+{
+	if (m_pOwner == NULL)
+	{
+		return FALSE;
+	}
 
-    CListTextElementUI::DoEvent(event);
+	TListInfoUI *pListInfo = m_pOwner->GetListInfo();
+
+	if (m_bColomnEditable == NULL)
+	{
+		m_bColomnEditable = new bool[pListInfo->nColumns];
+	}
+
+	if (nColomnIndex < pListInfo->nColumns)
+	{
+		m_bColomnEditable[nColomnIndex] = bEditable;
+
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
