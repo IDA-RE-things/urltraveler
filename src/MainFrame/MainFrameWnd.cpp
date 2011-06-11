@@ -286,16 +286,16 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		}
 		return;
 	}
-	else if(msg.sType == L"return")
+	else if(msg.sType == L"listeditfinish")
 	{
-		CControlUI *pControl = msg.pSender->GetParent();
+		CControlUI *pControl = msg.pSender;
+
 		if (_tcscmp(pControl->GetClass(), _T("ListUI")) == 0)
 		{
-			CListUI *pListUI = (CListUI *)pControl;
-			pListUI->HideEditText();
-			::MessageBox(NULL, msg.pSender->GetText(), msg.pSender->GetText(), MB_OK);
+			::MessageBox(NULL, NULL, NULL, NULL);
 		}
 	}
+	
 }
 
 LRESULT CMainFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

@@ -8,19 +8,16 @@ namespace DuiLib {
 
 CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m_iExpandedItem(-1)
 {
+	m_nEditRow = -1;
+	m_nEditColomn = -1;
+	m_bAddNotifyer = false;
     m_pList = new CListBodyUI(this);
     m_pHeader = new CListHeaderUI;
 
 	CVerticalLayoutUI::Add(m_pHeader);
     CVerticalLayoutUI::Add(m_pList);
 
-	m_pEditUI = new CEditUI;
-	m_pEditUI->SetFloat(true);
-	m_pEditUI->SetBorderSize(1);
-	m_pEditUI->SetBorderColor(0xff000000);
-	m_pEditUI->SetManager(m_pManager, this);
-	m_pEditUI->SetName(_T("test1231"));
-	CVerticalLayoutUI::Add(m_pEditUI);
+	m_pEditUI = NULL;
 
     m_ListInfo.nColumns = 0;
     m_ListInfo.nFont = -1;
@@ -38,6 +35,19 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
     m_ListInfo.bMultiExpandable = false;
     ::ZeroMemory(&m_ListInfo.rcTextPadding, sizeof(m_ListInfo.rcTextPadding));
     ::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
+}
+
+void CListUI::Notify(TNotifyUI& msg)
+{
+	if(msg.sType == L"return")
+	{
+		CControlUI *pControl = msg.pSender->GetParent();
+		if (pControl && _tcscmp(pControl->GetClass(), _T("ListUI")) == 0)
+		{
+			CListUI *pListUI = (CListUI *)pControl;
+			pListUI->HideEditText();
+		}
+	}
 }
 
 LPCTSTR CListUI::GetClass() const
@@ -139,16 +149,22 @@ bool CListUI::Add(CControlUI* pControl)
 		if (m_pList != pControl)
 		{
 			CVerticalLayoutUI::Remove(m_pList);
-			CVerticalLayoutUI::Remove(m_pEditUI);
 			m_pList = static_cast<CListBodyUI*>(pControl);
+			
+			return CVerticalLayoutUI::Add(pControl);
+		}
+	}
 
-			m_pEditUI = new CEditUI;
+	if( pControl->GetInterface(_T("Edit")) != NULL ) {
+		if (m_pEditUI != pControl)
+		{
+			CVerticalLayoutUI::Remove(m_pEditUI);
+			m_pEditUI = static_cast<CEditUI*>(pControl);
 			m_pEditUI->SetFloat(true);
 			m_pEditUI->SetBorderSize(1);
 			m_pEditUI->SetBorderColor(0xff000000);
 			m_pEditUI->SetManager(m_pManager, this);
-			CVerticalLayoutUI::Add(m_pEditUI);
-			return CVerticalLayoutUI::Add(pControl);
+			return CVerticalLayoutUI::Add(m_pEditUI);
 		}
 	}
     // We also need to recognize header sub-items
@@ -879,11 +895,29 @@ CListElementUI* CListUI::GetSubItem( int nIndex )
 
 void CListUI::HideEditText()
 {
+	if (m_bShowEdit == true)
+	{
+		m_bShowEdit = false;
+	}
+	else
+		return;
 	m_pEditUI->SetPos(CRect(0, 0, 0, 0));
+	TNotifyUI notify;
+
+
+	notify.sType = _T("listeditfinish");
+	notify.pSender = this;
+	#define MAKEDWORD(w1,w2) (((w1)<<16)|(w2))
+
+	notify.wParam = MAKEDWORD((WORD)m_nEditRow, (WORD)m_nEditColomn);
+	m_pManager->SendNotify(notify);
 }
 
-void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
+void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc, int nRow, int nColomn)
 {
+	m_bShowEdit = true;
+	m_nEditColomn = nColomn;
+	m_nEditRow = nRow;
 	CScrollBarUI *pScrollBar = m_pList->GetVerticalScrollBar();
 
 	if (pScrollBar && pScrollBar->IsVisible())
@@ -899,6 +933,17 @@ void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
 	m_pEditUI->SetText(pstrText);
 	m_pEditUI->SetFocus();
 	m_pEditUI->SetSel();
+}
+
+void CListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
+{
+	CVerticalLayoutUI::SetManager(pManager, pParent, bInit);
+
+	if (m_pEditUI != NULL && !m_bAddNotifyer)
+	{
+		m_bAddNotifyer = true;
+		m_pManager->AddNotifier(this);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -2146,7 +2191,7 @@ void CListTextEditElementUI::DoEvent(TEventUI& event)
 
 		        if( pCallback ) pstrText = pCallback->GetItemText(this, m_iIndex, i);
 
-				m_pOwner->ShowEditText(pstrText, rcItem);
+				m_pOwner->ShowEditText(pstrText, rcItem, GetIndex(), i);
 
 				break;
 			}
@@ -2776,5 +2821,8 @@ void CListContainerElementUI::DrawItemBk(HDC hDC, const RECT& rcItem)
         CRenderEngine::DrawLine(hDC, rcLine, 1, pInfo->dwLineColor);
     }
 }
+
+
+
 
 } // namespace DuiLib

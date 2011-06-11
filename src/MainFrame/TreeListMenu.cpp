@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "TreeListMenu.h"
 #include "MainFrameDefine.h"
 #include "MainFrameModule.h"
