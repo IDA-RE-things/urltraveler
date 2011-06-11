@@ -890,7 +890,7 @@ void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
 	{
 		int nScrollBarWidth = pScrollBar->GetFixedWidth();
 
-		if (rc.right > m_rcItem.right - nScrollBarWidth)
+		if (rc.right > m_pList->GetPos().right - nScrollBarWidth)
 		{
 			rc.right -= nScrollBarWidth;
 		}
