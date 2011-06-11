@@ -2123,9 +2123,11 @@ void CListTextEditElementUI::DoEvent(TEventUI& event)
 	{
 		for (int i = 0; i < pInfo->nColumns; i++)
 		{
+			RECT rcItem = { pInfo->rcColumn[i].left, m_rcItem.top, pInfo->rcColumn[i].right, m_rcItem.bottom };
+
 			if (m_bColomnEditable != NULL && 
-				m_bColomnEditable[i] == TRUE)// &&
-				//PtInRect(&pInfo->rcColumn[i], event.ptMouse))
+				m_bColomnEditable[i] == TRUE &&
+				::PtInRect(&rcItem, event.ptMouse))
 			{
 				RECT rcItem = { pInfo->rcColumn[i].left, m_rcItem.top, pInfo->rcColumn[i].right, m_rcItem.bottom };
 
