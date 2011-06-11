@@ -1764,6 +1764,47 @@ void CEditUI::PaintText(HDC hDC)
     }
 }
 
+bool CEditUI::SetSel( int nSelStart, int nSelEnd )
+{
+	if (m_pWindow == NULL)
+	{
+		return false;
+	}
+
+	int nSize = GetWindowTextLength(*m_pWindow);
+
+	if (nSelStart == -1 && nSelEnd == -1)
+	{
+		if (nSize == 0)
+		{
+			nSize = 1;
+		}
+
+		Edit_SetSel(*m_pWindow, 0, nSize);
+
+		return true;
+	}
+
+	if (nSelStart > nSelEnd)
+	{
+		return false;
+	}
+	
+	if (nSelStart > nSize)
+	{
+		return false;
+	}
+
+	if (nSelEnd > nSize)
+	{
+		return false;
+	}
+
+	Edit_SetSel(*m_pWindow, nSelStart, nSelEnd);
+
+	return true;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 //
 //
