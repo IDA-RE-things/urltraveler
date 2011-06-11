@@ -883,9 +883,14 @@ void CListUI::HideEditText()
 
 void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
 {
-	m_items.Add(m_pEditUI);
-	m_pEditUI->SetText(pstrText);
+	CScrollBarUI *pScrollBar = m_pList->GetVerticalScrollBar();
+
+	if (pScrollBar && pScrollBar->IsVisible())
+	{
+		rc.right -= pScrollBar->GetFixedWidth();
+	}
 	m_pEditUI->SetVisible(true);
+	m_pEditUI->SetText(pstrText);
 	m_pEditUI->SetPos(rc);
 }
 
