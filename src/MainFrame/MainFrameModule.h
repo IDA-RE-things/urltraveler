@@ -79,6 +79,7 @@ protected:
 	void	OnEvent_DeleteFavorite(Event* pEvent);			//	删除给定的收藏记录
 	void	OnEvent_OpenUrl(Event* pEvent);			//	打开给定的收藏网址
 	void	OnEvent_CopyUrl(Event* pEvent);			//	拷贝网址
+	void	OnEvent_DeleteFavoriteFold(Event* pEvent);	//	删除收藏夹
 
 	// Message处理函数
 protected:

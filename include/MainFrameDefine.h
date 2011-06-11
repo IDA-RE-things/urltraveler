@@ -3,7 +3,7 @@
 // MainFrame的对外的头文件信息
 
 #include "SndaBase.h"
-
+#include "UrlTravelerHeader.h"
 
 namespace mainframe
 {
@@ -81,6 +81,19 @@ namespace mainframe
 
 		//	需要删除的URL的索引
 		int nDeleteNodeId;	
+	};
+
+	// 删除某个收藏夹记录
+	struct MainFrame_DeleteFavoriteFoldEvent	:	public MainFrameEvent
+	{
+		MainFrame_DeleteFavoriteFoldEvent()
+		{
+			eventValue	=	EVENT_VALUE_MAINFRAME_DELETE_FAVORITE_FOLD;
+			nDeleteIndex	= -1;
+		}
+
+		//	需要删除的URL的索引
+		int	nDeleteIndex;	
 	};
 
 	//===========================================//

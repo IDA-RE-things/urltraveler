@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "OleIdl.h"
+
 namespace DuiLib {
 
 class CTxtWinHost;

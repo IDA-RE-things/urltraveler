@@ -43,6 +43,7 @@ BEGIN_EVENT_MAP(MainFrameModule)
 	ON_EVENT(EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE, OnEvent_FavoriteIconArrive)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_ADD_URL, OnEvent_AddUrl)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_DELETE_FAVORITE, OnEvent_DeleteFavorite)
+	ON_EVENT(EVENT_VALUE_MAINFRAME_DELETE_FAVORITE_FOLD, OnEvent_DeleteFavoriteFold)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_OPEN_URL, OnEvent_OpenUrl)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_COPY_URL, OnEvent_CopyUrl)
 END_EVENT_MAP()
@@ -153,7 +154,11 @@ void	MainFrameModule::OnEvent_FavoriteIconArrive(Event* pEvent)
 
 void MainFrameModule::OnEvent_AddUrl(Event* pEvent)
 {
-	ASSERT( pEvent->eventValue == EVENT_VALUE_MAINFRAME_ADD_URL);
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_MAINFRAME_ADD_URL)
+	{
+		ASSERT(0);
+		return;
+	}
 
 	m_pMainFrame->AddUrl();
 }
@@ -170,8 +175,11 @@ void	MainFrameModule::OnEvent_DeleteFavorite(Event* pEvent)
 
 void	MainFrameModule::OnEvent_OpenUrl(Event* pEvent)
 {
-	if( pEvent == NULL)
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_MAINFRAME_OPEN_URL )
+	{
+		ASSERT(0);
 		return;
+	}
 
 	int nSel = pEvent->param0;
 	m_pMainFrame->OpenUrl(nSel);
@@ -179,12 +187,29 @@ void	MainFrameModule::OnEvent_OpenUrl(Event* pEvent)
 
 void	MainFrameModule::OnEvent_CopyUrl(Event* pEvent)
 {
-	if( pEvent == NULL)
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_MAINFRAME_COPY_URL )
+	{
+		ASSERT(0);
 		return;
+	}
 
 	int nSel = pEvent->param0;
 	m_pMainFrame->CopyUrl(nSel);
 }
+
+void	MainFrameModule::OnEvent_DeleteFavoriteFold(Event* pEvent)
+{
+	MainFrame_DeleteFavoriteFoldEvent* pDeleteFavoriteFoldEvent = (MainFrame_DeleteFavoriteFoldEvent*)pEvent->m_pstExtraInfo;
+	if( pDeleteFavoriteFoldEvent == NULL || pDeleteFavoriteFoldEvent->eventValue != EVENT_VALUE_MAINFRAME_DELETE_FAVORITE_FOLD)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	int nIndex  = pDeleteFavoriteFoldEvent->nDeleteIndex;
+	m_pMainFrame->DeleteFavoriteFold(nIndex);
+}
+
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)
 {
