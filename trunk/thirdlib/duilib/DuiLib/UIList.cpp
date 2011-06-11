@@ -44,7 +44,7 @@ void CListUI::Notify(TNotifyUI& msg)
 		CControlUI *pControl = msg.pSender->GetParent();
 		if (pControl &&
 			_tcscmp(pControl->GetClass(), _T("ListUI")) == 0 &&
-			_tcscmp(msg.pSender->GetName(), m_pEditUI->GetName()))
+			_tcscmp(msg.pSender->GetName(), m_pEditUI->GetName()) == 0)
 		{
 			CListUI *pListUI = (CListUI *)pControl;
 			pListUI->HideEditText();
