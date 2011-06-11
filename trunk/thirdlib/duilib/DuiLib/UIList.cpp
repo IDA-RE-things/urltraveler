@@ -19,6 +19,7 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
 	m_pEditUI->SetBorderSize(1);
 	m_pEditUI->SetBorderColor(0xff000000);
 	m_pEditUI->SetManager(m_pManager, this);
+	m_pEditUI->SetName(_T("test1231"));
 	CVerticalLayoutUI::Add(m_pEditUI);
 
     m_ListInfo.nColumns = 0;
@@ -878,7 +879,8 @@ CListElementUI* CListUI::GetSubItem( int nIndex )
 
 void CListUI::HideEditText()
 {
-	m_pEditUI->SetVisible(false);
+	m_pEditUI->SetPos(CRect(0, 0, 0, 0));
+	//m_pEditUI->SetVisible(false);
 }
 
 void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
@@ -889,9 +891,9 @@ void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
 	{
 		rc.right -= pScrollBar->GetFixedWidth();
 	}
-	m_pEditUI->SetVisible(true);
-	m_pEditUI->SetText(pstrText);
 	m_pEditUI->SetPos(rc);
+	m_pEditUI->SetText(pstrText);
+	m_pEditUI->SetVisible(true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
