@@ -269,6 +269,7 @@ public:
 
     void SetEnabled(bool bEnable = true);
     void SetText(LPCTSTR pstrText);
+	bool SetSel(int nSelStart = -1, int nSelEnd = -1);
     void SetMaxChar(UINT uMax);
     UINT GetMaxChar();
     void SetReadOnly(bool bReadOnly);

@@ -897,6 +897,8 @@ void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
 	}
 	m_pEditUI->SetPos(rc);
 	m_pEditUI->SetText(pstrText);
+	m_pEditUI->SetFocus();
+	m_pEditUI->SetSel();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
