@@ -63,7 +63,7 @@ public:
     virtual void SetTextCallback(IListCallbackUI* pCallback) = 0;
     virtual bool ExpandItem(int iIndex, bool bExpand = true) = 0;
     virtual int GetExpandedItem() const = 0;
-	virtual void ShowEditText(LPCTSTR pstrText, CRect rc) = 0;
+	virtual void ShowEditText(LPCTSTR pstrText, CRect rc, int nRow, int nColomn) = 0;
 	virtual void HideEditText() = 0;
 };
 
@@ -89,7 +89,7 @@ class CListBodyUI;
 class CListHeaderUI;
 class CListElementUI;
 
-class UILIB_API CListUI : public CVerticalLayoutUI, public IListUI
+class UILIB_API CListUI : public CVerticalLayoutUI, public IListUI, public INotifyUI
 {
 public:
     CListUI();
@@ -195,8 +195,11 @@ public:
 	void RemoveAllItems();
 	CListElementUI* GetSubItem(int nIndex);
 
-	void ShowEditText(LPCTSTR pstrText, CRect rc);
+	void ShowEditText(LPCTSTR pstrText, CRect rc, int nRow, int nColomn);
 	void HideEditText();
+public:
+	void Notify(TNotifyUI& msg);
+	virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 protected:
     bool m_bScrollSelect;
     int m_iCurSel;
@@ -206,6 +209,10 @@ protected:
     CListHeaderUI* m_pHeader;
     TListInfoUI m_ListInfo;
 	CEditUI* m_pEditUI;			//	编辑框，用来对给定的列编辑
+	bool     m_bAddNotifyer;
+	int      m_nEditRow;
+	int      m_nEditColomn;
+	bool     m_bShowEdit;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
