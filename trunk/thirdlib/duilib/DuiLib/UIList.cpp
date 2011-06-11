@@ -888,7 +888,12 @@ void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc )
 
 	if (pScrollBar && pScrollBar->IsVisible())
 	{
-		rc.right -= pScrollBar->GetFixedWidth();
+		int nScrollBarWidth = pScrollBar->GetFixedWidth();
+
+		if (rc.right > m_rcItem.right - nScrollBarWidth)
+		{
+			rc.right -= nScrollBarWidth;
+		}
 	}
 	m_pEditUI->SetPos(rc);
 	m_pEditUI->SetText(pstrText);
