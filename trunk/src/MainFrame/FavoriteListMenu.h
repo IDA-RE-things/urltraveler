@@ -59,6 +59,13 @@ public:
 			MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_MAINFRAME_COPY_URL, MODULE_ID_MAINFRAME, nSel));
 	}
 
+	void OnEdit()
+	{
+		CListUI* pList = static_cast<CListUI*>(m_pOwner);
+
+		pList->EditItem(m_nX, m_nY);
+	}
+
 	void Notify(TNotifyUI& msg)
 	{
 		if( msg.sType == _T("itemselect") ) {
@@ -81,6 +88,21 @@ public:
 			{
 				OnCopyUrl();
 			}
+			else if( msg.pSender->GetName() == _T("menu_Edit") )
+			{
+				OnEdit();
+			}
 		}
 	}
+
+	void StoreLanuchPos(int nX, int nY)
+	{
+		m_nX = nX;
+		m_nY = nY;
+		
+	}
+
+	//点击菜单时候的x 和 y两个坐标
+	int m_nX;
+	int m_nY;
 };
