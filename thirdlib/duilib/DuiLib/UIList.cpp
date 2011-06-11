@@ -344,6 +344,8 @@ void CListUI::DoEvent(TEventUI& event)
         case VK_RETURN:
             if( m_iCurSel != -1 ) GetItemAt(m_iCurSel)->Activate();
             return;
+		case VK_F2:
+			EditItem(event.ptMouse.x, event.ptMouse.y);
             }
         break;
     case UIEVENT_SCROLLWHEEL:
@@ -954,6 +956,38 @@ CStdString CListUI::GetEditText()
 	}
 
 	return _T("");
+}
+
+bool CListUI::EditItem( int nX, int nY )
+{
+	if (m_pEditUI == NULL)
+	{
+		return false;
+	}
+
+	POINT pt;
+	pt.x = nX;
+	pt.y = nY;
+
+	for (int i = 0; i < m_pList->GetCount(); i++)
+	{
+		CControlUI *pItem = m_pList->GetItemAt(i);
+		RECT rcItem = pItem->GetPos();
+
+		for (int j = 0; j < m_ListInfo.nColumns; j++)
+		{
+			rcItem.left = m_ListInfo.rcColumn[j].left;
+			rcItem.right = m_ListInfo.rcColumn[j].right;
+
+			if (::PtInRect(&rcItem, pt))
+			{
+				LPCTSTR pstrText = NULL;
+				if( m_pCallback ) pstrText = m_pCallback->GetItemText(pItem, i, j);
+				ShowEditText(pstrText, rcItem, i, j);
+				return true;
+			}
+		}
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
