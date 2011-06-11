@@ -115,8 +115,8 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 			CListTextEditElementUI* pListElement = new CListTextEditElementUI;
 			pListElement->SetTag((UINT_PTR)pData);
 			pUserList->Add(pListElement);
-			pListElement->SetColomnEditable(0, TRUE);
 			pListElement->SetColomnEditable(1, TRUE);
+			pListElement->SetColomnEditable(2, TRUE);
 			m_vFavoriteNodeAtTreeNode.push_back(pData);
 			j++;
 		}
