@@ -42,7 +42,9 @@ void CListUI::Notify(TNotifyUI& msg)
 	if(msg.sType == L"return")
 	{
 		CControlUI *pControl = msg.pSender->GetParent();
-		if (pControl && _tcscmp(pControl->GetClass(), _T("ListUI")) == 0)
+		if (pControl &&
+			_tcscmp(pControl->GetClass(), _T("ListUI")) == 0 &&
+			_tcscmp(msg.pSender->GetName(), m_pEditUI->GetName()))
 		{
 			CListUI *pListUI = (CListUI *)pControl;
 			pListUI->HideEditText();
@@ -161,8 +163,6 @@ bool CListUI::Add(CControlUI* pControl)
 			CVerticalLayoutUI::Remove(m_pEditUI);
 			m_pEditUI = static_cast<CEditUI*>(pControl);
 			m_pEditUI->SetFloat(true);
-			m_pEditUI->SetBorderSize(1);
-			m_pEditUI->SetBorderColor(0xff000000);
 			m_pEditUI->SetManager(m_pManager, this);
 			return CVerticalLayoutUI::Add(m_pEditUI);
 		}
