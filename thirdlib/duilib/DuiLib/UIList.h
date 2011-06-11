@@ -425,6 +425,7 @@ public:
     LPCTSTR GetClass() const;
     LPVOID  GetInterface(LPCTSTR pstrName);
 	BOOL    SetColomnEditable(int nColomnIndex, bool bEditable);
+	BOOL    IsColomnEditable(int nColomn);
 
     void DoEvent(TEventUI& event);
 

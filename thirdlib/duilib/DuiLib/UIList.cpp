@@ -917,6 +917,11 @@ void CListUI::HideEditText()
 
 void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc, int nRow, int nColomn)
 {
+	//如果已经显示了，直接返回
+	if (m_bShowEdit == true)
+	{
+		return;
+	}
 	m_bShowEdit = true;
 	m_nEditColomn = nColomn;
 	m_nEditRow = nRow;
@@ -971,7 +976,7 @@ bool CListUI::EditItem( int nX, int nY )
 
 	for (int i = 0; i < m_pList->GetCount(); i++)
 	{
-		CControlUI *pItem = m_pList->GetItemAt(i);
+		CListTextEditElementUI *pItem = (CListTextEditElementUI *)m_pList->GetItemAt(i);
 		RECT rcItem = pItem->GetPos();
 
 		for (int j = 0; j < m_ListInfo.nColumns; j++)
@@ -979,7 +984,7 @@ bool CListUI::EditItem( int nX, int nY )
 			rcItem.left = m_ListInfo.rcColumn[j].left;
 			rcItem.right = m_ListInfo.rcColumn[j].right;
 
-			if (::PtInRect(&rcItem, pt))
+			if (pItem->IsColomnEditable(j) && ::PtInRect(&rcItem, pt))
 			{
 				LPCTSTR pstrText = NULL;
 				if( m_pCallback ) pstrText = m_pCallback->GetItemText(pItem, i, j);
@@ -2260,6 +2265,7 @@ BOOL CListTextEditElementUI::SetColomnEditable( int nColomnIndex, bool bEditable
 	if (m_bColomnEditable == NULL)
 	{
 		m_bColomnEditable = new bool[pListInfo->nColumns];
+		memset(m_bColomnEditable, 0, sizeof(bool) * pListInfo->nColumns);
 	}
 
 	if (nColomnIndex < pListInfo->nColumns)
@@ -2267,6 +2273,24 @@ BOOL CListTextEditElementUI::SetColomnEditable( int nColomnIndex, bool bEditable
 		m_bColomnEditable[nColomnIndex] = bEditable;
 
 		return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL CListTextEditElementUI::IsColomnEditable(int nColomn)
+{
+	if (m_pOwner)
+	{
+		TListInfoUI *pInfo = m_pOwner->GetListInfo();
+
+		if (pInfo && nColomn < pInfo->nColumns)
+		{
+			if (m_bColomnEditable)
+			{
+				return m_bColomnEditable[nColomn];
+			}
+		}
 	}
 
 	return FALSE;
