@@ -526,10 +526,14 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 
 				wstring strTitle = wstring(L"<x 4><i ") + wstrDomain;
 				strTitle += L".ico><x 4>";
-				strTitle += m_vFavoriteNodeAtTreeNode[iIndex]->szTitle;
 				return _wcsdup(strTitle.c_str());
 			}
 			if( iSubItem == 1 )
+			{
+				wstring strTitle = m_vFavoriteNodeAtTreeNode[iIndex]->szTitle;
+				return _wcsdup(strTitle.c_str());
+			}
+			if( iSubItem == 2 )
 			{
 				wstring strUrl;
 				strUrl += L"<x 4>";
@@ -607,6 +611,33 @@ void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 		return;
 
 	pUserList->Invalidate();
+}
+
+void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
+{
+	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
+	if( pFavoriteTree == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	CListLabelElementUI* pElement = (CListLabelElementUI*)pFavoriteTree->GetSubItem(nIndex);
+	if( pElement == NULL)
+		return;
+
+	TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
+	pFavoriteTree->RemoveNode(pNode);
+	pFavoriteTree->RemoveAt(nIndex);
+
+	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
+	if( itr == m_mapNodeId.end())
+		return;
+
+	int nId = itr->second;
+
+	// 检查当前收藏夹下是否存在子文件夹，如果存在则提醒。
+
 }
 
 void CMainFrameWnd::AddUrl()

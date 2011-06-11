@@ -52,6 +52,7 @@ public:
 	void	LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum);
 	void	UpdateFavoriteIcon(wchar_t*	pszUrl, HICON hIcon);
 	void	DeleteFavorite(int nDeleteNodeId);
+	void	DeleteFavoriteFold(int nIndex);
 	void	AddUrl();
 	void	OpenUrl(int nIndex);
 	void	CopyUrl(int nIndex);
