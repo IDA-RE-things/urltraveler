@@ -293,6 +293,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		{
 			CListUI *pListUI = (CListUI *)pControl;
 			pListUI->HideEditText();
+			::MessageBox(NULL, msg.pSender->GetText(), msg.pSender->GetText(), MB_OK);
 		}
 	}
 }
