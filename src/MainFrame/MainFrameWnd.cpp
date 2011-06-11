@@ -286,6 +286,15 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		}
 		return;
 	}
+	else if(msg.sType == L"return")
+	{
+		CControlUI *pControl = msg.pSender->GetParent();
+		if (_tcscmp(pControl->GetClass(), _T("ListUI")) == 0)
+		{
+			CListUI *pListUI = (CListUI *)pControl;
+			pListUI->HideEditText();
+		}
+	}
 }
 
 LRESULT CMainFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
