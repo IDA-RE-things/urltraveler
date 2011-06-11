@@ -197,6 +197,7 @@ public:
 
 	void ShowEditText(LPCTSTR pstrText, CRect rc, int nRow, int nColomn);
 	void HideEditText();
+	CStdString GetEditText();
 public:
 	void Notify(TNotifyUI& msg);
 	virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);

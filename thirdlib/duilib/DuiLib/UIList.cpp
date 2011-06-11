@@ -946,6 +946,16 @@ void CListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool b
 	}
 }
 
+CStdString CListUI::GetEditText()
+{
+	if (m_pEditUI)
+	{
+		return m_pEditUI->GetText();
+	}
+
+	return _T("");
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 //
 //

@@ -290,9 +290,18 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	{
 		CControlUI *pControl = msg.pSender;
 
-		if (_tcscmp(pControl->GetClass(), _T("ListUI")) == 0)
+		if (_tcscmp(pControl->GetName(), _T("favoritefilelist")) == 0)
 		{
-			::MessageBox(NULL, NULL, NULL, NULL);
+			int nRow = HIWORD(msg.wParam);
+			int nColomn = LOWORD(msg.wParam);
+			CListUI *pListUI = (CListUI *)pControl;
+
+			TCHAR szDemo[255];
+
+			_stprintf_s(szDemo, 255, _T("行:%d 列:%d 编辑完成"), nRow, nColomn);
+
+			::MessageBox(NULL, pListUI->GetEditText(), szDemo, NULL);
+			
 		}
 	}
 	
