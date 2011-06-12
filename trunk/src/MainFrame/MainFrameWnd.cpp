@@ -301,10 +301,9 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 
 			TCHAR szDemo[255];
 
-			_stprintf_s(szDemo, 255, _T("行:%d 列:%d 编辑完成"), nRow, nColomn);
+			_stprintf_s(szDemo, 255, _T("行:%d 列:%d 编辑内容:%s"), nRow, nColomn, pListUI->GetEditText());
 
-			::MessageBox(NULL, pListUI->GetEditText(), szDemo, NULL);
-			
+			OutputDebugString(szDemo);
 		}
 	}
 	
