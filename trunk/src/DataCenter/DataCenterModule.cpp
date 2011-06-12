@@ -154,12 +154,14 @@ DataCenterModule::~DataCenterModule()
 BEGIN_EVENT_MAP(DataCenterModule)
 	ON_EVENT(EVENT_VALUE_WEB_GET_FAVICON_RESP, OnEvent_FavoriteIconArrive)
 	ON_EVENT(EVENT_VALUE_DATACENTER_DELETE_FAVORITE, OnEvent_DeleteFavorite)
+	ON_EVENT(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD, OnEvent_DeleteFavoriteFolder)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(DataCenterModule)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR, OnService_GetFavoriteVector)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,OnService_GetFavoriteData)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON,OnService_GetFavoriteIcon)
+	ON_SERVICE(SERVICE_VALUE_DATACENTER_CHECK_EXIST_SUBFOLD, OnService_CheckExistSubFolder)
 END_SERVICE_MAP()
 
 //----------------------------------------------------------------------------------------
@@ -263,7 +265,7 @@ void	DataCenterModule::OnEvent_DeleteFavorite(Event* pEvent)
 	int nId = pDeleteFavoriteEvent->nFavoriteId;
 	wstring	wstrUrl = pDeleteFavoriteEvent->szUrl;
 
-	for( int i = 0; i<m_vFavoriteLineData.size(); i++)
+	for( size_t i = 0; i<m_vFavoriteLineData.size(); i++)
 	{
 		FAVORITELINEDATA* pData = &m_vFavoriteLineData[i]	;
 		if( pData->nPid == nId && wstrUrl == pData->szUrl)
@@ -271,6 +273,18 @@ void	DataCenterModule::OnEvent_DeleteFavorite(Event* pEvent)
 			pData->bDelete = true;
 		}
 	}
+}
+
+void	DataCenterModule::OnEvent_DeleteFavoriteFolder(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	int nDeleteId = pEvent->param0;
+	DeleteFavoriteFold(nDeleteId);
 }
 
 void	DataCenterModule::OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam)
@@ -331,4 +345,54 @@ void	DataCenterModule::OnService_GetFavoriteIcon(ServiceValue lServiceValue, par
 	wstring	wstrFavIconUrl = wstrDomain + wstring(L"/favicon.ico");
 	STRNCPY(pGetFavIconEvent->szFavoriteUrl, wstrFavIconUrl.c_str());
 	m_pModuleManager->PushEvent(*pGetFavIconEvent);
+}
+
+void	DataCenterModule::OnService_CheckExistSubFolder(ServiceValue	lServiceValue, param	 lParam)
+{
+	DataCenter_CheckExistSubFoldService* pCheckExistSubFolderService = (DataCenter_CheckExistSubFoldService*)lParam;
+	ASSERT(pCheckExistSubFolderService != NULL);
+
+	int nId = pCheckExistSubFolderService->nFoldId;
+	for(size_t i=0; i<m_vFavoriteLineData.size(); i++)
+	{
+		FAVORITELINEDATA* pData = &m_vFavoriteLineData[i];
+		if( pData->nPid == nId)
+		{
+			if( pData->bFolder == TRUE)
+			{
+				pCheckExistSubFolderService->bExistSubFolder = TRUE;
+			}
+			else
+			{
+				pCheckExistSubFolderService->bExistFavorite	=	TRUE;
+			}
+		}
+
+		if( pCheckExistSubFolderService->bExistSubFolder == TRUE 
+			&& pCheckExistSubFolderService->bExistFavorite == TRUE)
+			break;
+	}
+}
+
+void DataCenterModule::DeleteFavoriteFold( int nId )
+{
+	for( size_t i=0; i<m_vFavoriteLineData.size(); i++)
+	{
+		FAVORITELINEDATA* pData = &m_vFavoriteLineData[i];
+		if( pData->bDelete == TRUE)
+			continue;
+
+		if( pData->nPid == nId)
+		{
+			if( pData->bFolder == true)
+			{
+				pData->bDelete = true;
+				DeleteFavoriteFold(pData->nId);
+			}
+			else
+			{
+				pData->bDelete = true;
+			}
+		}
+	}
 }

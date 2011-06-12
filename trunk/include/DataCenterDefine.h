@@ -15,10 +15,11 @@ namespace datacenter
 	enum E_DataCenterEventValue
 	{
 		EVENT_VALUE_DATACENTER_OPEN = EVENT_VALUE_DATACENTER_BEGIN,		//打开主界面
-		EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE,										//收藏夹图标已经就绪
-		EVENT_VALUE_DATACENTER_DELETE_FAVORITE,												//删除某个收藏的URL
+		EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE,						//收藏夹图标已经就绪
+		EVENT_VALUE_DATACENTER_DELETE_FAVORITE,		//删除某个收藏的URL
+		EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,	//删除某个收藏夹的所有数据, param0为需要删除的收藏夹id
 		
-		EVENT_VALUE_DATACENTER_END = EVENT_VALUE_DATACENTER_END ,			//所有的事件结束
+		EVENT_VALUE_DATACENTER_END = EVENT_VALUE_DATACENTER_END ,		//所有的事件结束
 	};
 
 	// DataCenter能够可能对外发送的广播消息
@@ -32,6 +33,7 @@ namespace datacenter
 		SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR	=	SERVICE_VALUE_DATACENTER_BEGIN,
 		SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
 		SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON,		//	获取给定Domain对应的URL
+		SERVICE_VALUE_DATACENTER_CHECK_EXIST_SUBFOLD,		//	检查给定文件夹下是否存在子文件夹
 	};
 
 	//===========================================//
@@ -199,4 +201,20 @@ namespace datacenter
 		HICON	hIcon;
 	};
 
+
+	// 检查给定的收藏夹下是否存在子文件夹
+	struct DataCenter_CheckExistSubFoldService : public Service
+	{
+		DataCenter_CheckExistSubFoldService()
+		{
+			serviceId = SERVICE_VALUE_DATACENTER_CHECK_EXIST_SUBFOLD;
+			nFoldId	=	0;
+			bExistSubFolder	=	FALSE;
+			bExistFavorite	=	FALSE;
+		}
+
+		int nFoldId;					//	收藏夹的ID
+		BOOL	bExistSubFolder;		//	是否存在子文件夹
+		BOOL	bExistFavorite;			//	该文件夹下是否存在收藏记录
+	};
 };
