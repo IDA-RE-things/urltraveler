@@ -627,7 +627,7 @@ INT32 TranferManager::stop()
 	{		
 		clear();
 		pWorker->stop = true;
-		delay_ms(1000);
+		//delay_ms(1000);
 		pWorker = NULL;	//由线程启动函数自行删除pWorker
 		
 		mgrStarted = false;
