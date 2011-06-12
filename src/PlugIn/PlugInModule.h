@@ -114,6 +114,11 @@ private:
 	//	将pFavoriteData进行合并
 	void	Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId);
 
+	//	按照广度遍历排序
+	void SortByBreadth(PFAVORITELINEDATA pFavoriteLineData, int nNum);
+
+	void ReArrange(PFAVORITELINEDATA pData, int nLen);
+
 private:
 
 	//	保存所有的插件模块指针

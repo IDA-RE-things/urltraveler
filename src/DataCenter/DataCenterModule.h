@@ -72,6 +72,7 @@ protected:
 
 	void	OnEvent_FavoriteIconArrive(Event* pEvent);		//	网址对应的ICON图标达到
 	void	OnEvent_DeleteFavorite(Event* pEvent);			//	删除特定的URL
+	void	OnEvent_DeleteFavoriteFolder(Event* pEvent);		//	删除指定的收藏夹
 
 
 protected:
@@ -79,7 +80,12 @@ protected:
 	void	OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam);
 	void	OnService_GetFavoriteData(ServiceValue lServiceValue, param	lParam);
 	void	OnService_GetFavoriteIcon(ServiceValue lServiceValue, param lParam);
+	void	OnService_CheckExistSubFolder(ServiceValue	lServiceValue, param	 lParam);
 
+private:
+
+	// 删除指定收藏夹
+	void	DeleteFavoriteFold(int nId);
 
 protected:
 	

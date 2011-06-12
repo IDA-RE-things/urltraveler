@@ -648,6 +648,24 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 	int nId = itr->second;
 
 	// 检查当前收藏夹下是否存在子文件夹，如果存在则提醒。
+	// 向数据中心请求检查是否存在子文件夹
+	DataCenter_CheckExistSubFoldService checkService;
+	checkService.nFoldId = nId;
+	g_MainFrameModule->GetModuleManager()->CallService(checkService.serviceId,(param)&checkService);
+
+	// 存在子文件夹，则提醒是否删除
+	if( checkService.bExistSubFolder == TRUE)
+	{
+		int nRet = ::MessageBox(NULL, L"该收藏夹下存在子收藏夹，是否确定要一起删除", L"删除提示", MB_OKCANCEL);
+		// 确定删除
+		if( nRet == IDOK)
+		{
+			g_MainFrameModule->GetModuleManager()->PushEvent(
+				MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
+				MODULE_ID_DATACENTER,
+				nId));	
+		}
+	}
 
 }
 

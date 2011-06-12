@@ -291,6 +291,36 @@ bool compare(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
 	return a1->nHashId < a2->nHashId;
 }
 
+void PlugInModule::SortByBreadth(PFAVORITELINEDATA pFavoriteLineData, int nNum)
+{
+	// 首先对pFavoriteLineData进行排序
+	FAVORITELINEDATA*	pSortLineData = new FAVORITELINEDATA[nNum];
+	memset(pSortLineData, 0x0, sizeof(FAVORITELINEDATA) * nNum);
+
+	FAVORITELINEDATA*	pSortLineDataPos = pSortLineData;
+
+	// 逐一找到合适的数据，并插入到pSortLineData中去
+	int nParentId	=	0;
+	for( int i=0; i<nNum; i++)
+	{
+		// 在未排序的数据中查找Parent为nParentId的数据
+		for(int j=0; j<nNum; j++)
+		{
+			if( pFavoriteLineData[j].nPid	==	nParentId)
+			{
+				memcpy(pSortLineDataPos, &pFavoriteLineData[j], sizeof(FAVORITELINEDATA));
+				pSortLineDataPos++;
+			}
+		}
+
+		nParentId	=	pSortLineData[i].nId;
+	}
+
+	// 排序后的数据拷贝
+	memcpy(pFavoriteLineData, pSortLineData, nNum*sizeof( FAVORITELINEDATA));
+	delete[] pSortLineData;
+}
+
 void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 {
 	int nHash = 0;
@@ -335,7 +365,7 @@ void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 	}
 }
 
-void Rearrange(PFAVORITELINEDATA pData, int nLen)
+void PlugInModule::ReArrange(PFAVORITELINEDATA pData, int nLen)
 {
 	//最坏时间复杂度O(N^2)
 	for (int i = 0; i < nLen; i++)
@@ -429,10 +459,12 @@ int PlugInModule::Run()
 		else
 			itr++;
 	}
-
 	m_nSumFavorite =  pvFavoriteData->size();
 
-	Rearrange(&(*pvFavoriteData)[0], m_nSumFavorite);
+	// 进行广度遍历排序
+	SortByBreadth(&(*pvFavoriteData)[0], m_nSumFavorite);
+
+	ReArrange(&(*pvFavoriteData)[0], m_nSumFavorite);
 	
 	// 将合并后的数据导入到各个浏览器中
 	if (panCount)
