@@ -477,7 +477,6 @@ int PlugInModule::Run()
 	m_pModuleManager->PushMessage(
 		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED));
 
-	
 	/*
 	for( int i=0; i<nNumOfPlugIns; i++)
 	{

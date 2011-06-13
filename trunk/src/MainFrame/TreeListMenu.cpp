@@ -25,6 +25,8 @@ void CTreeListMenu::OnDelete()
 		if( pTree)
 		{
 			int nIndex = pTree->GetCurSel();
+			if( nIndex < 0)
+				return;
 
 			// 通知数据中心删除
 			MainFrame_DeleteFavoriteFoldEvent* pEvent = new MainFrame_DeleteFavoriteFoldEvent();

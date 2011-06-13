@@ -286,6 +286,8 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
 			::ClientToScreen(*this, &pt);
 			pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 125));
+
+			pMenu->Enable(L"menu_Delete", false);
 		}
 		return;
 	}
@@ -306,7 +308,6 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			OutputDebugString(szDemo);
 		}
 	}
-	
 }
 
 LRESULT CMainFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -639,7 +640,7 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 
 	TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
 	pFavoriteTree->RemoveNode(pNode);
-	pFavoriteTree->RemoveAt(nIndex);
+	//pFavoriteTree->RemoveAt(nIndex);
 
 	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
 	if( itr == m_mapNodeId.end())
