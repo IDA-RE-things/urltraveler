@@ -395,4 +395,7 @@ void DataCenterModule::DeleteFavoriteFold( int nId )
 			}
 		}
 	}
+
+	// 删除之后，如果移动到当前结点的上一个结点。如果上一个结点不存在，则移动到父结点。
+
 }

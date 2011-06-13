@@ -66,9 +66,7 @@ BOOL SogouPlugIn::IsWorked()
 	if (m_pMemFavoriteDB)
 	{
 		CppSQLite3DB  objSqliteDatabase;
-
 		objSqliteDatabase.openmem(m_pMemFavoriteDB, "");
-
 		bRet = objSqliteDatabase.tableExists("favorTable");
 	}
 
@@ -238,7 +236,6 @@ int32 SogouPlugIn::GetFavoriteCount()
 	if (m_pMemFavoriteDB != NULL)
 	{
 		CppSQLite3DB  m_SqliteDatabase;
-
 		m_SqliteDatabase.openmem(m_pMemFavoriteDB, "");
 		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select count(*) as Total from FavorTable");
 
@@ -260,7 +257,6 @@ BOOL SogouPlugIn::SaveDatabase()
 	}
 
 	strEncode.assign((char *)m_pMemFavoriteDB->pMemPointer, m_pMemFavoriteDB->ulMemSize);
-
 	nRet = encode(strEncode, StringHelper::UnicodeToANSI(pszFavoriteDataPath));
 
 	free(pszFavoriteDataPath);

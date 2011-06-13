@@ -286,6 +286,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Menu.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Menu.h"
 					>
 				</File>
