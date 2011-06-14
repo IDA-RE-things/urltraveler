@@ -284,32 +284,45 @@ void	DataCenterModule::OnEvent_DeleteFavoriteFolder(Event* pEvent)
 	}
 
 	int nSelectIndex = 0;
-
 	int nDeleteId = pEvent->param0;
 
 	FAVORITELINEDATA*	pData = &m_vFavoriteLineData[nDeleteId-1];
 	int nParentId = pData->nPid;
 
 	// 找到当前结点的前一个兄弟结点
+	int nPid = 0;
 	int i = nDeleteId - 2;
 	for( ; i>=0; i--)
 	{
 		pData = &m_vFavoriteLineData[i];
-		if( pData->nPid == nParentId)
+		if( pData->nPid == nParentId && pData->bFolder == true && pData->bDelete == false)
 			break;
+
+		if( pData->nId == nParentId)
+		{
+			nPid = pData->nId;
+		}
 	}
 
 	// 没有找到前一个兄弟结点，则找到它的父结点
 	if( i == -1)
-		 nSelectIndex = nParentId;
+	{
+		if( nPid == 0)
+			nSelectIndex = 0;
+		else
+			 nSelectIndex = nPid-1;
+	}
 	else 
 		nSelectIndex = i;
 
 	DeleteFavoriteFold(nDeleteId);
 
+	pData = &m_vFavoriteLineData[nSelectIndex];
+
 	// 删除之后，如果移动到当前结点的上一个结点。如果上一个结点不存在，则移动到父结点。
 	GetModuleManager()->PushEvent(
-		MakeEvent<MODULE_ID_DATACENTER>()(EVENT_VALUE_DATACENTER_TREELIST_SELECT, MODULE_ID_MAINFRAME, nSelectIndex));
+		MakeEvent<MODULE_ID_DATACENTER>()(EVENT_VALUE_DATACENTER_TREELIST_SELECT, 
+		MODULE_ID_MAINFRAME, pData->nId));
 }
 
 void	DataCenterModule::OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam)
