@@ -80,6 +80,7 @@ protected:
 	void	OnEvent_OpenUrl(Event* pEvent);			//	打开给定的收藏网址
 	void	OnEvent_CopyUrl(Event* pEvent);			//	拷贝网址
 	void	OnEvent_DeleteFavoriteFold(Event* pEvent);	//	删除收藏夹
+	void	OnEvent_SelectTreeListItem(Event* pEvent);	//	选中树结点中的某一个
 
 	// Message处理函数
 protected:

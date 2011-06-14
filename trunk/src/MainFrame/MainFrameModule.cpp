@@ -46,6 +46,7 @@ BEGIN_EVENT_MAP(MainFrameModule)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_DELETE_FAVORITE_FOLD, OnEvent_DeleteFavoriteFold)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_OPEN_URL, OnEvent_OpenUrl)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_COPY_URL, OnEvent_CopyUrl)
+	ON_EVENT(EVENT_VALUE_DATACENTER_TREELIST_SELECT, OnEvent_SelectTreeListItem)
 END_EVENT_MAP()
 
 
@@ -210,6 +211,14 @@ void	MainFrameModule::OnEvent_DeleteFavoriteFold(Event* pEvent)
 	m_pMainFrame->DeleteFavoriteFold(nIndex);
 }
 
+void	MainFrameModule::OnEvent_SelectTreeListItem(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_DATACENTER_TREELIST_SELECT)
+		return;
+
+	int nSelectIndex = pEvent->param0;
+	m_pMainFrame->SelectTreeList(nSelectIndex);
+}
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)
 {

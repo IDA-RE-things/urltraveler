@@ -287,7 +287,12 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			::ClientToScreen(*this, &pt);
 			pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 125));
 
-			pMenu->Enable(L"menu_Delete", false);
+			TreeListUI* pTree = (TreeListUI*)msg.pSender;
+			int nSelIndex = pTree->GetCurSel();
+			if( nSelIndex == 0)
+			{
+				pMenu->Enable(L"menu_Delete", false);
+			}
 		}
 		return;
 	}
@@ -640,7 +645,6 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 
 	TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
 	pFavoriteTree->RemoveNode(pNode);
-	//pFavoriteTree->RemoveAt(nIndex);
 
 	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
 	if( itr == m_mapNodeId.end())
@@ -666,6 +670,13 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 				MODULE_ID_DATACENTER,
 				nId));	
 		}
+	}
+	else
+	{
+		g_MainFrameModule->GetModuleManager()->PushEvent(
+			MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
+			MODULE_ID_DATACENTER,
+			nId));	
 	}
 
 }
@@ -710,6 +721,18 @@ void	CMainFrameWnd::CopyUrl(int nIndex)
 	{
 		MessageBox(L"URL地址已经成功复制到剪贴板", L"复制成功", MB_OK);
 	}
+}
+
+void	CMainFrameWnd::SelectTreeList(int nIndex)
+{
+	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
+	if( pFavoriteTree == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	pFavoriteTree->SelectItem(nIndex);
 }
 
 void CMainFrameWnd::GetAvailableBrowser()
