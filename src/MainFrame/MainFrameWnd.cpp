@@ -644,8 +644,6 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 		return;
 
 	TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
-	pFavoriteTree->RemoveNode(pNode);
-
 	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
 	if( itr == m_mapNodeId.end())
 		return;
@@ -665,6 +663,10 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 		// È·¶¨É¾³ý
 		if( nRet == IDOK)
 		{
+			pFavoriteTree->RemoveNode(pNode);
+			m_mapNodeId.erase(pNode);
+			m_mapIdNode.erase(nId);
+
 			g_MainFrameModule->GetModuleManager()->PushEvent(
 				MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
 				MODULE_ID_DATACENTER,
@@ -673,12 +675,15 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 	}
 	else
 	{
+		pFavoriteTree->RemoveNode(pNode);
+		m_mapNodeId.erase(pNode);
+		m_mapIdNode.erase(nId);
+
 		g_MainFrameModule->GetModuleManager()->PushEvent(
 			MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
 			MODULE_ID_DATACENTER,
 			nId));	
 	}
-
 }
 
 void CMainFrameWnd::AddUrl()
@@ -723,7 +728,7 @@ void	CMainFrameWnd::CopyUrl(int nIndex)
 	}
 }
 
-void	CMainFrameWnd::SelectTreeList(int nIndex)
+void	CMainFrameWnd::SelectTreeList(int nId)
 {
 	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
 	if( pFavoriteTree == NULL)
@@ -732,7 +737,30 @@ void	CMainFrameWnd::SelectTreeList(int nIndex)
 		return;
 	}
 
-	pFavoriteTree->SelectItem(nIndex);
+	std::map<int, TreeListUI::Node*>::iterator itr = m_mapIdNode.find(nId);
+	if( itr == m_mapIdNode.end())
+		return;
+
+	if( itr->second == NULL)
+		return;
+
+	int nCount = pFavoriteTree->GetCount();
+	for( int i =0; i<nCount;i++)
+	{
+		CListLabelElementUI* pElement = (CListLabelElementUI*)pFavoriteTree->GetSubItem(i);
+		if( pElement == NULL)
+			continue;
+
+		TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
+		if( pNode == itr->second)
+		{
+			pFavoriteTree->SelectItem(i);
+			ShowFavoriteTreeList(nId);
+			break;
+		}
+	}
+	
+
 }
 
 void CMainFrameWnd::GetAvailableBrowser()
