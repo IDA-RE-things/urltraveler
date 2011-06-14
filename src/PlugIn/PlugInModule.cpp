@@ -286,39 +286,9 @@ void	PlugInModule::OnService_GetAvailablePlugIns(ServiceValue lServiceValue, par
 	pService->pvPlugIns = &m_vPlugIns;
 }
 
-bool compare(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
+bool compare_hashid(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
 {
 	return a1->nHashId < a2->nHashId;
-}
-
-void PlugInModule::SortByBreadth(PFAVORITELINEDATA pFavoriteLineData, int nNum)
-{
-	// 首先对pFavoriteLineData进行排序
-	FAVORITELINEDATA*	pSortLineData = new FAVORITELINEDATA[nNum];
-	memset(pSortLineData, 0x0, sizeof(FAVORITELINEDATA) * nNum);
-
-	FAVORITELINEDATA*	pSortLineDataPos = pSortLineData;
-
-	// 逐一找到合适的数据，并插入到pSortLineData中去
-	int nParentId	=	0;
-	for( int i=0; i<nNum; i++)
-	{
-		// 在未排序的数据中查找Parent为nParentId的数据
-		for(int j=0; j<nNum; j++)
-		{
-			if( pFavoriteLineData[j].nPid	==	nParentId)
-			{
-				memcpy(pSortLineDataPos, &pFavoriteLineData[j], sizeof(FAVORITELINEDATA));
-				pSortLineDataPos++;
-			}
-		}
-
-		nParentId	=	pSortLineData[i].nId;
-	}
-
-	// 排序后的数据拷贝
-	memcpy(pFavoriteLineData, pSortLineData, nNum*sizeof( FAVORITELINEDATA));
-	delete[] pSortLineData;
 }
 
 void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
@@ -341,7 +311,7 @@ void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 	if (vSize > 1)
 	{
 		//对vec按hashid进行排序, 主要方便下面一次遍历就能找出所有相同元素
-		sort(vec.begin(), vec.end(), compare);
+		sort(vec.begin(), vec.end(), compare_hashid);
 
 		for (int i = 0; i < vSize - 1; i++)
 		{
@@ -462,7 +432,8 @@ int PlugInModule::Run()
 	m_nSumFavorite =  pvFavoriteData->size();
 
 	// 进行广度遍历排序
-	SortByBreadth(&(*pvFavoriteData)[0], m_nSumFavorite);
+	sort(pvFavoriteData->begin(), pvFavoriteData->end());
+	//SortByBreadth(&(*pvFavoriteData)[0], m_nSumFavorite);
 
 	ReArrange(&(*pvFavoriteData)[0], m_nSumFavorite);
 	
