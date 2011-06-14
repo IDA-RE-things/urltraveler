@@ -18,7 +18,8 @@ namespace datacenter
 		EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE,						//收藏夹图标已经就绪
 		EVENT_VALUE_DATACENTER_DELETE_FAVORITE,		//删除某个收藏的URL
 		EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,	//删除某个收藏夹的所有数据, param0为需要删除的收藏夹id
-		
+		EVENT_VALUE_DATACENTER_TREELIST_SELECT,		//	在树中某个结点被删除后，需要将焦点移动到上一个结点或者父结点中
+
 		EVENT_VALUE_DATACENTER_END = EVENT_VALUE_DATACENTER_END ,		//所有的事件结束
 	};
 

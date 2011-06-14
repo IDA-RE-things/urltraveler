@@ -56,6 +56,7 @@ public:
 	void	AddUrl();
 	void	OpenUrl(int nIndex);
 	void	CopyUrl(int nIndex);
+	void	SelectTreeList(int nIndex);
 
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);

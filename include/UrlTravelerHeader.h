@@ -281,7 +281,7 @@ struct Event
 };
 
 
-template<ModuleIdentity id>
+template<ModuleIdentity srcId>
 struct  MakeEvent
 {
 	Event operator()(EventValue  const eventValue,
@@ -293,7 +293,7 @@ struct  MakeEvent
 		ExtraInfo *extraInfo=NULL)
 	{
 		return Event(eventValue,
-			id,
+			srcId,
 			desMId,
 			param0,
 			param1,
