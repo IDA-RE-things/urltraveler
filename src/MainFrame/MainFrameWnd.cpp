@@ -663,6 +663,24 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 		// È·¶¨É¾³ý
 		if( nRet == IDOK)
 		{
+			DataCenter_GetSubFolderIdService getSubFolderService;
+			getSubFolderService.nFoldId = nId;
+			g_MainFrameModule->GetModuleManager()->CallService(getSubFolderService.serviceId, (param)&getSubFolderService);
+
+			for( int i=0; i<getSubFolderService.nIdNum; i++)
+			{
+				int nSubFolderId = getSubFolderService.pIdNum[i];
+
+				std::map<int, TreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
+				if( itr != m_mapIdNode.end())
+				{
+					TreeListUI::Node* pNode = itr->second;
+					if( pNode)
+						m_mapNodeId.erase(pNode);
+				}
+				m_mapIdNode.erase(nSubFolderId);
+			}
+
 			pFavoriteTree->RemoveNode(pNode);
 			m_mapNodeId.erase(pNode);
 			m_mapIdNode.erase(nId);
@@ -675,6 +693,25 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 	}
 	else
 	{
+		DataCenter_GetSubFolderIdService getSubFolderService;
+		getSubFolderService.nFoldId = nId;
+		g_MainFrameModule->GetModuleManager()->CallService(getSubFolderService.serviceId, (param)&getSubFolderService);
+
+		for( int i=0; i<getSubFolderService.nIdNum; i++)
+		{
+			int nSubFolderId = getSubFolderService.pIdNum[i];
+
+			std::map<int, TreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
+			if( itr != m_mapIdNode.end())
+			{
+				TreeListUI::Node* pNode = itr->second;
+				if( pNode)
+					m_mapNodeId.erase(pNode);
+			}
+
+			m_mapIdNode.erase(nSubFolderId);
+		}
+
 		pFavoriteTree->RemoveNode(pNode);
 		m_mapNodeId.erase(pNode);
 		m_mapIdNode.erase(nId);
@@ -737,6 +774,13 @@ void	CMainFrameWnd::SelectTreeList(int nId)
 		return;
 	}
 
+	if( nId == 0)
+	{
+		pFavoriteTree->SelectItem(0);
+		ShowFavoriteTreeList(0);
+		return;
+	}
+
 	std::map<int, TreeListUI::Node*>::iterator itr = m_mapIdNode.find(nId);
 	if( itr == m_mapIdNode.end())
 		return;
@@ -759,8 +803,6 @@ void	CMainFrameWnd::SelectTreeList(int nId)
 			break;
 		}
 	}
-	
-
 }
 
 void CMainFrameWnd::GetAvailableBrowser()
