@@ -81,11 +81,13 @@ protected:
 	void	OnService_GetFavoriteData(ServiceValue lServiceValue, param	lParam);
 	void	OnService_GetFavoriteIcon(ServiceValue lServiceValue, param lParam);
 	void	OnService_CheckExistSubFolder(ServiceValue	lServiceValue, param	 lParam);
+	void	OnService_GetSubFolderId(ServiceValue lServiceValue, param lParam);
 
 private:
 
 	// É¾³ýÖ¸¶¨ÊÕ²Ø¼Ð
 	void	DeleteFavoriteFold(int nId);
+	void	GetSubFolderId(std::vector<int>* pvId, int nId);
 
 protected:
 	

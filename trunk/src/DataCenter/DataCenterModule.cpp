@@ -162,6 +162,7 @@ BEGIN_SERVICE_MAP(DataCenterModule)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,OnService_GetFavoriteData)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON,OnService_GetFavoriteIcon)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_CHECK_EXIST_SUBFOLD, OnService_CheckExistSubFolder)
+	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_SUBFOLD_ID, OnService_GetSubFolderId)
 END_SERVICE_MAP()
 
 //----------------------------------------------------------------------------------------
@@ -308,7 +309,12 @@ void	DataCenterModule::OnEvent_DeleteFavoriteFolder(Event* pEvent)
 	if( i == -1)
 	{
 		if( nPid == 0)
-			nSelectIndex = 0;
+		{
+			// 选中收藏夹根结点
+			GetModuleManager()->PushEvent(
+				MakeEvent<MODULE_ID_DATACENTER>()(EVENT_VALUE_DATACENTER_TREELIST_SELECT, 
+				MODULE_ID_MAINFRAME, 0));
+		}
 		else
 			 nSelectIndex = nPid-1;
 	}
@@ -316,7 +322,6 @@ void	DataCenterModule::OnEvent_DeleteFavoriteFolder(Event* pEvent)
 		nSelectIndex = i;
 
 	DeleteFavoriteFold(nDeleteId);
-
 	pData = &m_vFavoriteLineData[nSelectIndex];
 
 	// 删除之后，如果移动到当前结点的上一个结点。如果上一个结点不存在，则移动到父结点。
@@ -409,6 +414,45 @@ void	DataCenterModule::OnService_CheckExistSubFolder(ServiceValue	lServiceValue,
 		if( pCheckExistSubFolderService->bExistSubFolder == TRUE 
 			&& pCheckExistSubFolderService->bExistFavorite == TRUE)
 			break;
+	}
+}
+
+void	DataCenterModule::GetSubFolderId(std::vector<int>* pvId, int nId)
+{
+	if( pvId == NULL)
+		return;
+
+	for( size_t i=0; i<m_vFavoriteLineData.size(); i++)
+	{
+		FAVORITELINEDATA* pData = &m_vFavoriteLineData[i];
+		if( pData->bDelete == TRUE)
+			continue;
+
+		if( pData->nPid == nId)
+		{
+			if( pData->bFolder == true)
+			{
+				pvId->push_back(pData->nId);
+				GetSubFolderId(pvId, pData->nId);
+			}
+		}
+	}
+}
+
+void	DataCenterModule::OnService_GetSubFolderId(ServiceValue lServiceValue, param lParam)
+{
+	DataCenter_GetSubFolderIdService* pGetSubFolderIdService = (DataCenter_GetSubFolderIdService*)lParam;
+	ASSERT(pGetSubFolderIdService != NULL);
+
+	std:vector<int>	vSubFolderId;
+	int nId = pGetSubFolderIdService->nFoldId;
+	GetSubFolderId(&vSubFolderId, nId);
+
+	pGetSubFolderIdService->nIdNum = vSubFolderId.size();
+	pGetSubFolderIdService->pIdNum = new int[vSubFolderId.size()];
+	for(int i=0; i<vSubFolderId.size(); i++)
+	{
+		pGetSubFolderIdService->pIdNum[i] = vSubFolderId[i];	
 	}
 }
 

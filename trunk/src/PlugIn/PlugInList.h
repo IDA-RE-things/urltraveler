@@ -18,8 +18,8 @@ struct PlugInList
 {
 	PlugInList()
 	{
-		//m_stDllPlugInList.push_back(PLUGIN_NAME(SogouPlugIn));
-		m_stDllPlugInList.push_back(PLUGIN_NAME(MaxthonPlugIn));
+		m_stDllPlugInList.push_back(PLUGIN_NAME(SogouPlugIn));
+		//m_stDllPlugInList.push_back(PLUGIN_NAME(MaxthonPlugIn));
 		//m_stDllPlugInList.push_back(PLUGIN_NAME(360PlugIn));
 		//m_stDllPlugInList.push_back(PLUGIN_NAME(FireFoxPlugIn));
 		//m_stDllPlugInList.push_back(PLUGIN_NAME(IEPlugIn));
