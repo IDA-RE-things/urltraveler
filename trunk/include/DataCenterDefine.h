@@ -35,6 +35,7 @@ namespace datacenter
 		SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
 		SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON,		//	获取给定Domain对应的URL
 		SERVICE_VALUE_DATACENTER_CHECK_EXIST_SUBFOLD,		//	检查给定文件夹下是否存在子文件夹
+		SERVICE_VALUE_DATACENTER_GET_SUBFOLD_ID,			//	获取给定文件夹下的所有子文件夹的id
 	};
 
 	//===========================================//
@@ -217,5 +218,22 @@ namespace datacenter
 		int nFoldId;					//	收藏夹的ID
 		BOOL	bExistSubFolder;		//	是否存在子文件夹
 		BOOL	bExistFavorite;			//	该文件夹下是否存在收藏记录
+	};
+
+	struct DataCenter_GetSubFolderIdService : public Service
+	{
+		DataCenter_GetSubFolderIdService()
+		{
+			serviceId =  SERVICE_VALUE_DATACENTER_GET_SUBFOLD_ID;
+			
+			pIdNum = NULL;
+			nIdNum = 0;
+			nFoldId = 0;
+		}
+
+		int nFoldId;
+
+		int nIdNum;
+		int*	pIdNum;
 	};
 };

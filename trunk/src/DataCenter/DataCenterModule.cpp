@@ -464,6 +464,11 @@ void DataCenterModule::DeleteFavoriteFold( int nId )
 		if( pData->bDelete == TRUE)
 			continue;
 
+		if( pData->nId == nId)
+		{
+			pData->bDelete = true;
+		}
+
 		if( pData->nPid == nId)
 		{
 			if( pData->bFolder == true)
