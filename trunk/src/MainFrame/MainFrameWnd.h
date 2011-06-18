@@ -76,6 +76,7 @@ private:
 
 	int m_nFavoriteNum;
 	FAVORITELINEDATA*	m_pFavoriteData;
+
 	CTipWnd*            m_pTipWnd;
 
 	// 保存某个目录结点下的所有的叶子结点

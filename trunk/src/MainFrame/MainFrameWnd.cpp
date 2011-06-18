@@ -302,15 +302,35 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 
 		if (_tcscmp(pControl->GetName(), _T("favoritefilelist")) == 0)
 		{
-			int nRow = HIWORD(msg.wParam);
-			int nColomn = LOWORD(msg.wParam);
 			CListUI *pListUI = (CListUI *)pControl;
 
-			TCHAR szDemo[255];
+			int nRow = HIWORD(msg.wParam);
+			int nColomn = LOWORD(msg.wParam);
 
-			_stprintf_s(szDemo, 255, _T("行:%d 列:%d 编辑内容:%s"), nRow, nColomn, pListUI->GetEditText());
+			if( nRow > pListUI->GetCount() - 1)
+				return;
 
-			OutputDebugString(szDemo);
+			FAVORITELINEDATA* pData = m_vFavoriteNodeAtTreeNode[nRow];
+			if( pData == NULL)
+				return;
+
+			if( nColomn == 1)
+			{
+				STRNCPY(pData->szTitle, pListUI->GetEditText());
+			}
+			else if( nColomn == 2)
+			{
+				String	strUrl = pListUI->GetEditText();
+				if( strUrl.Left(7) != L"http://" && strUrl.Left(8) != L"https://")
+				{
+					strUrl = String(L"http://") + strUrl;
+				}
+				STRNCPY(pData->szUrl, strUrl.GetData());
+				GetWebSiteFavIcon(pData->szUrl, nRow);
+			}
+			pListUI->Invalidate();
+
+			// 通知DataCenter更新数据
 		}
 	}
 }
@@ -659,7 +679,7 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 	// 存在子文件夹，则提醒是否删除
 	if( checkService.bExistSubFolder == TRUE)
 	{
-		int nRet = ::MessageBox(NULL, L"该收藏夹下存在子收藏夹，是否确定要一起删除", L"删除提示", MB_OKCANCEL);
+		int nRet = ::MessageBox(NULL, L"该收藏夹下存在收藏数据，是否确定要一起删除", L"删除提示", MB_OKCANCEL);
 		// 确定删除
 		if( nRet == IDOK)
 		{
