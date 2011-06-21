@@ -214,6 +214,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\DragDropImpl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\FileHelper.cpp"
 				>
 			</File>
@@ -297,6 +301,10 @@
 			</File>
 			<File
 				RelativePath=".\CurlHttp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DragDropImpl.h"
 				>
 			</File>
 			<File
