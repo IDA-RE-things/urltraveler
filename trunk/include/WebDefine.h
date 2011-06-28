@@ -23,7 +23,18 @@ namespace web
 	{
 		// Favicon对应的图标
 		EVENT_VALUE_WEB_GET_FAVICON = EVENT_VALUE_WEB_BEGIN,		// 通知去拉取Favorite图标
-		EVENT_VALUE_WEB_GET_FAVICON_RESP,							// 获取到图标的响应事件
+		EVENT_VALUE_WEB_GET_FAVICON_RESP,											// 获取到图标的响应事件
+
+		EVENT_VALUE_WEB_OPEN_URLTRAVELER,										// 打开URLTRAVELER软件
+		EVENT_VALUE_WEB_OPEN_URLTRAVELER_RESP,								// 打开URLTRAVELER软件
+		EVENT_VALUE_WEB_CLOSE_URLTRAVELER,										// 关闭URLTRAVELER软件
+		EVENT_VALUE_WEB_CLOSE_URLTRAVELER_RESP,								// 关闭URLTRAVELER软件
+		EVENT_VALUE_WEB_LOGININ_URLTRAVELER,									// 注册登录用户
+		EVENT_VALUE_WEB_LOGININ_URLTRAVELER_RESP,							
+		EVENT_VALUE_WEB_LOGINOUT_URLTRAVELER,								// 注册登录用户
+		EVENT_VALUE_WEB_LOGINOUT_URLTRAVELER_RESP,							
+		EVENT_VALUE_WEB_REPORT_USERINFO,											// 上报用户信息
+		EVENT_VALUE_WEB_REPORT_USERINFO_RESP,							
 	};
 
 	// Web能够可能对外发送的广播消息
@@ -173,4 +184,20 @@ namespace web
 		int nIconSize;
 		char*	pIconData;
 	};
+
+	// 向网络传送当前用户的信息
+	struct Web_ReportUserInfoReqEvent	:	public WebReqEvent
+	{
+		Web_ReportUserInfoReqEvent()
+		{
+			eventValue	=	 EVENT_VALUE_WEB_REPORT_USERINFO;
+			ZeroMemory(szMachinedId, 64 * sizeof(wchar_t));
+			ZeroMemory(szOSVersion, 64 * sizeof(wchar_t));
+		}
+
+		// 收藏夹图标的URL
+		wchar_t	szMachinedId[64];			//	机器ID
+		wchar_t	szOSVersion[64];					//	操作系统版本
+	};
+
 };

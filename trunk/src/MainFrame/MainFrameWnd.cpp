@@ -20,6 +20,7 @@
 
 using namespace datacenter;
 using namespace mainframe;
+using namespace web;
 
 CMainFrameWnd::CMainFrameWnd()
 {
@@ -41,6 +42,10 @@ CMainFrameWnd::~CMainFrameWnd()
 void CMainFrameWnd::OnPrepare(TNotifyUI& msg) 
 { 
 	m_pTipWnd->Init(msg.pSender); 
+
+	// 发送请求至服务器，统计在线人数
+	g_MainFrameModule->GetModuleManager()->PushEvent(
+		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_WEB_OPEN_URLTRAVELER, MODULE_ID_WEB));
 }
 
 void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
@@ -143,6 +148,11 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	if( msg.sType == _T("windowinit") ) OnPrepare(msg);
 	else if( msg.sType == _T("click") ) {
 		if( msg.pSender->GetName() == L"closebtn" ) {
+
+			// 发送请求至服务器，统计在线人数
+			CurlHttp* pHttp  = CurlHttp::Instance();
+			string strData = pHttp->RequestGet(L"http://1.urltraveler.sinaapp.com/logout.php");
+
 			PostQuitMessage(0);
 			return; 
 		}
@@ -356,6 +366,7 @@ LRESULT CMainFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 LRESULT CMainFrameWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
+
 	return 0;
 }
 

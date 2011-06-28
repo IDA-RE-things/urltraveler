@@ -32,6 +32,8 @@ CResponseParser::~CResponseParser(void)
 
 BEGIN_HANDLER_MAP(CResponseParser)
 	ON_HANDLER(EVENT_VALUE_WEB_GET_FAVICON, ParseGetFavIcon)
+	ON_HANDLER(EVENT_VALUE_WEB_OPEN_URLTRAVELER, ParseOpenUrlTraveler)
+	ON_HANDLER(EVENT_VALUE_WEB_CLOSE_URLTRAVELER, ParseCloseUrlTraveler)
 END_HANDLER_MAP(CResponseParser)
 
 string 
@@ -58,8 +60,17 @@ void CResponseParser::ParseGetFavIcon( HTTPCONTEXT* pContext)
 	g_WebModule->GetModuleManager()->PushEvent(*pEvent);
 }
 
-void	
-CResponseParser::ParseResponse( HTTPCONTEXT* pContext )
+void CResponseParser::ParseOpenUrlTraveler( HTTPCONTEXT* pContext)
+{
+	string	strOnline = pContext->strContentData;
+}
+
+void CResponseParser::ParseCloseUrlTraveler( HTTPCONTEXT* pContext)
+{
+	string	strOnline = pContext->strContentData;
+}
+
+void CResponseParser::ParseResponse( HTTPCONTEXT* pContext )
 {
 	if( pContext == NULL)
 		return;

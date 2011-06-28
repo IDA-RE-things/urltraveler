@@ -40,6 +40,11 @@ WebModule::~WebModule()
 
 BEGIN_EVENT_MAP(WebModule)
 	ON_EVENT(EVENT_VALUE_WEB_GET_FAVICON, OnEvent_GetFavoriteIcon)
+	ON_EVENT(EVENT_VALUE_WEB_OPEN_URLTRAVELER, OnEvent_OpenUrlTraveler)
+	ON_EVENT(EVENT_VALUE_WEB_CLOSE_URLTRAVELER, OnEvent_CloseUrlTraveler)
+	ON_EVENT(EVENT_VALUE_WEB_LOGININ_URLTRAVELER, OnEvent_LoginInUrlTraveler)
+	ON_EVENT(EVENT_VALUE_WEB_LOGINOUT_URLTRAVELER, OnEvent_LoginOutUrlTraveler)
+	ON_EVENT(EVENT_VALUE_WEB_REPORT_USERINFO, OnEvent_ReportUserInfo)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(WebModule)
@@ -224,6 +229,70 @@ void WebModule::OnEvent_GetFavoriteIcon(Event* pEvent)
 	}
 
 	uint32 nSeqNo = m_pRequestManager->PushUrl(	pEvent->eventValue,0,pE->szFavoriteUrl,NULL);
+	if( nSeqNo != INVALID_SEQNO)
+	{
+		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
+	}
+}
+
+void WebModule::OnEvent_OpenUrlTraveler(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_WEB_OPEN_URLTRAVELER)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pEvent->eventValue,0,
+		L"http://1.urltraveler.sinaapp.com/login.php",NULL);
+	if( nSeqNo != INVALID_SEQNO)
+	{
+		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
+	}
+}
+
+void WebModule::OnEvent_CloseUrlTraveler(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_WEB_CLOSE_URLTRAVELER)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pEvent->eventValue,0,
+		L"http://1.urltraveler.sinaapp.com/logout.php",NULL);
+	if( nSeqNo != INVALID_SEQNO)
+	{
+		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
+	}
+}
+
+void WebModule::OnEvent_LoginInUrlTraveler(Event* pEvent)
+{
+}
+
+void WebModule::OnEvent_LoginOutUrlTraveler(Event* pEvent)
+{
+}
+
+void WebModule::OnEvent_ReportUserInfo(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_WEB_REPORT_USERINFO)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	Web_ReportUserInfoReqEvent* pE = (Web_ReportUserInfoReqEvent*)pEvent->m_pstExtraInfo;
+	string strMachinedId = StringHelper::UnicodeToANSI(pE->szMachinedId);
+	string strOsVersion = StringHelper::UnicodeToANSI(pE->szOSVersion);
+
+	POST_PARAMS httpArgument ;
+	httpArgument.add_param("machineId", strMachinedId.c_str(), strMachinedId.size() + 1, PARAM_TEXT);
+	httpArgument.add_param("osVersion", strOsVersion.c_str(), strOsVersion.size() + 1, PARAM_TEXT);
+
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pEvent->eventValue,0,
+		L"http://1.urltraveler.sinaapp.com/userinfo.php",NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
 		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;

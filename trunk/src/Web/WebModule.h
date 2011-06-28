@@ -82,6 +82,11 @@ public:
 protected:
 
 	void OnEvent_GetFavoriteIcon(Event* pEvent);
+	void OnEvent_OpenUrlTraveler(Event* pEvent);
+	void OnEvent_CloseUrlTraveler(Event* pEvent);
+	void OnEvent_LoginInUrlTraveler(Event* pEvent);
+	void OnEvent_LoginOutUrlTraveler(Event* pEvent);
+	void OnEvent_ReportUserInfo(Event* pEvent);
 
 protected:
 

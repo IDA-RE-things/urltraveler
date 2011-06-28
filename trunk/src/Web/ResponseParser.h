@@ -82,6 +82,8 @@ private:
 	//              内部使用的辅助函数
 	//==========================================================
 	void	ParseGetFavIcon( HTTPCONTEXT* pContext);
+	void	ParseOpenUrlTraveler( HTTPCONTEXT* pContext);
+	void ParseCloseUrlTraveler( HTTPCONTEXT* pContext);
 
 private:
 
