@@ -14,8 +14,7 @@ namespace update
 	// Update对外公开的事件
 	enum E_UpdateEventValue
 	{
-		// Favicon对应的图标
-		EVENT_VALUE_UPDATE_FAVICON_SAVE = EVENT_VALUE_UPDATE_BEGIN,		//打开主界面
+		EVENT_VALUE_UPDATE_CHECK_UPDATEINFO = EVENT_VALUE_UPDATE_BEGIN,		// 检查当前应用程序是否存在更新
 	};
 
 	// Update能够可能对外发送的广播消息
@@ -58,43 +57,14 @@ namespace update
 	{
 		Update_FavIconSaveEvent()
 		{
-			eventValue	=	 EVENT_VALUE_UPDATE_FAVICON_SAVE;
-			ZeroMemory(szFavoriteUrl, MAX_PATH);
-
-			nIconDataLen = 0;
-			pIconData = NULL;
 		}
 
 		~Update_FavIconSaveEvent()
 		{
-			if( pIconData != NULL)
-			{
-				delete pIconData;
-				pIconData = NULL;
-			}
-
-			nIconDataLen = 0;
 		}
-
-		wchar_t	szFavoriteUrl[MAX_PATH];		//	URL
-		int	nIconDataLen;					//	Icon缓冲区的产度
-		const char*	pIconData;			//	ICON数据
 	};
 
 	//============================================================================//
 	//                   Update中所使用到的Service结构			              //
 	//============================================================================//
-	struct Update_GetFavoriteIconService : public Service
-	{
-		Update_GetFavoriteIconService()
-		{
-			serviceId = SERVICE_VALUE_UPDATE_FAVICON_LOAD;
-			ZeroMemory(szFavoriteUrl, MAX_PATH);
-			hcon	=	NULL;
-		}
-
-		wchar_t szFavoriteUrl[MAX_PATH];										//	
-		HICON	hcon;				//	返回的ICON	
-	};
-
 };

@@ -5,6 +5,7 @@
 #include "StringHelper.h"
 #include <string>
 #include "ImageHelper.h"
+#include "MiscHelper.h"
 
 HMODULE	g_hModule = NULL;
 
@@ -31,10 +32,28 @@ UpdateModule::~UpdateModule()
 }
 
 BEGIN_EVENT_MAP(UpdateModule)
+	ON_EVENT(EVENT_VALUE_UPDATE_CHECK_UPDATEINFO, OnEvent_CheckUpdateInfo)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(UpdateModule)
 END_SERVICE_MAP()
+
+//----------------------------------------------------------------------------------------
+//名称: Load
+//描述: 主程序通过该方法对模块进行加载
+//参数: 
+//		@param	pManager			主模块总线的指针	
+//返回: 
+//		如果加载成功，返回TRUE，否则返回FALSE
+//----------------------------------------------------------------------------------------
+BOOL UpdateModule::Load(IModuleManager* pManager) 
+{
+	__super::Load(pManager);
+
+	m_strUpdatePath	=	MiscHelper::GetUpdatePath();
+
+	return TRUE;
+}
 
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
@@ -91,4 +110,9 @@ void UpdateModule::ProcessMessage(const Message& msg)
 int32 UpdateModule::CallDirect(const ServiceValue lServiceValue, param wparam) 
 {
 	CALL_DIRECT(lServiceValue, wparam);
+}
+
+void	UpdateModule::OnEvent_CheckUpdateInfo(Event* pEvent)
+{
+
 }

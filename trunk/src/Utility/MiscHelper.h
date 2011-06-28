@@ -27,4 +27,23 @@ public:
 	static wchar_t*	GetTopDomainUrl(const wchar_t* pszDomainUrl);
 
 	static BOOL	SaveTextToClipboard(const char*	lpszText);
+
+	//获取操作系统的版本
+
+#define OS_UNKNOWN     0
+#define OS_WIN95       1
+#define OS_WIN98       2
+#define OS_WIN98SE     3
+#define OS_WINME       4
+#define OS_WINNT       5
+#define OS_WIN2000     6
+#define OS_WINXP       7
+#define OS_WIN2003     8
+#define OS_WINXP64     9
+#define OS_VISTA       10
+#define OS_WIN7        11
+	static int GetOsVer();
+
+	// 返回更新文件保存的路径
+	static wchar_t*	GetUpdatePath();
 };

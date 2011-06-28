@@ -15,8 +15,6 @@
 #include "XString.h"
 
 //////////////////////////////////////////////////////////////////////////
-///#if 1 ... #else 范围内的下面函数全部为Unicode版本的函数
-/**获取当前模块所在的目录*/
 std::wstring PathHelper::GetModuleDir(HINSTANCE hInstance)
 {
 	WCHAR szModulePath[MAX_PATH  + 1];

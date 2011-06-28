@@ -44,6 +44,7 @@ enum ModuleId
 	MODULE_ID_PLUGIN,				//	创建加载模块
 	MODULE_ID_DATABASE,				//	数据库模块
 	MODULE_ID_WEB,					//	Web模块，全面负责所有的HTTP请求处理
+	MODULE_ID_UPDATE,					//	Web模块，全面负责所有的HTTP请求处理
 
 	MODULE_ID_END,//最后一个，边界判断
 };
@@ -157,6 +158,10 @@ enum EventValueRanges
 
 	//WEB模块
  	EVENT_VALUE(WEB)
+
+	//更新模块
+ 	EVENT_VALUE(UPDATE)
+
 };
 
 #define MESSAGE_VALUE(MODULE_NAME)	\
@@ -197,6 +202,9 @@ enum MessageValueRanges
 
 	//WEB管理模块
 	MESSAGE_VALUE(WEB)
+
+	//Update管理模块
+	MESSAGE_VALUE(UPDATE)
 };
 
 #define SERVICE_VALUE(MODULE_NAME)	\
@@ -228,6 +236,9 @@ enum ServiceValueRanges
 
 	//WEB管理模块
 	SERVICE_VALUE(WEB)
+
+	//Update管理模块
+	SERVICE_VALUE(UPDATE)
 };
 
 
@@ -385,4 +396,15 @@ struct Service
 	}
 
 	int serviceId;
+};
+
+// 定义版本号
+enum ClientVersion
+{
+	MAIN_VERSION2	  =          0,
+	SUB_VERSION2		  =          5,
+	PATCH_VERSION2	  =          0,
+	BUILD_VERSION2	  =           1,
+
+	CLIENT_VERSION2		= (MAIN_VERSION2<<24)+(SUB_VERSION2<<16)+(PATCH_VERSION2<<8) + BUILD_VERSION2,
 };

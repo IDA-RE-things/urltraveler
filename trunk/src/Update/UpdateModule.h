@@ -25,6 +25,16 @@ public:
 	~UpdateModule();
 
 	//----------------------------------------------------------------------------------------
+	//名称: Load
+	//描述: 主程序通过该方法对模块进行加载
+	//参数: 
+	//		@param	pManager			主模块总线的指针	
+	//返回: 
+	//		如果加载成功，返回TRUE，否则返回FALSE
+	//----------------------------------------------------------------------------------------
+	virtual BOOL Load(IModuleManager* pManager) ;
+
+	//----------------------------------------------------------------------------------------
 	//名称: GetModuleName
 	//描述: 主程序通过该方法获取当前模块的名字，每一个模块都有一个唯一的名字
 	//返回: 
@@ -69,10 +79,11 @@ public:
 
 protected:
 
+	void	OnEvent_CheckUpdateInfo(Event* pEvent);
 
 protected:
 
-
+	wstring	m_strUpdatePath;	//	下载的文件的保存路径
 };
 
 class UpdateModuleFactory : public ModuleFactoryImpl<UpdateModule>{};

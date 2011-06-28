@@ -1,6 +1,8 @@
 #include "stdafx.h"
+#include "PathHelper.h"
 #include "MiscHelper.h"
 #include "XString.h"
+#include <atlbase.h>  
 
 MiscHelper::MiscHelper()
 {
@@ -247,4 +249,141 @@ BOOL	MiscHelper::SaveTextToClipboard(const char*	lpszText)
 	CloseClipboard();
 
 	return TRUE;
+}
+
+int MiscHelper::GetOsVer()
+{
+	typedef struct _OSVERSIONINFOEXP
+	{
+		DWORD dwOSVersionInfoSize;
+		DWORD dwMajorVersion;
+		DWORD dwMinorVersion;
+		DWORD dwBuildNumber;
+		DWORD dwPlatformId;
+		TCHAR szCSDVersion[ 128 ];
+		WORD wServicePackMajor;
+		WORD wServicePackMinor;
+		WORD wSuiteMask;
+		BYTE wProductType;
+		BYTE wReserved;
+	} OSVERSIONINFOEXP;
+
+	OSVERSIONINFOEXP osVerInfo = {0};
+
+	osVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXP);
+
+	if(!GetVersionEx((OSVERSIONINFO *) &osVerInfo))
+	{
+		osVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		if(!GetVersionEx( (OSVERSIONINFO *) &osVerInfo)) 
+		{
+			return OS_UNKNOWN;
+		}
+	}
+
+	typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
+
+	SYSTEM_INFO si = {0};
+	PGNSI pGNSI;
+
+	pGNSI = (PGNSI)GetProcAddress(
+		GetModuleHandle(TEXT("kernel32.dll")), "GetNativeSystemInfo");
+
+	if(NULL != pGNSI)
+	{
+		pGNSI(&si);
+	}
+	else
+	{
+		GetSystemInfo(&si);
+	}
+
+	int nSystemVersion = OS_UNKNOWN;
+
+	DWORD dwPlatId = osVerInfo.dwPlatformId;
+	DWORD majorVer = osVerInfo.dwMajorVersion;
+	DWORD minorVer = osVerInfo.dwMinorVersion;
+
+	if(dwPlatId == VER_PLATFORM_WIN32_NT) 
+	{
+		//Windows NT/2000
+		if( majorVer <= 4 )
+		{
+			nSystemVersion = OS_WINNT;
+		}
+		else if( majorVer == 5 && minorVer == 0)
+		{
+			nSystemVersion = OS_WIN2000;
+		}
+		else if( majorVer == 5 && minorVer == 1)
+		{
+			nSystemVersion = OS_WINXP;
+		}
+		else if( majorVer == 5 && minorVer == 2)
+		{
+			if(osVerInfo.wProductType == 1 &&//VER_NT_WORKSTATION
+				si.wProcessorArchitecture == 9)//PROCESSOR_ARCHITECTURE_AMD64
+			{
+				nSystemVersion = OS_WINXP64;
+			}
+			else
+			{
+				nSystemVersion = OS_WIN2003;
+			}
+		}
+		else if( majorVer == 6 && minorVer == 0)
+		{
+			nSystemVersion = OS_VISTA;
+		}
+		else if(majorVer == 6 && minorVer == 1)
+		{
+			nSystemVersion = OS_WIN7;
+		}
+		else
+		{
+			nSystemVersion = OS_UNKNOWN;
+		}
+	}
+	else if(dwPlatId == VER_PLATFORM_WIN32_WINDOWS)
+	{
+		//Windows 9x/ME
+		if( majorVer == 4 && minorVer ==0)
+		{
+			nSystemVersion = OS_WIN95;
+		}
+		else if( majorVer == 4 && minorVer == 10)
+		{
+			if( osVerInfo.szCSDVersion[1] == 'A' || osVerInfo.szCSDVersion[1] == 'B')
+			{
+				nSystemVersion = OS_WIN98SE;
+			}
+			else
+			{
+				nSystemVersion = OS_WIN98;
+			}
+		}
+		else if( majorVer == 4 && minorVer == 90 )
+		{
+			nSystemVersion = OS_WINME;
+		}
+		else
+		{
+			nSystemVersion = OS_UNKNOWN;
+		}
+	}
+	else
+	{
+		nSystemVersion = OS_UNKNOWN;
+	}
+
+	return nSystemVersion;
+}
+
+// 返回更新文件保存的路径
+wchar_t*	MiscHelper::GetUpdatePath()
+{
+	wstring wstrUpdate = PathHelper::GetAppDataDir() + L"\\urltraveler\\update\\";
+	PathHelper::CreateMultipleDirectory(wstrUpdate);
+
+	return (wchar_t*)wstrUpdate.c_str();
 }
