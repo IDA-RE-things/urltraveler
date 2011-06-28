@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<update>
+	<!-- ¸üÐÂ³ÌÐò±¾ÉíÐèÒª½øÐÐ¸üÐÂ£¬´ËÊ±ÏÈÏÂÔØ¸üÐÂ³ÌÐò£¬Èç¹û²»ÐèÒª¸üÐÂ£¬ÔòÃ»ÓÐupdate_module½áµã-->
+	<update_module url="http://www.urltraveler.com/update_module.exe"/>
+
+
+	<!--°æ±¾ÐÅÏ¢-->
+	<version_info>
+		<!--Ç¿ÖÆ¸üÐÂµÄ×îµÍ°æ±¾£¬Èç¹ûµÍÓÚÕâ¸ö°æ±¾£¬Ôò±ØÐë¸üÐÂ-->
+		<low_version>8</low_version>
+
+		<!--µ±Ç°µÄ×îÐÂ°æ±¾ºÅ-->
+		<new_version>12</new_version>
+	</version_info>
+
+	<!--ÐèÒª¸üÐÂµÄÎÄ¼þ-->
+	<update_files>
+		<file url="http://www.baidu.com/1.dll" md5="239ef9099dedffdddd" />
+		<file url="http://www.baidu.com/1.dll" md5="239ef9099dedffdddd" />
+		<file url="http://www.baidu.com/1.dll" md5="239ef9099dedffdddd" />
+		<file url="http://www.baidu.com/1.dll" md5="239ef9099dedffdddd" />
+	</update_files>
+</update>
