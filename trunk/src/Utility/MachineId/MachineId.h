@@ -1,7 +1,7 @@
 #pragma once
 #include <Windows.h>
 
-class UTILITY_API CMachineId
+class CMachineId
 {
 public:
 	CMachineId();

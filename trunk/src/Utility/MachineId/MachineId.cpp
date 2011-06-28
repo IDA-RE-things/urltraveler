@@ -31,7 +31,7 @@ bool CMachineId::GetMac( BYTE *lpMac, UINT &nLen )
 		&hKey))
 	{
 		if (ERROR_SUCCESS == SHEnumKeyEx(hKey,
-			1,
+			0,
 			szKeyName,
 			&dwKeyNameLen))
 		{
