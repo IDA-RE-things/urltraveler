@@ -5,6 +5,7 @@
 #include "ModuleManager.h"
 #include "ModuleManagerImpl.h"
 #include "MainFrameDefine.h"
+#include "UpdateDefine.h"
 //#include "vld/vld.h"
 
 #define MAX_LOADSTRING 100
@@ -42,6 +43,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 
 	module_manager.Init();
+
+	module_manager.PushEvent(
+		MakeEvent<MODULE_ID_CORE>()(update::EVENT_VALUE_UPDATE_CHECK_UPDATEINFO,MODULE_ID_UPDATE));
+
 	module_manager.Run();
 	module_manager.Destroy();
 

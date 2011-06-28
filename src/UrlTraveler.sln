@@ -119,6 +119,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Web", "Web\Web.vcproj", "{1
 		{F37C7DC5-E310-4FF4-9718-1B43AEE2BA81} = {F37C7DC5-E310-4FF4-9718-1B43AEE2BA81}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Update", "Update\Update.vcproj", "{B7089F69-47EF-4F1C-B3DC-9C61A3CE21F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -209,6 +211,10 @@ Global
 		{109670E5-DDE1-40E8-863E-5045250284C3}.Debug|Win32.Build.0 = Debug|Win32
 		{109670E5-DDE1-40E8-863E-5045250284C3}.Release|Win32.ActiveCfg = Release|Win32
 		{109670E5-DDE1-40E8-863E-5045250284C3}.Release|Win32.Build.0 = Release|Win32
+		{B7089F69-47EF-4F1C-B3DC-9C61A3CE21F3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B7089F69-47EF-4F1C-B3DC-9C61A3CE21F3}.Debug|Win32.Build.0 = Debug|Win32
+		{B7089F69-47EF-4F1C-B3DC-9C61A3CE21F3}.Release|Win32.ActiveCfg = Release|Win32
+		{B7089F69-47EF-4F1C-B3DC-9C61A3CE21F3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
