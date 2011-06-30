@@ -15,6 +15,7 @@
 #include <algorithm>
 #include "json/json.h"
 #include "time.h"
+#include "icu_utf.h"
 
 
 #pragma comment(lib, "shlwapi.lib")
@@ -137,6 +138,7 @@ int32 CChromePlugIn::GetFavoriteCount()
 	{
  		EnumNode(chrome_bookmarks["roots"]["bookmark_bar"]["children"], nFavoriteCount);
  		EnumNode(chrome_bookmarks["roots"]["other"]["children"], nFavoriteCount);
+		EnumNode(chrome_bookmarks["roots"]["synced"]["children"], nFavoriteCount);
 	}
 
 	infile.close();
@@ -171,6 +173,7 @@ BOOL CChromePlugIn::ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum)
 			Json::Value roots = chrome_bookmarks["roots"];
 			ExportFolder(roots["bookmark_bar"], 0, pData, nDataNum);
 			ExportFolder(roots["other"], 0, pData, nDataNum);
+			ExportFolder(roots["synced"], 0, pData, nDataNum);
 		}
 		
 		bRetCode = TRUE;
@@ -209,14 +212,14 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 	Json::Value root;
 	Json::Value bookmark_bar;
 	Json::Value other;
+	Json::Value synced;
 	uint32 nIndex = 0;
 	int32 nDepth = 0;
 
 	InitializeChecksum();
 
-	MakeSpecialFolderNode(L"书签栏", nIndex, bookmark_bar);
-	MakeSpecialFolderNode(L"其他书签", nIndex, other);
-
+	MakeSpecialFolderNode(L"Bookmarks bar", m_nIndex, bookmark_bar);
+	SortByDepth(&pData[0], nDataNum);
 	for (int32 i = 0; i < nDataNum; ++i)
 	{
 		if (pData[i].bDelete == true)
@@ -257,20 +260,86 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 	{
 		return FALSE;
 	}
+
+	MAP_ID_INDEX_INFO::iterator itIdIndex;
+	for (int k = 0; k <= nDataNum; k++)
+	{
+		itIdIndex = m_mapIdIndexInfo.find(pData[k].nId);
+		if (itIdIndex != m_mapIdIndexInfo.end())
+		{
+			int32 nIndex = (*itIdIndex).second; 
+			if (pData[k].bFolder)
+			{
+				m_mapPidInfo.insert(MAP_PID_INFO::value_type(pData[k].nId, nDepth));
+				char szId[256] = {0};
+				sprintf_s(szId, 255, "%u", nIndex);
+				UpdateChecksumWithFolderNode(&szId[0], pData[k].szTitle);
+			}
+			else
+			{
+				char szId[256] = {0};
+				sprintf_s(szId, 255, "%u", nIndex);
+				UpdateChecksumWithUrlNode(&szId[0], pData[k].szTitle, StringHelper::UnicodeToUtf8(pData[k].szUrl));
+			}
+		}
+	}
+
+	MakeSpecialFolderNode(L"Other bookmarks", m_nIndex, other);
+	MakeSpecialFolderNode(L"Synced bookmarks", m_nIndex, synced);
 	
 	FinalizeChecksum();
 
 	root["checksum"] = m_strCheckSum;
 	root["roots"]["bookmark_bar"] = bookmark_bar;
 	root["roots"]["other"] = other;
-	root["version"] = "1";
+	root["roots"]["synced"] = synced;
+	root["version"] = 1;
 
 	std::ofstream outfile(strTmpPath.c_str());
 	Json::StyledStreamWriter writer;
-	writer.write(outfile, root);
+	writer.write(outfile, root);	
 	outfile.close();
 
 	return TRUE;
+}
+
+void CChromePlugIn::SortByDepth(PFAVORITELINEDATA pData, int32 nDataNum)
+{
+	FAVORITELINEDATA* pSortLineData = new FAVORITELINEDATA[nDataNum];
+	memset(pSortLineData, 0, sizeof(FAVORITELINEDATA) * nDataNum);
+
+	FAVORITELINEDATA* pSortLineDataPos = pSortLineData;
+
+	// 逐一找到合适的数据，并插入到pSortLineData中去
+	SortNode(pData, nDataNum, pSortLineDataPos, 0);
+
+	// 排序后的数据拷贝
+	memcpy(pData, pSortLineData, nDataNum * sizeof(FAVORITELINEDATA));
+	delete[] pSortLineData;
+	pSortLineData = NULL;
+}
+
+void CChromePlugIn::SortNode(PFAVORITELINEDATA pData, int32 nDataNum, PFAVORITELINEDATA& pSortData, int32 nParentId)
+{
+	static int k = 0;
+
+	for (int i = 0; i < nDataNum; i++)
+	{
+		if (pData[i].nPid == nParentId)
+		{
+			memcpy(pSortData++, &pData[i], sizeof(FAVORITELINEDATA));
+			if (++k >= nDataNum)
+			{//排序完所有数据，则直接退出循环，以提高效率
+				break;
+			}
+
+			if (pData[i].bFolder)
+			{
+				SortNode(pData, nDataNum, pSortData, pData[i].nId);
+			}
+
+		}
+	}
 }
 
 BOOL CChromePlugIn::ImportFavoriteData(FAVORITELINEDATA stData)
@@ -285,8 +354,11 @@ BOOL CChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITEL
 		return FALSE;
 	}
 
-	if (!wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"书签栏") 
-		|| !wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"其他书签"))
+	if (!wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"Bookmarks bar") 
+		|| !wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"书签栏")
+		|| !wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"Other bookmarks")
+		|| !wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"其他书签")
+		|| !wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"Synced bookmarks"))
 	{
 		Json::Value children_nodes = folder_obj["children"];
 		int32 nNodeCount = children_nodes.size();
@@ -376,11 +448,11 @@ BOOL CChromePlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDAT
 BOOL CChromePlugIn::MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_obj, uint32& nIndex)
 {
 	wchar_t szFormat[] = L" { \"children\": [ ],\
-				  \"date_added\": \"%s\",\
-				  \"date_modified\": \"%s\",\
-				  \"id\": \"%u\",\
-				  \"name\": \"%s\",\
-				  \"type\": \"folder\" }";
+					  \"date_added\": \"%s\",\
+					  \"date_modified\": \"%s\",\
+					  \"id\": \"%u\",\
+					  \"name\": \"%s\",\
+					  \"type\": \"folder\" }";
 
 	std::string strAddTime;
 	std::string strModifyTime;
@@ -388,17 +460,11 @@ BOOL CChromePlugIn::MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_
 	Int64ToString(stData.nLastModifyTime, strModifyTime);
 
 	wchar_t szTmp[2048];
-	swprintf_s(szTmp, 2048 - 1, szFormat, StringHelper::ANSIToUnicode(strAddTime).c_str(), \
-		StringHelper::ANSIToUnicode(strModifyTime).c_str(), ++nIndex, stData.szTitle);
-	std::string strTmp = StringHelper::UnicodeToUtf8(szTmp);
-
-	char szId[256] = {0};
-	sprintf_s(szId, 255, "%u", nIndex);
-	UpdateChecksumWithFolderNode(&szId[0], stData.szTitle);
+	swprintf_s(szTmp, 2048 - 1, szFormat, StringHelper::Utf8ToUnicode(strAddTime).c_str(), StringHelper::Utf8ToUnicode(strModifyTime).c_str(), ++nIndex, stData.szTitle);
 
 	Json::Reader reader;
 	folder_obj.clear();
-	reader.parse(strTmp.c_str(), folder_obj);
+	reader.parse(StringHelper::UnicodeToUtf8(szTmp), folder_obj);
 
 	return TRUE;
 }
@@ -406,57 +472,53 @@ BOOL CChromePlugIn::MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_
 BOOL CChromePlugIn::MakeUrlNode(FAVORITELINEDATA stData, Json::Value& url_obj, uint32& nIndex)
 {
 	wchar_t szFormat[] = L" {\
-				 \"date_added\": \"%s\",\
-				 \"id\": \"%u\",\
-				 \"name\": \"%s\",\
-				 \"type\": \"url\",\
-				 \"url\": \"%s\"}";
-	
+					  \"date_added\": \"%s\",\
+					  \"id\": \"%u\",\
+					  \"name\": \"%s\",\
+					  \"type\": \"url\",\
+					  \"url\": \"%s\"}";
+
 	std::string strAddTime;
 	Int64ToString(stData.nAddTimes, strAddTime);
 
 	wchar_t szTmp[2048];
-	swprintf_s(szTmp, 2048 -1, szFormat, StringHelper::ANSIToUnicode(strAddTime).c_str(), \
-		++nIndex, stData.szTitle, stData.szUrl);
-	std::string strTmp = StringHelper::UnicodeToUtf8(szTmp);
-
-	char szId[256] = {0};
-	sprintf_s(szId, 255, "%u", nIndex);
-	UpdateChecksumWithUrlNode(&szId[0],stData.szTitle, StringHelper::UnicodeToUtf8(stData.szUrl));
+	swprintf_s(szTmp, 2048 -1, szFormat, StringHelper::Utf8ToUnicode(strAddTime).c_str(), ++nIndex, stData.szTitle, stData.szUrl);
 
 	Json::Reader reader;
 	url_obj.clear();
-	reader.parse(strTmp.c_str(),url_obj);	
+	reader.parse(StringHelper::UnicodeToUtf8(szTmp), url_obj);	
 
 	return TRUE;
 }
 
+
 BOOL CChromePlugIn::MakeSpecialFolderNode(wchar_t *pszName, uint32& nIndex, Json::Value& folder_obj)
 {
+
 	wchar_t szFormat[] = L" { \"children\": [ ],\
-						  \"date_added\": \"%s\",\
-						  \"date_modified\": \"%s\",\
-						  \"id\": \"%u\",\
-						  \"name\": \"%s\",\
-						  \"type\": \"folder\" }";
+					  \"date_added\": \"%s\",\
+					  \"date_modified\": \"%s\",\
+					  \"id\": \"%u\",\
+					  \"name\": \"%s\",\
+					  \"type\": \"folder\" }";
 
 	wchar_t szTmp[2048];
 	std::string strTime;
 	Int64ToString(time(NULL), strTime);
-	swprintf_s(szTmp, 2048 - 1, szFormat, StringHelper::ANSIToUnicode(strTime).c_str(), StringHelper::ANSIToUnicode(strTime).c_str(), ++nIndex, pszName);
-	std::string strTmp = StringHelper::UnicodeToUtf8(szTmp);
+	swprintf_s(szTmp, 2048 - 1, szFormat, StringHelper::Utf8ToUnicode(strTime).c_str(), StringHelper::Utf8ToUnicode(strTime).c_str(), ++nIndex, pszName);
 
-	
-// 	char szId[256] = {0};
-// 	sprintf_s(szId, 255, "%u", nIndex);
-// 	UpdateChecksumWithFolderNode(&szId[0], pszName);
+
+	char szId[256] = {0};
+	sprintf_s(szId, 255, "%u", nIndex);
+	UpdateChecksumWithFolderNode(&szId[0], pszName);
 
 	Json::Reader reader;
 	folder_obj.clear();
-	reader.parse(strTmp.c_str(), folder_obj);
+	reader.parse(StringHelper::UnicodeToUtf8(szTmp), folder_obj);
 
 	return TRUE;
 }
+
 
 BOOL CChromePlugIn::EnumNode(Json::Value& folder_obj, int32& nCount)
 {
@@ -528,6 +590,8 @@ BOOL CChromePlugIn::TraverseNode(PFAVORITELINEDATA pData, int32 nDepth)
 			{
 				vecPidList.push_back(pData[(*it).second].nPid);
 			}	
+
+			m_mapIdIndexInfo.insert(MAP_ID_INDEX_INFO::value_type(pData[(*it).second].nId, m_nIndex));
 		}
 		
 		std::vector<int32>::iterator itrPid;
@@ -612,10 +676,13 @@ void CChromePlugIn::UpdateChecksum(const std::wstring& str)
 
 void CChromePlugIn::UpdateChecksumWithUrlNode(const std::string& id, const std::wstring& title, const std::string& url) 
 {
-	UpdateChecksum(id);
-	UpdateChecksum(title);
-	UpdateChecksum("url");
-	UpdateChecksum(url);
+	if (IsStringUTF8(url))
+	{
+		UpdateChecksum(id);
+		UpdateChecksum(title);
+		UpdateChecksum("url");
+		UpdateChecksum(url);
+	}
 }
 
 void CChromePlugIn::UpdateChecksumWithFolderNode(const std::string& id, const std::wstring& title) 
@@ -636,3 +703,31 @@ void CChromePlugIn::FinalizeChecksum()
 	MD5Final(&digest, &m_szMd5Context);
 	m_strCheckSum = MD5DigestToBase16(digest);
 }
+
+inline bool CChromePlugIn::IsValidCharacter(uint32 code_point) 
+{
+	// Excludes non-characters (U+FDD0..U+FDEF, and all codepoints ending in
+	// 0xFFFE or 0xFFFF) from the set of valid code points.
+	return code_point < 0xD800u || (code_point >= 0xE000u &&
+		code_point < 0xFDD0u) || (code_point > 0xFDEFu &&
+		code_point <= 0x10FFFFu && (code_point & 0xFFFEu) != 0xFFFEu);
+}
+
+bool CChromePlugIn::IsStringUTF8(const std::string& str) 
+{
+	const char *src = str.data();
+	int32 src_len = static_cast<int32>(str.length());
+	int32 char_index = 0;
+
+	while (char_index < src_len) 
+	{
+		int32 code_point;
+		CBU8_NEXT(src, char_index, src_len, code_point);
+		if (!IsValidCharacter(code_point))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
