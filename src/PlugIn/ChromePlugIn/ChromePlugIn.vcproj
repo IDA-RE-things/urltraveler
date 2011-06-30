@@ -211,6 +211,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\icu_utf.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\md5.cc"
 				>
 			</File>
@@ -246,6 +250,10 @@
 			</File>
 			<File
 				RelativePath=".\ChromePlugInFactory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\icu_utf.h"
 				>
 			</File>
 			<File
