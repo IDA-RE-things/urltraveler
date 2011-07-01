@@ -81,8 +81,11 @@ protected:
 
 	void	OnEvent_CheckUpdateInfo(Event* pEvent);
 
-protected:
+private:
 
+	BOOL            IsHaveUpdatePackage();
+
+protected:
 	wstring	m_strUpdatePath;	//	下载的文件的保存路径
 };
 
