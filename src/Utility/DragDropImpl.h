@@ -42,12 +42,14 @@ public:
 	bool m_bDropped;
 
 	CDropSource::CDropSource():m_cRefCount(0),m_bDropped(false) {}
+
 	//IUnknown
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ void __RPC_FAR *__RPC_FAR *ppvObject);        
 	virtual ULONG STDMETHODCALLTYPE AddRef( void);
 	virtual ULONG STDMETHODCALLTYPE Release( void);
+
 	//IDropSource
 	virtual HRESULT STDMETHODCALLTYPE QueryContinueDrag( 
 		/* [in] */ BOOL fEscapePressed,

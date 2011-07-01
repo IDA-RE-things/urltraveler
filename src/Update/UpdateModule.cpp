@@ -116,3 +116,12 @@ void	UpdateModule::OnEvent_CheckUpdateInfo(Event* pEvent)
 {
 
 }
+
+BOOL UpdateModule::IsHaveUpdatePackage()
+{
+	std::wstring tempCab = m_strUpdatePath;
+	tempCab += _T("*.cab");
+
+	BOOL bExist = PathHelper::IsFileExist(tempCab.c_str());
+	return bExist;
+}

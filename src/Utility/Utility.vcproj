@@ -289,6 +289,10 @@
 				RelativePath=".\XSync.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\XTime.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
@@ -365,6 +369,10 @@
 			</File>
 			<File
 				RelativePath=".\XSync.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XTime.h"
 				>
 			</File>
 		</Filter>
