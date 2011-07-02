@@ -28,7 +28,7 @@ EXPORT_RELEASEMODULEFACTORY(UpdateModule)
 
 UpdateModule::UpdateModule()
 {
-
+	m_bAddAllUpdateInfo	=	FALSE;
 }
 
 UpdateModule::~UpdateModule()
@@ -44,6 +44,11 @@ END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(UpdateModule)
 END_SERVICE_MAP()
+
+BEGIN_MESSAGE_MAP(UpdateModule)
+	ON_MESSAGE(MESSAGE_VALUE_CORE_CYCLE_TRIGGER, OnMessage_CycleTrigged)
+END_MESSAGE_MAP()
+
 
 //----------------------------------------------------------------------------------------
 //名称: Load
@@ -104,6 +109,7 @@ void UpdateModule::ProcessEvent(const Event& evt)
 //----------------------------------------------------------------------------------------
 void UpdateModule::ProcessMessage(const Message& msg) 
 {
+	PROCESS_MESSAGE(msg);
 }
 
 //----------------------------------------------------------------------------------------
@@ -139,7 +145,7 @@ void	UpdateModule::OnEvent_UpdateInfoArrive(Event* pEvent)
 		return;
 
 	m_strUpdateXml = pResp->szUpdateXml;
-	ProcessXmlUpdate();
+	ProcessUpdateConfig();
 }
 
 void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
@@ -160,7 +166,7 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 	}
 }
 
-void	UpdateModule::ProcessXmlUpdate()
+void	UpdateModule::ProcessUpdateConfig()
 {
 	Json::Reader reader;
 	Json::Value root;
@@ -210,6 +216,8 @@ void	UpdateModule::ProcessXmlUpdate()
 			}
 		}
 
+		m_vUpdateInfo.push_back(updateInfo);
+
 		Web_DownloadUpdateFileReqEvent* pEvent = new Web_DownloadUpdateFileReqEvent();
 		pEvent->srcMId = MODULE_ID_UPDATE;
 		pEvent->nId = updateInfo.nId;
@@ -219,6 +227,8 @@ void	UpdateModule::ProcessXmlUpdate()
 	}
 
 	free(wszUpdatePath);
+
+	m_bAddAllUpdateInfo = TRUE;
 }
 
 
@@ -229,4 +239,25 @@ BOOL UpdateModule::IsHaveUpdatePackage()
 
 	BOOL bExist = PathHelper::IsFileExist(tempCab.c_str());
 	return bExist;
+}
+
+void UpdateModule::OnMessage_CycleTrigged(Message* pMessage)
+{
+	if( m_bAddAllUpdateInfo == FALSE)
+		return;
+
+	int i = 0;
+	for( ; i<m_vUpdateInfo.size(); i++)
+	{
+		UPDATEFILEINFO* pUpdateInfo = &m_vUpdateInfo[i];
+		if( pUpdateInfo->bDownloaded == FALSE)
+			break;
+	}
+
+	// 所有更新文件都下载完毕，此时可以执行拷贝到安装目录中了。
+	if( i == m_vUpdateInfo.size())
+	{
+		//启动UpdateExe程序，然后自己运行退出
+	}
+
 }

@@ -38,6 +38,7 @@ class UpdateModule : public ModuleImpl
 {
 	DECLEAR_SERVICE_MAP(UpdateModule)
 	DECLEAR_EVENT_MAP(UpdateModule)
+	DECLEAR_MESSAGE_MAP(UpdateModule)
 
 public:
 	UpdateModule();
@@ -102,16 +103,20 @@ protected:
 	void	OnEvent_UpdateInfoArrive(Event* pEvent);
 	void	OnEvent_UpdateFileDownloaded(Event* pEvent);
 
+protected:
+	void OnMessage_CycleTrigged(Message* pMessage);
+
 private:
 
 	BOOL	IsHaveUpdatePackage();
-	void		ProcessXmlUpdate();
+	void		ProcessUpdateConfig();
 
 
 protected:
 	wstring	m_strUpdatePath;	//	下载的文件的保存路径
 	wstring	m_strUpdateXml;	//	更新的xml文件内容
 
+	BOOL	m_bAddAllUpdateInfo;	//	是否已经添加了所有的更新文件列表
 	std::vector<UPDATEFILEINFO>	m_vUpdateInfo;	//	更新的信息
 };
 
