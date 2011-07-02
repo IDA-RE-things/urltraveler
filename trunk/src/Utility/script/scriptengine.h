@@ -1,20 +1,3 @@
-/*++
-
- REVISION LOG ENTRY
- Revision By: linjinming
- Revised on 2010-3-17 23:52:55
- Comments: 修改为导出函数
-
---*/
-
-/**
- * @file scriptengine.h
- * @brief 脚本引擎注册，销毁，执行函数
- *
- * @author FrontLee
- * @date 2010-3-14 13:30:04
- */
-
 #ifndef __SCRIPTENGINE_H__
 #define __SCRIPTENGINE_H__
 
