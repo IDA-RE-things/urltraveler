@@ -34,6 +34,8 @@ BEGIN_HANDLER_MAP(CResponseParser)
 	ON_HANDLER(EVENT_VALUE_WEB_GET_FAVICON, ParseGetFavIcon)
 	ON_HANDLER(EVENT_VALUE_WEB_OPEN_URLTRAVELER, ParseOpenUrlTraveler)
 	ON_HANDLER(EVENT_VALUE_WEB_CLOSE_URLTRAVELER, ParseCloseUrlTraveler)
+	ON_HANDLER(EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG, ParseCheckUpdateConfig)
+	ON_HANDLER(EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE,ParseDownloadUpdateFile)
 END_HANDLER_MAP(CResponseParser)
 
 string 
@@ -68,6 +70,28 @@ void CResponseParser::ParseOpenUrlTraveler( HTTPCONTEXT* pContext)
 void CResponseParser::ParseCloseUrlTraveler( HTTPCONTEXT* pContext)
 {
 	string	strOnline = pContext->strContentData;
+}
+
+void	CResponseParser::ParseCheckUpdateConfig(HTTPCONTEXT* pContext)
+{
+	NEW_RESP(Web_CheckUpdateConfigRespEvent, pEvent);
+	STRNCPY(pEvent->szUpdateXml, StringHelper::ANSIToUnicode(pContext->strContentData).c_str());
+	g_WebModule->GetModuleManager()->PushEvent(*pEvent);
+}
+
+void CResponseParser::ParseDownloadUpdateFile(HTTPCONTEXT* pContext)
+{
+	NEW_RESP( Web_DownloadUpdateFileRespEvent, pEvent);
+	if( pContext->uResult == SUCCESS)
+		pEvent->param0 = WEB_RET_SUCCESS;
+	else if( pContext->uResult == FAILED && pContext->nErrorCode == ERR_TASK_WRITE_FILE_ERROR)
+		pEvent->param0 = WEB_RET_COMMON_WRITE_FILE_ERROR;
+	else
+		pEvent->param0 = WEB_RET_UNKNOWN;
+
+	pEvent->nId = pContext->uParam0;
+
+	g_WebModule->GetModuleManager()->PushEvent(*pEvent);
 }
 
 void CResponseParser::ParseResponse( HTTPCONTEXT* pContext )

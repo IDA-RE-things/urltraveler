@@ -460,7 +460,8 @@ BOOL CChromePlugIn::MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_
 	Int64ToString(stData.nLastModifyTime, strModifyTime);
 
 	wchar_t szTmp[2048];
-	swprintf_s(szTmp, 2048 - 1, szFormat, StringHelper::Utf8ToUnicode(strAddTime).c_str(), StringHelper::Utf8ToUnicode(strModifyTime).c_str(), ++nIndex, stData.szTitle);
+	swprintf_s(szTmp, 2048 - 1, szFormat, StringHelper::Utf8ToUnicode(strAddTime).c_str(), 
+		StringHelper::Utf8ToUnicode(strModifyTime).c_str(), ++nIndex, stData.szTitle);
 
 	Json::Reader reader;
 	folder_obj.clear();
@@ -505,7 +506,8 @@ BOOL CChromePlugIn::MakeSpecialFolderNode(wchar_t *pszName, uint32& nIndex, Json
 	wchar_t szTmp[2048];
 	std::string strTime;
 	Int64ToString(time(NULL), strTime);
-	swprintf_s(szTmp, 2048 - 1, szFormat, StringHelper::Utf8ToUnicode(strTime).c_str(), StringHelper::Utf8ToUnicode(strTime).c_str(), ++nIndex, pszName);
+	swprintf_s(szTmp, 2048 - 1, szFormat, StringHelper::Utf8ToUnicode(strTime).c_str(), 
+		StringHelper::Utf8ToUnicode(strTime).c_str(), ++nIndex, pszName);
 
 
 	char szId[256] = {0};

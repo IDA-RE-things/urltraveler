@@ -45,6 +45,8 @@ BEGIN_EVENT_MAP(WebModule)
 	ON_EVENT(EVENT_VALUE_WEB_LOGININ_URLTRAVELER, OnEvent_LoginInUrlTraveler)
 	ON_EVENT(EVENT_VALUE_WEB_LOGINOUT_URLTRAVELER, OnEvent_LoginOutUrlTraveler)
 	ON_EVENT(EVENT_VALUE_WEB_REPORT_USERINFO, OnEvent_ReportUserInfo)
+	ON_EVENT(EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG,OnEvent_CheckUpdateConfig)
+	ON_EVENT(EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE,OnEvent_DownloadUpdateFile)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(WebModule)
@@ -298,6 +300,36 @@ void WebModule::OnEvent_ReportUserInfo(Event* pEvent)
 		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
 	}
 }
+
+void	WebModule::OnEvent_CheckUpdateConfig(Event* pEvent)
+{
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pEvent->eventValue,0,
+		L"http://urltraveler.sinaapp.com/getversion.php",NULL);
+	if( nSeqNo != INVALID_SEQNO)
+	{
+		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
+	}
+}
+
+void	WebModule::OnEvent_DownloadUpdateFile(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	Web_DownloadUpdateFileReqEvent* pE = (Web_DownloadUpdateFileReqEvent*)pEvent->m_pstExtraInfo;
+	string strDownloadUrl = StringHelper::UnicodeToANSI(pE->szUpdateFileUrl);
+
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pEvent->eventValue,pE->nId,
+		StringHelper::ANSIToUnicode(strDownloadUrl).c_str(),NULL,ONCE_FILE, pE->szSavePath);
+	if( nSeqNo != INVALID_SEQNO)
+	{
+		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
+	}
+}
+
 
 void WebModule::OnMessage_CycleTrigged(Message* pMessage)
 {

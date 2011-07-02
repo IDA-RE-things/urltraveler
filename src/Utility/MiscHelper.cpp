@@ -385,5 +385,5 @@ wchar_t*	MiscHelper::GetUpdatePath()
 	wstring wstrUpdate = PathHelper::GetAppDataDir() + L"\\urltraveler\\update\\";
 	PathHelper::CreateMultipleDirectory(wstrUpdate);
 
-	return (wchar_t*)wstrUpdate.c_str();
+	return (wchar_t*)wcsdup(wstrUpdate.c_str());
 }

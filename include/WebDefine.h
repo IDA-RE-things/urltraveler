@@ -38,8 +38,13 @@ namespace web
 		EVENT_VALUE_WEB_GET_VISITED_URL,							// 从服务器拉取需要访问的URL列表
 		EVENT_VALUE_WEB_GET_VISITED_URL_RESP,									
 		EVENT_VALUE_WEB_DOWNLOAD_FILE,							// 下载给定的文件
-		EVENT_VALUE_WEB_DOWNLOAD_FILE_RESP,			
+		EVENT_VALUE_WEB_DOWNLOAD_FILE_RESP,		
 
+		EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG,					// 获取更新配置信息
+		EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG_RESP,
+
+		EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE,					// 下载需要更新的文件
+		EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP,
 	};
 
 	// Web能够可能对外发送的广播消息
@@ -56,44 +61,45 @@ namespace web
 	// 返回给上层调用者的错误响应信息
 	enum E_WebRespCode
 	{
-		WEB_RET_SUCCESS						=		5000,			// 成功获取到用户的信息
-		WEB_RET_INNER_USED					=		5002,
-		WEB_RET_DOWNLOAD_ERROR				=		5003,			// 下载失败，重新下载
+		WEB_RET_SUCCESS						=		0,			// 成功获取到用户的信息
+		WEB_RET_INNER_USED					=		1,
+		WEB_RET_DOWNLOAD_ERROR			=		2,			// 下载失败，重新下载
+		WEB_RET_UNKNOWN					=		3,	// 未知的错误
 
 		// 网络相关的信息
-		WEB_RET_NET_ERROR_URL				=		900,	// 请求的URL错误
-		WEB_RET_NET_ERROR_CONNECT			=		901,	// 无法连接远程服务器
-		WEB_RET_NET_ERROR_OPEN_REQUEST		=		902,	// 无法打开请求
-		WEB_RET_NET_ERROR_SETCALLBACK		=		903,	// 设置Callback函数失败
-		WEB_RET_NET_ERROR_SENDREQUEST		=		904,	// 发送请求失败
-		WEB_RET_NET_ERROR_SET_OPTION		=		905,	// 设置选项错误
-		WEB_RET_NET_ERROR_QUERY_HEADER		=		906,	// 查询HTTP头失败
-		WEB_RET_NET_ERROR_QUERY_BODY_DATA	=		907,	// 查询报文体数据失败
-		WEB_RET_NET_ERROR_READ_DATA			=		908,	// 读取报文体数据失败
-		WEB_RET_NET_ERROR_RECEIVE_BODY_DATA	=		909,	// 接受报文体数据失败
-		WEB_RET_NET_ERROR_TIMEOUT			=		910,	// 接受报文超时
-		WEB_RET_NET_ERROR_ADDHEADER			=		911,	// 增加HTTP头失败
-		WEB_RET_NET_ERROR_OPEN_SESSION		=		912,	// 打开HTTP会话失败
+		WEB_RET_NET_ERROR_URL				=		100,	// 请求的URL错误
+		WEB_RET_NET_ERROR_CONNECT			=		101,	// 无法连接远程服务器
+		WEB_RET_NET_ERROR_OPEN_REQUEST		=		102,	// 无法打开请求
+		WEB_RET_NET_ERROR_SETCALLBACK		=		103,	// 设置Callback函数失败
+		WEB_RET_NET_ERROR_SENDREQUEST		=		104,	// 发送请求失败
+		WEB_RET_NET_ERROR_SET_OPTION			=		105,	// 设置选项错误
+		WEB_RET_NET_ERROR_QUERY_HEADER		=		106,	// 查询HTTP头失败
+		WEB_RET_NET_ERROR_QUERY_BODY_DATA	=		107,	// 查询报文体数据失败
+		WEB_RET_NET_ERROR_READ_DATA			=		108,	// 读取报文体数据失败
+		WEB_RET_NET_ERROR_RECEIVE_BODY_DATA	=		109,	// 接受报文体数据失败
+		WEB_RET_NET_ERROR_TIMEOUT			=		110,	// 接受报文超时
+		WEB_RET_NET_ERROR_ADDHEADER			=		111,	// 增加HTTP头失败
+		WEB_RET_NET_ERROR_OPEN_SESSION		=		112,	// 打开HTTP会话失败
 
 		// 通用错误类型
-		WEB_RET_COMMON_NO_URL				=		1000,	// 请求的URL不存在
-		WEB_RET_COMMON_METHOD_NOT_SUPPORT	=		1001,	// 客户端请求的方法不支持
-		WEB_RET_COMMON_NO_PERMIT			=		1002,	// 客户端请求的资源无权限访问
-		WEB_RET_COMMON_NO_AUTH				=		1003,	// 客户端没有通过授权
-		WEB_RET_COMMON_SERVER_INTERNAL_ERROR=		1004,	// 服务器内部错误
-		WEB_RET_COMMON_SERVER_NOT_AVAIL		=		1005,	// 服务器暂时不可用
-		WEB_RET_COMMON_SERVER_NOT_IMPL		=		1006,	// 服务器尚未实现请求方法
-		WEB_RET_COMMON_PROXY_NEED_AUTH		=		1007,	// 代理服务器需要验证
+		WEB_RET_COMMON_NO_URL					=		200,	// 请求的URL不存在
+		WEB_RET_COMMON_METHOD_NOT_SUPPORT	=		201,	// 客户端请求的方法不支持
+		WEB_RET_COMMON_NO_PERMIT				=		202,	// 客户端请求的资源无权限访问
+		WEB_RET_COMMON_NO_AUTH				=		203,	// 客户端没有通过授权
+		WEB_RET_COMMON_SERVER_INTERNAL_ERROR=		204,	// 服务器内部错误
+		WEB_RET_COMMON_SERVER_NOT_AVAIL		=		205,	// 服务器暂时不可用
+		WEB_RET_COMMON_SERVER_NOT_IMPL		=		206,	// 服务器尚未实现请求方法
+		WEB_RET_COMMON_PROXY_NEED_AUTH		=		207,	// 代理服务器需要验证
 
-		WEB_RET_COMMON_NO_BODY_DATA			=		1020,	// 没有接收到报文体数据
-		WEB_RET_COMMON_NO_WEB_DATA			=		1021,	
-		WEB_RET_COMMON_NOT_LOGIN			=		1022,	// 用户尚未登录
-		WEB_RET_COMMON_ERROR_PARAM			=		1023,	// 传入的参数错误
-		WEB_RET_COMMON_ERROR_TOKEN			=		1024,	// 传入的TOKEN错误
-		WEB_RET_COMMON_ERROR_AUTH			=		1025,	// 传入的auth错误
-		WEB_RET_COMMON_TOKEN_TIMEOUT		=		1026,	// Token超时
-		WEB_RET_COMMON_ERROR_INTERNAL		=		1030,	// XML内部解析错
-		WEB_RET_COMMON_WRITE_FILE_ERROR		=		1031,	// 写入文件失败
+		WEB_RET_COMMON_NO_BODY_DATA			=		220,	// 没有接收到报文体数据
+		WEB_RET_COMMON_NO_WEB_DATA			=		221,	
+		WEB_RET_COMMON_NOT_LOGIN				=		222,	// 用户尚未登录
+		WEB_RET_COMMON_ERROR_PARAM			=		223,	// 传入的参数错误
+		WEB_RET_COMMON_ERROR_TOKEN			=		224,	// 传入的TOKEN错误
+		WEB_RET_COMMON_ERROR_AUTH				=		225,	// 传入的auth错误
+		WEB_RET_COMMON_TOKEN_TIMEOUT			=		226,	// Token超时
+		WEB_RET_COMMON_ERROR_INTERNAL			=		230,	// XML内部解析错
+		WEB_RET_COMMON_WRITE_FILE_ERROR			=		231,	// 写入文件失败
 	};
 
 	//============================================================================//
@@ -203,6 +209,48 @@ namespace web
 		// 收藏夹图标的URL
 		wchar_t	szMachinedId[64];			//	机器ID
 		wchar_t	szOSVersion[64];			//	操作系统版本
+	};
+
+	// 检查当前是否有更新信息
+#define MAX_UPDATE_XML_LENGTH	10240
+	struct Web_CheckUpdateConfigRespEvent	:	public WebRespEvent
+	{
+		Web_CheckUpdateConfigRespEvent()
+		{
+			eventValue	=	 EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG;
+			ZeroMemory(szUpdateXml, MAX_UPDATE_XML_LENGTH * sizeof(wchar_t));
+		}
+
+		// 返回的xml报文，最大为10240长度
+		wchar_t	szUpdateXml[MAX_UPDATE_XML_LENGTH];
+	};
+
+	// 下载需要更新的文件
+	struct Web_DownloadUpdateFileReqEvent	:	public WebReqEvent
+	{
+		Web_DownloadUpdateFileReqEvent()
+		{
+			eventValue = EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE;
+
+			nId = 0;
+			ZeroMemory(szUpdateFileUrl, MAX_PATH * sizeof(wchar_t));
+			ZeroMemory(szSavePath, MAX_PATH * sizeof(wchar_t));
+		}
+
+		int	nId;
+		//	需要下载的文件的URL
+		wchar_t	szUpdateFileUrl[MAX_PATH];
+		wchar_t	szSavePath[MAX_PATH];	//	下载存放的路径
+	};
+
+	struct Web_DownloadUpdateFileRespEvent	:	public WebRespEvent
+	{
+		Web_DownloadUpdateFileRespEvent()
+		{
+			eventValue = EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP;
+		}
+
+		int nId;	//	已经下载完毕的更新文件的ID
 	};
 
 };
