@@ -63,10 +63,9 @@ const String& String::operator=(const String& src)
 	return *this;
 }
 
-const String& String::operator=(const TCHAR ch)
+const String& String::operator=(String& src)
 {
-	Clear();
-	m_strString.push_back(ch);
+	Assign(src);
 	return *this;
 }
 
@@ -78,9 +77,30 @@ const String& String::operator=(LPCTSTR lpszStr)
 	return *this;
 }
 
+const String& String::operator=(LPTSTR lpszStr)
+{
+	ASSERT(!::IsBadStringPtr(lpszStr,-1));
+
+	Assign((LPCTSTR)lpszStr);
+	return *this;
+}
+
+const String& String::operator=(const TCHAR ch)
+{
+	Clear();
+	m_strString.push_back(ch);
+	return *this;
+}
+
 const String& String::operator+(const String& src)
 {
 	Append(src);
+	return *this;
+}
+
+const String& String::operator+(String& src)
+{
+	Append((LPCTSTR)src);
 	return *this;
 }
 
@@ -96,13 +116,32 @@ const String& String::operator+(LPCTSTR lpszStr)
 	return *this;
 }
 
+const String& String::operator+(LPTSTR lpszStr)
+{
+	Append(lpszStr);
+	return *this;
+}
+
 const String& String::operator+=(const String& src)
 {
-	Append(src);
+	Append((LPCTSTR)src);
+	return *this;
+}
+
+const String& String::operator+=(String& src)
+{
+	Append((LPCTSTR)src);
 	return *this;
 }
 
 const String& String::operator+=(LPCTSTR pstr)
+{
+	ASSERT(!::IsBadStringPtr(pstr,-1));
+	Append(pstr);
+	return *this;
+}
+
+const String& String::operator+=(LPTSTR pstr)
 {
 	ASSERT(!::IsBadStringPtr(pstr,-1));
 	Append(pstr);
@@ -114,7 +153,6 @@ const String& String::operator+=(const TCHAR ch)
 	Append(ch);
 	return *this;
 }
-
 
 bool String::operator == (LPCTSTR str) const
 {

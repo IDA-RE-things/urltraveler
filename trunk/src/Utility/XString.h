@@ -48,15 +48,21 @@ public:
 	TCHAR operator[] (int nIndex) const;
 
 	const String& operator=(const String& src);
-	const String& operator=(const TCHAR ch);
+	const String& operator=(String& src);
 	const String& operator=(LPCTSTR lpszStr);
+	const String& operator=(LPTSTR lpszStr);
+	const String& operator=(const TCHAR ch);
 
 	const String& operator+(const String& src);
-	const String& operator+(const TCHAR ch);
+	const String& operator+(String& src);
 	const String& operator+(LPCTSTR lpszStr);
+	const String& operator+(LPTSTR lpszStr);
+	const String& operator+(const TCHAR ch);
 
 	const String& operator+=(const String& src);
+	const String& operator+=(String& src);
 	const String& operator+=(LPCTSTR pstr);
+	const String& operator+=(LPTSTR pstr);
 	const String& operator+=(const TCHAR ch);
 
 	bool operator == (LPCTSTR str) const;

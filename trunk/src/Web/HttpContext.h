@@ -38,14 +38,14 @@ typedef struct HTTPCONTEXT
 {
 	HTTPCONTEXT(string& url)
 	{
-		uOpPolicy			=	SUCCESS_RESP;			//	对该上下文处理的策略
+		uOpPolicy				=	SUCCESS_RESP;			//	对该上下文处理的策略
 
 		nEventValue			=	0;						//	IN 当前对应的事件值
-		strURL				=	url;					//	IN 当前请求的URL
-		eReqType			=	ONCE_BUFFER;			//	IN 请求的类型
+		strURL				=	url;						//	IN 当前请求的URL
+		eReqType				=	ONCE_BUFFER;				//	IN 请求的类型
 		pArgument			=	NULL;					//	IN 请求所需要的Post参数
-		nTimeout			=	0;						//	IN 超时
-		wstrWritedFileName	=	L"";					//	IN 写入的文件的名称
+		nTimeout				=	0;						//	IN 超时
+		wstrWritedFileName		=	L"";						//	IN 写入的文件的名称
 		uParam0				=	0;						//	额外的参数
 		uParam1				=	0;						//	额外的参数
 		uParam2				=	0;						//	额外的参数
@@ -55,33 +55,33 @@ typedef struct HTTPCONTEXT
 		*/
 		nReqSeq				=	0;						//	OUT 当前请求的序列号
 		nTaskId				=	0;						//	OUT 当前序列号对应的内部ID
-		uAddTime			=	time(NULL);				//	OUT 加入队列的时间
-		uEndTime			=	time(NULL);				//	OUT	处理结束时间
+		uAddTime				=	time(NULL);				//	OUT 加入队列的时间
+		uEndTime				=	time(NULL);				//	OUT	处理结束时间
 		nFailedTime			=	0;						//	OUT 请求失败的次数
 		nSpeed				=	0;						//	OUT	传输速率，xxK/秒
 		nRemainedTime		=	0;						//	OUT	估计的剩余时间
 
-		uResult				=	SUCCESS;				//	OUT 本次操作的结结果，SUCCESS OR FAILED	
+		uResult				=	SUCCESS;					//	OUT 本次操作的结结果，SUCCESS OR FAILED	
 		nErrorCode			=	0;						//	OUT 具体的错误码
-		nHttpCode			=	200;					//	OUT HTTP响应码
+		nHttpCode			=	200;						//	OUT HTTP响应码
 
 		hFileHandle			=	NULL;					//	OUT 文件的句柄
 		nContentLength		=	0;						//	OUT 整个报文的大小
 		nFinishedLength		=	0;						//	OUT 已经读取的报文的长度
-		strContentData		=	"";						//	OUT 本次读取的数据，对于FRAG_BUFFER而言，则是一次读取的数据，不是全部
+		strContentData			=	"";						//	OUT 本次读取的数据，对于FRAG_BUFFER而言，则是一次读取的数据，不是全部
 		bAllowRepeated		=	TRUE;
 	}
 
 	HTTPCONTEXT()
 	{
-		uOpPolicy			=	SUCCESS_RESP;			//	对该上下文处理的策略
+		uOpPolicy				=	SUCCESS_RESP;			//	对该上下文处理的策略
 
 		nEventValue			=	0;						//	IN 当前对应的事件值
 		strURL				=	"";						//	IN 当前请求的URL
-		eReqType			=	ONCE_BUFFER;			//	IN 请求的类型
+		eReqType				=	ONCE_BUFFER;			//	IN 请求的类型
 		pArgument			=	NULL;					//	IN 请求所需要的Post参数
-		nTimeout			=	30;						//	IN 超时
-		wstrWritedFileName	=	L"";					//	IN 写入的文件的名称
+		nTimeout				=	30;						//	IN 超时
+		wstrWritedFileName		=	L"";					//	IN 写入的文件的名称
 		uParam0				=	0;						//	额外的参数
 		uParam1				=	0;						//	额外的参数
 		uParam2				=	0;						//	额外的参数
@@ -91,8 +91,8 @@ typedef struct HTTPCONTEXT
 		*/
 		nReqSeq				=	0;						//	OUT 当前请求的序列号
 		nTaskId				=	0;						//	OUT 当前序列号对应的内部ID
-		uAddTime			=	time(NULL);				//	OUT 加入队列的时间
-		uEndTime			=	time(NULL);				//	OUT	处理结束时间
+		uAddTime				=	time(NULL);				//	OUT 加入队列的时间
+		uEndTime				=	time(NULL);				//	OUT	处理结束时间
 		nFailedTime			=	0;						//	OUT 请求失败的次数
 		nSpeed				=	0;						//	OUT	传输速率，xxK/秒
 		nRemainedTime		=	0;						//	OUT	估计的剩余时间
@@ -104,18 +104,18 @@ typedef struct HTTPCONTEXT
 		hFileHandle			=	NULL;					//	OUT 文件的句柄
 		nContentLength		=	0;						//	OUT 整个报文的大小
 		nFinishedLength		=	0;						//	OUT 已经读取的报文的长度
-		strContentData		=	"";						//	OUT 本次读取的数据，对于FRAG_BUFFER而言，则是一次读取的数据，不是全部
+		strContentData			=	"";						//	OUT 本次读取的数据，对于FRAG_BUFFER而言，则是一次读取的数据，不是全部
 		bAllowRepeated		=	TRUE;
 	}
 
 	HTTPCONTEXT( HTTPCONTEXT* pContext)
 	{
-		uOpPolicy			=	pContext->uOpPolicy;			//	对该上下文处理的策略
+		uOpPolicy				=	pContext->uOpPolicy;			//	对该上下文处理的策略
 		nEventValue			=	pContext->nEventValue;			//	IN 当前对应的事件值
 		strURL				=	pContext->strURL;				//	IN 当前请求的URL
-		eReqType			=	pContext->eReqType;				//	IN 请求的类型
-		nTimeout			=	pContext->nTimeout;				//	IN 超时
-		wstrWritedFileName	=	pContext->wstrWritedFileName;	//	IN 写入的文件的名称
+		eReqType				=	pContext->eReqType;				//	IN 请求的类型
+		nTimeout				=	pContext->nTimeout;				//	IN 超时
+		wstrWritedFileName		=	pContext->wstrWritedFileName;	//	IN 写入的文件的名称
 		uParam0				=	pContext->uParam0;				//	额外的参数
 		uParam1				=	pContext->uParam1;				//	额外的参数
 		uParam2				=	pContext->uParam2;				//	额外的参数
@@ -125,8 +125,8 @@ typedef struct HTTPCONTEXT
 		*/
 		nReqSeq				=	pContext->nReqSeq;				//	OUT 当前请求的序列号
 		nTaskId				=	pContext->nTaskId;				//	OUT 当前序列号对应的内部ID
-		uAddTime			=	pContext->uAddTime;				//	OUT 加入队列的时间
-		uEndTime			=	pContext->uEndTime;				//	OUT	处理结束时间
+		uAddTime				=	pContext->uAddTime;				//	OUT 加入队列的时间
+		uEndTime				=	pContext->uEndTime;				//	OUT	处理结束时间
 		nFailedTime			=	pContext->nFailedTime;			//	OUT 请求失败的次数
 		nSpeed				=	pContext->nSpeed;				//	OUT	传输速率，xxK/秒
 		nRemainedTime		=	pContext->nRemainedTime;		//	OUT	估计的剩余时间
@@ -138,7 +138,7 @@ typedef struct HTTPCONTEXT
 		hFileHandle			=	pContext->hFileHandle;			//	OUT 文件的句柄
 		nContentLength		=	pContext->nContentLength;		//	OUT 整个报文的大小
 		nFinishedLength		=	pContext->nFinishedLength;		//	OUT 已经读取的报文的长度
-		strContentData		=	pContext->strContentData;		//	OUT 本次读取的数据，对于FRAG_BUFFER而言，则是一次读取的数据，不是全部
+		strContentData			=	pContext->strContentData;		//	OUT 本次读取的数据，对于FRAG_BUFFER而言，则是一次读取的数据，不是全部
 		if( pContext->pArgument == NULL)
 			pArgument = NULL;
 		else

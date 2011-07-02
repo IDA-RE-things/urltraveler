@@ -84,6 +84,8 @@ private:
 	void	ParseGetFavIcon( HTTPCONTEXT* pContext);
 	void	ParseOpenUrlTraveler( HTTPCONTEXT* pContext);
 	void ParseCloseUrlTraveler( HTTPCONTEXT* pContext);
+	void ParseCheckUpdateConfig(HTTPCONTEXT* pContext);
+	void ParseDownloadUpdateFile(HTTPCONTEXT* pContext);
 
 private:
 

@@ -87,6 +87,8 @@ protected:
 	void OnEvent_LoginInUrlTraveler(Event* pEvent);
 	void OnEvent_LoginOutUrlTraveler(Event* pEvent);
 	void OnEvent_ReportUserInfo(Event* pEvent);
+	void	OnEvent_CheckUpdateConfig(Event* pEvent);
+	void	OnEvent_DownloadUpdateFile(Event* pEvent);
 
 protected:
 
