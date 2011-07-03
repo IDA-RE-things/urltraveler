@@ -39,17 +39,17 @@ WebModule::~WebModule()
 }
 
 BEGIN_EVENT_MAP(WebModule)
-	ON_EVENT(EVENT_VALUE_WEB_GET_FAVICON, OnEvent_GetFavoriteIcon)
-	ON_EVENT(EVENT_VALUE_WEB_OPEN_URLTRAVELER, OnEvent_OpenUrlTraveler)
-	ON_EVENT(EVENT_VALUE_WEB_CLOSE_URLTRAVELER, OnEvent_CloseUrlTraveler)
-	ON_EVENT(EVENT_VALUE_WEB_LOGININ_URLTRAVELER, OnEvent_LoginInUrlTraveler)
-	ON_EVENT(EVENT_VALUE_WEB_LOGINOUT_URLTRAVELER, OnEvent_LoginOutUrlTraveler)
-	ON_EVENT(EVENT_VALUE_WEB_REPORT_USERINFO, OnEvent_ReportUserInfo)
-	ON_EVENT(EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG,OnEvent_CheckUpdateConfig)
-	ON_EVENT(EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE,OnEvent_DownloadUpdateFile)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(WebModule)
+	ON_SERVICE(SERVICE_VALUE_WEB_GET_FAVICON, OnService_GetFavoriteIcon)
+	ON_SERVICE(SERVICE_VALUE_WEB_OPEN_URLTRAVELER, OnService_OpenUrlTraveler)
+	ON_SERVICE(SERVICE_VALUE_WEB_CLOSE_URLTRAVELER, OnService_CloseUrlTraveler)
+	ON_SERVICE(SERVICE_VALUE_WEB_LOGININ_URLTRAVELER, OnService_LoginInUrlTraveler)
+	ON_SERVICE(SERVICE_VALUE_WEB_LOGINOUT_URLTRAVELER, OnService_LoginOutUrlTraveler)
+	ON_SERVICE(SERVICE_VALUE_WEB_REPORT_USERINFO, OnService_ReportUserInfo)
+	ON_SERVICE(SERVICE_VALUE_WEB_CHECK_UPDATE_CONFIG,OnService_CheckUpdateConfig)
+	ON_SERVICE(SERVICE_VALUE_WEB_DOWNLOAD_UPDATE_FILE,OnService_DownloadUpdateFile)
 END_SERVICE_MAP()
 
 BEGIN_MESSAGE_MAP(WebModule)
@@ -221,123 +221,138 @@ void WebModule::ProcessSendUrl( )
 	}
 }
 
-void WebModule::OnEvent_GetFavoriteIcon(Event* pEvent)
+int32 WebModule::OnService_GetFavoriteIcon(ServiceValue lService, param wparam)
 {
-	Web_GetFavIconReqEvent* pE = (Web_GetFavIconReqEvent*)pEvent->m_pstExtraInfo;
-	if( pE == NULL)
+	Web_GetFavIconqService* pService = (Web_GetFavIconqService*)wparam;
+	if( pService == NULL || pService->srcId == MODULE_ID_INVALID)
 	{
 		ASSERT(0);
-		return;
+		return -1;
 	}
 
-	uint32 nSeqNo = m_pRequestManager->PushUrl(	pEvent->eventValue,0,pE->szFavoriteUrl,NULL);
+	uint32 nSeqNo = m_pRequestManager->PushUrl(	pService->serviceId,0,pService->szFavoriteUrl,NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
 	}
+
+	return nSeqNo;
 }
 
-void WebModule::OnEvent_OpenUrlTraveler(Event* pEvent)
+int32 WebModule::OnService_OpenUrlTraveler(ServiceValue lService, param wparam)
 {
-	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_WEB_OPEN_URLTRAVELER)
+	Web_OpenTravelerService* pService = (Web_OpenTravelerService*)wparam;
+	if( pService == NULL || pService->serviceId  != SERVICE_VALUE_WEB_OPEN_URLTRAVELER)
 	{
 		ASSERT(0);
-		return;
+		return -1;
 	}
 
-	uint32 nSeqNo = m_pRequestManager->PushUrl(pEvent->eventValue,0,
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pService->serviceId,0,
 		L"http://1.urltraveler.sinaapp.com/login.php",NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
 	}
+
+	return nSeqNo;
 }
 
-void WebModule::OnEvent_CloseUrlTraveler(Event* pEvent)
+int32 WebModule::OnService_CloseUrlTraveler(ServiceValue lService, param wparam)
 {
-	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_WEB_CLOSE_URLTRAVELER)
+	Web_CloseTravelerService* pService = (Web_CloseTravelerService*)wparam;
+	if( pService == NULL || pService->serviceId  != SERVICE_VALUE_WEB_CLOSE_URLTRAVELER)
 	{
 		ASSERT(0);
-		return;
+		return -1;
 	}
 
-	uint32 nSeqNo = m_pRequestManager->PushUrl(pEvent->eventValue,0,
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pService->serviceId,0,
 		L"http://1.urltraveler.sinaapp.com/logout.php",NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
 	}
+
+	return nSeqNo;
 }
 
-void WebModule::OnEvent_LoginInUrlTraveler(Event* pEvent)
+int32 WebModule::OnService_LoginInUrlTraveler(ServiceValue lService, param wparam)
 {
+	return -1;
 }
 
-void WebModule::OnEvent_LoginOutUrlTraveler(Event* pEvent)
+int32 WebModule::OnService_LoginOutUrlTraveler(ServiceValue lService, param wparam)
 {
+	return -1;
 }
 
-void WebModule::OnEvent_ReportUserInfo(Event* pEvent)
+int32 WebModule::OnService_ReportUserInfo(ServiceValue lService, param wparam)
 {
-	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_WEB_REPORT_USERINFO)
+	Web_ReportUserInfoService* pService = (Web_ReportUserInfoService*)wparam;
+	if( pService == NULL || pService->serviceId  != SERVICE_VALUE_WEB_REPORT_USERINFO)
 	{
 		ASSERT(0);
-		return;
+		return -1;
 	}
 
-	Web_ReportUserInfoReqEvent* pE = (Web_ReportUserInfoReqEvent*)pEvent->m_pstExtraInfo;
-	string strMachinedId = StringHelper::UnicodeToANSI(pE->szMachinedId);
-	string strOsVersion = StringHelper::UnicodeToANSI(pE->szOSVersion);
+	string strMachinedId = StringHelper::UnicodeToANSI(pService->szMachinedId);
+	string strOsVersion = StringHelper::UnicodeToANSI(pService->szOSVersion);
 
 	POST_PARAMS httpArgument ;
 	httpArgument.add_param("machineId", strMachinedId.c_str(), strMachinedId.size() + 1, PARAM_TEXT);
 	httpArgument.add_param("osVersion", strOsVersion.c_str(), strOsVersion.size() + 1, PARAM_TEXT);
 
-	uint32 nSeqNo = m_pRequestManager->PushUrl(pEvent->eventValue,0,
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pService->serviceId,0,
 		L"http://1.urltraveler.sinaapp.com/userinfo.php",NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
 	}
+	return nSeqNo;
 }
 
-void	WebModule::OnEvent_CheckUpdateConfig(Event* pEvent)
+int32	WebModule::OnService_CheckUpdateConfig(ServiceValue lService, param wparam)
 {
-	uint32 nSeqNo = m_pRequestManager->PushUrl(pEvent->eventValue,0,
-		L"http://urltraveler.sinaapp.com/getversion.php",NULL);
-	if( nSeqNo != INVALID_SEQNO)
-	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
-	}
-}
-
-void	WebModule::OnEvent_DownloadUpdateFile(Event* pEvent)
-{
-	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE)
+	Web_CheckUpdateConfigService* pService = (Web_CheckUpdateConfigService*)wparam;
+	if( pService == NULL || pService->serviceId  != SERVICE_VALUE_WEB_CHECK_UPDATE_CONFIG)
 	{
 		ASSERT(0);
-		return;
+		return -1;
 	}
-
-	Web_DownloadUpdateFileReqEvent* pE = (Web_DownloadUpdateFileReqEvent*)pEvent->m_pstExtraInfo;
-	string strDownloadUrl = StringHelper::UnicodeToANSI(pE->szUpdateFileUrl);
-
-	uint32 nSeqNo = m_pRequestManager->PushUrl(pEvent->eventValue,pE->nId,
-		StringHelper::ANSIToUnicode(strDownloadUrl).c_str(),NULL,ONCE_FILE, pE->szSavePath);
+	
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pService->serviceId,0,
+		L"http://urltraveler.sinaapp.com/getversion.php?type=copy",NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pEvent->srcMId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
 	}
+	return nSeqNo;
 }
 
+int32	WebModule::OnService_DownloadUpdateFile(ServiceValue lService, param wparam)
+{
+	Web_DownloadUpdateFileService* pService = (Web_DownloadUpdateFileService*)wparam;
+	if( pService == NULL || pService->serviceId  != SERVICE_VALUE_WEB_DOWNLOAD_UPDATE_FILE)
+	{
+		ASSERT(0);
+		return -1;
+	}
+
+	string strDownloadUrl = StringHelper::UnicodeToANSI(pService->szUpdateFileUrl);
+
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pService->serviceId,0,
+		StringHelper::ANSIToUnicode(strDownloadUrl).c_str(),NULL,ONCE_FILE, pService->szSavePath);
+	if( nSeqNo != INVALID_SEQNO)
+	{
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
+	}
+
+	return nSeqNo;
+}
 
 void WebModule::OnMessage_CycleTrigged(Message* pMessage)
 {
 	ProcessGetResponse();
 	ProcessSendUrl();
-}
-
-int32 WebModule:: OnService_GetFavoriteIcon(ServiceValue lService, param lparam)
-{
-	return -1;
 }

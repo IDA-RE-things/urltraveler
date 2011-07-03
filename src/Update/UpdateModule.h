@@ -18,19 +18,10 @@ extern "C"
 // 需要更新的文件信息
 typedef struct UpdateFileInfo
 {
-	UpdateFileInfo()
-	{
-		bDownloaded	=	FALSE;
-		nId = 0;
-	}
-
-	int	nId;
 	wstring	strFileName;		//	文件名
 	wstring	strMd5;		
 	wstring	strDownloadUrl;
-	wstring	strLocatePath;		
 	wstring	strTempSavePath;	//	下载之后的临时存放目录
-	BOOL	bDownloaded;		//	是否已经下载完毕
 
 }UPDATEFILEINFO, *PUPDATEFILEINFO;
 
@@ -115,9 +106,7 @@ private:
 protected:
 	wstring	m_strUpdatePath;	//	下载的文件的保存路径
 	wstring	m_strUpdateXml;	//	更新的xml文件内容
-
-	BOOL	m_bAddAllUpdateInfo;	//	是否已经添加了所有的更新文件列表
-	std::vector<UPDATEFILEINFO>	m_vUpdateInfo;	//	更新的信息
+	wstring	m_strUpdateFileName;	//	更新的文件名称
 };
 
 class UpdateModuleFactory : public ModuleFactoryImpl<UpdateModule>{};

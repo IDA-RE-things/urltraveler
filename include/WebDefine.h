@@ -21,30 +21,10 @@ namespace web
 	// Web对外公开的事件
 	enum E_WebEventValue
 	{
-		// Favicon对应的图标
-		EVENT_VALUE_WEB_GET_FAVICON = EVENT_VALUE_WEB_BEGIN,		// 通知去拉取Favorite图标
-		EVENT_VALUE_WEB_GET_FAVICON_RESP,								// 获取到图标的响应事件
-
-		EVENT_VALUE_WEB_OPEN_URLTRAVELER,						// 打开URLTRAVELER软件
-		EVENT_VALUE_WEB_OPEN_URLTRAVELER_RESP,					// 打开URLTRAVELER软件
-		EVENT_VALUE_WEB_CLOSE_URLTRAVELER,						// 关闭URLTRAVELER软件
-		EVENT_VALUE_WEB_CLOSE_URLTRAVELER_RESP,					
-		EVENT_VALUE_WEB_LOGININ_URLTRAVELER,						// 注册登录用户
-		EVENT_VALUE_WEB_LOGININ_URLTRAVELER_RESP,							
-		EVENT_VALUE_WEB_LOGINOUT_URLTRAVELER,					// 登出用户
-		EVENT_VALUE_WEB_LOGINOUT_URLTRAVELER_RESP,							
-		EVENT_VALUE_WEB_REPORT_USERINFO,							// 上报用户信息
-		EVENT_VALUE_WEB_REPORT_USERINFO_RESP,
-		EVENT_VALUE_WEB_GET_VISITED_URL,							// 从服务器拉取需要访问的URL列表
-		EVENT_VALUE_WEB_GET_VISITED_URL_RESP,									
-		EVENT_VALUE_WEB_DOWNLOAD_FILE,							// 下载给定的文件
-		EVENT_VALUE_WEB_DOWNLOAD_FILE_RESP,		
-
-		EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG,					// 获取更新配置信息
+		EVENT_VALUE_WEB_DOWNLOAD_FILE_RESP	=	EVENT_VALUE_WEB_BEGIN,		
 		EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG_RESP,
-
-		EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE,					// 下载需要更新的文件
 		EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP,
+		EVENT_VALUE_WEB_GET_FAVICON_RESP,						// 获取到图标的响应事件
 	};
 
 	// Web能够可能对外发送的广播消息
@@ -55,7 +35,21 @@ namespace web
 	// Web能够处理的直接调用
 	enum E_WebServiceValue
 	{
-		SERVICE_VALUE_WEB_FAVICON_LOAD = SERVICE_VALUE_WEB_BEGIN,					//	加载特定的URL的收藏夹图标
+		// Favicon对应的图标
+		SERVICE_VALUE_WEB_GET_FAVICON = SERVICE_VALUE_WEB_BEGIN,	// 通知去拉取Favorite图标
+		SERVICE_VALUE_WEB_OPEN_URLTRAVELER,						// 打开URLTRAVELER软件
+		SERVICE_VALUE_WEB_CLOSE_URLTRAVELER,						// 关闭URLTRAVELER软件
+		SERVICE_VALUE_WEB_LOGININ_URLTRAVELER,					// 注册登录用户
+		SERVICE_VALUE_WEB_LOGINOUT_URLTRAVELER,					// 登出用户
+		SERVICE_VALUE_WEB_REPORT_USERINFO,						// 上报用户信息
+		SERVICE_VALUE_WEB_GET_VISITED_URL,							// 从服务器拉取需要访问的URL列表
+		SERVICE_VALUE_WEB_DOWNLOAD_FILE,						// 下载给定的文件
+
+		SERVICE_VALUE_WEB_CHECK_UPDATE_CONFIG,					// 获取更新配置信息
+		SERVICE_VALUE_WEB_DOWNLOAD_UPDATE_FILE,					// 下载需要更新的文件
+
+		SERVICE_VALUE_WEB_FAVICON_LOAD ,							//	加载特定的URL的收藏夹图标
+		SERVICE_VALUE_WEB_QUERY_DOWNLOAD_FILE_PROESS,			// 查询正在下载的文件的进度
 	};
 
 	// 返回给上层调用者的错误响应信息
@@ -156,19 +150,6 @@ namespace web
 		}
 	};
 
-	// 向网络请求收藏夹ICON图标
-	struct Web_GetFavIconReqEvent	:	public WebReqEvent
-	{
-		Web_GetFavIconReqEvent()
-		{
-			eventValue	=	 EVENT_VALUE_WEB_GET_FAVICON;
-			ZeroMemory(szFavoriteUrl, MAX_PATH * sizeof(wchar_t));
-		}
-
-		// 收藏夹图标的URL
-		wchar_t	szFavoriteUrl[MAX_PATH];		//	URL
-	};
-
 	// 网络中返回的响应数据
 	struct Web_GetFavIconRespEvent	:	public WebRespEvent
 	{
@@ -196,12 +177,80 @@ namespace web
 		char*	pIconData;
 	};
 
-	// 向网络传送当前用户的信息
-	struct Web_ReportUserInfoReqEvent	:	public WebReqEvent
+	// 检查当前是否有更新信息
+#define MAX_UPDATE_XML_LENGTH	10240
+	struct Web_CheckUpdateConfigRespEvent	:	public WebRespEvent
 	{
-		Web_ReportUserInfoReqEvent()
+		Web_CheckUpdateConfigRespEvent()
 		{
-			eventValue	=	 EVENT_VALUE_WEB_REPORT_USERINFO;
+			eventValue	=	 EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG_RESP;
+			ZeroMemory(szUpdateXml, MAX_UPDATE_XML_LENGTH * sizeof(wchar_t));
+		}
+
+		// 返回的xml报文，最大为10240长度
+		wchar_t	szUpdateXml[MAX_UPDATE_XML_LENGTH];
+	};
+
+	struct Web_DownloadUpdateFileRespEvent	:	public WebRespEvent
+	{
+		Web_DownloadUpdateFileRespEvent()
+		{
+			eventValue = EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP;
+		}
+
+		int nId;	//	已经下载完毕的更新文件的ID
+	};
+
+	//===========================================//
+	//                   Web中所使用到的Service						      //
+	//===========================================//
+	struct Web_Service	:	public	Service
+	{
+		Web_Service()
+		{
+			srcId = MODULE_ID_INVALID;
+		}
+
+		int	srcId;	//	源模块
+	};
+
+
+	// 向网络请求收藏夹ICON图标
+	struct Web_GetFavIconqService	:	public Web_Service
+	{
+		Web_GetFavIconqService()
+		{
+			serviceId	=	 SERVICE_VALUE_WEB_GET_FAVICON;
+			ZeroMemory(szFavoriteUrl, MAX_PATH * sizeof(wchar_t));
+		}
+
+		// 收藏夹图标的URL
+		wchar_t	szFavoriteUrl[MAX_PATH];		//	URL
+	};
+
+	// 打开浏览器的时候通知服务器增加计数
+	struct Web_OpenTravelerService	:	public Web_Service
+	{
+		Web_OpenTravelerService()
+		{
+			serviceId	=	 SERVICE_VALUE_WEB_OPEN_URLTRAVELER;
+		}
+	};
+
+	struct Web_CloseTravelerService	:	public Web_Service
+	{
+		Web_CloseTravelerService()
+		{
+			serviceId	=	 SERVICE_VALUE_WEB_CLOSE_URLTRAVELER;
+		}
+	};
+
+	// 向网络传送当前用户的信息
+	struct Web_ReportUserInfoService	:	public Web_Service
+	{
+		Web_ReportUserInfoService()
+		{
+			serviceId	=	 SERVICE_VALUE_WEB_REPORT_USERINFO;
 			ZeroMemory(szMachinedId, 64 * sizeof(wchar_t));
 			ZeroMemory(szOSVersion, 64 * sizeof(wchar_t));
 		}
@@ -211,26 +260,20 @@ namespace web
 		wchar_t	szOSVersion[64];			//	操作系统版本
 	};
 
-	// 检查当前是否有更新信息
-#define MAX_UPDATE_XML_LENGTH	10240
-	struct Web_CheckUpdateConfigRespEvent	:	public WebRespEvent
+	struct Web_CheckUpdateConfigService	:	public Web_Service
 	{
-		Web_CheckUpdateConfigRespEvent()
+		Web_CheckUpdateConfigService()
 		{
-			eventValue	=	 EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG;
-			ZeroMemory(szUpdateXml, MAX_UPDATE_XML_LENGTH * sizeof(wchar_t));
+			serviceId	=	 SERVICE_VALUE_WEB_CHECK_UPDATE_CONFIG;
 		}
-
-		// 返回的xml报文，最大为10240长度
-		wchar_t	szUpdateXml[MAX_UPDATE_XML_LENGTH];
 	};
 
 	// 下载需要更新的文件
-	struct Web_DownloadUpdateFileReqEvent	:	public WebReqEvent
+	struct Web_DownloadUpdateFileService	:	public Web_Service
 	{
-		Web_DownloadUpdateFileReqEvent()
+		Web_DownloadUpdateFileService()
 		{
-			eventValue = EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE;
+			serviceId = SERVICE_VALUE_WEB_DOWNLOAD_UPDATE_FILE;
 
 			nId = 0;
 			ZeroMemory(szUpdateFileUrl, MAX_PATH * sizeof(wchar_t));
@@ -243,14 +286,20 @@ namespace web
 		wchar_t	szSavePath[MAX_PATH];	//	下载存放的路径
 	};
 
-	struct Web_DownloadUpdateFileRespEvent	:	public WebRespEvent
+	struct Web_QueryDownFileProcessService	:	public Web_Service
 	{
-		Web_DownloadUpdateFileRespEvent()
+		Web_QueryDownFileProcessService()
 		{
-			eventValue = EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP;
+			serviceId	=	SERVICE_VALUE_WEB_QUERY_DOWNLOAD_FILE_PROESS;
 		}
 
-		int nId;	//	已经下载完毕的更新文件的ID
+		uint32	nSeqNo;						//	当前下载任务的序列号
+
+		uint32	uPercent;						//	下载进度， 50 表示 完成50%
+		uint32	uTotalLength;					//	下载的总长度
+		uint32	uFinishedLength;				//	已经下载完毕的总长度
+		uint32	uSpeed;						//	速率，
+		int32	uRemainedTime;				//	
 	};
 
 };
