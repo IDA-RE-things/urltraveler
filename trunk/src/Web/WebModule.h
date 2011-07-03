@@ -81,18 +81,14 @@ public:
 
 protected:
 
-	void OnEvent_GetFavoriteIcon(Event* pEvent);
-	void OnEvent_OpenUrlTraveler(Event* pEvent);
-	void OnEvent_CloseUrlTraveler(Event* pEvent);
-	void OnEvent_LoginInUrlTraveler(Event* pEvent);
-	void OnEvent_LoginOutUrlTraveler(Event* pEvent);
-	void OnEvent_ReportUserInfo(Event* pEvent);
-	void	OnEvent_CheckUpdateConfig(Event* pEvent);
-	void	OnEvent_DownloadUpdateFile(Event* pEvent);
-
-protected:
-
 	int32 OnService_GetFavoriteIcon(ServiceValue lService, param wparam);
+	int32 OnService_OpenUrlTraveler(ServiceValue lService, param wparam);
+	int32 OnService_CloseUrlTraveler(ServiceValue lService, param wparam);
+	int32 OnService_LoginInUrlTraveler(ServiceValue lService, param wparam);
+	int32 OnService_LoginOutUrlTraveler(ServiceValue lService, param wparam);
+	int32 OnService_ReportUserInfo(ServiceValue lService, param wparam);
+	int32 OnService_CheckUpdateConfig(ServiceValue lService, param wparam);
+	int32 OnService_DownloadUpdateFile(ServiceValue lService, param wparam);
 
 protected:
 	void OnMessage_CycleTrigged(Message* pMessage);

@@ -10,12 +10,15 @@
 #include "json/json.h"
 #include "XString.h"
 #include "MD5Checksum.h"
+#include "UpdateWnd.h";
+#include "MainFrameDefine.h"
 
 HMODULE	g_hModule = NULL;
 
 using namespace std;
 using namespace update;
 using namespace web;
+using namespace mainframe;
 
 namespace update
 {
@@ -28,17 +31,15 @@ EXPORT_RELEASEMODULEFACTORY(UpdateModule)
 
 UpdateModule::UpdateModule()
 {
-	m_bAddAllUpdateInfo	=	FALSE;
 }
 
 UpdateModule::~UpdateModule()
 {
-
 }
 
 BEGIN_EVENT_MAP(UpdateModule)
 	ON_EVENT(EVENT_VALUE_UPDATE_CHECK_UPDATEINFO, OnEvent_CheckUpdateInfo)
-	ON_EVENT(EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG,OnEvent_UpdateInfoArrive)
+	ON_EVENT(EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG_RESP,OnEvent_UpdateInfoArrive)
 	ON_EVENT(EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP, OnEvent_UpdateFileDownloaded)
 END_EVENT_MAP()
 
@@ -130,15 +131,15 @@ void	UpdateModule::OnEvent_CheckUpdateInfo(Event* pEvent)
 	//先检查是否已经存在下载包
 
 	//从服务器读取更新配置信息
-	GetModuleManager()->PushEvent(
-		MakeEvent<MODULE_ID_UPDATE>()(EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG, 
-		MODULE_ID_WEB));
+	Web_CheckUpdateConfigService checkUpdateConfigService;
+	checkUpdateConfigService.srcId = MODULE_ID_UPDATE;
+	GetModuleManager()->CallService(checkUpdateConfigService.serviceId,(param)&checkUpdateConfigService);
 }
 
 void	UpdateModule::OnEvent_UpdateInfoArrive(Event* pEvent)
 {
 	Web_CheckUpdateConfigRespEvent* pResp = (Web_CheckUpdateConfigRespEvent*)pEvent->m_pstExtraInfo;
-	if( pResp == NULL ||  pResp->eventValue != EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG)
+	if( pResp == NULL ||  pResp->eventValue != EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG_RESP)
 		return;
 
 	if( pResp->param0 != WEB_RET_SUCCESS)
@@ -154,16 +155,8 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 	if( pE == NULL || pE->eventValue != EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP)
 		return;
 
-	int nId = pE->nId;
-	for( int i=0; i<m_vUpdateInfo.size(); i++)
-	{
-		UPDATEFILEINFO* pUpdateInfo = &m_vUpdateInfo[i];
-		if( pUpdateInfo->nId == nId)
-		{
-			pUpdateInfo->bDownloaded = TRUE;
-			break;
-		}
-	}
+	//	启动UpdateExe文件
+
 }
 
 void	UpdateModule::ProcessUpdateConfig()
@@ -179,56 +172,67 @@ void	UpdateModule::ProcessUpdateConfig()
 	string strCurrentVersion = versionNode["high_version"].asString();
 
 	// 文件结点
-	Json::Value& updateListNode = root["filelist"];
-	ASSERT(updateListNode.isArray());
+	Json::Value& updateFileNode = root["package"];
 
 	wchar_t* wszUpdatePath = MiscHelper::GetUpdatePath();
 
-	for(size_t i=0; i<updateListNode.size(); i++)
+	UPDATEFILEINFO	updateInfo;
+	updateInfo.strFileName = StringHelper::ANSIToUnicode(updateFileNode["filename"].asString());
+	updateInfo.strMd5 = StringHelper::ANSIToUnicode(updateFileNode["md5"].asString());
+	updateInfo.strDownloadUrl = StringHelper::ANSIToUnicode(updateFileNode["downloadurl"].asString());
+
+	// 得到下载的文件名
+	String strUrl = (LPCTSTR)updateInfo.strDownloadUrl.c_str();
+	int nInex = strUrl.FindLastCharOf(L"\\/");
+	if( nInex == String::NPOS)
+		return;
+
+	strUrl = strUrl.Right(strUrl.GetLength() - nInex - 1);
+	wstring wstrPath = wstring(wszUpdatePath) + wstring(L"\\") + strUrl.GetData();
+	updateInfo.strTempSavePath = wstrPath;
+
+	// 检查文件是否存在，并且检查MD5
+	if( PathHelper::IsFileExist(wstrPath.c_str()) == TRUE)
 	{
-		Json::Value& fileNode = updateListNode[i];
-
-		UPDATEFILEINFO	updateInfo;
-		updateInfo.nId = StringHelper::ConvertToInt(fileNode["id"].asString());
-		updateInfo.strFileName = StringHelper::ANSIToUnicode(fileNode["filename"].asString());
-		updateInfo.strMd5 = StringHelper::ANSIToUnicode(fileNode["md5"].asString());
-		updateInfo.strLocatePath = StringHelper::ANSIToUnicode(fileNode["locatepath"].asString());
-		updateInfo.strDownloadUrl = StringHelper::ANSIToUnicode(fileNode["downloadurl"].asString());
-
-		// 得到下载的文件名
-		String strUrl = (LPCTSTR)updateInfo.strDownloadUrl.c_str();
-		int nInex = strUrl.FindLastCharOf(L"\\/");
-		if( nInex == String::NPOS)
-			continue;
-
-		strUrl = strUrl.Right(strUrl.GetLength() - nInex - 1);
-		wstring wstrPath = wstring(wszUpdatePath) + wstring(L"\\") + strUrl.GetData();
-		updateInfo.strTempSavePath = wstrPath;
-
-		// 检查文件是否存在，并且检查MD5
-		if( PathHelper::IsFileExist(wstrPath.c_str()) == TRUE)
+		string strExistMD5 = CMD5Checksum::GetMD5W(wstrPath);
+		if( updateInfo.strMd5 == StringHelper::ANSIToUnicode(strExistMD5))
 		{
-			string strExistMD5 = CMD5Checksum::GetMD5W(wstrPath);
-			if( updateInfo.strMd5 == StringHelper::ANSIToUnicode(strExistMD5))
-			{
-				updateInfo.bDownloaded = TRUE;
-				continue;
-			}
+			m_strUpdateFileName	=	wstrPath;
+
+			// 直接通知下载ok
+			Web_DownloadUpdateFileRespEvent* pEvent = new Web_DownloadUpdateFileRespEvent();
+			pEvent->desMId	=	MODULE_ID_UPDATE;
+			pEvent->srcMId	=	MODULE_ID_WEB;
+			pEvent->param0 = web::WEB_RET_SUCCESS;
+			GetModuleManager()->PushEvent(*pEvent);
+
+			return;
 		}
-
-		m_vUpdateInfo.push_back(updateInfo);
-
-		Web_DownloadUpdateFileReqEvent* pEvent = new Web_DownloadUpdateFileReqEvent();
-		pEvent->srcMId = MODULE_ID_UPDATE;
-		pEvent->nId = updateInfo.nId;
-		STRNCPY(pEvent->szUpdateFileUrl, updateInfo.strDownloadUrl.c_str());
-		STRNCPY(pEvent->szSavePath, wstrPath.c_str());
-		GetModuleManager()->PushEvent(*pEvent);
 	}
+
+	mainframe::MainFrame_GetWndService stGetWndService;
+	m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
+
+	CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
+	ASSERT(pMainFrameWnd != NULL);
+
+	Web_DownloadUpdateFileService downloadUpdateFileService;
+	downloadUpdateFileService.srcId = MODULE_ID_UPDATE;
+	STRNCPY(downloadUpdateFileService.szUpdateFileUrl, updateInfo.strDownloadUrl.c_str());
+	STRNCPY(downloadUpdateFileService.szSavePath, wstrPath.c_str());
+	GetModuleManager()->CallService(downloadUpdateFileService.serviceId, (param)&downloadUpdateFileService);
 
 	free(wszUpdatePath);
 
-	m_bAddAllUpdateInfo = TRUE;
+	// 启动进度条界面
+	CUpdateWnd* pUpdaeWnd = new CUpdateWnd();
+	if( pUpdaeWnd != NULL )
+	{ 
+		pUpdaeWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+		pUpdaeWnd->CenterWindow();
+		pMainFrameWnd->ShowModal(*pUpdaeWnd);
+	}
+
 }
 
 
@@ -243,21 +247,4 @@ BOOL UpdateModule::IsHaveUpdatePackage()
 
 void UpdateModule::OnMessage_CycleTrigged(Message* pMessage)
 {
-	if( m_bAddAllUpdateInfo == FALSE)
-		return;
-
-	int i = 0;
-	for( ; i<m_vUpdateInfo.size(); i++)
-	{
-		UPDATEFILEINFO* pUpdateInfo = &m_vUpdateInfo[i];
-		if( pUpdateInfo->bDownloaded == FALSE)
-			break;
-	}
-
-	// 所有更新文件都下载完毕，此时可以执行拷贝到安装目录中了。
-	if( i == m_vUpdateInfo.size())
-	{
-		//启动UpdateExe程序，然后自己运行退出
-	}
-
 }

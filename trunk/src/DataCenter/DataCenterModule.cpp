@@ -382,12 +382,12 @@ void	DataCenterModule::OnService_GetFavoriteIcon(ServiceValue lServiceValue, par
 	}
 
 	// 如果数据库中也不存在，则从网络拉取，执行Web模块
-	web::Web_GetFavIconReqEvent* pGetFavIconEvent = new web::Web_GetFavIconReqEvent();
-	pGetFavIconEvent->srcMId = MODULE_ID_DATACENTER;
+	web::Web_GetFavIconqService getFavIconService ;
+	getFavIconService.srcId = MODULE_ID_DATACENTER;
 
 	wstring	wstrFavIconUrl = wstrDomain + wstring(L"/favicon.ico");
-	STRNCPY(pGetFavIconEvent->szFavoriteUrl, wstrFavIconUrl.c_str());
-	m_pModuleManager->PushEvent(*pGetFavIconEvent);
+	STRNCPY(getFavIconService.szFavoriteUrl, wstrFavIconUrl.c_str());
+	m_pModuleManager->CallService(getFavIconService.serviceId, (param)&getFavIconService);
 }
 
 void	DataCenterModule::OnService_CheckExistSubFolder(ServiceValue	lServiceValue, param	 lParam)

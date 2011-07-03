@@ -44,8 +44,9 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	m_pTipWnd->Init(msg.pSender); 
 
 	// 发送请求至服务器，统计在线人数
-	g_MainFrameModule->GetModuleManager()->PushEvent(
-		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_WEB_OPEN_URLTRAVELER, MODULE_ID_WEB));
+	Web_OpenTravelerService openTravelerService;
+	openTravelerService.srcId = MODULE_ID_MAINFRAME;
+	g_MainFrameModule->GetModuleManager()->CallService(openTravelerService.serviceId,(param)&openTravelerService);
 }
 
 void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)

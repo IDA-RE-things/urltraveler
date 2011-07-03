@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\Utility"
+				AdditionalIncludeDirectories="..\..\include;..\..\thirdlib\duilib\DuiLib\;..\Utility"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;TRAYICON_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,10 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Utilityd.lib"
+				AdditionalDependencies="DuiLib_ud.lib Utilityd.lib"
 				OutputFile="..\..\bin\Updated.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\lib"
+				AdditionalLibraryDirectories="..\..\thirdlib\duilib\bin\;..\..\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				ImportLibrary="..\..\lib\$(TargetName).lib"
@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\include;..\Utility"
+				AdditionalIncludeDirectories="..\..\include;..\..\thirdlib\duilib\DuiLib\;..\Utility"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;TRAYICON_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -138,10 +138,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Utility.lib"
+				AdditionalDependencies="DuiLib_ud.lib Utilityd.lib"
 				OutputFile="..\..\bin\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\lib"
+				AdditionalLibraryDirectories="..\..\thirdlib\duilib\bin\;..\..\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -200,6 +200,10 @@
 				RelativePath=".\UpdateModule.h"
 				>
 			</File>
+			<File
+				RelativePath=".\UpdateWnd.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Ô´ÎÄ¼þ"
@@ -254,6 +258,10 @@
 			</File>
 			<File
 				RelativePath=".\UpdateModule.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UpdateWnd.cpp"
 				>
 			</File>
 		</Filter>
