@@ -31,6 +31,8 @@ EXPORT_RELEASEMODULEFACTORY(UpdateModule)
 
 UpdateModule::UpdateModule()
 {
+	m_nDownloadSeqNo	=	INVALID_SEQNO;
+	m_pUpdateWnd	=	NULL;
 }
 
 UpdateModule::~UpdateModule()
@@ -220,19 +222,23 @@ void	UpdateModule::ProcessUpdateConfig()
 	downloadUpdateFileService.srcId = MODULE_ID_UPDATE;
 	STRNCPY(downloadUpdateFileService.szUpdateFileUrl, updateInfo.strDownloadUrl.c_str());
 	STRNCPY(downloadUpdateFileService.szSavePath, wstrPath.c_str());
-	GetModuleManager()->CallService(downloadUpdateFileService.serviceId, (param)&downloadUpdateFileService);
+	m_nDownloadSeqNo = GetModuleManager()->CallService(downloadUpdateFileService.serviceId, (param)&downloadUpdateFileService);
 
 	free(wszUpdatePath);
 
 	// 启动进度条界面
-	CUpdateWnd* pUpdaeWnd = new CUpdateWnd();
-	if( pUpdaeWnd != NULL )
-	{ 
-		pUpdaeWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
-		pUpdaeWnd->CenterWindow();
-		pMainFrameWnd->ShowModal(*pUpdaeWnd);
-	}
+	if( m_pUpdateWnd == NULL)
+		m_pUpdateWnd = new CUpdateWnd();
 
+	if( m_pUpdateWnd != NULL )
+	{ 
+		if( m_pUpdateWnd->GetHWND() == NULL)
+		{
+			m_pUpdateWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+		}
+		m_pUpdateWnd->CenterWindow();
+		pMainFrameWnd->ShowModal(*m_pUpdateWnd);
+	}
 }
 
 
@@ -247,4 +253,5 @@ BOOL UpdateModule::IsHaveUpdatePackage()
 
 void UpdateModule::OnMessage_CycleTrigged(Message* pMessage)
 {
+	Web_DownloadUpdateFileService	
 }

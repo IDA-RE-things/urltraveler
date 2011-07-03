@@ -89,6 +89,7 @@ protected:
 	int32 OnService_ReportUserInfo(ServiceValue lService, param wparam);
 	int32 OnService_CheckUpdateConfig(ServiceValue lService, param wparam);
 	int32 OnService_DownloadUpdateFile(ServiceValue lService, param wparam);
+	int32 OnService_QueryDownloadUpdateFileProcess(ServiceValue lService, param wparam);
 
 protected:
 	void OnMessage_CycleTrigged(Message* pMessage);

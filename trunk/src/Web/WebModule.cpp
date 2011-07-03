@@ -351,6 +351,27 @@ int32	WebModule::OnService_DownloadUpdateFile(ServiceValue lService, param wpara
 	return nSeqNo;
 }
 
+int32 WebModule::OnService_QueryDownloadUpdateFileProcess(ServiceValue lService, param wparam)
+{
+	Web_QueryDownFileProcessService* pService = (Web_QueryDownFileProcessService*)wparam;
+	if( pService == NULL || pService->serviceId  != SERVICE_VALUE_WEB_QUERY_DOWNLOAD_FILE_PROESS)
+	{
+		ASSERT(0);
+		return -1;
+	}
+
+	int nSeqNo = pService->nSeqNo;
+	uint32 ret = m_pRequestManager->QueryDownloadProcess( pService->nSeqNo, &pService->uPercent, 
+		&pService->uTotalLength, &pService->uFinishedLength, &pService->uSpeed, &pService->uRemainedTime);
+	if( ret == false)
+	{
+		return INVALID_SEQNO;
+	}
+
+	return READY_SEQNO;
+}
+
+
 void WebModule::OnMessage_CycleTrigged(Message* pMessage)
 {
 	ProcessGetResponse();
