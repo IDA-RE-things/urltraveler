@@ -209,9 +209,15 @@ namespace web
 		Web_Service()
 		{
 			srcId = MODULE_ID_INVALID;
+
+			bAllowOffline	=	FALSE;
+			bAllowRepeated	=	FALSE;
 		}
 
 		int	srcId;	//	源模块
+
+		bool	bAllowOffline;		//	是否允许离线操作, TRUE为允许，FALSE为不允许
+		bool	bAllowRepeated;		//	该URL是否允许重复
 	};
 
 

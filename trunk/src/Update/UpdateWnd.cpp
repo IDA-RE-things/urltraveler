@@ -8,6 +8,7 @@
 
 CUpdateWnd::CUpdateWnd()
 {
+	m_pProcess	=	NULL;
 }
 
 CUpdateWnd::~CUpdateWnd()
@@ -16,6 +17,12 @@ CUpdateWnd::~CUpdateWnd()
 
 void CUpdateWnd::OnPrepare(TNotifyUI& msg) 
 { 
+	m_pProcess = static_cast<CProgressUI*>(m_pm.FindControl(_T("UpdateProgress")));
+	if( m_pProcess == NULL)
+		return;
+
+	m_pProcess->SetMaxValue(100);
+	//m_pProcess->SetFgImage(L"E:\\URLTraveler\\bin\Skin\\UrlTraveler\\tree_select.bmp");
 }
 
 void CUpdateWnd::Notify(TNotifyUI& msg)
@@ -210,4 +217,23 @@ LRESULT CUpdateWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if( bHandled ) return lRes;
 	if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
 	return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
+}
+
+void CUpdateWnd::SetDownLoadProgress( UINT nPercent)
+{
+	m_pProcess = static_cast<CProgressUI*>(m_pm.FindControl(_T("UpdateProgress")));
+	if( m_pProcess == NULL)
+		return;
+
+	m_pProcess->SetValue(nPercent);
+
+	CLabelUI* pPercentText = static_cast<CLabelUI*>(m_pm.FindControl(_T("PercentText")));
+	if( pPercentText == NULL)
+		return;
+
+	wstring	wstrPercent = StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nPercent));
+	wstrPercent += L"%";
+	pPercentText->SetText(wstrPercent.c_str());
+
+	m_pProcess->Invalidate();
 }

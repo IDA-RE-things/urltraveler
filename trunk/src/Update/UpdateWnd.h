@@ -12,6 +12,7 @@
 #include "PlugIn.h"
 #include <map>
 #include <vector>
+#include "UICommonControls.h"
 
 using namespace std;
 using namespace DuiLib;
@@ -43,6 +44,10 @@ public:
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+
+	void SetDownLoadProgress( UINT nPercent);
+
 public:
 	CPaintManagerUI m_pm;
+	CProgressUI*	m_pProcess;
 };
