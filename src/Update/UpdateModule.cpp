@@ -33,6 +33,7 @@ UpdateModule::UpdateModule()
 {
 	m_nDownloadSeqNo	=	INVALID_SEQNO;
 	m_pUpdateWnd	=	NULL;
+	m_bDownloading	=	FALSE;
 }
 
 UpdateModule::~UpdateModule()
@@ -153,9 +154,18 @@ void	UpdateModule::OnEvent_UpdateInfoArrive(Event* pEvent)
 
 void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 {
+	m_bDownloading	=	FALSE;
+
+	if(m_pUpdateWnd)
+	{
+		m_pUpdateWnd->SetDownLoadProgress( 100);
+	}
+
 	Web_DownloadUpdateFileRespEvent* pE = (Web_DownloadUpdateFileRespEvent*)pEvent->m_pstExtraInfo;
 	if( pE == NULL || pE->eventValue != EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP)
 		return;
+
+
 
 	//	启动UpdateExe文件
 
@@ -226,6 +236,8 @@ void	UpdateModule::ProcessUpdateConfig()
 
 	free(wszUpdatePath);
 
+	m_bDownloading	=	TRUE;
+
 	// 启动进度条界面
 	if( m_pUpdateWnd == NULL)
 		m_pUpdateWnd = new CUpdateWnd();
@@ -253,5 +265,23 @@ BOOL UpdateModule::IsHaveUpdatePackage()
 
 void UpdateModule::OnMessage_CycleTrigged(Message* pMessage)
 {
-	Web_DownloadUpdateFileService	
+	if( m_bDownloading == FALSE)
+		return;
+
+	// 查询进度
+	web::Web_QueryDownFileProcessService queryProcessService;
+	queryProcessService.bAllowOffline = true;
+	queryProcessService.srcId = MODULE_ID_UPDATE;
+	queryProcessService.nSeqNo = m_nDownloadSeqNo;
+	queryProcessService.uPercent = 0;
+	queryProcessService.uTotalLength = 0;
+	queryProcessService.uFinishedLength = 0;
+
+	if (INVALID_SEQNO != GetModuleManager()->CallService(queryProcessService.serviceId, (param)&queryProcessService))
+	{
+		if(m_pUpdateWnd)
+		{
+			m_pUpdateWnd->SetDownLoadProgress( queryProcessService.uPercent);
+		}
+	}
 }
