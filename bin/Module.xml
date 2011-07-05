@@ -21,4 +21,7 @@
 	<Module Name="Webd.dll">
 		<IModule Id="10" desc="MODULE_ID_WEB"/>
 	</Module>
+	<Module Name="Updated.dll">
+		<IModule Id="11" desc="MODULE_ID_UPDATE"/>
+	</Module>
 </ModuleManager>
