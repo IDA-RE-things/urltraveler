@@ -404,22 +404,19 @@ int	MiscHelper::GetVersionFromString(const char*	pszVersion)
 
 	std::vector<std::string> vecResutl = StringHelper::Split(pszVersion, '.');
 	if( vecResutl.size() == 0)
-		return 0;
+		vecResutl.push_back(pszVersion);
+
+	int nNum = vecResutl.size() > 4 ? 4 : vecResutl.size();
 
 	int i =0;
-	for( ; i<4; i++)
+	for( ; i<nNum; i++)
 	{
 		string&	szSubVersion = vecResutl[i];
 		if( StringHelper::IsNumberic(szSubVersion) == false)
 			break;
 	}
 
-	if( i < 4)
-		return 0;
-
 	int nVersion = 0;
-
-	int nNum = vecResutl.size() > 4 ? 4 : vecResutl.size();
 	for( int j=0; j<nNum; j++)
 	{
 		nVersion += StringHelper::ConvertToInt(vecResutl[j]) << ((3-j)*8);
