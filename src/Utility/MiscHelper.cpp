@@ -2,7 +2,10 @@
 #include "PathHelper.h"
 #include "MiscHelper.h"
 #include "XString.h"
-#include <atlbase.h>  
+#include <atlbase.h>
+#include "StringHelper.h"
+#include "UrlTravelerHeader.h"
+
 
 MiscHelper::MiscHelper()
 {
@@ -386,4 +389,41 @@ wchar_t*	MiscHelper::GetUpdatePath()
 	PathHelper::CreateMultipleDirectory(wstrUpdate);
 
 	return (wchar_t*)wcsdup(wstrUpdate.c_str());
+}
+
+int MiscHelper::GetCurrentVersion()
+{
+	return CLIENT_VERSION;
+}
+
+// 将1.0.0.0格式的字符传变成整数
+int	MiscHelper::GetVersionFromString(const char*	pszVersion)
+{
+	if( pszVersion == NULL)
+		return 0;
+
+	std::vector<std::string> vecResutl = StringHelper::Split(pszVersion, '.');
+	if( vecResutl.size() == 0)
+		return 0;
+
+	int i =0;
+	for( ; i<4; i++)
+	{
+		string&	szSubVersion = vecResutl[i];
+		if( StringHelper::IsNumberic(szSubVersion) == false)
+			break;
+	}
+
+	if( i < 4)
+		return 0;
+
+	int nVersion = 0;
+
+	int nNum = vecResutl.size() > 4 ? 4 : vecResutl.size();
+	for( int j=0; j<nNum; j++)
+	{
+		nVersion += StringHelper::ConvertToInt(vecResutl[j]) << ((3-j)*8);
+	}
+
+	return nVersion;
 }

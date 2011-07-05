@@ -94,6 +94,7 @@ public:
 protected:
 
 	void OnEvent_ShowTrayIcon(Event* pEvent);
+	void OnEvent_ShowUpdateWnd(Event* pEvent);
 
 public:
 

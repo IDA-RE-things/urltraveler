@@ -33,6 +33,11 @@ MainFrameModule::MainFrameModule()
 MainFrameModule::~MainFrameModule()
 {
 	::CoUninitialize();
+
+	if( m_pMainFrame)
+	{
+		m_pMainFrame->SendMessage(WM_CLOSE, 0, 0);
+	}
 }
 
 BEGIN_EVENT_MAP(MainFrameModule)

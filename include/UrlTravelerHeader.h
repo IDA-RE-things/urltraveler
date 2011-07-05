@@ -401,10 +401,10 @@ struct Service
 // ∂®“Â∞Ê±æ∫≈
 enum ClientVersion
 {
-	MAIN_VERSION2	  =          0,
-	SUB_VERSION2		  =          5,
-	PATCH_VERSION2	  =          0,
-	BUILD_VERSION2	  =           1,
+	MAIN_VERSION	  =          0,
+	SUB_VERSION		  =          5,
+	PATCH_VERSION	  =          0,
+	BUILD_VERSION	  =           1,
 
-	CLIENT_VERSION2		= (MAIN_VERSION2<<24)+(SUB_VERSION2<<16)+(PATCH_VERSION2<<8) + BUILD_VERSION2,
+	CLIENT_VERSION		= (MAIN_VERSION<<24)+(SUB_VERSION<<16)+(PATCH_VERSION<<8) + BUILD_VERSION,
 };

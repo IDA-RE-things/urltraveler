@@ -9,6 +9,7 @@ namespace trayicon
 	enum E_TrayIconEventValue
 	{
 		EVENT_VALUE_TRAYICON_SHOW = EVENT_VALUE_TRAYICON_BEGIN,		//	通知显示任务栏图标
+		EVENT_VALUE_TRAYICON_SHOW_UPDATE_WND,										//	弹出更新提示框
 	};
 
 	// TrayIcon能够可能对外发送的广播消息
@@ -33,5 +34,17 @@ namespace trayicon
 			srcMId	=	MODULE_ID_INVALID;
 			desMId	=	MODULE_ID_TRAYICON;
 		}
+	};
+
+	struct TrayIcon_ShowUpdateWndEvent	:	public	TrayIconEvent
+	{
+	public:
+		   TrayIcon_ShowUpdateWndEvent()
+		   {
+			   nNewestVersion	=	0;
+		   }
+
+		   //	当前的最新版本
+		   int	nNewestVersion;
 	};
 };
