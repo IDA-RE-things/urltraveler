@@ -31,6 +31,7 @@ TrayIconModule::~TrayIconModule()
 
 BEGIN_EVENT_MAP(TrayIconModule)
 	ON_EVENT(EVENT_VALUE_TRAYICON_SHOW,OnEvent_ShowTrayIcon)
+	ON_EVENT(EVENT_VALUE_TRAYICON_SHOW_UPDATE_WND, OnEvent_ShowUpdateWnd)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(TrayIconModule)
@@ -272,6 +273,15 @@ void TrayIconModule::OnEvent_ShowAboutDialog( Event *pEvent )
 	dlg.Create(*pParentWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);	
 	dlg.CenterWindow();
 	pParentWnd->ShowModal(dlg);
+}
+
+void TrayIconModule::OnEvent_ShowUpdateWnd(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue == EVENT_VALUE_TRAYICON_SHOW_UPDATE_WND)
+		return;
+
+	TrayIcon_ShowUpdateWndEvent* pShowEvent = (TrayIcon_ShowUpdateWndEvent*)pEvent->m_pstExtraInfo;
+
 }
 
 void TrayIconModule::OnMessage_Show(Message* pMessage)

@@ -444,13 +444,13 @@ void	DataCenterModule::OnService_GetSubFolderId(ServiceValue lServiceValue, para
 	DataCenter_GetSubFolderIdService* pGetSubFolderIdService = (DataCenter_GetSubFolderIdService*)lParam;
 	ASSERT(pGetSubFolderIdService != NULL);
 
-	std:vector<int>	vSubFolderId;
+	std::vector<int>	vSubFolderId;
 	int nId = pGetSubFolderIdService->nFoldId;
 	GetSubFolderId(&vSubFolderId, nId);
 
 	pGetSubFolderIdService->nIdNum = vSubFolderId.size();
 	pGetSubFolderIdService->pIdNum = new int[vSubFolderId.size()];
-	for(int i=0; i<vSubFolderId.size(); i++)
+	for(size_t i=0; i<vSubFolderId.size(); i++)
 	{
 		pGetSubFolderIdService->pIdNum[i] = vSubFolderId[i];	
 	}

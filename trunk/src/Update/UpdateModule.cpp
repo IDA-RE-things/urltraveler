@@ -12,6 +12,7 @@
 #include "MD5Checksum.h"
 #include "UpdateWnd.h";
 #include "MainFrameDefine.h"
+#include "TrayIconDefine.h"
 
 HMODULE	g_hModule = NULL;
 
@@ -19,6 +20,7 @@ using namespace std;
 using namespace update;
 using namespace web;
 using namespace mainframe;
+using namespace trayicon;
 
 namespace update
 {
@@ -38,6 +40,10 @@ UpdateModule::UpdateModule()
 
 UpdateModule::~UpdateModule()
 {
+	if( m_pUpdateWnd)
+	{
+		m_pUpdateWnd->SendMessage(WM_CLOSE, 0, 0);
+	}
 }
 
 BEGIN_EVENT_MAP(UpdateModule)
@@ -165,10 +171,7 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 	if( pE == NULL || pE->eventValue != EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP)
 		return;
 
-
-
 	//	启动UpdateExe文件
-
 }
 
 void	UpdateModule::ProcessUpdateConfig()
@@ -182,6 +185,9 @@ void	UpdateModule::ProcessUpdateConfig()
 	Json::Value& versionNode = root["version"];
 	string strLowVersion = versionNode["low_version"].asString();
 	string strCurrentVersion = versionNode["high_version"].asString();
+
+	int nLowVersion = MiscHelper::GetVersionFromString(strLowVersion.c_str());
+	int nHighVersion = MiscHelper::GetVersionFromString(strCurrentVersion.c_str());
 
 	// 文件结点
 	Json::Value& updateFileNode = root["package"];
@@ -222,34 +228,55 @@ void	UpdateModule::ProcessUpdateConfig()
 		}
 	}
 
-	mainframe::MainFrame_GetWndService stGetWndService;
-	m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
-
-	CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
-	ASSERT(pMainFrameWnd != NULL);
-
-	Web_DownloadUpdateFileService downloadUpdateFileService;
-	downloadUpdateFileService.srcId = MODULE_ID_UPDATE;
-	STRNCPY(downloadUpdateFileService.szUpdateFileUrl, updateInfo.strDownloadUrl.c_str());
-	STRNCPY(downloadUpdateFileService.szSavePath, wstrPath.c_str());
-	m_nDownloadSeqNo = GetModuleManager()->CallService(downloadUpdateFileService.serviceId, (param)&downloadUpdateFileService);
-
 	free(wszUpdatePath);
 
-	m_bDownloading	=	TRUE;
+	// 此时是强制更新
+	int nCurrentVersion = MiscHelper::GetCurrentVersion();
+	if( nCurrentVersion <= nLowVersion)
+	{
+		Web_DownloadUpdateFileService downloadUpdateFileService;
+		downloadUpdateFileService.srcId = MODULE_ID_UPDATE;
+		STRNCPY(downloadUpdateFileService.szUpdateFileUrl, updateInfo.strDownloadUrl.c_str());
+		STRNCPY(downloadUpdateFileService.szSavePath, wstrPath.c_str());
+		m_nDownloadSeqNo = GetModuleManager()->CallService(downloadUpdateFileService.serviceId, (param)&downloadUpdateFileService);
 
-	// 启动进度条界面
-	if( m_pUpdateWnd == NULL)
-		m_pUpdateWnd = new CUpdateWnd();
+		// 强制弹出更新窗口进行升级
+		mainframe::MainFrame_GetWndService stGetWndService;
+		m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
 
-	if( m_pUpdateWnd != NULL )
-	{ 
-		if( m_pUpdateWnd->GetHWND() == NULL)
-		{
-			m_pUpdateWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+		CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
+		ASSERT(pMainFrameWnd != NULL);
+
+		m_bDownloading	=	TRUE;
+
+		// 启动进度条界面
+		if( m_pUpdateWnd == NULL)
+			m_pUpdateWnd = new CUpdateWnd();
+
+		if( m_pUpdateWnd != NULL )
+		{ 
+			if( m_pUpdateWnd->GetHWND() == NULL)
+			{
+				m_pUpdateWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+			}
+			m_pUpdateWnd->CenterWindow();
+			pMainFrameWnd->ShowModal(*m_pUpdateWnd);
 		}
-		m_pUpdateWnd->CenterWindow();
-		pMainFrameWnd->ShowModal(*m_pUpdateWnd);
+	}
+	else 
+	{
+		ASSERT( nCurrentVersion <= nHighVersion);
+
+		//	弹出提示提示用户是否需要进行更新
+		
+		// 如果用户已经设置了默认更新，则不进行任何的提示
+		
+		// 右下角弹出更新提示框
+
+		TrayIcon_ShowUpdateWndEvent* pEvent = new TrayIcon_ShowUpdateWndEvent();
+		pEvent->srcMId = MODULE_ID_UPDATE;
+		pEvent->nNewestVersion	=	nHighVersion;
+		GetModuleManager()->PushEvent(*pEvent);
 	}
 }
 
