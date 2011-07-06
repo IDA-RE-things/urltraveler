@@ -1,7 +1,12 @@
 #include "stdafx.h"
+#include "SettingDefine.h"
+#include "MainFrameDefine.h"
 #include "SettingModule.h"
 
 using namespace setting;
+using namespace mainframe;
+
+HMODULE	g_hModule = NULL;
 
 namespace setting
 {
@@ -14,13 +19,20 @@ EXPORT_RELEASEMODULEFACTORY(SettingModule)
 
 SettingModule::SettingModule()
 {
-
+	m_pSettingWnd	=	NULL;
 }
 
 SettingModule::~SettingModule()
 {
-
+	if( m_pSettingWnd)
+	{
+		m_pSettingWnd->SendMessage(WM_CLOSE, 0, 0);
+	}
 }
+
+BEGIN_EVENT_MAP(SettingModule)
+	ON_EVENT(EVENT_VALUE_SETTING_OPEN, OnEvent_OpenSettingWnd)
+END_EVENT_MAP(SettingModule)
 
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
@@ -52,6 +64,7 @@ uint32 const SettingModule::GetModuleId()
 //----------------------------------------------------------------------------------------
 void SettingModule::ProcessEvent(const Event& evt)
 {
+	PROCESS_EVENT(evt);
 }
 
 //----------------------------------------------------------------------------------------
@@ -76,4 +89,34 @@ void SettingModule::ProcessMessage(const Message& msg)
 int32 SettingModule::CallDirect(const param lparam, param wparam) 
 {
 	return -1;
+}
+
+void	SettingModule::OnEvent_OpenSettingWnd(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_SETTING_OPEN)
+		return;
+
+	Setting_OpenEvent* pOpenEvent = (Setting_OpenEvent*)pEvent->m_pstExtraInfo;
+
+			// 强制弹出更新窗口进行升级
+		mainframe::MainFrame_GetWndService stGetWndService;
+		m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
+
+		CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
+		ASSERT(pMainFrameWnd != NULL);
+
+		// 启动进度条界面
+		if( m_pSettingWnd == NULL)
+			m_pSettingWnd = new CSettingWnd();
+
+		if( m_pSettingWnd != NULL )
+		{ 
+			if( m_pSettingWnd->GetHWND() == NULL)
+			{
+				m_pSettingWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+			}
+			m_pSettingWnd->CenterWindow();
+			pMainFrameWnd->ShowModal(*m_pSettingWnd);
+		}
+
 }
