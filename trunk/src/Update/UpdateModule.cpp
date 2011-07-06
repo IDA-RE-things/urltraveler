@@ -141,7 +141,7 @@ void	UpdateModule::OnEvent_CheckUpdateInfo(Event* pEvent)
 
 	//从服务器读取更新配置信息
 	Web_CheckUpdateConfigService checkUpdateConfigService;
-	checkUpdateConfigService.srcId = MODULE_ID_UPDATE;
+	checkUpdateConfigService.srcMId = MODULE_ID_UPDATE;
 	GetModuleManager()->CallService(checkUpdateConfigService.serviceId,(param)&checkUpdateConfigService);
 }
 
@@ -235,7 +235,7 @@ void	UpdateModule::ProcessUpdateConfig()
 	if( nCurrentVersion <= nLowVersion)
 	{
 		Web_DownloadUpdateFileService downloadUpdateFileService;
-		downloadUpdateFileService.srcId = MODULE_ID_UPDATE;
+		downloadUpdateFileService.srcMId = MODULE_ID_UPDATE;
 		STRNCPY(downloadUpdateFileService.szUpdateFileUrl, updateInfo.strDownloadUrl.c_str());
 		STRNCPY(downloadUpdateFileService.szSavePath, wstrPath.c_str());
 		m_nDownloadSeqNo = GetModuleManager()->CallService(downloadUpdateFileService.serviceId, (param)&downloadUpdateFileService);
@@ -298,7 +298,7 @@ void UpdateModule::OnMessage_CycleTrigged(Message* pMessage)
 	// 查询进度
 	web::Web_QueryDownFileProcessService queryProcessService;
 	queryProcessService.bAllowOffline = true;
-	queryProcessService.srcId = MODULE_ID_UPDATE;
+	queryProcessService.srcMId = MODULE_ID_UPDATE;
 	queryProcessService.nSeqNo = m_nDownloadSeqNo;
 	queryProcessService.uPercent = 0;
 	queryProcessService.uTotalLength = 0;

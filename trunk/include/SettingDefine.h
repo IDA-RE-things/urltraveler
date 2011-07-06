@@ -2,13 +2,14 @@
 
 // 设置界面的对外的头文件信息
 #include "SndaBase.h"
+#include "UrlTravelerHeader.h"
 
 namespace setting
 {
 	// Setting对外公开的事件
 	enum E_SettingEventValue
 	{
-		EVENT_VALUE_SETTING_OPEN = EVENT_VALUE_SETTING_BEGIN,		//打开主界面
+		EVENT_VALUE_SETTING_OPEN = EVENT_VALUE_SETTING_BEGIN,		//打开设置主界面
 		EVENT_VALUE_SETTING_CLOSE,						//	关闭当前主界面
 
 		EVENT_VALUE_SETTING_END = EVENT_VALUE_SETTING_END ,			//所有的事件结束
@@ -30,7 +31,6 @@ namespace setting
 	//===========================================//
 	struct SettingEvent	:	public ExtraInfo
 	{
-	public:
 		SettingEvent()
 		{
 			srcMId	=	MODULE_ID_INVALID;
@@ -41,21 +41,19 @@ namespace setting
 	// 打开主界面需要的对应的Event
 	struct Setting_OpenEvent	:	public	SettingEvent
 	{
-	public:
 		Setting_OpenEvent()
 		{
 			eventValue	=	 EVENT_VALUE_SETTING_OPEN;
 		}
-	}
+	};
 
 	//	关闭主界面需要的对应的Event
 	struct Setting_CloseEvent	:	public	SettingEvent
 	{
-	public:
-		Setting_OpenEvent()
+		Setting_CloseEvent()
 		{
 			eventValue	=	 EVENT_VALUE_SETTING_CLOSE;
 		}
-	}
+	};
 
 };

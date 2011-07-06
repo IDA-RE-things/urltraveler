@@ -5,6 +5,7 @@
 #include "PlugInDefine.h"
 #include "DataCenterDefine.h"
 #include "WebDefine.h"
+#include "SettingDefine.h"
 
 #include "ImageHelper.h"
 #include "MiscHelper.h"
@@ -21,6 +22,7 @@
 using namespace datacenter;
 using namespace mainframe;
 using namespace web;
+
 
 CMainFrameWnd::CMainFrameWnd()
 {
@@ -45,7 +47,7 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 
 	// 发送请求至服务器，统计在线人数
 	Web_OpenTravelerService openTravelerService;
-	openTravelerService.srcId = MODULE_ID_MAINFRAME;
+	openTravelerService.srcMId = MODULE_ID_MAINFRAME;
 	g_MainFrameModule->GetModuleManager()->CallService(openTravelerService.serviceId,(param)&openTravelerService);
 }
 
@@ -525,6 +527,11 @@ LRESULT CMainFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		break;
 
 	case IDM_SETTING:
+		{
+			setting::Setting_OpenEvent* pEvent = new setting::Setting_OpenEvent();
+			pEvent->srcMId = MODULE_ID_MAINFRAME;
+			g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+		}
 		break;
 
 	default:

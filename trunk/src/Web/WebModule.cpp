@@ -225,7 +225,7 @@ void WebModule::ProcessSendUrl( )
 int32 WebModule::OnService_GetFavoriteIcon(ServiceValue lService, param wparam)
 {
 	Web_GetFavIconqService* pService = (Web_GetFavIconqService*)wparam;
-	if( pService == NULL || pService->srcId == MODULE_ID_INVALID)
+	if( pService == NULL || pService->srcMId == MODULE_ID_INVALID)
 	{
 		ASSERT(0);
 		return -1;
@@ -234,7 +234,7 @@ int32 WebModule::OnService_GetFavoriteIcon(ServiceValue lService, param wparam)
 	uint32 nSeqNo = m_pRequestManager->PushUrl(	pService->serviceId,0,pService->szFavoriteUrl,NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcMId;
 	}
 
 	return nSeqNo;
@@ -253,7 +253,7 @@ int32 WebModule::OnService_OpenUrlTraveler(ServiceValue lService, param wparam)
 		L"http://1.urltraveler.sinaapp.com/login.php",NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcMId;
 	}
 
 	return nSeqNo;
@@ -272,7 +272,7 @@ int32 WebModule::OnService_CloseUrlTraveler(ServiceValue lService, param wparam)
 		L"http://1.urltraveler.sinaapp.com/logout.php",NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcMId;
 	}
 
 	return nSeqNo;
@@ -308,7 +308,7 @@ int32 WebModule::OnService_ReportUserInfo(ServiceValue lService, param wparam)
 		L"http://1.urltraveler.sinaapp.com/userinfo.php",NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcMId;
 	}
 	return nSeqNo;
 }
@@ -326,7 +326,7 @@ int32	WebModule::OnService_CheckUpdateConfig(ServiceValue lService, param wparam
 		L"http://urltraveler.sinaapp.com/getversion.php?type=copy",NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcMId;
 	}
 	return nSeqNo;
 }
@@ -346,7 +346,7 @@ int32	WebModule::OnService_DownloadUpdateFile(ServiceValue lService, param wpara
 		StringHelper::ANSIToUnicode(strDownloadUrl).c_str(),NULL,ONCE_FILE, pService->szSavePath);
 	if( nSeqNo != INVALID_SEQNO)
 	{
-		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcId;
+		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcMId;
 	}
 
 	return nSeqNo;

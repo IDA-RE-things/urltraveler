@@ -4,6 +4,8 @@
 #include "Module.h"
 #include "ModuleImpl.h"
 
+#include "SettingWnd.h"
+
 
 extern "C" 
 {
@@ -13,6 +15,8 @@ extern "C"
 
 class SettingModule : public ModuleImpl
 {
+	DECLEAR_EVENT_MAP(SettingModule);
+
 public:
 	SettingModule();
 	~SettingModule();
@@ -59,6 +63,14 @@ public:
 	//		@param	rparam			²ÎÊý2
 	//----------------------------------------------------------------------------------------
 	int32 CallDirect(const param lparam, param wparam);
+
+protected:
+
+	void	OnEvent_OpenSettingWnd(Event* pEvent);
+
+protected:
+	CSettingWnd*	m_pSettingWnd;
+
 };
 
 class SettingModuleFactory : public ModuleFactoryImpl<SettingModule>{};

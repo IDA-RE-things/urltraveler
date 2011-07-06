@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include"
+				AdditionalIncludeDirectories="..\..\include;..\..\thirdlib\duilib\DuiLib\;..\Utility"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;OPTIONSETTING_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,8 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="DuiLib_ud.lib Utilityd.lib"
 				OutputFile="..\..\bin\Settingd.dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="..\..\thirdlib\duilib\bin\;..\..\lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
@@ -118,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\include"
+				AdditionalIncludeDirectories="..\..\include;..\..\thirdlib\duilib\DuiLib\;..\Utility"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;OPTIONSETTING_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -137,8 +139,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="DuiLib_ud.lib Utilityd.lib"
 				OutputFile="..\..\bin\Setting.dll"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\thirdlib\duilib\bin\;..\..\lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
@@ -209,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SettingWnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -240,6 +248,10 @@
 			</File>
 			<File
 				RelativePath=".\SettingModule.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SettingWnd.h"
 				>
 			</File>
 			<File
