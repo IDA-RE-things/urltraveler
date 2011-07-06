@@ -115,7 +115,14 @@ void	SettingModule::OnEvent_OpenSettingWnd(Event* pEvent)
 			{
 				m_pSettingWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
 			}
+
 			m_pSettingWnd->CenterWindow();
+
+			// 主窗口处于最小化状态
+			if( IsIconic(pMainFrameWnd->GetHWND()) == TRUE)
+			{
+			}
+
 			pMainFrameWnd->ShowModal(*m_pSettingWnd);
 		}
 
