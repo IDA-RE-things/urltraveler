@@ -225,6 +225,7 @@ void CUpdateWnd::SetDownLoadProgress( UINT nPercent)
 	if( m_pProcess == NULL)
 		return;
 
+	m_pProcess->SetFgImage(L"E:\\URLTraveler\\bin\Skin\\UrlTraveler\\tree_select.bmp");
 	m_pProcess->SetValue(nPercent);
 
 	CLabelUI* pPercentText = static_cast<CLabelUI*>(m_pm.FindControl(_T("PercentText")));
