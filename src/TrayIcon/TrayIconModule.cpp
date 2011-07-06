@@ -5,10 +5,12 @@
 #include <sstream>
 #include "AboutDlg.h"
 #include "MainFrameDefine.h"
+#include "SettingDefine.h"
 
 HMODULE	g_hModule = NULL;
 
 using namespace trayicon;
+using namespace setting;
 
 namespace trayicon
 {
@@ -54,6 +56,15 @@ static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM wParam, L
 			case IDM_APP_ABOUT:
 				pTrayIconModule->OnEvent_ShowAboutDialog(NULL);
 				break;
+
+			case IDM_SETTING:
+				{
+					setting::Setting_OpenEvent* pEvent = new setting::Setting_OpenEvent();
+					pEvent->srcMId = MODULE_ID_MAINFRAME;
+					pTrayIconModule->GetModuleManager()->PushEvent(*pEvent);
+
+					break;
+				}
 
 			case IDM_APP_EXIT:
 				{
