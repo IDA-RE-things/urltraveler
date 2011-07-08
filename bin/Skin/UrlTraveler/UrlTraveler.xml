@@ -17,8 +17,9 @@
                 <Label name="LabelUI11" text="收藏夹同步" float="true" pos="108,86,168,116" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                 <Label name="LabelUI12" text="COOKIE同步" float="true" pos="198,86,258,116" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                 <Label name="LabelUI13" text="  设  置" float="true" pos="282,85,342,115" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                <Text name="TextUI17" text="网址漫游精灵1.0" float="true" pos="10,7,159,22" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-            </HorizontalLayout>
+				<Text name="TextUI17" text="{b}3+收藏夹漫游大师1.0{/b}" float="true" pos="37,7,186,22" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                <Label name="LabelUI14" float="true" pos="10,4,30,24" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />           
+			</HorizontalLayout>
             <HorizontalLayout name="HorizontalLayoutUI8" width="120" height="122">
 		<Button name="menubtn" padding="0,1,0,0" maxheight="17" maxwidth="26" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_menu.png' source='0,0,26,17'" hotimage="file='sys_dlg_menu.png' source='26,0,52,17'" pushedimage="file='sys_dlg_menu.png' source='52,0,78,17'"/>
                 <Button name="minbtn" padding="0,1,0,0" maxheight="17" maxwidth="26" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_min.png' source='0,0,26,17'" hotimage="file='sys_dlg_min.png' source='26,0,52,17'" pushedimage="file='sys_dlg_min.png' source='52,0,78,17'"/>
