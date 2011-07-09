@@ -30,7 +30,7 @@ void CUpdateWnd::Notify(TNotifyUI& msg)
 	if( msg.sType == _T("windowinit") ) OnPrepare(msg);
 	else if( msg.sType == _T("click") ) {
 		if( msg.pSender->GetName() == L"closebtn" ) {
-			PostQuitMessage(0);
+			Close();
 			return; 
 		}
 		else if( msg.pSender->GetName() == L"minbtn" ) { 
@@ -69,14 +69,6 @@ LRESULT CUpdateWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 {
 	bHandled = FALSE;
 
-	return 0;
-}
-
-LRESULT CUpdateWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	::PostQuitMessage(0L);
-
-	bHandled = FALSE;
 	return 0;
 }
 
@@ -202,7 +194,6 @@ LRESULT CUpdateWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch( uMsg ) {
 		case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
 		case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
-		case WM_DESTROY:       lRes = OnDestroy(uMsg, wParam, lParam, bHandled); break;
 		case WM_NCACTIVATE:    lRes = OnNcActivate(uMsg, wParam, lParam, bHandled); break;
 		case WM_NCCALCSIZE:    lRes = OnNcCalcSize(uMsg, wParam, lParam, bHandled); break;
 		case WM_NCPAINT:       lRes = OnNcPaint(uMsg, wParam, lParam, bHandled); break;

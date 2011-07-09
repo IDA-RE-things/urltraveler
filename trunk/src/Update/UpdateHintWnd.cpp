@@ -5,6 +5,11 @@
 #include "StringHelper.h"
 #include "MiscHelper.h"
 #include "XString.h"
+#include "UpdateDefine.h"
+#include "UpdateModule.h"
+
+using namespace  update;
+
 
 CUpdateHintWnd::CUpdateHintWnd()
 {
@@ -44,21 +49,31 @@ void CUpdateHintWnd::OnPrepare(TNotifyUI& msg)
 
 void CUpdateHintWnd::Notify(TNotifyUI& msg)
 {
-	if( msg.sType == _T("windowinit") ) OnPrepare(msg);
-	else if( msg.sType == _T("click") ) {
-		if( msg.pSender->GetName() == L"closebtn" ) {
-			PostQuitMessage(0);
+	if( msg.sType == _T("windowinit") ) 
+	{
+		OnPrepare(msg);
+	}
+	else if( msg.sType == _T("click") )
+	{
+		if( msg.pSender->GetName() == L"closebtn" ) 
+		{
+			Close();
 			return; 
 		}
-		else if( msg.pSender->GetName() == L"minbtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0); return; }
-		else if( msg.pSender->GetName() == L"maxbtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0); return; }
-		else if( msg.pSender->GetName() == L"restorebtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_RESTORE, 0); return; }
-		else if( msg.pSender->GetName() == L"menubtn" ) { 
-		}
 
+		// Á¢¼´¸üÐÂ
+		else if( msg.pSender->GetName() == L"UpdateNow" ) 
+		{ 
+			Update_ShowUpdateDownloadingEvent* pEvent = new Update_ShowUpdateDownloadingEvent();
+			pEvent->srcMId = MODULE_ID_UPDATE;
+			g_UpdateModule->GetModuleManager()->PushEvent(*pEvent);
+
+			Close();
+		}
+		else if( msg.pSender->GetName() == L"RemindNow" )
+		{ 
+			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0); return; 
+		}
 	}
 }
 
@@ -83,14 +98,6 @@ LRESULT CUpdateHintWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 {
 	bHandled = FALSE;
 
-	return 0;
-}
-
-LRESULT CUpdateHintWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	::PostQuitMessage(0L);
-
-	bHandled = FALSE;
 	return 0;
 }
 
@@ -216,7 +223,6 @@ LRESULT CUpdateHintWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch( uMsg ) {
 		case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
 		case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
-		case WM_DESTROY:       lRes = OnDestroy(uMsg, wParam, lParam, bHandled); break;
 		case WM_NCACTIVATE:    lRes = OnNcActivate(uMsg, wParam, lParam, bHandled); break;
 		case WM_NCCALCSIZE:    lRes = OnNcCalcSize(uMsg, wParam, lParam, bHandled); break;
 		case WM_NCPAINT:       lRes = OnNcPaint(uMsg, wParam, lParam, bHandled); break;
