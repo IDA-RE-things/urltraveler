@@ -26,7 +26,7 @@ typedef struct TxConfig
 };
 #pragma pop()
 
-class CTxConfig
+class UTILITY_API CTxConfig
 {
 public:
 	CTxConfig(void);
