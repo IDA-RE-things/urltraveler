@@ -15,6 +15,7 @@ namespace update
 	enum E_UpdateEventValue
 	{
 		EVENT_VALUE_UPDATE_CHECK_UPDATEINFO = EVENT_VALUE_UPDATE_BEGIN,		// 检查当前应用程序是否存在更新
+		EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND,			//	显示更新提示窗口
 	};
 
 	// Update能够可能对外发送的广播消息
@@ -27,12 +28,6 @@ namespace update
 	{
 		SERVICE_VALUE_UPDATE_FAVICON_LOAD = SERVICE_VALUE_UPDATE_BEGIN,					//	加载特定的URL的收藏夹图标
 	};
-
-	/** 本模块中使用的一些全局宏定义常量
-	本处的宏定义常量无实际语义,这些常量在代码中不作为有语义的常量使用
-	如:字符串最大长度、数组最大长度等
-	*/	
-#define DB_MAX_LEN_BINARY_BUFFER			(20480+1)
 
 	//============================================================================//
 	//                   Update中所使用到的数据结构			                  //
@@ -52,16 +47,17 @@ namespace update
 		}
 	};
 
-	// 存储收藏夹图标的接口
-	struct Update_FavIconSaveEvent	:	public UpdateEvent
+	// 通知提示显示更新信息对话框
+#define MAX_UPDATE_VERSION_LEN			(32+1)
+	struct Update_ShowUpdateInfoEvent	:	public UpdateEvent
 	{
-		Update_FavIconSaveEvent()
+		Update_ShowUpdateInfoEvent()
 		{
+			eventValue = EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND;
+			nVersion = 0;
 		}
 
-		~Update_FavIconSaveEvent()
-		{
-		}
+		int nVersion;
 	};
 
 	//============================================================================//
