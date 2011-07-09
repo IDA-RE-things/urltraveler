@@ -196,7 +196,6 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 
 		//	启动UpdateExe文件
 	}
-
 }
 
 void	UpdateModule::OnEvent_ShowUpdateDownloadingWnd(Event* pEvent)
@@ -208,19 +207,13 @@ void	UpdateModule::OnEvent_ShowUpdateDownloadingWnd(Event* pEvent)
 	int nLastestVersion	=	 pDownloadEvent->nLastestVersion;
 	wstring	wstrUrl	=	pDownloadEvent->szDownloadUrl;
 	wstring	wstrPath	=	pDownloadEvent->szSavePath;
+	BOOL bForce = pDownloadEvent->bForce;
 
 	Web_DownloadUpdateFileService downloadUpdateFileService;
 	downloadUpdateFileService.srcMId = MODULE_ID_UPDATE;
 	STRNCPY(downloadUpdateFileService.szUpdateFileUrl, wstrUrl.c_str());
 	STRNCPY(downloadUpdateFileService.szSavePath, wstrPath.c_str());
 	m_nDownloadSeqNo = GetModuleManager()->CallService(downloadUpdateFileService.serviceId, (param)&downloadUpdateFileService);
-
-	// 强制弹出更新窗口进行升级
-	mainframe::MainFrame_GetWndService stGetWndService;
-	m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
-
-	CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
-	ASSERT(pMainFrameWnd != NULL);
 
 	m_bDownloading	=	TRUE;
 
@@ -233,12 +226,34 @@ void	UpdateModule::OnEvent_ShowUpdateDownloadingWnd(Event* pEvent)
 		m_pUpdateWnd->SetNewVersion(nLastestVersion);
 		m_pUpdateWnd->SetCurrentVersion(MiscHelper::GetCurrentVersion());
 
-		if( m_pUpdateWnd->GetHWND() == NULL)
+		if( bForce == TRUE)
 		{
-			m_pUpdateWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+			// 强制弹出更新窗口进行升级
+			mainframe::MainFrame_GetWndService stGetWndService;
+			m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
+
+			CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
+			ASSERT(pMainFrameWnd != NULL);
+
+			if( m_pUpdateWnd->GetHWND() == NULL)
+			{
+				m_pUpdateWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+			}
+			m_pUpdateWnd->CenterWindow();
+			m_pUpdateWnd->SetHintMsg(L"{b}你的版本太低，必须升级才能继续使用！{/b}");
+			pMainFrameWnd->ShowModal(*m_pUpdateWnd);
 		}
-		m_pUpdateWnd->CenterWindow();
-		pMainFrameWnd->ShowModal(*m_pUpdateWnd);
+		else
+		{
+			if( m_pUpdateWnd->GetHWND() == NULL)
+			{
+				m_pUpdateWnd->Create(NULL, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+			}
+			m_pUpdateWnd->CenterWindow();
+
+			m_pUpdateWnd->SetHintMsg(L"{b}检测到新的版本，正在进行升级！{/b}");
+			m_pUpdateWnd->ShowWindow(true);
+		}
 	}	
 }
  
@@ -263,6 +278,8 @@ void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
 	}
 	ASSERT(m_pUpdateHintWnd->GetHWND() != NULL);
 
+	m_pUpdateHintWnd->SetDownloadUrl(pUpdateInfoEvent->szDownloadUrl);
+	m_pUpdateHintWnd->SetSavePath(pUpdateInfoEvent->szSavePath);
 	m_pUpdateHintWnd->SetVersion(MiscHelper::GetStringFromVersion(pUpdateInfoEvent->nVersion + 12));
 	m_pUpdateHintWnd->SetSize(2.34);
 	m_pUpdateHintWnd->AddUpdateDetail(L"增加了对Chrome浏览器的支持");
@@ -286,7 +303,7 @@ void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
 	BOOL bTaskBarOnTop=nDesktopHeight<nScreenHeight && rcDesktop.top!=0;
 	BOOL bTaskbarOnBottom=nDesktopHeight<nScreenHeight && rcDesktop.top==0;
 
-	GetWindowRect(m_pUpdateHintWnd->GetHWND(),&m_UpdateTipWindowRect);
+	::GetWindowRect(m_pUpdateHintWnd->GetHWND(),&m_UpdateTipWindowRect);
 
 	m_nStartPosX=rcDesktop.right-m_UpdateTipWindowRect.GetWidth() -5;
 	m_nStartPosY=rcDesktop.bottom;
@@ -294,10 +311,11 @@ void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
 	m_nCurrentPosX=m_nStartPosX;
 	m_nCurrentPosY=m_nStartPosY;
 
-	MoveWindow(m_pUpdateHintWnd->GetHWND(),
+	::MoveWindow(m_pUpdateHintWnd->GetHWND(),
 		m_nCurrentPosX, m_nCurrentPosY, 
 		m_UpdateTipWindowRect.GetWidth(), 
 		m_UpdateTipWindowRect.GetHeight(), TRUE);
+	::SetWindowPos(m_pUpdateHintWnd->GetHWND(),HWND_TOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
 
 	m_bShowingUpdateInfoWnd	=	TRUE;
 }
@@ -367,6 +385,7 @@ void	UpdateModule::ProcessUpdateConfig()
 		pEvent->nLastestVersion = nHighVersion;
 		STRNCPY(pEvent->szDownloadUrl, updateInfo.strDownloadUrl.c_str());
 		STRNCPY(pEvent->szSavePath, updateInfo.strTempSavePath.c_str());
+		pEvent->bForce = TRUE;
 		GetModuleManager()->PushEvent(*pEvent);
 	}
 	else 
@@ -381,6 +400,8 @@ void	UpdateModule::ProcessUpdateConfig()
 		Update_ShowUpdateInfoEvent* pEvent = new Update_ShowUpdateInfoEvent();
 		pEvent->srcMId = MODULE_ID_UPDATE;
 		pEvent->nVersion = nHighVersion;
+		STRNCPY(pEvent->szDownloadUrl, updateInfo.strDownloadUrl.c_str());
+		STRNCPY(pEvent->szSavePath, updateInfo.strTempSavePath.c_str());
 		GetModuleManager()->PushEvent(*pEvent);
 	}
 }

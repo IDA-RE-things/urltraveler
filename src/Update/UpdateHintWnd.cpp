@@ -65,6 +65,11 @@ void CUpdateHintWnd::Notify(TNotifyUI& msg)
 		{ 
 			Update_ShowUpdateDownloadingEvent* pEvent = new Update_ShowUpdateDownloadingEvent();
 			pEvent->srcMId = MODULE_ID_UPDATE;
+			pEvent->bForce = FALSE;
+			STRNCPY(pEvent->szDownloadUrl, m_strDownloadUrl.GetData());
+			STRNCPY(pEvent->szSavePath, m_strSavePath.GetData());
+			pEvent->nLastestVersion = MiscHelper::GetVersionFromString(
+				StringHelper::UnicodeToANSI(m_strVersion.GetData()).c_str()); 
 			g_UpdateModule->GetModuleManager()->PushEvent(*pEvent);
 
 			Close();
@@ -176,7 +181,7 @@ LRESULT CUpdateHintWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 {
 	// 有时会在收到WM_NCDESTROY后收到wParam为SC_CLOSE的WM_SYSCOMMAND
 	if( wParam == SC_CLOSE ) {
-		::PostQuitMessage(0L);
+		PostMessageW(WM_CLOSE,0,0);
 		bHandled = TRUE;
 		return 0;
 	}
@@ -236,6 +241,16 @@ LRESULT CUpdateHintWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if( bHandled ) return lRes;
 	if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
 	return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
+}
+
+void CUpdateHintWnd::SetDownloadUrl(String strDownloadUrl)
+{
+	m_strDownloadUrl = strDownloadUrl;
+}
+
+void	CUpdateHintWnd::SetSavePath(String strSavePath)
+{
+	m_strSavePath = strSavePath;
 }
 
 void	CUpdateHintWnd::SetVersion(String	strVersion)

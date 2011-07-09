@@ -56,9 +56,14 @@ namespace update
 		{
 			eventValue = EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND;
 			nVersion = 0;
+
+			ZeroMemory(szDownloadUrl, MAX_PATH*sizeof(wchar_t));
+			ZeroMemory(szSavePath, MAX_PATH*sizeof(wchar_t));
 		}
 
 		int nVersion;
+		wchar_t	szDownloadUrl[MAX_PATH];
+		wchar_t	szSavePath[MAX_PATH];
 	};
 
 	struct Update_ShowUpdateDownloadingEvent	:	public UpdateEvent
@@ -69,7 +74,11 @@ namespace update
 			nLastestVersion = 0;
 			ZeroMemory(szDownloadUrl, MAX_PATH*sizeof(wchar_t));
 			ZeroMemory(szSavePath, MAX_PATH*sizeof(wchar_t));
+
+			bForce	=	FALSE;
 		}
+
+		BOOL	bForce;		//	是否需要强制更新
 
 		int nLastestVersion;		//	最近的版本
 
