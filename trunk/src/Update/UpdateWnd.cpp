@@ -16,6 +16,11 @@ CUpdateWnd::~CUpdateWnd()
 {
 }
 
+void	CUpdateWnd::SetHintMsg(String strMsg)
+{
+	m_strHintMsg = strMsg;
+}
+
 void	CUpdateWnd::SetNewVersion(int nNewVersion) 
 {
 	m_nNewVersion = nNewVersion;
@@ -37,12 +42,23 @@ void CUpdateWnd::OnPrepare(TNotifyUI& msg)
 	CTextUI * pNewVersion = static_cast<CTextUI *>(m_pm.FindControl(_T("newversion")));
 	if( pNewVersion == NULL)
 		return;
-	pNewVersion->SetText(MiscHelper::GetStringFromVersion(m_nNewVersion));
+	String strNewVersion = L"{c #ff0000}{b}";
+	strNewVersion += MiscHelper::GetStringFromVersion(m_nNewVersion) ;
+	strNewVersion += L"{/b}{/c}";
+	pNewVersion->SetText(strNewVersion.GetData());
 
 	CTextUI * pCurrentVersion = static_cast<CTextUI *>(m_pm.FindControl(_T("currentversion")));
 	if( pCurrentVersion == NULL)
 		return;
-	pCurrentVersion->SetText(MiscHelper::GetStringFromVersion(m_nCurrentVersion));
+	String strCurrentVersion = L"{c #ff0000}{b}";
+	strCurrentVersion += MiscHelper::GetStringFromVersion(m_nCurrentVersion) ;
+	strCurrentVersion += L"{/b}{/c}";
+	pCurrentVersion->SetText(strCurrentVersion.GetData());
+
+	CTextUI * pHintMsg = static_cast<CTextUI *>(m_pm.FindControl(_T("hintmsg")));
+	if( pHintMsg == NULL)
+		return;
+	pHintMsg->SetText(m_strHintMsg.GetData());
 }
 
 void CUpdateWnd::Notify(TNotifyUI& msg)

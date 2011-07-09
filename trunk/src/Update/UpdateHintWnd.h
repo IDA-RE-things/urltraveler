@@ -45,6 +45,8 @@ public:
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
+	void SetDownloadUrl(String strDownloadUrl);
+	void	SetSavePath(String strSavePath);
 	void	SetVersion(String	strVersion);
 	void	SetSize(float fSize);
 	void	AddUpdateDetail(String strDetail);
@@ -52,6 +54,8 @@ public:
 public:
 	CPaintManagerUI m_pm;
 
+	String	m_strDownloadUrl;
+	String	m_strSavePath;
 	String	m_strVersion;
 	float		m_fSize;
 	std::vector<wstring>	m_vUpdateDetail;

@@ -44,7 +44,7 @@ public:
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-
+	void	SetHintMsg(String strMsg);
 	void SetDownLoadProgress( UINT nPercent);
 	void	SetNewVersion(int nNewVersion) ;
 	void	SetCurrentVersion(int nCurrentVersion);
@@ -55,4 +55,5 @@ public:
 	
 	int	m_nNewVersion;
 	int	m_nCurrentVersion;
+	String	m_strHintMsg;
 };
