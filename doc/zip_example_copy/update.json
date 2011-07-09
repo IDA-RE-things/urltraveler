@@ -1,0 +1,18 @@
+{	
+	"filelist":
+	[
+		{
+			"action":"copy",
+			"filename":"TrayIcond.dll",
+			"md5":"C574504E8007B047B0250AEF755614C2",
+			"locatepath":".\",
+		},		
+
+		{
+			"action":"copy",
+			"filename":"Utilityd.dll",
+			"md5":"38BE2890D7F87B12ED6097FC5E3539F4",
+			"locatepath":".\",
+		},		
+	]
+} 

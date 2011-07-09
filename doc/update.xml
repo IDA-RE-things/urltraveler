@@ -4,6 +4,17 @@
 		"low_version":"1",
 		"high_version":"1"
 	},
+
+	"updateinfo":
+	{
+		size:1.23,
+		detail:
+		[
+			{item:"增加了对chrome浏览器的支持"},
+			{item:"修复了IE插件的bug"},
+			{item:"支持网络同步"},
+		]
+	},
 	
 	"filelist":
 	[
