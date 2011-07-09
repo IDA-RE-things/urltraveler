@@ -13,6 +13,7 @@
 #include <map>
 #include <vector>
 #include "UICommonControls.h"
+#include "XString.h"
 
 using namespace std;
 using namespace DuiLib;
@@ -45,8 +46,13 @@ public:
 
 
 	void SetDownLoadProgress( UINT nPercent);
+	void	SetNewVersion(int nNewVersion) ;
+	void	SetCurrentVersion(int nCurrentVersion);
 
 public:
 	CPaintManagerUI m_pm;
 	CProgressUI*	m_pProcess;
+	
+	int	m_nNewVersion;
+	int	m_nCurrentVersion;
 };
