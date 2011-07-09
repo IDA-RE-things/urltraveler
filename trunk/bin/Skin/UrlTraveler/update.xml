@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<Window size="350,120" sizebox="0,0,300,30" caption="0,0,0,30">
+<Window size="425,304" sizebox="0,0,300,30" caption="0,0,0,30">
     <Font name="宋体" size="13" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="false" italic="false" default="true" />
     <Font name="宋体" size="14" bold="true" italic="false" />
     <Font name="宋体" size="22" bold="true" italic="true" />
     <Font name="SimSun" size="12" bold="true" italic="false" />
-    <VerticalLayout name="VerticalLayoutUI1" pos="0,0,350,146" width="350" height="146" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
-        <HorizontalLayout name="VerticalLayoutUI2" pos="0,0,850,24" width="850" height="24">
-            <HorizontalLayout name="HorizontalLayoutUI7" pos="0,0,300,23" width="300" height="23">
-                <Text name="TextUI17" text="网址漫游精灵版本更新" float="true" pos="10,7,159,22" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+    <VerticalLayout name="VerticalLayoutUI1" pos="0,0,425,315" width="425" height="315" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,1,0">
+        <HorizontalLayout name="VerticalLayoutUI2" pos="1,0,425,31" width="424" height="31">
+            <HorizontalLayout name="HorizontalLayoutUI7" pos="0,0,361,30" width="361" height="30">
+                <Text name="TextUI17" text="{b}3+收藏夹漫游大师版本更新{/b}" float="true" pos="38,8,218,24" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                <Label name="LabelUI2" float="true" pos="8,4,30,26" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             </HorizontalLayout>
-            <HorizontalLayout name="HorizontalLayoutUI8" pos="302,0,344,21" width="42" height="21">
-                <Button name="restorebtn" visible="false" padding="0,1,0,0" maxheight="17" maxwidth="26" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_restore.png&apos; source=&apos;0,0,26,17&apos;" />
-                <Button name="closebtn" pos="0,2,45,19" width="45" height="17" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+            <HorizontalLayout name="HorizontalLayoutUI8" pos="361,0,422,29" width="61" height="29">
+                <Button name="closebtn" float="true" pos="16,2,58,19" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
             </HorizontalLayout>
         </HorizontalLayout>
-        <Progress name="UpdateProgress" float="true" pos="19,50,333,80" bordercolor="#FF4EA0D1" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" min="0" max="100" value="0" hor="true" />
-        <Label name="LabelUI1" text="正在下载更新包，已经完成" float="true" pos="22,95,168,113" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-        <Label name="PercentText" text="0%" float="true" pos="175,95,221,113" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+        <HorizontalLayout name="HorizontalLayoutUI1" pos="1,31,425,270" width="424" height="239" bkcolor="#FFFFFFFF">
+            <Progress name="UpdateProgress" float="true" pos="135,133,412,163" bordercolor="#FF4EA0D1" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" min="0" max="100" value="0" hor="true" />
+            <Label name="LabelUI1" text="正在下载更新包，已经完成" float="true" pos="135,101,281,119" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+            <Label name="PercentText" text="0%" float="true" pos="290,101,336,119" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+            <Label name="LabelUI3" float="true" pos="1,1,112,238" bkimage="update_back.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+            <Text name="TextUI1" text="最新版本为：3.0.0.0" float="true" pos="135,26,284,44" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+            <Text name="TextUI2" text="当前版本为：2.0.0.0" float="true" pos="135,57,284,75" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+        </HorizontalLayout>
+        <Button name="ButtonUI2" text="关闭" float="true" pos="307,274,379,299" bkimage="E:\URLTraveler\bin\Skin\UrlTraveler\btn21.png" bordercolor="#00000080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
     </VerticalLayout>
 </Window>

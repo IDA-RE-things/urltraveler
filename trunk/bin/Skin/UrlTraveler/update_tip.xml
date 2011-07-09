@@ -8,16 +8,16 @@
     <Font name="SimSun" size="12" bold="true" italic="false" />
     <VerticalLayout name="VerticalLayoutUI1" pos="0,0,323,269" width="323" height="269" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,0,0">
         <VerticalLayout name="VerticalLayoutUI2" pos="1,0,322,30" width="321" height="30">
+            <Button name="closebtn" float="true" pos="269,1,314,18" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
             <Label name="LabelUI1" float="true" pos="3,3,25,25" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             <Label name="LabelUI2" text="{b}3+ 收藏夹漫游大师{/b}" float="true" pos="31,4,153,25" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" />
-            <Button name="closebtn" float="true" pos="269,1,314,18" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
         </VerticalLayout>
         <VerticalLayout name="VerticalLayoutUI3" pos="1,30,322,99" width="321" height="69" bkcolor="#FFFFFFFF" inset="1,0,0,0">
             <Text name="TextUI1" text="{f 4}{b}hi，我们发现最新版本{/b}{/f}" float="true" pos="28,10,295,36" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
             <Text name="TextUI2" text="版本：" float="true" pos="14,46,57,65" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-            <Text name="version" text="1.0.0.5" float="true" pos="50,46,130,65" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+            <Text name="TextUI3" text="1.0.0.5" float="true" pos="50,46,130,65" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
             <Text name="TextUI4" text="更新包大小：" float="true" pos="155,46,235,65" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-            <Text name="size" text="{b}1.23M{/b}" float="true" pos="231,46,311,65" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+            <Text name="TextUI5" text="{b}1.23M{/b}" float="true" pos="231,46,311,65" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
         </VerticalLayout>
         <VerticalLayout name="VerticalLayoutUI9" pos="1,99,322,129" width="321" height="30">
             <Text name="TextUI7" text="{i update_hint.png} 普通升级" float="true" pos="18,7,102,24" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
@@ -25,10 +25,9 @@
             <Text name="TextUI9" text="用户选择升级该版本" float="true" pos="193,7,319,24" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
         </VerticalLayout>
         <VerticalLayout name="VerticalLayoutUI10" pos="1,129,322,248" width="321" height="119" bkcolor="#FFFFFFFF" inset="1,0,0,0">
-            <Text name="update_detail" text="更新内容：{n}{n} {x 2}{i ball.png}  增加了对Chrome浏览器的支持 {n}{n} {x 2}{i ball.png}  修改了FireFox插件的bug" float="true" pos="10,6,306,113" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+            <Text name="TextUI6" text="更新内容：{n}{n} {x 2}{i ball.png}  增加了对Chrome浏览器的支持 {n}{n} {x 2}{i ball.png}  修改了FireFox插件的bug" float="true" pos="7,6,313,113" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
         </VerticalLayout>
-        <Button name="ButtonUI1" text="跳过此版本" float="true" pos="14,261,94,285" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-        <Button name="ButtonUI2" text="立即升级" float="true" pos="148,262,228,286" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-        <Button name="ButtonUI3" text="稍后再说" float="true" pos="237,261,317,285" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+        <Button name="UpdateNow" text="立即升级" float="true" pos="144,258,224,282" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+        <Button name="RemindLater" text="稍后再说" float="true" pos="233,257,313,281" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
     </VerticalLayout>
 </Window>
