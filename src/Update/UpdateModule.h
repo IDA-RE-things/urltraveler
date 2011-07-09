@@ -7,6 +7,8 @@
 #include <vector>
 #include "UpdateDefine.h"
 #include "UpdateWnd.h"
+#include "UpdateHintWnd.h"
+#include "UIBase.h"
 
 using namespace std;
 
@@ -94,9 +96,13 @@ protected:
 	void	OnEvent_CheckUpdateInfo(Event* pEvent);
 	void	OnEvent_UpdateInfoArrive(Event* pEvent);
 	void	OnEvent_UpdateFileDownloaded(Event* pEvent);
+	void	OnEvent_ShowUpdateInfoWnd(Event* pEvent);
 
 protected:
 	void OnMessage_CycleTrigged(Message* pMessage);
+
+	void	QueryDownloadUpdateFileProcess();
+	void	ShowUpdateInfoWnd();
 
 private:
 
@@ -109,9 +115,22 @@ protected:
 	wstring	m_strUpdateXml;	//	更新的xml文件内容
 	wstring	m_strUpdateFileName;	//	更新的文件名称
 
-	int		m_bDownloading;	//	是否正在下载安装包
+	BOOL	m_bDownloading;	//	是否正在下载安装包
 	int		m_nDownloadSeqNo;
-	CUpdateWnd*	m_pUpdateWnd;		
+
+	CUpdateWnd*	m_pUpdateWnd;	
+
+	// UpdateHintWnd相关的信息
+	BOOL	m_bShowingUpdateInfoWnd;	//	是否正在逐步显示更新信息对话框
+	CRect	m_UpdateTipWindowRect;
+	CUpdateHintWnd*	m_pUpdateHintWnd;
+
+	int m_nStartPosX;
+	int m_nStartPosY;
+	int m_nCurrentPosX;
+	int m_nCurrentPosY;
+	int m_nTaskbarPlacement;
+	int m_nIncrement;
 };
 
 class UpdateModuleFactory : public ModuleFactoryImpl<UpdateModule>{};

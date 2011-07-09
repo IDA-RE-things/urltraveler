@@ -367,7 +367,7 @@ String String::ValueOf(double dwValue)
 //参数: 
 //	@param	flValue	需要转换的整数
 //----------------------------------------------------------------------------------------
-String String::ValueOf(float flValue)
+String String::ValueOf(float flValue, int n)
 {
 	return String(_T(""));
 }

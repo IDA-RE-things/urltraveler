@@ -13,8 +13,15 @@
 #include "UpdateWnd.h";
 #include "MainFrameDefine.h"
 #include "TrayIconDefine.h"
+#include "UIBase.h"
 
 HMODULE	g_hModule = NULL;
+
+#define IDT_HIDDEN		0
+#define IDT_APPEARING		1
+#define IDT_WAITING		2
+#define IDT_DISAPPEARING	3
+
 
 using namespace std;
 using namespace update;
@@ -34,8 +41,19 @@ EXPORT_RELEASEMODULEFACTORY(UpdateModule)
 UpdateModule::UpdateModule()
 {
 	m_nDownloadSeqNo	=	INVALID_SEQNO;
-	m_pUpdateWnd	=	NULL;
 	m_bDownloading	=	FALSE;
+
+	m_pUpdateWnd	=	NULL;
+
+	m_bShowingUpdateInfoWnd		=	FALSE;
+	m_pUpdateHintWnd	=	NULL;
+
+	m_nStartPosX=0;
+	m_nStartPosY=0;
+	m_nCurrentPosX=0;
+	m_nCurrentPosY=0;
+	m_nIncrement=20;
+	m_nTaskbarPlacement=0;
 }
 
 UpdateModule::~UpdateModule()
@@ -44,12 +62,18 @@ UpdateModule::~UpdateModule()
 	{
 		m_pUpdateWnd->SendMessage(WM_CLOSE, 0, 0);
 	}
+
+	if( m_pUpdateHintWnd)
+	{
+		m_pUpdateHintWnd->SendMessage(WM_CLOSE,0);
+	}
 }
 
 BEGIN_EVENT_MAP(UpdateModule)
 	ON_EVENT(EVENT_VALUE_UPDATE_CHECK_UPDATEINFO, OnEvent_CheckUpdateInfo)
 	ON_EVENT(EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG_RESP,OnEvent_UpdateInfoArrive)
 	ON_EVENT(EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP, OnEvent_UpdateFileDownloaded)
+	ON_EVENT(EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND,OnEvent_ShowUpdateInfoWnd)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(UpdateModule)
@@ -73,7 +97,6 @@ BOOL UpdateModule::Load(IModuleManager* pManager)
 	__super::Load(pManager);
 
 	m_strUpdatePath	=	MiscHelper::GetUpdatePath();
-
 	return TRUE;
 }
 
@@ -174,6 +197,66 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 	//	启动UpdateExe文件
 }
 
+void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND)
+		return;
+
+	Update_ShowUpdateInfoEvent* pUpdateInfoEvent = (Update_ShowUpdateInfoEvent*)pEvent->m_pstExtraInfo;
+
+	// 启动进度条界面
+	// 强制弹出更新窗口进行升级
+	if( m_pUpdateHintWnd == NULL)
+		m_pUpdateHintWnd = new CUpdateHintWnd();
+
+	if( m_pUpdateHintWnd != NULL )
+	{ 
+		if( m_pUpdateHintWnd->GetHWND() == NULL)
+		{
+			m_pUpdateHintWnd->Create(NULL, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+		}
+	}
+	ASSERT(m_pUpdateHintWnd->GetHWND() != NULL);
+
+	m_pUpdateHintWnd->SetVersion(MiscHelper::GetStringFromVersion(pUpdateInfoEvent->nVersion + 12));
+	m_pUpdateHintWnd->SetSize(2.34);
+	m_pUpdateHintWnd->AddUpdateDetail(L"增加了对Chrome浏览器的支持");
+	m_pUpdateHintWnd->AddUpdateDetail(L"支持云端备份");
+	m_pUpdateHintWnd->AddUpdateDetail(L"支持盛大账号登录");
+
+	unsigned int nDesktopHeight;
+	unsigned int nDesktopWidth;
+	unsigned int nScreenWidth;
+	unsigned int nScreenHeight;
+
+	CRect rcDesktop;
+	::SystemParametersInfoW(SPI_GETWORKAREA,0,&rcDesktop,0);
+	nDesktopWidth=rcDesktop.right-rcDesktop.left;
+	nDesktopHeight=rcDesktop.bottom-rcDesktop.top;
+	nScreenWidth=::GetSystemMetrics(SM_CXSCREEN);
+	nScreenHeight=::GetSystemMetrics(SM_CYSCREEN);
+
+	BOOL bTaskbarOnRight=nDesktopWidth<nScreenWidth && rcDesktop.left==0;
+	BOOL bTaskbarOnLeft=nDesktopWidth<nScreenWidth && rcDesktop.left!=0;
+	BOOL bTaskBarOnTop=nDesktopHeight<nScreenHeight && rcDesktop.top!=0;
+	BOOL bTaskbarOnBottom=nDesktopHeight<nScreenHeight && rcDesktop.top==0;
+
+	GetWindowRect(m_pUpdateHintWnd->GetHWND(),&m_UpdateTipWindowRect);
+
+	m_nStartPosX=rcDesktop.right-m_UpdateTipWindowRect.GetWidth() -5;
+	m_nStartPosY=rcDesktop.bottom;
+
+	m_nCurrentPosX=m_nStartPosX;
+	m_nCurrentPosY=m_nStartPosY;
+
+	MoveWindow(m_pUpdateHintWnd->GetHWND(),
+		m_nCurrentPosX, m_nCurrentPosY, 
+		m_UpdateTipWindowRect.GetWidth(), 
+		m_UpdateTipWindowRect.GetHeight(), TRUE);
+
+	m_bShowingUpdateInfoWnd	=	TRUE;
+}
+
 void	UpdateModule::ProcessUpdateConfig()
 {
 	Json::Reader reader;
@@ -267,19 +350,17 @@ void	UpdateModule::ProcessUpdateConfig()
 	{
 		ASSERT( nCurrentVersion <= nHighVersion);
 
-		//	弹出提示提示用户是否需要进行更新
+		// 弹出提示提示用户是否需要进行更新
 		
 		// 如果用户已经设置了默认更新，则不进行任何的提示
 		
 		// 右下角弹出更新提示框
-
-		TrayIcon_ShowUpdateWndEvent* pEvent = new TrayIcon_ShowUpdateWndEvent();
+		Update_ShowUpdateInfoEvent* pEvent = new Update_ShowUpdateInfoEvent();
 		pEvent->srcMId = MODULE_ID_UPDATE;
-		pEvent->nNewestVersion	=	nHighVersion;
+		pEvent->nVersion = nHighVersion;
 		GetModuleManager()->PushEvent(*pEvent);
 	}
 }
-
 
 BOOL UpdateModule::IsHaveUpdatePackage()
 {
@@ -290,7 +371,7 @@ BOOL UpdateModule::IsHaveUpdatePackage()
 	return bExist;
 }
 
-void UpdateModule::OnMessage_CycleTrigged(Message* pMessage)
+void UpdateModule::QueryDownloadUpdateFileProcess()
 {
 	if( m_bDownloading == FALSE)
 		return;
@@ -311,4 +392,32 @@ void UpdateModule::OnMessage_CycleTrigged(Message* pMessage)
 			m_pUpdateWnd->SetDownLoadProgress( queryProcessService.uPercent);
 		}
 	}
+}
+
+void	UpdateModule::ShowUpdateInfoWnd()
+{
+	if( m_bShowingUpdateInfoWnd == TRUE)
+	{
+		CRect rectClient;
+		GetClientRect(m_pUpdateHintWnd->GetHWND(),&rectClient);
+
+		if (m_nCurrentPosY>(m_nStartPosY-rectClient.GetHeight() - 2))
+		{
+			m_nCurrentPosY-=m_nIncrement;
+			MoveWindow(m_pUpdateHintWnd->GetHWND(),
+				m_nCurrentPosX, m_nCurrentPosY, 
+				m_UpdateTipWindowRect.GetWidth(), 
+				m_UpdateTipWindowRect.GetHeight(), TRUE);
+		}
+		else
+		{
+			m_bShowingUpdateInfoWnd = FALSE;
+		}
+	}
+}
+
+void UpdateModule::OnMessage_CycleTrigged(Message* pMessage)
+{
+	QueryDownloadUpdateFileProcess();
+	ShowUpdateInfoWnd();
 }

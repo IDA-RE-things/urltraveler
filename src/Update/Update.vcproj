@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\UpdateHintWnd.h"
+				>
+			</File>
+			<File
 				RelativePath=".\UpdateModule.h"
 				>
 			</File>
@@ -254,6 +258,10 @@
 			</File>
 			<File
 				RelativePath=".\Update.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UpdateHintWnd.cpp"
 				>
 			</File>
 			<File

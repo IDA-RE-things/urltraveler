@@ -162,7 +162,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CDockablePane* pTabbedBar = NULL;
 	m_wndClassView.AttachToTabWnd(&m_wndFileView, DM_SHOW, TRUE, &pTabbedBar);
 	m_wndResourceView.AttachToTabWnd(pTabbedBar, DM_SHOW, TRUE, &pTabbedBar);
-	m_wndProperties.EnableDocking(CBRS_ALIGN_ANY);
+	m_wndProperties.EnableDocking(CBRS_ALIGN_RIGHT);
 	m_wndToolBox.EnableDocking(CBRS_ALIGN_ANY);
 	DockPane(&m_wndProperties);
 	DockPane(&m_wndToolBox);

@@ -5,6 +5,7 @@
 #include <atlbase.h>
 #include "StringHelper.h"
 #include "UrlTravelerHeader.h"
+#include "XString.h"
 
 
 MiscHelper::MiscHelper()
@@ -423,4 +424,24 @@ int	MiscHelper::GetVersionFromString(const char*	pszVersion)
 	}
 
 	return nVersion;
+}
+
+// 将给定的整数转换为3.0.0.0格式的字符串
+wchar_t* MiscHelper::GetStringFromVersion(int nVersion)
+{
+	if( nVersion <= 0)
+		return NULL;
+
+	String wstrVerson = L"";
+	for( int i=0; i<4; i++)
+	{
+		int n = nVersion/(1 << ((3-i)*8));
+		wstrVerson += String::ValueOf(n);
+		wstrVerson += L".";
+
+		nVersion = nVersion%(1 << ((3-i)*8));
+	}
+
+	wstrVerson.Trim(L'.');
+	return wcsdup(wstrVerson.GetData());
 }
