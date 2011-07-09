@@ -186,16 +186,17 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 {
 	m_bDownloading	=	FALSE;
 
-	if(m_pUpdateWnd)
+	if(m_pUpdateWnd && ::IsWindow(m_pUpdateWnd->GetHWND()))
 	{
 		m_pUpdateWnd->SetDownLoadProgress( 100);
+
+		Web_DownloadUpdateFileRespEvent* pE = (Web_DownloadUpdateFileRespEvent*)pEvent->m_pstExtraInfo;
+		if( pE == NULL || pE->eventValue != EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP)
+			return;
+
+		//	启动UpdateExe文件
 	}
 
-	Web_DownloadUpdateFileRespEvent* pE = (Web_DownloadUpdateFileRespEvent*)pEvent->m_pstExtraInfo;
-	if( pE == NULL || pE->eventValue != EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP)
-		return;
-
-	//	启动UpdateExe文件
 }
 
 void	UpdateModule::OnEvent_ShowUpdateDownloadingWnd(Event* pEvent)
@@ -229,6 +230,9 @@ void	UpdateModule::OnEvent_ShowUpdateDownloadingWnd(Event* pEvent)
 
 	if( m_pUpdateWnd != NULL )
 	{ 
+		m_pUpdateWnd->SetNewVersion(nLastestVersion);
+		m_pUpdateWnd->SetCurrentVersion(MiscHelper::GetCurrentVersion());
+
 		if( m_pUpdateWnd->GetHWND() == NULL)
 		{
 			m_pUpdateWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
@@ -360,6 +364,7 @@ void	UpdateModule::ProcessUpdateConfig()
 	{
 		Update_ShowUpdateDownloadingEvent* pEvent = new Update_ShowUpdateDownloadingEvent();
 		pEvent->srcMId = MODULE_ID_UPDATE;
+		pEvent->nLastestVersion = nHighVersion;
 		STRNCPY(pEvent->szDownloadUrl, updateInfo.strDownloadUrl.c_str());
 		STRNCPY(pEvent->szSavePath, updateInfo.strTempSavePath.c_str());
 		GetModuleManager()->PushEvent(*pEvent);
@@ -405,7 +410,7 @@ void UpdateModule::QueryDownloadUpdateFileProcess()
 
 	if (INVALID_SEQNO != GetModuleManager()->CallService(queryProcessService.serviceId, (param)&queryProcessService))
 	{
-		if(m_pUpdateWnd)
+		if(m_pUpdateWnd && ::IsWindow(m_pUpdateWnd->GetHWND()))
 		{
 			m_pUpdateWnd->SetDownLoadProgress( queryProcessService.uPercent);
 		}

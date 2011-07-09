@@ -6,6 +6,7 @@
 #include "MiscHelper.h"
 #include "XString.h"
 
+
 CUpdateWnd::CUpdateWnd()
 {
 	m_pProcess	=	NULL;
@@ -15,6 +16,16 @@ CUpdateWnd::~CUpdateWnd()
 {
 }
 
+void	CUpdateWnd::SetNewVersion(int nNewVersion) 
+{
+	m_nNewVersion = nNewVersion;
+}
+
+void	CUpdateWnd::SetCurrentVersion(int nCurrentVersion) 
+{
+	m_nCurrentVersion = nCurrentVersion;
+}
+
 void CUpdateWnd::OnPrepare(TNotifyUI& msg) 
 { 
 	m_pProcess = static_cast<CProgressUI*>(m_pm.FindControl(_T("UpdateProgress")));
@@ -22,7 +33,16 @@ void CUpdateWnd::OnPrepare(TNotifyUI& msg)
 		return;
 
 	m_pProcess->SetMaxValue(100);
-	//m_pProcess->SetFgImage(L"E:\\URLTraveler\\bin\Skin\\UrlTraveler\\tree_select.bmp");
+
+	CTextUI * pNewVersion = static_cast<CTextUI *>(m_pm.FindControl(_T("newversion")));
+	if( pNewVersion == NULL)
+		return;
+	pNewVersion->SetText(MiscHelper::GetStringFromVersion(m_nNewVersion));
+
+	CTextUI * pCurrentVersion = static_cast<CTextUI *>(m_pm.FindControl(_T("currentversion")));
+	if( pCurrentVersion == NULL)
+		return;
+	pCurrentVersion->SetText(MiscHelper::GetStringFromVersion(m_nCurrentVersion));
 }
 
 void CUpdateWnd::Notify(TNotifyUI& msg)
@@ -216,7 +236,7 @@ void CUpdateWnd::SetDownLoadProgress( UINT nPercent)
 	if( m_pProcess == NULL)
 		return;
 
-	m_pProcess->SetFgImage(L"E:\\URLTraveler\\bin\Skin\\UrlTraveler\\tree_select.bmp");
+	m_pProcess->SetFgImage(L"E:\\URLTraveler\\bin\\Skin\\UrlTraveler\\tree_select.bmp");
 	m_pProcess->SetValue(nPercent);
 
 	CLabelUI* pPercentText = static_cast<CLabelUI*>(m_pm.FindControl(_T("PercentText")));

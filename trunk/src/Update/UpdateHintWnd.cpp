@@ -60,7 +60,6 @@ void CUpdateHintWnd::Notify(TNotifyUI& msg)
 			Close();
 			return; 
 		}
-
 		// Á¢¼´¸üÐÂ
 		else if( msg.pSender->GetName() == L"UpdateNow" ) 
 		{ 
