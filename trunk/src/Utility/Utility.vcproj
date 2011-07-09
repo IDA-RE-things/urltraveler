@@ -746,6 +746,18 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="TxConfig"
+			>
+			<File
+				RelativePath=".\TxConfig.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TxConfig.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
