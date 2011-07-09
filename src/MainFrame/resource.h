@@ -3,6 +3,9 @@
 // Used by MainFrame.rc
 //
 #define IDR_MENU1                       101
+#define IDI_APPICON16                   103
+#define IDI_ICON2                       104
+#define IDI_APPICON32                   104
 #define IDM_LOGIN                       40002
 #define IDM_SETTING                     40005
 #define IDM_ABOUT                       40006
@@ -12,7 +15,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        103
+#define _APS_NEXT_RESOURCE_VALUE        105
 #define _APS_NEXT_COMMAND_VALUE         40009
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101

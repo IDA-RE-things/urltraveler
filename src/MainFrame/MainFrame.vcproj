@@ -324,6 +324,14 @@
 				RelativePath=".\MainFrame.rc"
 				>
 			</File>
+			<File
+				RelativePath=".\res\urltraveler16.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\urltraveler32.ico"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"

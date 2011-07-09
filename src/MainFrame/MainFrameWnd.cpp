@@ -350,6 +350,13 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 
 LRESULT CMainFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	// 设置任务栏图标
+	HICON hSmallIcon = ::LoadIconW(g_hModule,(LPCTSTR)IDI_APPICON16);
+	HICON hBigIcon = ::LoadIconW(g_hModule,(LPCTSTR)IDI_APPICON32);
+
+	SendMessage(WM_SETICON,ICON_SMALL,(LPARAM)hSmallIcon);
+	SendMessage(WM_SETICON,ICON_BIG,(LPARAM)hBigIcon); 
+
 	LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
 	styleValue &= ~WS_CAPTION;
 	::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
