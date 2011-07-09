@@ -14,6 +14,11 @@ BOOL CTxConfig::ParseConfig( BYTE *pConfigBuf, DWORD dwLen )
 	TxConfig *pConfig = (TxConfig *)pConfigBuf;
 	TxItem   *pItem = NULL;
 
+	if (pConfig->wMagic != TX_CONFIG_MAGIC)
+	{
+		return FALSE;
+	}
+
 	pItem = &pConfig->stItem[0];
 
 	for (int i = 0; i < pConfig->wNumOfItems; i++)
@@ -105,7 +110,65 @@ BOOL CTxConfig::MakeConfig( std::string strFilePath )
 		return FALSE;
 	}
 
+	std::map<std::wstring, std::string>::iterator iterPointer = m_mapKey2Value.begin();
+	std::map<std::wstring, std::string>::const_iterator iterEnd = m_mapKey2Value.end();
+
+	size_t configSize = sizeof(TxConfig);
+
+	for (; iterPointer != iterEnd; ++iterPointer)
+	{
+		std::wstring strKey = iterPointer->first;
+		std::string  strValue = iterPointer->second;
+
+		configSize = configSize + sizeof(TxItem) - 2 + strKey.length() * 2 + strValue.length();
+	}
+
+	BYTE *configBuffer = new BYTE[configSize];
+
+	TxConfig *pConfig = (TxConfig *)configBuffer;
+
+	pConfig->byMajorVer = 1;
+	pConfig->byMinorVer = 1;
+	pConfig->wNumOfItems = m_mapKey2Value.size();
+
+	TxItem   *pItem = NULL;
+	pItem = &pConfig->stItem[0];
+
+	iterPointer = m_mapKey2Value.begin();
+
+	for (int i = 0; iterPointer != iterEnd; ++iterPointer, i++)
+	{
+		std::wstring strKey = iterPointer->first;
+		std::string  strValue = iterPointer->second;
+
+		pItem->wKeyLen = strKey.length() * 2;
+
+		memcpy(&pItem->abyKey[0], strKey.c_str(), strKey.length() * 2);
+
+		for (int j = 0; j < pItem->wKeyLen; j++)
+		{
+			pItem->abyKey[j] = LOBYTE(pItem->wKeyLen) ^ HIBYTE(pItem->wKeyLen) ^ ~pItem->abyKey[j];
+		}
+
+		TxItem *pTemp = (TxItem *)((BYTE *)pItem + pItem->wKeyLen - 1);
+
+		pTemp->dwValueLen = strValue.length();
+
+		for (int j = 0; j < pTemp->dwValueLen; j++)
+		{
+			pTemp->abyValue[j] = LOBYTE(pTemp->dwValueLen) ^ HIBYTE(pTemp->dwValueLen) ^ ~pTemp->abyValue[j];
+		}
+
+
+		pItem = (TxItem *)((BYTE *)pItem + sizeof(TxItem) + pItem->wKeyLen + pTemp->dwValueLen - 2);
+	}
+
+
 	FILE *configFile = fopen(strFilePath.c_str(), "rb");
+
+	fwrite(configBuffer, 1, configSize, configFile);
+
+	fclose(configFile);
 
 	return true;
 }
