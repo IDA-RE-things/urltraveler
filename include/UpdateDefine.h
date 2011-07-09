@@ -16,6 +16,7 @@ namespace update
 	{
 		EVENT_VALUE_UPDATE_CHECK_UPDATEINFO = EVENT_VALUE_UPDATE_BEGIN,		// 检查当前应用程序是否存在更新
 		EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND,			//	显示更新提示窗口
+		EVENT_VALUE_UPDATE_SHOW_DOWNLOADING_WND,			//	显示下载进度窗口
 	};
 
 	// Update能够可能对外发送的广播消息
@@ -58,6 +59,22 @@ namespace update
 		}
 
 		int nVersion;
+	};
+
+	struct Update_ShowUpdateDownloadingEvent	:	public UpdateEvent
+	{
+		Update_ShowUpdateDownloadingEvent()
+		{
+			eventValue = EVENT_VALUE_UPDATE_SHOW_DOWNLOADING_WND;
+			nLastestVersion = 0;
+			ZeroMemory(szDownloadUrl, MAX_PATH*sizeof(wchar_t));
+			ZeroMemory(szSavePath, MAX_PATH*sizeof(wchar_t));
+		}
+
+		int nLastestVersion;		//	最近的版本
+
+		wchar_t	szDownloadUrl[MAX_PATH];	// 下载的URL
+		wchar_t	szSavePath[MAX_PATH];
 	};
 
 	//============================================================================//

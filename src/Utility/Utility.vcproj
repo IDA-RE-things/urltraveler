@@ -278,6 +278,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TxConfig.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Utility.cpp"
 				>
 			</File>
@@ -361,6 +365,10 @@
 			</File>
 			<File
 				RelativePath=".\TimeHelper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TxConfig.h"
 				>
 			</File>
 			<File
@@ -743,18 +751,6 @@
 			</File>
 			<File
 				RelativePath=".\script\scriptfunctions.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="TxConfig"
-			>
-			<File
-				RelativePath=".\TxConfig.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\TxConfig.h"
 				>
 			</File>
 		</Filter>

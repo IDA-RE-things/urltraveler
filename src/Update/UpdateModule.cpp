@@ -74,6 +74,7 @@ BEGIN_EVENT_MAP(UpdateModule)
 	ON_EVENT(EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG_RESP,OnEvent_UpdateInfoArrive)
 	ON_EVENT(EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP, OnEvent_UpdateFileDownloaded)
 	ON_EVENT(EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND,OnEvent_ShowUpdateInfoWnd)
+	ON_EVENT(EVENT_VALUE_UPDATE_SHOW_DOWNLOADING_WND, OnEvent_ShowUpdateDownloadingWnd)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(UpdateModule)
@@ -197,6 +198,46 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 	//	启动UpdateExe文件
 }
 
+void	UpdateModule::OnEvent_ShowUpdateDownloadingWnd(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_UPDATE_SHOW_DOWNLOADING_WND)
+		return;
+
+	Update_ShowUpdateDownloadingEvent* pDownloadEvent = (Update_ShowUpdateDownloadingEvent*)pEvent->m_pstExtraInfo;
+	int nLastestVersion	=	 pDownloadEvent->nLastestVersion;
+	wstring	wstrUrl	=	pDownloadEvent->szDownloadUrl;
+	wstring	wstrPath	=	pDownloadEvent->szSavePath;
+
+	Web_DownloadUpdateFileService downloadUpdateFileService;
+	downloadUpdateFileService.srcMId = MODULE_ID_UPDATE;
+	STRNCPY(downloadUpdateFileService.szUpdateFileUrl, wstrUrl.c_str());
+	STRNCPY(downloadUpdateFileService.szSavePath, wstrPath.c_str());
+	m_nDownloadSeqNo = GetModuleManager()->CallService(downloadUpdateFileService.serviceId, (param)&downloadUpdateFileService);
+
+	// 强制弹出更新窗口进行升级
+	mainframe::MainFrame_GetWndService stGetWndService;
+	m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
+
+	CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
+	ASSERT(pMainFrameWnd != NULL);
+
+	m_bDownloading	=	TRUE;
+
+	// 启动进度条界面
+	if( m_pUpdateWnd == NULL)
+		m_pUpdateWnd = new CUpdateWnd();
+
+	if( m_pUpdateWnd != NULL )
+	{ 
+		if( m_pUpdateWnd->GetHWND() == NULL)
+		{
+			m_pUpdateWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+		}
+		m_pUpdateWnd->CenterWindow();
+		pMainFrameWnd->ShowModal(*m_pUpdateWnd);
+	}	
+}
+ 
 void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
 {
 	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND)
@@ -317,34 +358,11 @@ void	UpdateModule::ProcessUpdateConfig()
 	int nCurrentVersion = MiscHelper::GetCurrentVersion();
 	if( nCurrentVersion <= nLowVersion)
 	{
-		Web_DownloadUpdateFileService downloadUpdateFileService;
-		downloadUpdateFileService.srcMId = MODULE_ID_UPDATE;
-		STRNCPY(downloadUpdateFileService.szUpdateFileUrl, updateInfo.strDownloadUrl.c_str());
-		STRNCPY(downloadUpdateFileService.szSavePath, wstrPath.c_str());
-		m_nDownloadSeqNo = GetModuleManager()->CallService(downloadUpdateFileService.serviceId, (param)&downloadUpdateFileService);
-
-		// 强制弹出更新窗口进行升级
-		mainframe::MainFrame_GetWndService stGetWndService;
-		m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
-
-		CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
-		ASSERT(pMainFrameWnd != NULL);
-
-		m_bDownloading	=	TRUE;
-
-		// 启动进度条界面
-		if( m_pUpdateWnd == NULL)
-			m_pUpdateWnd = new CUpdateWnd();
-
-		if( m_pUpdateWnd != NULL )
-		{ 
-			if( m_pUpdateWnd->GetHWND() == NULL)
-			{
-				m_pUpdateWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
-			}
-			m_pUpdateWnd->CenterWindow();
-			pMainFrameWnd->ShowModal(*m_pUpdateWnd);
-		}
+		Update_ShowUpdateDownloadingEvent* pEvent = new Update_ShowUpdateDownloadingEvent();
+		pEvent->srcMId = MODULE_ID_UPDATE;
+		STRNCPY(pEvent->szDownloadUrl, updateInfo.strDownloadUrl.c_str());
+		STRNCPY(pEvent->szSavePath, updateInfo.strTempSavePath.c_str());
+		GetModuleManager()->PushEvent(*pEvent);
 	}
 	else 
 	{
