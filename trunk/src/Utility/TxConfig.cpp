@@ -3,6 +3,7 @@
 
 CTxConfig::CTxConfig(void)
 {
+
 }
 
 CTxConfig::~CTxConfig(void)
@@ -130,6 +131,7 @@ BOOL CTxConfig::MakeConfig( std::string strFilePath )
 	pConfig->byMajorVer = 1;
 	pConfig->byMinorVer = 1;
 	pConfig->wNumOfItems = m_mapKey2Value.size();
+	pConfig->wMagic = TX_CONFIG_MAGIC;
 
 	TxItem   *pItem = NULL;
 	pItem = &pConfig->stItem[0];
@@ -140,6 +142,7 @@ BOOL CTxConfig::MakeConfig( std::string strFilePath )
 	{
 		std::wstring strKey = iterPointer->first;
 		std::string  strValue = iterPointer->second;
+		pItem->byFlag = TX_ITEM_FLAG;
 
 		pItem->wKeyLen = strKey.length() * 2;
 
@@ -153,6 +156,7 @@ BOOL CTxConfig::MakeConfig( std::string strFilePath )
 		TxItem *pTemp = (TxItem *)((BYTE *)pItem + pItem->wKeyLen - 1);
 
 		pTemp->dwValueLen = strValue.length();
+		memcpy(&pTemp->abyValue[0], strValue.c_str(), strValue.length());
 
 		for (int j = 0; j < pTemp->dwValueLen; j++)
 		{
@@ -164,11 +168,16 @@ BOOL CTxConfig::MakeConfig( std::string strFilePath )
 	}
 
 
-	FILE *configFile = fopen(strFilePath.c_str(), "rb");
+	FILE *configFile = fopen(strFilePath.c_str(), "wb");
 
 	fwrite(configBuffer, 1, configSize, configFile);
 
 	fclose(configFile);
+
+	if (configBuffer)
+	{
+		delete []configBuffer;
+	}
 
 	return true;
 }
