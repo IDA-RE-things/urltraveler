@@ -17,6 +17,18 @@
 
 HMODULE	g_hModule = NULL;
 
+// 当前客户端的版本描述配置
+#define INI_FILE_NAME L"RainBowUpdate.ini"
+
+// 更新包名称
+#define UPDATE_PACKAGE	L"UpdatePackage.zip"
+
+#ifdef _DEBUG
+#define UPDATE_PROGRAM L"RBUpdated.exe"
+#else
+#define UPDATE_PROGRAM L"RBUpdate.exe"
+#endif
+
 #define IDT_HIDDEN		0
 #define IDT_APPEARING		1
 #define IDT_WAITING		2
@@ -45,7 +57,7 @@ UpdateModule::UpdateModule()
 
 	m_pUpdateWnd	=	NULL;
 
-	m_bShowingUpdateInfoWnd		=	FALSE;
+	m_bShowingUpdateInfoWnd	=	FALSE;
 	m_pUpdateHintWnd	=	NULL;
 
 	m_nStartPosX=0;
@@ -120,7 +132,7 @@ const wchar_t* UpdateModule::GetModuleName()
 //----------------------------------------------------------------------------------------
 uint32 const UpdateModule::GetModuleId()
 {
-	return MODULE_ID_DATABASE;
+	return MODULE_ID_UPDATE;
 }
 
 //----------------------------------------------------------------------------------------
@@ -175,6 +187,7 @@ void	UpdateModule::OnEvent_UpdateInfoArrive(Event* pEvent)
 	if( pResp == NULL ||  pResp->eventValue != EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG_RESP)
 		return;
 
+	// 如果更新失败，则不作任何的提示
 	if( pResp->param0 != WEB_RET_SUCCESS)
 		return;
 
@@ -182,19 +195,72 @@ void	UpdateModule::OnEvent_UpdateInfoArrive(Event* pEvent)
 	ProcessUpdateConfig();
 }
 
+// 通知更新包已经下载结束
 void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 {
 	m_bDownloading	=	FALSE;
 
-	if(m_pUpdateWnd && ::IsWindow(m_pUpdateWnd->GetHWND()))
+	Web_DownloadUpdateFileRespEvent* pE = (Web_DownloadUpdateFileRespEvent*)pEvent->m_pstExtraInfo;
+	if( pE == NULL || pE->eventValue != EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP)
+		return;
+
+	// 写入磁盘失败
+	if( pE->param0 == web::WEB_RET_COMMON_WRITE_FILE_ERROR)
 	{
-		m_pUpdateWnd->SetDownLoadProgress( 100);
+		if( m_pUpdateWnd && m_pUpdateWnd->GetHWND() != NULL)
+		{
+			::MessageBox(m_pUpdateWnd->GetHWND(), _T("写磁盘失败，请检查磁盘是否有可以用空间"), 
+				_T("3+收藏夹漫游大师升级向导"),  MB_ICONQUESTION|MB_OK);
+			m_pUpdateWnd->ShowWindow(SW_HIDE);
+		}
+		else
+		{
+			::MessageBox(NULL, _T("写磁盘失败，请检查磁盘是否有可以用空间"), 
+				_T("3+收藏夹漫游大师升级向导"),  MB_ICONQUESTION|MB_OK);
+		}
+		GetModuleManager()->PushEvent(
+			MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
+			MODULE_ID_CORE));
 
-		Web_DownloadUpdateFileRespEvent* pE = (Web_DownloadUpdateFileRespEvent*)pEvent->m_pstExtraInfo;
-		if( pE == NULL || pE->eventValue != EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP)
-			return;
+		return;
+	}
+	// 网络超时
+	else if(pE->param0 == web::WEB_RET_NET_ERROR_TIMEOUT)
+	{
+		int nRet =0;
+		if( m_pUpdateWnd && m_pUpdateWnd->GetHWND() != NULL)
+		{
+			nRet = ::MessageBox(m_pUpdateWnd->GetHWND(), _T("网络错误，下载失败!\r\n点击“确定”跳转到官网手动下载最新版本"), 
+				_T("3+收藏夹漫游大师升级向导"),  MB_ICONQUESTION|MB_OKCANCEL);
+			m_pUpdateWnd->ShowWindow(SW_HIDE);
+		}
+		else
+		{
+			nRet = ::MessageBox(NULL, _T("网络错误，下载失败!\r\n点击“确定”跳转到官网手动下载最新版本"), 
+				_T("3+收藏夹漫游大师升级向导"),  MB_ICONQUESTION|MB_OKCANCEL);
+		}
 
-		//	启动UpdateExe文件
+		if(nRet == IDOK)
+		{
+			ShellExecute(NULL, L"open",L"http://www.baidu.com", NULL,NULL,SW_SHOWMAXIMIZED);
+		}
+
+		GetModuleManager()->PushEvent(
+			MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
+			MODULE_ID_CORE));
+
+		return;
+	}
+
+	if( pE->param0 == web::WEB_RET_SUCCESS)
+	{
+		if(m_pUpdateWnd && ::IsWindow(m_pUpdateWnd->GetHWND()))
+		{
+			m_pUpdateWnd->SetDownLoadProgress( 100);
+
+			//	启动UpdateExe文件
+
+		}
 	}
 }
 
@@ -256,7 +322,7 @@ void	UpdateModule::OnEvent_ShowUpdateDownloadingWnd(Event* pEvent)
 		}
 	}	
 }
- 
+
 void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
 {
 	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND)
@@ -352,10 +418,8 @@ void	UpdateModule::ProcessUpdateConfig()
 		vDetail.push_back(StringHelper::Utf8ToUnicode(strDetail));
 	}
 
-
 	// 文件结点
 	Json::Value& updateFileNode = root["package"];
-
 	wchar_t* wszUpdatePath = MiscHelper::GetUpdatePath();
 
 	UPDATEFILEINFO	updateInfo;
@@ -411,9 +475,9 @@ void	UpdateModule::ProcessUpdateConfig()
 		ASSERT( nCurrentVersion <= nHighVersion);
 
 		// 弹出提示提示用户是否需要进行更新
-		
+
 		// 如果用户已经设置了默认更新，则不进行任何的提示
-		
+
 		// 右下角弹出更新提示框
 		Update_ShowUpdateInfoEvent* pEvent = new Update_ShowUpdateInfoEvent();
 		pEvent->srcMId = MODULE_ID_UPDATE;

@@ -155,6 +155,7 @@
 				OutputFile="..\bin\UIDesigner.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

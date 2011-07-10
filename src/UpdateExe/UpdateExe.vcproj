@@ -82,7 +82,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib"
-				ProgramDatabaseFile=".\Release/UpdateExe.pdb"
+				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -181,7 +181,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/UpdateExe.pdb"
+				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				GenerateMapFile="true"
 				MapFileName=".\Debug/UpdateExe.map"
 				SubSystem="2"
@@ -247,6 +247,10 @@
 				RelativePath="UpdateExe.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\UpdateExe.rc"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -257,10 +261,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath="StdAfx.h"
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\res\urltraveler16.ico"
+			>
+		</File>
+		<File
+			RelativePath=".\res\urltraveler32.ico"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
