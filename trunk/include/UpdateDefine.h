@@ -50,6 +50,7 @@ namespace update
 
 	// 通知提示显示更新信息对话框
 #define MAX_UPDATE_VERSION_LEN			(32+1)
+#define MAX_UPDATE_DETAIL_NUM			5
 	struct Update_ShowUpdateInfoEvent	:	public UpdateEvent
 	{
 		Update_ShowUpdateInfoEvent()
@@ -59,11 +60,17 @@ namespace update
 
 			ZeroMemory(szDownloadUrl, MAX_PATH*sizeof(wchar_t));
 			ZeroMemory(szSavePath, MAX_PATH*sizeof(wchar_t));
+
+			nUpdateDetailNum = 0;
+			ZeroMemory(szUpdateDetail, MAX_UPDATE_DETAIL_NUM*MAX_PATH*sizeof(wchar_t));
 		}
 
 		int nVersion;
 		wchar_t	szDownloadUrl[MAX_PATH];
 		wchar_t	szSavePath[MAX_PATH];
+
+		int nUpdateDetailNum;		//	更新的条目数
+		wchar_t	szUpdateDetail[MAX_UPDATE_DETAIL_NUM][MAX_PATH];
 	};
 
 	struct Update_ShowUpdateDownloadingEvent	:	public UpdateEvent

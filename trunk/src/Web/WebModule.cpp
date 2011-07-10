@@ -323,7 +323,7 @@ int32	WebModule::OnService_CheckUpdateConfig(ServiceValue lService, param wparam
 	}
 	
 	uint32 nSeqNo = m_pRequestManager->PushUrl(pService->serviceId,0,
-		L"http://urltraveler.sinaapp.com/getversion.php?type=copy",NULL);
+		L"http://urltraveler.sinaapp.com/getversion.php?type=copy&clientVersion=1.1",NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
 		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcMId;
