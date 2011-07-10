@@ -282,9 +282,11 @@ void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
 	m_pUpdateHintWnd->SetSavePath(pUpdateInfoEvent->szSavePath);
 	m_pUpdateHintWnd->SetVersion(MiscHelper::GetStringFromVersion(pUpdateInfoEvent->nVersion + 12));
 	m_pUpdateHintWnd->SetSize(2.34);
-	m_pUpdateHintWnd->AddUpdateDetail(L"增加了对Chrome浏览器的支持");
-	m_pUpdateHintWnd->AddUpdateDetail(L"支持云端备份");
-	m_pUpdateHintWnd->AddUpdateDetail(L"支持盛大账号登录");
+
+	for( int i=0; i<pUpdateInfoEvent->nUpdateDetailNum; i++)
+	{
+		m_pUpdateHintWnd->AddUpdateDetail(pUpdateInfoEvent->szUpdateDetail[i]);
+	}
 
 	unsigned int nDesktopHeight;
 	unsigned int nDesktopWidth;
@@ -329,11 +331,27 @@ void	UpdateModule::ProcessUpdateConfig()
 
 	// 版本结点
 	Json::Value& versionNode = root["version"];
-	string strLowVersion = versionNode["low_version"].asString();
-	string strCurrentVersion = versionNode["high_version"].asString();
-
+	string& strLowVersion = versionNode["low_version"].asString();
+	string& strCurrentVersion = versionNode["high_version"].asString();
 	int nLowVersion = MiscHelper::GetVersionFromString(strLowVersion.c_str());
 	int nHighVersion = MiscHelper::GetVersionFromString(strCurrentVersion.c_str());
+
+	// 更新明细结点
+	Json::Value& detailNode = root["updateinfo"];
+	ASSERT(detailNode.isArray() == true);
+
+	int nNodeNum = detailNode.size();
+	if( nNodeNum > MAX_UPDATE_DETAIL_NUM)
+		nNodeNum = MAX_UPDATE_DETAIL_NUM;
+
+	std::vector<wstring>	vDetail;
+	for( int i=0; i<nNodeNum; i++)
+	{
+		Json::Value& detail = detailNode[i];
+		string& strDetail = detail["item"].asString();
+		vDetail.push_back(StringHelper::Utf8ToUnicode(strDetail));
+	}
+
 
 	// 文件结点
 	Json::Value& updateFileNode = root["package"];
@@ -402,6 +420,13 @@ void	UpdateModule::ProcessUpdateConfig()
 		pEvent->nVersion = nHighVersion;
 		STRNCPY(pEvent->szDownloadUrl, updateInfo.strDownloadUrl.c_str());
 		STRNCPY(pEvent->szSavePath, updateInfo.strTempSavePath.c_str());
+
+		pEvent->nUpdateDetailNum = vDetail.size();
+		for( int i=0; i<vDetail.size();i++)
+		{
+			STRNCPY(pEvent->szUpdateDetail[i], vDetail[i].c_str());
+		}
+
 		GetModuleManager()->PushEvent(*pEvent);
 	}
 }
