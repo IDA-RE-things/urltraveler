@@ -227,7 +227,8 @@ LRESULT CUpdateWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lRes = 0;
 	BOOL bHandled = TRUE;
-	switch( uMsg ) {
+	switch( uMsg ) 
+	{
 		case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
 		case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
 		case WM_NCACTIVATE:    lRes = OnNcActivate(uMsg, wParam, lParam, bHandled); break;
@@ -251,17 +252,13 @@ void CUpdateWnd::SetDownLoadProgress( UINT nPercent)
 	m_pProcess = static_cast<CProgressUI*>(m_pm.FindControl(_T("UpdateProgress")));
 	if( m_pProcess == NULL)
 		return;
-
-	m_pProcess->SetFgImage(L"E:\\URLTraveler\\bin\\Skin\\UrlTraveler\\tree_select.bmp");
 	m_pProcess->SetValue(nPercent);
+	m_pProcess->Invalidate();
 
 	CLabelUI* pPercentText = static_cast<CLabelUI*>(m_pm.FindControl(_T("PercentText")));
 	if( pPercentText == NULL)
 		return;
-
 	wstring	wstrPercent = StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nPercent));
 	wstrPercent += L"%";
 	pPercentText->SetText(wstrPercent.c_str());
-
-	m_pProcess->Invalidate();
 }
