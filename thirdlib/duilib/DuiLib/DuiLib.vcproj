@@ -115,7 +115,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\bin\*.dll ..\..\..\bin\"
+				CommandLine="copy ..\bin\*.dll ..\..\..\bin\&#x0D;&#x0A;copy ..\bin\*.lib ..\..\..\lib\"
 			/>
 		</Configuration>
 		<Configuration
@@ -214,7 +214,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\bin\*.dll ..\..\..\bin\"
+				CommandLine="copy ..\bin\*.dll ..\..\..\bin\&#x0D;&#x0A;copy ..\bin\*.lib ..\..\..\lib\"
 			/>
 		</Configuration>
 	</Configurations>

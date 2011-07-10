@@ -208,6 +208,10 @@
 				RelativePath=".\UpdateWnd.h"
 				>
 			</File>
+			<File
+				RelativePath="..\Utility\XUnzip.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Ô´ÎÄ¼þ"

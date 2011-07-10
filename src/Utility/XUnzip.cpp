@@ -103,6 +103,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <tchar.h>
+#include "XUnzip.h"
+#include "StringHelper.h"
 
 #pragma warning(disable : 4996)	// disable bogus deprecation warning
 
@@ -166,70 +168,12 @@
 //   PkWare has also a specification at ftp://ftp.pkware.com/probdesc.zip
 
 #define zmalloc(len) malloc(len)
-
 #define zfree(p) free(p)
 
-/*
-void *zmalloc(unsigned int len)
-{ char *buf = new char[len+32];
-for (int i=0; i<16; i++)
-{ buf[i]=i;
-buf[len+31-i]=i;
-}
-*((unsigned int*)buf) = len;
-char c[1000]; wsprintf(c,"malloc 0x%lx  - %lu",buf+16,len);
-OutputDebugString(c);
-return buf+16;
-}
-
-void zfree(void *buf)
-{ char c[1000]; wsprintf(c,"free   0x%lx",buf);
-OutputDebugString(c);
-char *p = ((char*)buf)-16;
-unsigned int len = *((unsigned int*)p);
-bool blown=false;
-for (int i=0; i<16; i++)
-{ char lo = p[i];
-char hi = p[len+31-i];
-if (hi!=i || (lo!=i && i>4)) blown=true;
-}
-if (blown)
-{ OutputDebugString("BLOWN!!!");
-}
-delete[] p;
-}
-*/
-
-DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
-
-typedef DWORD ZRESULT;
-// return codes from any of the zip functions. Listed later.
 
 #define ZIP_HANDLE   1
 #define ZIP_FILENAME 2
 #define ZIP_MEMORY   3
-
-typedef struct
-{
-	int index;                 // index of this file within the zip
-	char name[MAX_PATH];       // filename within the zip
-	DWORD attr;                // attributes, as in GetFileAttributes.
-	FILETIME atime,ctime,mtime;// access, create, modify filetimes
-	long comp_size;            // sizes of item, compressed and uncompressed. These
-	long unc_size;             // may be -1 if not yet known (e.g. being streamed in)
-
-} ZIPENTRY;
-
-typedef struct
-{
-	int index;                 // index of this file within the zip
-	TCHAR name[MAX_PATH];      // filename within the zip
-	DWORD attr;                // attributes, as in GetFileAttributes.
-	FILETIME atime,ctime,mtime;// access, create, modify filetimes
-	long comp_size;            // sizes of item, compressed and uncompressed. These
-	long unc_size;             // may be -1 if not yet known (e.g. being streamed in)
-
-} ZIPENTRYW;
 
 // These are the result codes:
 #define ZR_OK         0x00000000     // nb. the pseudo-code zr-recent is never returned,
@@ -3920,8 +3864,9 @@ public:
 	TCHAR rootdir[MAX_PATH];
 
 	ZRESULT Open(void *z,unsigned int len,DWORD flags);
+	ZRESULT GetItemsNum(unsigned int* len);
 	ZRESULT Get(int index,ZIPENTRY *ze);
-	ZRESULT Find(const TCHAR *name,bool ic,int *index,ZIPENTRY *ze);
+	ZRESULT Find(const CHAR *name,bool ic,int *index,ZIPENTRY *ze);
 	ZRESULT Unzip(int index,void *dst,unsigned int len,DWORD flags);
 	ZRESULT Close();
 };
@@ -3946,6 +3891,15 @@ ZRESULT TUnzip::Open(void *z,unsigned int len,DWORD flags)
 	uf = unzOpenInternal(f);
 	//return ZR_OK;
 	return zopenerror;	//+++1.2
+}
+
+ZRESULT TUnzip::GetItemsNum(unsigned int* len)
+{
+	if( len == NULL)
+		return ZR_ARGS;
+
+	*len = (int)uf->gi.number_entry;
+	return ZR_OK;
 }
 
 ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
@@ -4048,9 +4002,9 @@ ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
 	return ZR_OK;
 }
 
-ZRESULT TUnzip::Find(const TCHAR *name, bool ic, int *index, ZIPENTRY *ze)
+ZRESULT TUnzip::Find(const CHAR *name, bool ic, int *index, ZIPENTRY *ze)
 { 
-	int res = unzLocateFile(uf,name,ic?CASE_INSENSITIVE:CASE_SENSITIVE);
+	int res = unzLocateFile(uf,StringHelper::ANSIToUnicode(name).c_str(),ic?CASE_INSENSITIVE:CASE_SENSITIVE);
 	if (res!=UNZ_OK)
 	{ 
 		if (index!=0) 
@@ -4296,6 +4250,25 @@ HZIP OpenZipU(void *z,unsigned int len,DWORD flags)
 	return (HZIP)han;
 }
 
+ZRESULT	GetZipItemNum(HZIP hz, unsigned int* nItemNum)
+{
+	if (hz==0) 
+	{
+		lasterrorU=ZR_ARGS;
+		return ZR_ARGS;
+	}
+
+	TUnzipHandleData *han = (TUnzipHandleData*)hz;
+	if (han->flag!=1) 
+	{
+		lasterrorU=ZR_ZMODE;
+		return ZR_ZMODE;
+	}
+	TUnzip *unz = han->unz;
+	lasterrorU = unz->GetItemsNum(nItemNum);
+	return lasterrorU;
+}
+
 ZRESULT GetZipItemA(HZIP hz, int index, ZIPENTRY *ze)
 { 
 	if (hz==0) 
@@ -4339,16 +4312,12 @@ ZRESULT GetZipItemW(HZIP hz, int index, ZIPENTRYW *zew)
 		zew->mtime     = ze.mtime;
 		zew->comp_size = ze.comp_size;
 		zew->unc_size  = ze.unc_size;
-#ifdef _UNICODE
-		GetUnicodeFileName(ze.name, zew->name, MAX_PATH-1);
-#else
 		strcpy(zew->name, ze.name);
-#endif
 	}
 	return lasterrorU;
 }
 
-ZRESULT FindZipItemA(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRY *ze)
+ZRESULT FindZipItemA(HZIP hz, const CHAR *name, bool ic, int *index, ZIPENTRY *ze)
 { 
 	if (hz==0) 
 	{
@@ -4366,7 +4335,7 @@ ZRESULT FindZipItemA(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRY *
 	return lasterrorU;
 }
 
-ZRESULT FindZipItemW(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRYW *zew)
+ZRESULT FindZipItemW(HZIP hz, const CHAR *name, bool ic, int *index, ZIPENTRYW *zew)
 { 
 	if (hz==0) 
 	{
@@ -4391,11 +4360,8 @@ ZRESULT FindZipItemW(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRYW 
 		zew->mtime     = ze.mtime;
 		zew->comp_size = ze.comp_size;
 		zew->unc_size  = ze.unc_size;
-#ifdef _UNICODE
-		GetUnicodeFileName(ze.name, zew->name, MAX_PATH-1);
-#else
+
 		strcpy(zew->name, ze.name);
-#endif
 	}
 
 	return lasterrorU;
