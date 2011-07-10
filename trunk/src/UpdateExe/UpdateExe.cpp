@@ -2,6 +2,9 @@
 #include <exdisp.h>
 #include <comdef.h>
 #include "ControlEx.h"
+#include "resource.h"
+
+HINSTANCE	hGolobalInstance = NULL;
 
 class CUpdateExeWnd : public CWindowWnd, public INotifyUI
 {
@@ -61,6 +64,13 @@ public:
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
+		// 设置任务栏图标
+		HICON hSmallIcon = ::LoadIconW(hGolobalInstance,(LPCTSTR)IDI_APPICON16);
+		HICON hBigIcon = ::LoadIconW(hGolobalInstance,(LPCTSTR)IDI_APPICON32);
+
+		SendMessage(WM_SETICON,ICON_SMALL,(LPARAM)hSmallIcon);
+		SendMessage(WM_SETICON,ICON_BIG,(LPARAM)hBigIcon); 
+
 		LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
 		styleValue &= ~WS_CAPTION;
 		::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
@@ -68,7 +78,7 @@ public:
 		m_pm.Init(m_hWnd);
 		CDialogBuilder builder;
 		CDialogBuilderCallbackEx cb;
-		CControlUI* pRoot = builder.Create(_T("update_tip.xml"), (UINT)0,  &cb, &m_pm);
+		CControlUI* pRoot = builder.Create(_T("install.xml"), (UINT)0,  &cb, &m_pm);
 		ASSERT(pRoot && "Failed to parse XML");
 		m_pm.AttachDialog(pRoot);
 		m_pm.AddNotifier(this);
@@ -227,6 +237,8 @@ private:
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int nCmdShow)
 {
+	hGolobalInstance = hInstance;
+
 	CPaintManagerUI::SetInstance(hInstance);
 	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\UrlTraveler"));
 /*

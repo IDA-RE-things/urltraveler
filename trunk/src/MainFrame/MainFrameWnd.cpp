@@ -349,8 +349,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 }
 
 LRESULT CMainFrameWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	// 设置任务栏图标
+{	// 设置任务栏图标
 	HICON hSmallIcon = ::LoadIconW(g_hModule,(LPCTSTR)IDI_APPICON16);
 	HICON hBigIcon = ::LoadIconW(g_hModule,(LPCTSTR)IDI_APPICON32);
 
