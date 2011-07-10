@@ -109,7 +109,7 @@ private:
 
 	BOOL	IsHaveUpdatePackage();
 	void		ProcessUpdateConfig();
-
+	void		LaunchUpdateExe();
 
 protected:
 	wstring	m_strUpdatePath;	//	下载的文件的保存路径
