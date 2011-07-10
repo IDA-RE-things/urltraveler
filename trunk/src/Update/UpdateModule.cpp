@@ -24,7 +24,7 @@ HMODULE	g_hModule = NULL;
 #define UPDATE_PACKAGE	L"UpdatePackage.zip"
 
 #ifdef _DEBUG
-#define UPDATE_PROGRAM L"RBUpdated.exe"
+#define UPDATE_PROGRAM L"URUpdated.exe"
 #else
 #define UPDATE_PROGRAM L"RBUpdate.exe"
 #endif
@@ -547,6 +547,28 @@ void	UpdateModule::ShowUpdateInfoWnd()
 			m_bShowingUpdateInfoWnd = FALSE;
 		}
 	}
+}
+
+void	UpdateModule::LaunchUpdateExe()
+{
+	std::wstring strUpdateExe = PathHelper::GetModulePath();
+	strUpdateExe += UPDATE_PROGRAM;
+	if (PathFileExists(strUpdateExe.c_str()))
+	{
+		// 参数
+		std::wstring strParam;
+		strParam += L"\"";
+		strParam += MiscHelper::GetUpdatePath();
+		strParam += L"\"";
+
+		ShellExecute(NULL, _T("open"), strUpdateExe.c_str(), strParam.c_str(), NULL, SW_SHOWNORMAL);
+	}
+	else
+	{
+		//无法找到更新程序
+		ASSERT(L"无法找到URUpdate.exe程序");
+	}
+
 }
 
 void UpdateModule::OnMessage_CycleTrigged(Message* pMessage)
