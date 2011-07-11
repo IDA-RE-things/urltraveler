@@ -5,9 +5,12 @@
 #include "resource.h"
 #include "shellapi.h"
 #include "XString.h"
+#include "XUnzip.h"
+#include "StringHelper.h"
+#include "atlconv.h"
 
 HINSTANCE	hGolobalInstance = NULL;
-String	strUpdatePackage = L"";
+String	strUpdatePackage = _T("");
 
 
 class CUpdateExeWnd : public CWindowWnd, public INotifyUI
@@ -18,18 +21,22 @@ public:
 	UINT GetClassStyle() const { return CS_DBLCLKS; };
 	void OnFinalMessage(HWND /*hWnd*/) { delete this; };
 
-	void Init() {
+	void Init() 
+	{
 		m_pCloseBtn = static_cast<CButtonUI*>(m_pm.FindControl(_T("closebtn")));
 	}
 
-	void OnPrepare() {
+	void OnPrepare() 
+	{
 	}
 
 	void Notify(TNotifyUI& msg)
 	{
 		if( msg.sType == _T("windowinit") ) OnPrepare();
-		else if( msg.sType == _T("click") ) {
-			if( msg.pSender == m_pCloseBtn ) {
+		else if( msg.sType == _T("click") ) 
+		{
+			if( msg.pSender == m_pCloseBtn ) 
+			{
 				PostQuitMessage(0);
 				return; 
 			}
@@ -39,8 +46,8 @@ public:
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		// 设置任务栏图标
-		HICON hSmallIcon = ::LoadIconW(hGolobalInstance,(LPCTSTR)IDI_APPICON16);
-		HICON hBigIcon = ::LoadIconW(hGolobalInstance,(LPCTSTR)IDI_APPICON32);
+		HICON hSmallIcon = ::LoadIcon(hGolobalInstance,(LPCTSTR)IDI_APPICON16);
+		HICON hBigIcon = ::LoadIcon(hGolobalInstance,(LPCTSTR)IDI_APPICON32);
 
 		SendMessage(WM_SETICON,ICON_SMALL,(LPARAM)hSmallIcon);
 		SendMessage(WM_SETICON,ICON_BIG,(LPARAM)hBigIcon); 
@@ -77,8 +84,8 @@ public:
 
 	LRESULT OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-        if( ::IsIconic(*this) ) bHandled = FALSE;
-        return (wParam == 0) ? TRUE : FALSE;
+		if( ::IsIconic(*this) ) bHandled = FALSE;
+		return (wParam == 0) ? TRUE : FALSE;
 	}
 
 	LRESULT OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -101,12 +108,13 @@ public:
 
 		RECT rcCaption = m_pm.GetCaptionRect();
 		if( pt.x >= rcClient.left + rcCaption.left && pt.x < rcClient.right - rcCaption.right \
-			&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) {
-				CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(pt));
-				if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
-					_tcscmp(pControl->GetClass(), _T("OptionUI")) != 0 &&
-					_tcscmp(pControl->GetClass(), _T("TextUI")) != 0 )
-					return HTCAPTION;
+			&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) 
+		{
+			CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(pt));
+			if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
+				_tcscmp(pControl->GetClass(), _T("OptionUI")) != 0 &&
+				_tcscmp(pControl->GetClass(), _T("TextUI")) != 0 )
+				return HTCAPTION;
 		}
 
 		return HTCLIENT;
@@ -114,19 +122,19 @@ public:
 
 	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-        SIZE szRoundCorner = m_pm.GetRoundCorner();
-        if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
-            CRect rcWnd;
-            ::GetWindowRect(*this, &rcWnd);
-            rcWnd.Offset(-rcWnd.left, -rcWnd.top);
-            rcWnd.right++; rcWnd.bottom++;
-            HRGN hRgn = ::CreateRoundRectRgn(rcWnd.left, rcWnd.top, rcWnd.right, rcWnd.bottom, szRoundCorner.cx, szRoundCorner.cy);
-            ::SetWindowRgn(*this, hRgn, TRUE);
-            ::DeleteObject(hRgn);
-        }
+		SIZE szRoundCorner = m_pm.GetRoundCorner();
+		if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
+			CRect rcWnd;
+			::GetWindowRect(*this, &rcWnd);
+			rcWnd.Offset(-rcWnd.left, -rcWnd.top);
+			rcWnd.right++; rcWnd.bottom++;
+			HRGN hRgn = ::CreateRoundRectRgn(rcWnd.left, rcWnd.top, rcWnd.right, rcWnd.bottom, szRoundCorner.cx, szRoundCorner.cy);
+			::SetWindowRgn(*this, hRgn, TRUE);
+			::DeleteObject(hRgn);
+		}
 
-        bHandled = FALSE;
-        return 0;
+		bHandled = FALSE;
+		return 0;
 	}
 
 	LRESULT OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -150,21 +158,25 @@ public:
 	LRESULT OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		// 有时会在收到WM_NCDESTROY后收到wParam为SC_CLOSE的WM_SYSCOMMAND
-		if( wParam == SC_CLOSE ) {
+		if( wParam == SC_CLOSE )
+		{
 			::PostQuitMessage(0L);
 			bHandled = TRUE;
 			return 0;
 		}
 		BOOL bZoomed = ::IsZoomed(*this);
 		LRESULT lRes = CWindowWnd::HandleMessage(uMsg, wParam, lParam);
-		if( ::IsZoomed(*this) != bZoomed ) {
-			if( !bZoomed ) {
+		if( ::IsZoomed(*this) != bZoomed ) 
+		{
+			if( !bZoomed )
+			{
 				CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(_T("maxbtn")));
 				if( pControl ) pControl->SetVisible(false);
 				pControl = static_cast<CControlUI*>(m_pm.FindControl(_T("restorebtn")));
 				if( pControl ) pControl->SetVisible(true);
 			}
-			else {
+			else 
+			{
 				CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(_T("maxbtn")));
 				if( pControl ) pControl->SetVisible(true);
 				pControl = static_cast<CControlUI*>(m_pm.FindControl(_T("restorebtn")));
@@ -178,20 +190,22 @@ public:
 	{
 		LRESULT lRes = 0;
 		BOOL bHandled = TRUE;
-		switch( uMsg ) {
-		case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
-		case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
-		case WM_DESTROY:       lRes = OnDestroy(uMsg, wParam, lParam, bHandled); break;
-		case WM_NCACTIVATE:    lRes = OnNcActivate(uMsg, wParam, lParam, bHandled); break;
-		case WM_NCCALCSIZE:    lRes = OnNcCalcSize(uMsg, wParam, lParam, bHandled); break;
-		case WM_NCPAINT:       lRes = OnNcPaint(uMsg, wParam, lParam, bHandled); break;
-		case WM_NCHITTEST:     lRes = OnNcHitTest(uMsg, wParam, lParam, bHandled); break;
-		case WM_SIZE:          lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
-		case WM_GETMINMAXINFO: lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
-		case WM_SYSCOMMAND:    lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
-		default:
-		bHandled = FALSE;
+		switch( uMsg ) 
+		{
+			case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
+			case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
+			case WM_DESTROY:       lRes = OnDestroy(uMsg, wParam, lParam, bHandled); break;
+			case WM_NCACTIVATE:    lRes = OnNcActivate(uMsg, wParam, lParam, bHandled); break;
+			case WM_NCCALCSIZE:    lRes = OnNcCalcSize(uMsg, wParam, lParam, bHandled); break;
+			case WM_NCPAINT:       lRes = OnNcPaint(uMsg, wParam, lParam, bHandled); break;
+			case WM_NCHITTEST:     lRes = OnNcHitTest(uMsg, wParam, lParam, bHandled); break;
+			case WM_SIZE:          lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
+			case WM_GETMINMAXINFO: lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
+			case WM_SYSCOMMAND:    lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
+			default:
+				bHandled = FALSE;
 		}
+
 		if( bHandled ) return lRes;
 		if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
 		return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
@@ -210,22 +224,18 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	hGolobalInstance = hInstance;
 
 	LPWSTR *szArgList;
-    int argCount;
+	int argCount;
 
-     szArgList = CommandLineToArgvW(GetCommandLine(), &argCount);
-     if (szArgList == NULL)
-     {
-         return -1;
-     }
-	 strUpdatePackage = szArgList[1];
-     LocalFree(szArgList);
-
-
+	szArgList = CommandLineToArgvW(GetCommandLineW(), &argCount);
+	if (szArgList == NULL)
+	{
+		return -1;
+	}
+	strUpdatePackage = szArgList[1];
+	LocalFree(szArgList);
 
 	CPaintManagerUI::SetInstance(hInstance);
 	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\UrlTraveler"));
-
-
 
 	HRESULT Hr = ::CoInitialize(NULL);
 	if( FAILED(Hr) ) return 0;
@@ -235,6 +245,45 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	pFrame->Create(NULL, _T("3+收藏夹漫游大师更新安装"), UI_WNDSTYLE_FRAME, 0L, 0, 0, 800, 572);
 	pFrame->CenterWindow();
 	::ShowWindow(*pFrame, SW_SHOW);
+
+	// 启动线程，进行更新
+	HZIP hz = OpenZip((void*)strUpdatePackage.GetData(), 0, 2);
+
+	unsigned int nZipItemNum;
+	ZRESULT zResult = GetZipItemNum(hz, &nZipItemNum);
+	if( zResult != ZR_OK)
+		return 0;
+
+	for( size_t i=0; i<nZipItemNum; i++)
+	{
+		ZIPENTRY ze; 
+		zResult = GetZipItemA(hz, i, &ze);
+		if( zResult != ZR_OK)
+			continue;
+
+		USES_CONVERSION;
+		wchar_t* pName = wcsdup(A2W(ze.name));
+
+		zResult = UnzipItem(hz, i, (void*)pName, wcslen(pName),ZIP_FILENAME);
+	}
+/*
+	ZIPENTRY ze; 
+	int i; 
+	if( FindZipItem(hz, bitmap.m_lpstr, true, &i, &ze) != 0 ) return NULL;
+	dwSize = ze.unc_size;
+	if( dwSize == 0 ) return NULL;
+	pData = new BYTE[ dwSize ];
+	int res = UnzipItem(hz, i, pData, dwSize, 3);
+	if( res != 0x00000000 && res != 0x00000600) {
+		delete[] pData;
+		CloseZip(hz);
+		return NULL;
+	}
+*/
+
+	CloseZip(hz);
+
+
 
 	CPaintManagerUI::MessageLoop();
 

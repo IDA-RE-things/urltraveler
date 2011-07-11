@@ -94,8 +94,9 @@ public:
 public:
 	//! 进入线程虚函数
 	virtual void OnThreadEntry();
-	//! RUN
+
 	virtual int Run();
+
 	//! 线程退出虚函数
 	virtual void OnThreadExit();
 

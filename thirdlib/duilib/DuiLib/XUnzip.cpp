@@ -3930,6 +3930,7 @@ ZRESULT TUnzip::Open(void *z,unsigned int len,DWORD flags)
 {
 	if (uf!=0 || currentfile!=-1) 
 		return ZR_NOTINITED;
+
 	GetCurrentDirectory(MAX_PATH,rootdir);
 	_tcscat(rootdir,_T("\\"));
 	if (flags==ZIP_HANDLE)
