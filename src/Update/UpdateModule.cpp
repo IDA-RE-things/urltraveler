@@ -94,7 +94,6 @@ END_MESSAGE_MAP()
 BOOL UpdateModule::Load(IModuleManager* pManager) 
 {
 	__super::Load(pManager);
-
 	return TRUE;
 }
 
@@ -162,7 +161,7 @@ void	UpdateModule::OnEvent_CheckUpdateInfo(Event* pEvent)
 
 	//从服务器读取更新配置信息
 	Web_CheckUpdateConfigService checkUpdateConfigService;
-	checkUpdateConfigService.srcMId = MODULE_ID_UPDATE;
+	checkUpdateConfigService.srcMId = GetModuleId();
 	GetModuleManager()->CallService(checkUpdateConfigService.serviceId,(param)&checkUpdateConfigService);
 }
 
@@ -407,14 +406,16 @@ void	UpdateModule::ProcessUpdateConfig()
 
 			// 直接通知下载ok
 			Web_DownloadUpdateFileRespEvent* pEvent = new Web_DownloadUpdateFileRespEvent();
-			pEvent->desMId	=	MODULE_ID_UPDATE;
-			pEvent->srcMId	=	MODULE_ID_WEB;
+			pEvent->desMId	=	MODULE_ID_WEB;
+			pEvent->srcMId	=	MODULE_ID_UPDATE;
 			pEvent->param0 = web::WEB_RET_SUCCESS;
 			GetModuleManager()->PushEvent(*pEvent);
 
 			return;
 		}
 	}
+
+	m_strUpdateFileName =	 wstring(wszUpdatePath) + updateInfo.strFileName;
 
 	free(wszUpdatePath);
 
@@ -491,11 +492,9 @@ void	UpdateModule::LaunchUpdateExe()
 	{
 		// 参数
 		std::wstring strParam;
-		strParam += L"-f ";
-		strParam += MiscHelper::GetUpdatePath();
+		strParam += L"\"";
 		strParam += m_strUpdateFileName;
-		strParam += L" -m ";
-		strParam += L"";
+		strParam += L"\"";
 
 		ShellExecuteW(NULL, _T("open"), strUpdateExe.c_str(), strParam.c_str(), NULL, SW_SHOWNORMAL);
 	}

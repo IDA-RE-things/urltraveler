@@ -3,8 +3,12 @@
 #include <comdef.h>
 #include "ControlEx.h"
 #include "resource.h"
+#include "shellapi.h"
+#include "XString.h"
 
 HINSTANCE	hGolobalInstance = NULL;
+String	strUpdatePackage = L"";
+
 
 class CUpdateExeWnd : public CWindowWnd, public INotifyUI
 {
@@ -16,9 +20,6 @@ public:
 
 	void Init() {
 		m_pCloseBtn = static_cast<CButtonUI*>(m_pm.FindControl(_T("closebtn")));
-		m_pMaxBtn = static_cast<CButtonUI*>(m_pm.FindControl(_T("maxbtn")));
-		m_pRestoreBtn = static_cast<CButtonUI*>(m_pm.FindControl(_T("restorebtn")));
-		m_pMinBtn = static_cast<CButtonUI*>(m_pm.FindControl(_T("minbtn")));
 	}
 
 	void OnPrepare() {
@@ -32,33 +33,6 @@ public:
 				PostQuitMessage(0);
 				return; 
 			}
-			else if( msg.pSender == m_pMinBtn ) { 
-				SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0); return; }
-			else if( msg.pSender == m_pMaxBtn ) { 
-				SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0); return; }
-			else if( msg.pSender == m_pRestoreBtn ) { 
-				SendMessage(WM_SYSCOMMAND, SC_RESTORE, 0); return; }
-		}
-		else if(msg.sType==_T("setfocus"))
-		{
-			CStdString name = msg.pSender->GetName();
-			CTabLayoutUI* pControl = static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("switch")));
-			if(name==_T("examine"))
-				 pControl->SelectItem(0);
-			else if(name==_T("trojan"))
-				 pControl->SelectItem(1);
-			else if(name==_T("plugins"))
-				pControl->SelectItem(2);
-			else if(name==_T("vulnerability"))
-				pControl->SelectItem(3);
-			else if(name==_T("rubbish"))
-				pControl->SelectItem(4);
-			else if(name==_T("cleanup"))
-				pControl->SelectItem(5);
-			else if(name==_T("fix"))
-				pControl->SelectItem(6);
-			else if(name==_T("tool"))
-				pControl->SelectItem(7);
 		}
 	}
 
@@ -228,30 +202,37 @@ public:
 
 private:
 	CButtonUI* m_pCloseBtn;
-	CButtonUI* m_pMaxBtn;
-	CButtonUI* m_pRestoreBtn;
-	CButtonUI* m_pMinBtn;
-	//...
 };
 
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCmdLine, int nCmdShow)
 {
 	hGolobalInstance = hInstance;
 
+	LPWSTR *szArgList;
+    int argCount;
+
+     szArgList = CommandLineToArgvW(GetCommandLine(), &argCount);
+     if (szArgList == NULL)
+     {
+         return -1;
+     }
+	 strUpdatePackage = szArgList[1];
+     LocalFree(szArgList);
+
+
+
 	CPaintManagerUI::SetInstance(hInstance);
 	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\UrlTraveler"));
-/*
-	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin"));
-	CPaintManagerUI::SetResourceZip(_T("360SafeRes.zip"));
-*/
+
+
 
 	HRESULT Hr = ::CoInitialize(NULL);
 	if( FAILED(Hr) ) return 0;
 
 	CUpdateExeWnd* pFrame = new CUpdateExeWnd();
 	if( pFrame == NULL ) return 0;
-	pFrame->Create(NULL, _T("360安全卫士"), UI_WNDSTYLE_FRAME, 0L, 0, 0, 800, 572);
+	pFrame->Create(NULL, _T("3+收藏夹漫游大师更新安装"), UI_WNDSTYLE_FRAME, 0L, 0, 0, 800, 572);
 	pFrame->CenterWindow();
 	::ShowWindow(*pFrame, SW_SHOW);
 
