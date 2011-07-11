@@ -20,6 +20,12 @@ using namespace DuiLib;
 
 extern HMODULE	g_hModule;
 
+// 定时器相关
+#define IDT_HIDDEN		0
+#define IDT_APPEARING		1
+#define IDT_WAITING		2
+#define IDT_DISAPPEARING	3
+
 class CUpdateHintWnd : public CWindowWnd, public INotifyUI
 {
 public:
@@ -28,7 +34,7 @@ public:
 	LPCTSTR GetWindowClassName() const { return _T("UpdateHintWnd"); };
 	UINT GetClassStyle() const { return CS_DBLCLKS; };
 	void OnFinalMessage(HWND /*hWnd*/) { delete this; };
-	void Init(){} ;
+	void OnInit();
 	void OnPrepare(TNotifyUI& msg);
 	void Notify(TNotifyUI& msg);
 
@@ -42,6 +48,7 @@ public:
 	LRESULT OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
@@ -50,13 +57,25 @@ public:
 	void	SetVersion(String	strVersion);
 	void	SetSize(float fSize);
 	void	AddUpdateDetail(String strDetail);
+	void	BeginToShowUpdateInfoWnd();
 
 public:
 	CPaintManagerUI m_pm;
 
+	// 更新内容相关
 	String	m_strDownloadUrl;
 	String	m_strSavePath;
 	String	m_strVersion;
 	float		m_fSize;
 	std::vector<wstring>	m_vUpdateDetail;
+
+	// 位置相关
+	CRect	m_UpdateTipWindowRect;
+
+	int m_nStartPosX;
+	int m_nStartPosY;
+	int m_nCurrentPosX;
+	int m_nCurrentPosY;
+	int m_nTaskbarPlacement;
+	int m_nIncrement;
 };

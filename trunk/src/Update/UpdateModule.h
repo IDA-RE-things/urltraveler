@@ -103,7 +103,6 @@ protected:
 	void OnMessage_CycleTrigged(Message* pMessage);
 
 	void	QueryDownloadUpdateFileProcess();
-	void	ShowUpdateInfoWnd();
 
 private:
 
@@ -112,7 +111,6 @@ private:
 	void		LaunchUpdateExe();
 
 protected:
-	wstring	m_strUpdatePath;	//	下载的文件的保存路径
 	wstring	m_strUpdateXml;	//	更新的xml文件内容
 	wstring	m_strUpdateFileName;	//	更新的文件名称
 
@@ -120,18 +118,7 @@ protected:
 	int		m_nDownloadSeqNo;
 
 	CUpdateWnd*	m_pUpdateWnd;	
-
-	// UpdateHintWnd相关的信息
-	BOOL	m_bShowingUpdateInfoWnd;	//	是否正在逐步显示更新信息对话框
-	CRect	m_UpdateTipWindowRect;
 	CUpdateHintWnd*	m_pUpdateHintWnd;
-
-	int m_nStartPosX;
-	int m_nStartPosY;
-	int m_nCurrentPosX;
-	int m_nCurrentPosY;
-	int m_nTaskbarPlacement;
-	int m_nIncrement;
 };
 
 class UpdateModuleFactory : public ModuleFactoryImpl<UpdateModule>{};

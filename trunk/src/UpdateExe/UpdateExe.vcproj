@@ -78,7 +78,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="DuiLib_u.lib Utility.lib"
-				OutputFile="..\..\bin\RBUpdate.exe"
+				OutputFile="..\..\bin\UTUpdate.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib"
@@ -176,7 +176,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="DuiLib_ud.lib  Utilityd.lib"
-				OutputFile="..\..\bin\RBUpdated.exe"
+				OutputFile="..\..\bin\UTUpdated.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib"
