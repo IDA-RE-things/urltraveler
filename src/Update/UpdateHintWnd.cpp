@@ -13,6 +13,12 @@ using namespace  update;
 
 CUpdateHintWnd::CUpdateHintWnd()
 {
+	m_nStartPosX=0;
+	m_nStartPosY=0;
+	m_nCurrentPosX=0;
+	m_nCurrentPosY=0;
+	m_nIncrement=20;
+	m_nTaskbarPlacement=0;
 }
 
 CUpdateHintWnd::~CUpdateHintWnd()
@@ -35,7 +41,7 @@ void CUpdateHintWnd::OnPrepare(TNotifyUI& msg)
 
 	// 更新内容：{n}{n} {x 2}{i ball.png}  增加了对Chrome浏览器的支持 {n}{n} {x 2}{i ball.png}  修改了FireFox插件的bug
 	String	strUpdateInfo = L"更新内容：";
-	for( int i=0; i<m_vUpdateDetail.size(); i++)
+	for( size_t i=0; i<m_vUpdateDetail.size(); i++)
 	{
 		strUpdateInfo += L"{n}{n}{x 2}{i ball.png}  ";
 		strUpdateInfo += m_vUpdateDetail[i].c_str();
@@ -94,8 +100,42 @@ LRESULT CUpdateHintWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	m_pm.AttachDialog(pRoot);
 	m_pm.AddNotifier(this);
 
-	Init();
+	OnInit();
 	return 0;
+}
+
+void	CUpdateHintWnd::OnInit()
+{
+	unsigned int nDesktopHeight;
+	unsigned int nDesktopWidth;
+	unsigned int nScreenWidth;
+	unsigned int nScreenHeight;
+
+	CRect rcDesktop;
+	::SystemParametersInfoW(SPI_GETWORKAREA,0,&rcDesktop,0);
+	nDesktopWidth=rcDesktop.right-rcDesktop.left;
+	nDesktopHeight=rcDesktop.bottom-rcDesktop.top;
+	nScreenWidth=::GetSystemMetrics(SM_CXSCREEN);
+	nScreenHeight=::GetSystemMetrics(SM_CYSCREEN);
+
+	BOOL bTaskbarOnRight=nDesktopWidth<nScreenWidth && rcDesktop.left==0;
+	BOOL bTaskbarOnLeft=nDesktopWidth<nScreenWidth && rcDesktop.left!=0;
+	BOOL bTaskBarOnTop=nDesktopHeight<nScreenHeight && rcDesktop.top!=0;
+	BOOL bTaskbarOnBottom=nDesktopHeight<nScreenHeight && rcDesktop.top==0;
+
+	::GetWindowRect(GetHWND(),&m_UpdateTipWindowRect);
+
+	m_nStartPosX=rcDesktop.right-m_UpdateTipWindowRect.GetWidth() -5;
+	m_nStartPosY=rcDesktop.bottom;
+
+	m_nCurrentPosX=m_nStartPosX;
+	m_nCurrentPosY=m_nStartPosY;
+
+	::MoveWindow(GetHWND(),
+		m_nCurrentPosX, m_nCurrentPosY, 
+		m_UpdateTipWindowRect.GetWidth(), 
+		m_UpdateTipWindowRect.GetHeight(), TRUE);
+	::SetWindowPos(GetHWND(),HWND_TOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
 }
 
 LRESULT CUpdateHintWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -219,6 +259,27 @@ LRESULT CUpdateHintWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	return 0;
 }
 
+LRESULT CUpdateHintWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	CRect rectClient;
+	GetClientRect(GetHWND(),&rectClient);
+
+	if (m_nCurrentPosY>(m_nStartPosY-rectClient.GetHeight() - 2))
+	{
+		m_nCurrentPosY-=m_nIncrement;
+		MoveWindow(GetHWND(),
+			m_nCurrentPosX, m_nCurrentPosY, 
+			m_UpdateTipWindowRect.GetWidth(), 
+			m_UpdateTipWindowRect.GetHeight(), TRUE);
+	}
+	else
+	{
+		KillTimer(GetHWND(), IDT_APPEARING);
+	}
+
+	return 0;
+}
+
 
 LRESULT CUpdateHintWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -235,6 +296,8 @@ LRESULT CUpdateHintWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_GETMINMAXINFO: lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
 		case WM_SYSCOMMAND:    lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
 		case WM_COMMAND:       lRes = OnCommand(uMsg, wParam, lParam, bHandled); break;
+		case WM_TIMER: lRes = OnTimer(uMsg, wParam, lParam, bHandled); break;
+
 		default:
 			bHandled = FALSE;
 	}
@@ -266,4 +329,9 @@ void	CUpdateHintWnd::SetSize(float fSize)
 void	CUpdateHintWnd::AddUpdateDetail(String strDetail)
 {
 	m_vUpdateDetail.push_back(strDetail.GetData());
+}
+
+void	CUpdateHintWnd::BeginToShowUpdateInfoWnd()
+{
+	SetTimer(this->GetHWND(), IDT_APPEARING, 100, NULL);
 }

@@ -10,7 +10,7 @@
 #include "json/json.h"
 #include "XString.h"
 #include "MD5Checksum.h"
-#include "UpdateWnd.h";
+#include "UpdateWnd.h"
 #include "MainFrameDefine.h"
 #include "TrayIconDefine.h"
 #include "UIBase.h"
@@ -18,21 +18,16 @@
 HMODULE	g_hModule = NULL;
 
 // 当前客户端的版本描述配置
-#define INI_FILE_NAME L"RainBowUpdate.ini"
+#define INI_FILE_NAME L"UTUpdate.ini"
 
 // 更新包名称
 #define UPDATE_PACKAGE	L"UpdatePackage.zip"
 
 #ifdef _DEBUG
-#define UPDATE_PROGRAM L"URUpdated.exe"
+#define UPDATE_PROGRAM L"UTUpdated.exe"
 #else
-#define UPDATE_PROGRAM L"RBUpdate.exe"
+#define UPDATE_PROGRAM L"UTUpdate.exe"
 #endif
-
-#define IDT_HIDDEN		0
-#define IDT_APPEARING		1
-#define IDT_WAITING		2
-#define IDT_DISAPPEARING	3
 
 
 using namespace std;
@@ -56,16 +51,7 @@ UpdateModule::UpdateModule()
 	m_bDownloading	=	FALSE;
 
 	m_pUpdateWnd	=	NULL;
-
-	m_bShowingUpdateInfoWnd	=	FALSE;
 	m_pUpdateHintWnd	=	NULL;
-
-	m_nStartPosX=0;
-	m_nStartPosY=0;
-	m_nCurrentPosX=0;
-	m_nCurrentPosY=0;
-	m_nIncrement=20;
-	m_nTaskbarPlacement=0;
 }
 
 UpdateModule::~UpdateModule()
@@ -109,7 +95,6 @@ BOOL UpdateModule::Load(IModuleManager* pManager)
 {
 	__super::Load(pManager);
 
-	m_strUpdatePath	=	MiscHelper::GetUpdatePath();
 	return TRUE;
 }
 
@@ -258,8 +243,14 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 		{
 			m_pUpdateWnd->SetDownLoadProgress( 100);
 
-			//	启动UpdateExe文件
+			// 再次检查MD5值
 
+			//	启动UpdateExe文件
+			LaunchUpdateExe();
+
+			GetModuleManager()->PushEvent(
+				MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
+				MODULE_ID_CORE));
 		}
 	}
 }
@@ -347,45 +338,14 @@ void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
 	m_pUpdateHintWnd->SetDownloadUrl(pUpdateInfoEvent->szDownloadUrl);
 	m_pUpdateHintWnd->SetSavePath(pUpdateInfoEvent->szSavePath);
 	m_pUpdateHintWnd->SetVersion(MiscHelper::GetStringFromVersion(pUpdateInfoEvent->nVersion + 12));
-	m_pUpdateHintWnd->SetSize(2.34);
+	m_pUpdateHintWnd->SetSize((float)2.34);
 
 	for( int i=0; i<pUpdateInfoEvent->nUpdateDetailNum; i++)
 	{
 		m_pUpdateHintWnd->AddUpdateDetail(pUpdateInfoEvent->szUpdateDetail[i]);
 	}
 
-	unsigned int nDesktopHeight;
-	unsigned int nDesktopWidth;
-	unsigned int nScreenWidth;
-	unsigned int nScreenHeight;
-
-	CRect rcDesktop;
-	::SystemParametersInfoW(SPI_GETWORKAREA,0,&rcDesktop,0);
-	nDesktopWidth=rcDesktop.right-rcDesktop.left;
-	nDesktopHeight=rcDesktop.bottom-rcDesktop.top;
-	nScreenWidth=::GetSystemMetrics(SM_CXSCREEN);
-	nScreenHeight=::GetSystemMetrics(SM_CYSCREEN);
-
-	BOOL bTaskbarOnRight=nDesktopWidth<nScreenWidth && rcDesktop.left==0;
-	BOOL bTaskbarOnLeft=nDesktopWidth<nScreenWidth && rcDesktop.left!=0;
-	BOOL bTaskBarOnTop=nDesktopHeight<nScreenHeight && rcDesktop.top!=0;
-	BOOL bTaskbarOnBottom=nDesktopHeight<nScreenHeight && rcDesktop.top==0;
-
-	::GetWindowRect(m_pUpdateHintWnd->GetHWND(),&m_UpdateTipWindowRect);
-
-	m_nStartPosX=rcDesktop.right-m_UpdateTipWindowRect.GetWidth() -5;
-	m_nStartPosY=rcDesktop.bottom;
-
-	m_nCurrentPosX=m_nStartPosX;
-	m_nCurrentPosY=m_nStartPosY;
-
-	::MoveWindow(m_pUpdateHintWnd->GetHWND(),
-		m_nCurrentPosX, m_nCurrentPosY, 
-		m_UpdateTipWindowRect.GetWidth(), 
-		m_UpdateTipWindowRect.GetHeight(), TRUE);
-	::SetWindowPos(m_pUpdateHintWnd->GetHWND(),HWND_TOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
-
-	m_bShowingUpdateInfoWnd	=	TRUE;
+	m_pUpdateHintWnd->BeginToShowUpdateInfoWnd();
 }
 
 void	UpdateModule::ProcessUpdateConfig()
@@ -486,7 +446,7 @@ void	UpdateModule::ProcessUpdateConfig()
 		STRNCPY(pEvent->szSavePath, updateInfo.strTempSavePath.c_str());
 
 		pEvent->nUpdateDetailNum = vDetail.size();
-		for( int i=0; i<vDetail.size();i++)
+		for( size_t i=0; i<vDetail.size();i++)
 		{
 			STRNCPY(pEvent->szUpdateDetail[i], vDetail[i].c_str());
 		}
@@ -497,11 +457,7 @@ void	UpdateModule::ProcessUpdateConfig()
 
 BOOL UpdateModule::IsHaveUpdatePackage()
 {
-	std::wstring tempCab = m_strUpdatePath;
-	tempCab += _T("*.cab");
-
-	BOOL bExist = PathHelper::IsFileExist(tempCab.c_str());
-	return bExist;
+	return TRUE;
 }
 
 void UpdateModule::QueryDownloadUpdateFileProcess()
@@ -527,52 +483,30 @@ void UpdateModule::QueryDownloadUpdateFileProcess()
 	}
 }
 
-void	UpdateModule::ShowUpdateInfoWnd()
-{
-	if( m_bShowingUpdateInfoWnd == TRUE)
-	{
-		CRect rectClient;
-		GetClientRect(m_pUpdateHintWnd->GetHWND(),&rectClient);
-
-		if (m_nCurrentPosY>(m_nStartPosY-rectClient.GetHeight() - 2))
-		{
-			m_nCurrentPosY-=m_nIncrement;
-			MoveWindow(m_pUpdateHintWnd->GetHWND(),
-				m_nCurrentPosX, m_nCurrentPosY, 
-				m_UpdateTipWindowRect.GetWidth(), 
-				m_UpdateTipWindowRect.GetHeight(), TRUE);
-		}
-		else
-		{
-			m_bShowingUpdateInfoWnd = FALSE;
-		}
-	}
-}
-
 void	UpdateModule::LaunchUpdateExe()
 {
-	std::wstring strUpdateExe = PathHelper::GetModulePath();
+	std::wstring strUpdateExe = PathHelper::GetModuleDir();
 	strUpdateExe += UPDATE_PROGRAM;
-	if (PathFileExists(strUpdateExe.c_str()))
+	if (PathHelper::IsFileExist(strUpdateExe.c_str()))
 	{
 		// 参数
 		std::wstring strParam;
-		strParam += L"\"";
+		strParam += L"-f ";
 		strParam += MiscHelper::GetUpdatePath();
-		strParam += L"\"";
+		strParam += m_strUpdateFileName;
+		strParam += L" -m ";
+		strParam += L"";
 
-		ShellExecute(NULL, _T("open"), strUpdateExe.c_str(), strParam.c_str(), NULL, SW_SHOWNORMAL);
+		ShellExecuteW(NULL, _T("open"), strUpdateExe.c_str(), strParam.c_str(), NULL, SW_SHOWNORMAL);
 	}
 	else
 	{
 		//无法找到更新程序
 		ASSERT(L"无法找到URUpdate.exe程序");
 	}
-
 }
 
 void UpdateModule::OnMessage_CycleTrigged(Message* pMessage)
 {
 	QueryDownloadUpdateFileProcess();
-	ShowUpdateInfoWnd();
 }

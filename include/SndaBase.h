@@ -98,7 +98,7 @@ typedef unsigned long ulong;
 #ifndef STRNCPY
 #define STRNCPY(dstPtr,srcPtr) \
 	memset(dstPtr, 0x0, sizeof(dstPtr)); \
-	wcsncpy(dstPtr, srcPtr, sizeof(dstPtr)/sizeof(wchar_t)-1); 
+	wcsncpy_s(dstPtr, sizeof(dstPtr)/sizeof(wchar_t)-1, srcPtr, sizeof(dstPtr)/sizeof(wchar_t)-1); 
 #endif
 
 #ifndef ZEROMEM
