@@ -8,7 +8,9 @@
 #include "XUnzip.h"
 #include "StringHelper.h"
 #include "MiscHelper.h"
+#include "FileHelper.h"
 #include "atlconv.h"
+#include "json/json.h"
 
 HINSTANCE	hGolobalInstance = NULL;
 String	strUpdatePackage = _T("");
@@ -294,11 +296,48 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	pFrame->CenterWindow();
 	::ShowWindow(*pFrame, SW_SHOW);
 
+/*
 	int nRet = UnzipPackage((wchar_t*)strUpdatePackage.GetData());
 	if( nRet == -1)
 		return 0;
+*/
 
 	// ’“µΩupdate.json
+	String	strUpdateJson  = MiscHelper::GetUnpackagePath();
+	strUpdateJson += L"update.json";
+
+	char* pOutBuffer = NULL;
+	int nBufLen = 0;
+	BOOL bRet = FileHelper::File2Buffer(strUpdateJson, (BYTE**)&pOutBuffer, nBufLen);
+	if(bRet == FALSE)
+		return 0;
+
+	Json::Reader reader;
+	Json::Value root;
+	if (!reader.parse(pOutBuffer, root, false))
+		return 0;
+
+	Json::Value& fileList = root["filelist"];
+	ASSERT(fileList.isArray() == TRUE);
+
+	for( size_t i=0; i<fileList.size(); i++)
+	{
+		Json::Value& fileNode = fileList[i];
+
+		string strAction = fileNode["action"].asString();
+		string strFileName = fileNode["filename"].asString();
+		string strMD5 = fileNode["md5"].asString();
+		string strPath = fileNode["locatepath"].asString();
+
+		// øΩ±¥Œƒº˛
+		if( strAction == "copy")
+		{
+
+		}
+
+
+	}
+
 	CPaintManagerUI::MessageLoop();
 
 	::CoUninitialize();
