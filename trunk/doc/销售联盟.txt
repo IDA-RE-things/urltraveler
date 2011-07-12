@@ -1,0 +1,6 @@
+京东
+用户名		密码			联盟id
+urltraveler	tencent1234		
+
+凡客
+urltraveler	tencent1234		http://www.vancl.com/?source=urltraveler
