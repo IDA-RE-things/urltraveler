@@ -45,6 +45,7 @@ enum ModuleId
 	MODULE_ID_DATABASE,				//	数据库模块
 	MODULE_ID_WEB,					//	Web模块，全面负责所有的HTTP请求处理
 	MODULE_ID_UPDATE,					//	Web模块，全面负责所有的HTTP请求处理
+	MODULE_ID_FAVMONITOR,           //  监控模块
 
 	MODULE_ID_END,//最后一个，边界判断
 };
