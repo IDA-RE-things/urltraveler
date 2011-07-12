@@ -124,7 +124,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Update", "Update\Update.vcp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UpdateExe", "UpdateExe\UpdateExe.vcproj", "{463FE628-A176-4C58-B005-3924BFD1E4E6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FavMonitor", "FavMonitor\FavMonitor.vcproj", "{95F3358E-165B-4218-BF48-B80C327C307E}"
+EndProject
 Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
@@ -222,6 +228,10 @@ Global
 		{463FE628-A176-4C58-B005-3924BFD1E4E6}.Debug|Win32.Build.0 = Debug|Win32
 		{463FE628-A176-4C58-B005-3924BFD1E4E6}.Release|Win32.ActiveCfg = Release|Win32
 		{463FE628-A176-4C58-B005-3924BFD1E4E6}.Release|Win32.Build.0 = Release|Win32
+		{95F3358E-165B-4218-BF48-B80C327C307E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{95F3358E-165B-4218-BF48-B80C327C307E}.Debug|Win32.Build.0 = Debug|Win32
+		{95F3358E-165B-4218-BF48-B80C327C307E}.Release|Win32.ActiveCfg = Release|Win32
+		{95F3358E-165B-4218-BF48-B80C327C307E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

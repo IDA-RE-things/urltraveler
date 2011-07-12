@@ -154,6 +154,9 @@ BOOL Maxthon3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 		CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from MyFavNodes where parent_id <> ''");
 		int i = 0;
 		unsigned char szParentNode[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		unsigned char szRecycle[16] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		unsigned char szGroup[16] = {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		unsigned char szStartPageFav[16] = {3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 		while(!Query.eof() && i < nDataNum)
 		{
@@ -165,12 +168,31 @@ BOOL Maxthon3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 			{
 				pData[i].nPid = 0;
 			}
+			else if(memcmp(pTemp, szRecycle, 16) == 0)
+			{
+				int i = 0;
+			}
+			else if(memcmp(pTemp, szGroup, 16) == 0)
+			{
+				int j = 0;
+			}
+			else if(memcmp(pTemp, szStartPageFav, 16) == 0)
+			{
+				pData[i].nPid = 0;
+				int m = 0;
+			}
 			else
 			{
 				ojbCrcHash.GetHash((BYTE *)pTemp, nBlobLen, (BYTE *)&pData[i].nPid, sizeof(uint32));
 			}
+			
 
 			pTemp = Query.getBlobField("id", nBlobLen);
+
+			if (pTemp == NULL)
+			{
+				continue;
+			}
 
 			ojbCrcHash.GetHash((BYTE *)pTemp, nBlobLen, (BYTE *)&pData[i].nId, sizeof(uint32));
 
