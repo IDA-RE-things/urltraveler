@@ -47,6 +47,10 @@ public:
 	// 返回更新文件保存的路径
 	static wchar_t*	GetUpdatePath();
 
+	static wchar_t*	GetUnpackagePath();
+
+	static void	 DeleteUnpackagePath();
+
 	static int GetCurrentVersion();
 
 	// 将1.0.0.0格式的字符传变成整数

@@ -392,6 +392,19 @@ wchar_t*	MiscHelper::GetUpdatePath()
 	return (wchar_t*)wcsdup(wstrUpdate.c_str());
 }
 
+wchar_t*	MiscHelper::GetUnpackagePath()
+{
+	wstring wstrUpdate = PathHelper::GetAppDataDir() + L"\\urltraveler\\unpackage\\";
+	PathHelper::CreateMultipleDirectory(wstrUpdate);
+	return (wchar_t*)wcsdup(wstrUpdate.c_str());
+}
+
+void	 MiscHelper::DeleteUnpackagePath()
+{
+	wstring wstrUpdate = PathHelper::GetAppDataDir() + L"\\urltraveler\\unpackage";
+	PathHelper::RemoveDir(wstrUpdate, TRUE);
+}
+
 int MiscHelper::GetCurrentVersion()
 {
 	return CLIENT_VERSION;

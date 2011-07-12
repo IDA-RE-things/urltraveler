@@ -550,7 +550,7 @@ BOOL PathHelper::RemoveDirAllFile(const std::wstring &strPath)
 		const std::wstring &strTmpFile = *iter;
 
 		bResult = ::DeleteFileW(strTmpFile.c_str());
-
+		int n = GetLastError();
 		iter ++;
 	}
 
