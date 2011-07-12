@@ -7,6 +7,7 @@
 #include "XString.h"
 #include "XUnzip.h"
 #include "StringHelper.h"
+#include "MiscHelper.h"
 #include "atlconv.h"
 
 HINSTANCE	hGolobalInstance = NULL;
@@ -218,6 +219,53 @@ private:
 	CButtonUI* m_pCloseBtn;
 };
 
+int UnzipPackage(wchar_t*	pPackageName)
+{
+	if( pPackageName == NULL)
+		return -1;
+
+	// 启动线程，进行更新
+	HZIP hz = OpenZip((void*)pPackageName, 0, 2);
+
+	unsigned int nZipItemNum;
+	ZRESULT zResult = GetZipItemNum(hz, &nZipItemNum);
+	if( zResult != ZR_OK)
+		return -1;
+
+	MiscHelper::DeleteUnpackagePath();
+
+	size_t i=0;
+	for( ; i<nZipItemNum; i++)
+	{
+		ZIPENTRY ze; 
+		zResult = GetZipItemA(hz, i, &ze);
+		if( zResult != ZR_OK)
+			continue;
+
+		USES_CONVERSION;
+		wchar_t* pName = wcsdup(A2W(ze.name));
+
+		wchar_t szName[MAX_PATH];
+		memset(szName, 0x0, MAX_PATH);
+		swprintf(szName, L"%s%s", MiscHelper::GetUnpackagePath(),pName);
+
+		zResult = UnzipItem(hz, i, (void*)szName, wcslen(szName),ZIP_FILENAME);
+
+		// 解压失败
+		if( zResult != ZR_OK)
+			break;
+	}
+ 	CloseZip(hz);
+
+	// 更新失败
+	if( i < nZipItemNum)
+	{
+		::MessageBox(NULL, L"安装包解压失败，无法正确进行更新", L"更新提示", MB_OK);
+		return -1;
+	}
+
+	return 0;
+}
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCmdLine, int nCmdShow)
 {
@@ -246,45 +294,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	pFrame->CenterWindow();
 	::ShowWindow(*pFrame, SW_SHOW);
 
-	// 启动线程，进行更新
-	HZIP hz = OpenZip((void*)strUpdatePackage.GetData(), 0, 2);
-
-	unsigned int nZipItemNum;
-	ZRESULT zResult = GetZipItemNum(hz, &nZipItemNum);
-	if( zResult != ZR_OK)
+	int nRet = UnzipPackage((wchar_t*)strUpdatePackage.GetData());
+	if( nRet == -1)
 		return 0;
 
-	for( size_t i=0; i<nZipItemNum; i++)
-	{
-		ZIPENTRY ze; 
-		zResult = GetZipItemA(hz, i, &ze);
-		if( zResult != ZR_OK)
-			continue;
-
-		USES_CONVERSION;
-		wchar_t* pName = wcsdup(A2W(ze.name));
-
-		zResult = UnzipItem(hz, i, (void*)pName, wcslen(pName),ZIP_FILENAME);
-	}
-/*
-	ZIPENTRY ze; 
-	int i; 
-	if( FindZipItem(hz, bitmap.m_lpstr, true, &i, &ze) != 0 ) return NULL;
-	dwSize = ze.unc_size;
-	if( dwSize == 0 ) return NULL;
-	pData = new BYTE[ dwSize ];
-	int res = UnzipItem(hz, i, pData, dwSize, 3);
-	if( res != 0x00000000 && res != 0x00000600) {
-		delete[] pData;
-		CloseZip(hz);
-		return NULL;
-	}
-*/
-
-	CloseZip(hz);
-
-
-
+	// 找到update.json
 	CPaintManagerUI::MessageLoop();
 
 	::CoUninitialize();
