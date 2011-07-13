@@ -196,18 +196,18 @@ public:
 		BOOL bHandled = TRUE;
 		switch( uMsg ) 
 		{
-			case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
-			case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
-			case WM_DESTROY:       lRes = OnDestroy(uMsg, wParam, lParam, bHandled); break;
-			case WM_NCACTIVATE:    lRes = OnNcActivate(uMsg, wParam, lParam, bHandled); break;
-			case WM_NCCALCSIZE:    lRes = OnNcCalcSize(uMsg, wParam, lParam, bHandled); break;
-			case WM_NCPAINT:       lRes = OnNcPaint(uMsg, wParam, lParam, bHandled); break;
-			case WM_NCHITTEST:     lRes = OnNcHitTest(uMsg, wParam, lParam, bHandled); break;
-			case WM_SIZE:          lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
-			case WM_GETMINMAXINFO: lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
-			case WM_SYSCOMMAND:    lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
-			default:
-				bHandled = FALSE;
+		case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
+		case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
+		case WM_DESTROY:       lRes = OnDestroy(uMsg, wParam, lParam, bHandled); break;
+		case WM_NCACTIVATE:    lRes = OnNcActivate(uMsg, wParam, lParam, bHandled); break;
+		case WM_NCCALCSIZE:    lRes = OnNcCalcSize(uMsg, wParam, lParam, bHandled); break;
+		case WM_NCPAINT:       lRes = OnNcPaint(uMsg, wParam, lParam, bHandled); break;
+		case WM_NCHITTEST:     lRes = OnNcHitTest(uMsg, wParam, lParam, bHandled); break;
+		case WM_SIZE:          lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
+		case WM_GETMINMAXINFO: lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
+		case WM_SYSCOMMAND:    lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
+		default:
+			bHandled = FALSE;
 		}
 
 		if( bHandled ) return lRes;
@@ -258,7 +258,7 @@ int UnzipPackage(wchar_t*	pPackageName)
 		if( zResult != ZR_OK)
 			break;
 	}
- 	CloseZip(hz);
+	CloseZip(hz);
 
 	// 更新失败
 	if( i < nZipItemNum)
@@ -274,7 +274,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 {
 	hGolobalInstance = hInstance;
 
-/*
 	LPWSTR *szArgList;
 	int argCount;
 
@@ -285,10 +284,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	}
 	strUpdatePackage = szArgList[1];
 	LocalFree(szArgList);
-*/
 
 
-/*
 	CPaintManagerUI::SetInstance(hInstance);
 	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\UrlTraveler"));
 
@@ -300,40 +297,34 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	pFrame->Create(NULL, _T("3+收藏夹漫游大师更新安装"), UI_WNDSTYLE_FRAME, 0L, 0, 0, 800, 572);
 	pFrame->CenterWindow();
 	::ShowWindow(*pFrame, SW_SHOW);
-*/
 
-/*
+	/*
 	int nRet = UnzipPackage((wchar_t*)strUpdatePackage.GetData());
 	if( nRet == -1)
-		return 0;
-*/
+	return 0;
+	*/
 
 	// 找到update.json
 
-/*
-		String	strUpdateJson  = MiscHelper::GetUnpackagePath();
-		strUpdateJson += L"update.json";
-		if( PathHelper::IsFileExist(strUpdateJson.GetData()) == FALSE)
-			return 0;
-	
-		char* pOutBuffer = NULL;
-		int nBufLen = 0;
-		BOOL bRet = FileHelper::File2Buffer(strUpdateJson, (BYTE**)&pOutBuffer, nBufLen);
-		if(bRet == FALSE)
-			return 0;
-*/
-	
-    Json::Reader reader;
-    Json::Value root;
-	if(! reader.parse("{ h }", root)) 
-        return 0;
+	String	strUpdateJson  = MiscHelper::GetUnpackagePath();
+	strUpdateJson += L"update.json";
+	if( PathHelper::IsFileExist(strUpdateJson.GetData()) == FALSE)
+		return 0;
 
-/*	
-		Json::Value& fileList = root["filelist"];
-		ASSERT(fileList.isArray() == TRUE);*/
-	
+	char* pOutBuffer = NULL;
+	int nBufLen = 0;
+	BOOL bRet = FileHelper::File2Buffer(strUpdateJson, (BYTE**)&pOutBuffer, nBufLen);
+	if(bRet == FALSE)
+		return 0;
 
-/*
+	Json::Reader reader;
+	Json::Value root;
+	if(! reader.parse(pOutBuffer, root)) 
+		return 0;
+
+	Json::Value& fileList = root["filelist"];
+	ASSERT(fileList.isArray() == TRUE);
+
 	for( size_t i=0; i<fileList.size(); i++)
 	{
 		Json::Value& fileNode = fileList[i];
@@ -351,10 +342,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 
 
 	}
-*/
 
 	CPaintManagerUI::MessageLoop();
 
-	//::CoUninitialize();
+	::CoUninitialize();
 	return 0;
 }
