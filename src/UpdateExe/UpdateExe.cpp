@@ -9,6 +9,7 @@
 #include "StringHelper.h"
 #include "MiscHelper.h"
 #include "FileHelper.h"
+#include "PathHelper.h"
 #include "atlconv.h"
 #include "json/json.h"
 
@@ -305,6 +306,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	// ’“µΩupdate.json
 	String	strUpdateJson  = MiscHelper::GetUnpackagePath();
 	strUpdateJson += L"update.json";
+	if( PathHelper::IsFileExist(strUpdateJson.GetData()) == FALSE)
+		return 0;
 
 	char* pOutBuffer = NULL;
 	int nBufLen = 0;
