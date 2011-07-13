@@ -1,10 +1,4 @@
 #include <stdafx.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-#include <ctype.h>
-#include <stdarg.h>
-#include <shlobj.h>
 #include <string>
 #include <vector>
 #include <queue>
@@ -13,6 +7,10 @@
 #include <tchar.h>
 #include "SndaBase.h"
 #include "XString.h"
+#include "shlwapi.h"
+#include "WinVer.h"
+#include "XString.h"
+#include "shellapi.h"
 
 //////////////////////////////////////////////////////////////////////////
 /** 根据文件的HANDLE获取文件的名称
@@ -49,6 +47,93 @@ DWORD FileHelper::GetFileSize(String sFilePath, DWORD* pdwHigh)
 	return dwRet;
 
 }
+BOOL FileHelper::IsExist(LPCTSTR szFilePath)
+{
+	return PathFileExists(szFilePath);
+}
+
+BOOL FileHelper::IsDirExist(LPCTSTR szFilePath)
+{
+	return PathIsDirectory(szFilePath);
+}
+
+/// 文件是否存在
+BOOL FileHelper::IsFileExist(LPCTSTR szFilePath)
+{
+	return IsExist(szFilePath) && !IsDirExist(szFilePath);
+}
+
+/// 文件是否可读(即是否被别的程序占用)
+BOOL FileHelper::IsFileReadable(LPCTSTR szFilePath)
+{
+	if (!IsFileExist(szFilePath))
+	{
+		ASSERT(0);
+		return false;
+	}
+
+	HANDLE hFile = CreateFile(szFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 
+		FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		return false;
+	}
+	else
+	{
+		CloseHandle(hFile);
+		return true;
+	}
+}
+
+/// 文件是否可写(即是否被别的程序占用)
+BOOL FileHelper::IsFileWriteable(LPCTSTR szFilePath)
+{
+	if (!IsFileExist(szFilePath))
+	{
+		ASSERT(0);
+		return false;
+	}
+
+	HANDLE hFile = CreateFile(szFilePath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, 
+		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		return false;
+	}
+	else
+	{
+		CloseHandle(hFile);
+		return true;
+	}
+}
+
+HICON FileHelper::GetFileIcon(LPCTSTR szFilePath,BOOL bDir)
+{
+	String strExt = _T("");
+	if (! bDir)
+	{
+		String strTmp = szFilePath;
+		int dotPos = strTmp.ReverseFind(L".");
+		if (dotPos >= 0)
+		{
+			strExt = strTmp.Right(strTmp.GetLength() - dotPos);
+			strExt = String(L"*") + strExt;
+		}
+	}
+	SHFILEINFO fileInfo = {0};
+	if (
+		!SHGetFileInfo(strExt,
+		0,
+		&fileInfo,
+		sizeof(fileInfo),
+		SHGFI_LARGEICON | SHGFI_ICON | SHGFI_USEFILEATTRIBUTES
+		)
+		)
+		return NULL;
+
+	return fileInfo.hIcon;
+}
+
 
 /// 把文件内容读出，放入buffer，注意用完buffer后，delete[] pBufOut
 BOOL FileHelper::File2Buffer(String sFile, BYTE** ppBufOut, int& nBufLenOut)
@@ -87,4 +172,5 @@ BOOL FileHelper::File2Buffer(String sFile, BYTE** ppBufOut, int& nBufLenOut)
 	}
 
 	return FALSE;
+
 }
