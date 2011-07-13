@@ -337,7 +337,17 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 		// 拷贝文件
 		if( strAction == "copy")
 		{
+			wstring wstrFileName = MiscHelper::GetUnpackagePath() + StringHelper::ANSIToUnicode(strFileName);
+			wstring wstrDestPath = PathHelper::GetModuleDir() + StringHelper::ANSIToUnicode(strPath) 
+				+ StringHelper::ANSIToUnicode(strFileName);
 
+			BOOL bRet = ::CopyFileW(wstrFileName.c_str(), wstrDestPath.c_str(), TRUE);
+			if( bRet == FALSE)
+			{
+				int n = GetLastError();
+				::MessageBox(NULL, L"安装包解压失败，无法拷贝更新文件", L"更新提示", MB_OK);
+				return 0;
+			}
 		}
 
 
