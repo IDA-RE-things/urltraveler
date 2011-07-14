@@ -257,6 +257,8 @@ int UnzipPackage(wchar_t*	pPackageName)
 		// 解压失败
 		if( zResult != ZR_OK)
 			break;
+
+		FileHelper::ModifyFileAttribute(szName, 0, FILE_ATTRIBUTE_READONLY);
 	}
 	CloseZip(hz);
 
@@ -352,6 +354,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 			BOOL bRet = ::CopyFileW(wstrFileName.c_str(), wstrDestPath.c_str(), FALSE);
 			if( bRet == FALSE)
 			{
+				int n = GetLastError();
 				::MessageBox(NULL, L"安装包解压失败，无法拷贝更新文件", L"更新提示", MB_OK);
 				return 0;
 			}

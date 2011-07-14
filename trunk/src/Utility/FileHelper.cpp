@@ -172,5 +172,12 @@ BOOL FileHelper::File2Buffer(String sFile, BYTE** ppBufOut, int& nBufLenOut)
 	}
 
 	return FALSE;
+}
 
+BOOL FileHelper::ModifyFileAttribute(String sPath, DWORD dwAttributeAdd, DWORD dwAttributeRemove)
+{
+	DWORD dwAttributeOld = GetFileAttributes(sPath);
+	DWORD dwAttributeNew = (dwAttributeOld | dwAttributeAdd) & ~dwAttributeRemove;
+	
+	return SetFileAttributes(sPath, dwAttributeNew);
 }
