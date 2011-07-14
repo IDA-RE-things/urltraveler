@@ -43,6 +43,8 @@ public:
 
 	static HICON   GetFileIcon(LPCTSTR szFilePath,BOOL bDir);
 
+	// 修改为难属性	 ModifyFileAttribute(sFile, 0, FILE_ATTRIBUTE_READONLY);
+	static BOOL	ModifyFileAttribute(String sPath, DWORD dwAttributeAdd, DWORD dwAttributeRemove);
 
 	/// 把文件内容读出，放入buffer，注意用完buffer后，delete[] pBufOut
 	static BOOL File2Buffer(String sFile, BYTE** ppBufOut, int& nBufLenOut);
