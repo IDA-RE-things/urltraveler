@@ -235,7 +235,7 @@ int UnzipPackage(wchar_t*	pPackageName)
 	if( zResult != ZR_OK)
 		return -1;
 
-	MiscHelper::DeleteUnpackagePath();
+	//MiscHelper::DeleteUnpackagePath();
 
 	size_t i=0;
 	for( ; i<nZipItemNum; i++)
@@ -252,7 +252,7 @@ int UnzipPackage(wchar_t*	pPackageName)
 		memset(szName, 0x0, MAX_PATH);
 		swprintf(szName, L"%s%s", MiscHelper::GetUnpackagePath(),pName);
 
-		zResult = UnzipItem(hz, i, (void*)szName, wcslen(szName),ZIP_FILENAME);
+		//zResult = UnzipItem(hz, i, (void*)szName, wcslen(szName),ZIP_FILENAME);
 
 		// ½âÑ¹Ê§°Ü
 		if( zResult != ZR_OK)
@@ -286,9 +286,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	}
 	strUpdatePackage = szArgList[1];
 	LocalFree(szArgList);
-
-	MiscHelper::DeleteUnpackagePath();
-
 
 	CPaintManagerUI::SetInstance(hInstance);
 	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\UrlTraveler"));
@@ -364,8 +361,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 		{
 			ShellExecuteW(NULL, _T("open"), wstrFileName.c_str(), NULL, NULL, SW_SHOWNORMAL);
 		}
-
-
 	}
 
 	CPaintManagerUI::MessageLoop();
