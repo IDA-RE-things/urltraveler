@@ -285,6 +285,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	strUpdatePackage = szArgList[1];
 	LocalFree(szArgList);
 
+	MiscHelper::DeleteUnpackagePath();
+
 
 	CPaintManagerUI::SetInstance(hInstance);
 	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\UrlTraveler"));
@@ -298,14 +300,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	pFrame->CenterWindow();
 	::ShowWindow(*pFrame, SW_SHOW);
 
-	/*
+	strUpdatePackage = MiscHelper::GetUpdatePath();
+	strUpdatePackage += L"\\update_copy.zip";
+
 	int nRet = UnzipPackage((wchar_t*)strUpdatePackage.GetData());
 	if( nRet == -1)
-	return 0;
-	*/
+		return 0;
 
 	// 找到update.json
-
 	String	strUpdateJson  = MiscHelper::GetUnpackagePath();
 	strUpdateJson += L"update.json";
 	if( PathHelper::IsFileExist(strUpdateJson.GetData()) == FALSE)
@@ -335,19 +337,29 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 		string strPath = fileNode["locatepath"].asString();
 
 		// 拷贝文件
+		wstring wstrFileName = MiscHelper::GetUnpackagePath() + StringHelper::ANSIToUnicode(strFileName);
+		if( PathHelper::IsFileExist(wstrFileName.c_str()) == FALSE)
+		{
+			::MessageBox(NULL, L"安装包解压失败，无法拷贝更新文件", L"更新提示", MB_OK);
+			break;
+		}
+
 		if( strAction == "copy")
 		{
-			wstring wstrFileName = MiscHelper::GetUnpackagePath() + StringHelper::ANSIToUnicode(strFileName);
 			wstring wstrDestPath = PathHelper::GetModuleDir() + StringHelper::ANSIToUnicode(strPath) 
 				+ StringHelper::ANSIToUnicode(strFileName);
 
-			BOOL bRet = ::CopyFileW(wstrFileName.c_str(), wstrDestPath.c_str(), TRUE);
+			BOOL bRet = ::CopyFileW(wstrFileName.c_str(), wstrDestPath.c_str(), FALSE);
 			if( bRet == FALSE)
 			{
-				int n = GetLastError();
 				::MessageBox(NULL, L"安装包解压失败，无法拷贝更新文件", L"更新提示", MB_OK);
 				return 0;
 			}
+		}
+		// 执行exe文件
+		else if( strAction == "install")
+		{
+			ShellExecuteW(NULL, _T("open"), wstrFileName.c_str(), NULL, NULL, SW_SHOWNORMAL);
 		}
 
 
