@@ -282,33 +282,29 @@ void	UpdateModule::OnEvent_ShowUpdateDownloadingWnd(Event* pEvent)
 		m_pUpdateWnd->SetNewVersion(nLastestVersion);
 		m_pUpdateWnd->SetCurrentVersion(MiscHelper::GetCurrentVersion());
 
+		// 强制弹出更新窗口进行升级
+		mainframe::MainFrame_GetWndService stGetWndService;
+		m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
+
+		CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
+		ASSERT(pMainFrameWnd != NULL);
+		pMainFrameWnd->ShowWindow(SW_NORMAL);
+
+		if( m_pUpdateWnd->GetHWND() == NULL)
+		{
+			m_pUpdateWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+		}
+		m_pUpdateWnd->CenterWindow();
+
 		if( bForce == TRUE)
 		{
-			// 强制弹出更新窗口进行升级
-			mainframe::MainFrame_GetWndService stGetWndService;
-			m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
-
-			CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
-			ASSERT(pMainFrameWnd != NULL);
-
-			if( m_pUpdateWnd->GetHWND() == NULL)
-			{
-				m_pUpdateWnd->Create(*pMainFrameWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
-			}
-			m_pUpdateWnd->CenterWindow();
 			m_pUpdateWnd->SetHintMsg(L"{b}你的版本太低，必须升级才能继续使用！{/b}");
 			pMainFrameWnd->ShowModal(*m_pUpdateWnd);
 		}
 		else
 		{
-			if( m_pUpdateWnd->GetHWND() == NULL)
-			{
-				m_pUpdateWnd->Create(NULL, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
-			}
-			m_pUpdateWnd->CenterWindow();
-
 			m_pUpdateWnd->SetHintMsg(L"{b}检测到新的版本，正在进行升级！{/b}");
-			m_pUpdateWnd->ShowWindow(true);
+			pMainFrameWnd->ShowModal(*m_pUpdateWnd);
 		}
 	}	
 }
@@ -491,11 +487,7 @@ void	UpdateModule::LaunchUpdateExe()
 	if (PathHelper::IsFileExist(strUpdateExe.c_str()))
 	{
 		// 参数
-		std::wstring strParam;
-		strParam += L"\"";
-		strParam += m_strUpdateFileName;
-		strParam += L"\"";
-
+		std::wstring strParam = PathHelper::GetModulePath();
 		ShellExecuteW(NULL, _T("open"), strUpdateExe.c_str(), strParam.c_str(), NULL, SW_SHOWNORMAL);
 	}
 	else

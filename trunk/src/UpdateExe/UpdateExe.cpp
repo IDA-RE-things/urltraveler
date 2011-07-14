@@ -1,21 +1,24 @@
 #include "stdafx.h"
 #include <exdisp.h>
 #include <comdef.h>
-#include "ControlEx.h"
 #include "resource.h"
-#include "shellapi.h"
-#include "XString.h"
+#include "ControlEx.h"
 #include "XUnzip.h"
 #include "StringHelper.h"
 #include "MiscHelper.h"
 #include "FileHelper.h"
 #include "PathHelper.h"
 #include "atlconv.h"
+#include <string>
 #include "json/json.h"
+#include "shellapi.h"
+
+using namespace std;
 
 HINSTANCE	hGolobalInstance = NULL;
-String	strUpdatePackage = _T("");
 
+class CUpdateExeWnd;
+CUpdateExeWnd* pUpdateExeWnd = NULL;
 
 class CUpdateExeWnd : public CWindowWnd, public INotifyUI
 {
@@ -222,7 +225,7 @@ private:
 	CButtonUI* m_pCloseBtn;
 };
 
-int UnzipPackage(wchar_t*	pPackageName)
+int UnzipPackage(wchar_t* pPackageName)
 {
 	if( pPackageName == NULL)
 		return -1;
@@ -234,8 +237,6 @@ int UnzipPackage(wchar_t*	pPackageName)
 	ZRESULT zResult = GetZipItemNum(hz, &nZipItemNum);
 	if( zResult != ZR_OK)
 		return -1;
-
-	//MiscHelper::DeleteUnpackagePath();
 
 	size_t i=0;
 	for( ; i<nZipItemNum; i++)
@@ -251,8 +252,7 @@ int UnzipPackage(wchar_t*	pPackageName)
 		wchar_t szName[MAX_PATH];
 		memset(szName, 0x0, MAX_PATH);
 		swprintf(szName, L"%s%s", MiscHelper::GetUnpackagePath(),pName);
-
-		//zResult = UnzipItem(hz, i, (void*)szName, wcslen(szName),ZIP_FILENAME);
+		zResult = UnzipItem(hz, i, (void*)szName, wcslen(szName),ZIP_FILENAME);
 
 		// 解压失败
 		if( zResult != ZR_OK)
@@ -272,56 +272,24 @@ int UnzipPackage(wchar_t*	pPackageName)
 	return 0;
 }
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCmdLine, int nCmdShow)
+int CopyUnPackageFile()
 {
-	hGolobalInstance = hInstance;
-
-	LPWSTR *szArgList;
-	int argCount;
-
-	szArgList = CommandLineToArgvW(GetCommandLineW(), &argCount);
-	if (szArgList == NULL)
-	{
-		return -1;
-	}
-	strUpdatePackage = szArgList[1];
-	LocalFree(szArgList);
-
-	CPaintManagerUI::SetInstance(hInstance);
-	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\UrlTraveler"));
-
-	HRESULT Hr = ::CoInitialize(NULL);
-	if( FAILED(Hr) ) return 0;
-
-	CUpdateExeWnd* pFrame = new CUpdateExeWnd();
-	if( pFrame == NULL ) return 0;
-	pFrame->Create(NULL, _T("3+收藏夹漫游大师更新安装"), UI_WNDSTYLE_FRAME, 0L, 0, 0, 800, 572);
-	pFrame->CenterWindow();
-	::ShowWindow(*pFrame, SW_SHOW);
-
-	strUpdatePackage = MiscHelper::GetUpdatePath();
-	strUpdatePackage += L"\\update_copy.zip";
-
-	int nRet = UnzipPackage((wchar_t*)strUpdatePackage.GetData());
-	if( nRet == -1)
-		return 0;
-
 	// 找到update.json
-	String	strUpdateJson  = MiscHelper::GetUnpackagePath();
+	wstring	strUpdateJson  = MiscHelper::GetUnpackagePath();
 	strUpdateJson += L"update.json";
-	if( PathHelper::IsFileExist(strUpdateJson.GetData()) == FALSE)
-		return 0;
+	if( PathHelper::IsFileExist(strUpdateJson.c_str()) == FALSE)
+		return -1;
 
 	char* pOutBuffer = NULL;
 	int nBufLen = 0;
-	BOOL bRet = FileHelper::File2Buffer(strUpdateJson, (BYTE**)&pOutBuffer, nBufLen);
+	BOOL bRet = FileHelper::File2Buffer(strUpdateJson.c_str(), (BYTE**)&pOutBuffer, nBufLen);
 	if(bRet == FALSE)
-		return 0;
+		return -1;
 
 	Json::Reader reader;
 	Json::Value root;
 	if(! reader.parse(pOutBuffer, root)) 
-		return 0;
+		return -1;
 
 	Json::Value& fileList = root["filelist"];
 	ASSERT(fileList.isArray() == TRUE);
@@ -353,7 +321,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 			{
 				int n = GetLastError();
 				::MessageBox(NULL, L"安装包解压失败，无法拷贝更新文件", L"更新提示", MB_OK);
-				return 0;
+				return -1;
 			}
 		}
 		// 执行exe文件
@@ -363,8 +331,59 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 		}
 	}
 
-	CPaintManagerUI::MessageLoop();
+	return 0;
+}
 
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCmdLine, int nCmdShow)
+{
+	hGolobalInstance = hInstance;
+
+	LPWSTR *szArgList;
+	int argCount;
+
+	szArgList = CommandLineToArgvW(GetCommandLineW(), &argCount);
+	if (szArgList == NULL)
+	{
+		return -1;
+	}
+
+	wstring strBinPath = szArgList[1];
+	LocalFree(szArgList);
+
+	CPaintManagerUI::SetInstance(hInstance);
+	CPaintManagerUI::SetResourcePath(CPaintManagerUI::GetInstancePath() + _T("\\skin\\UrlTraveler"));
+
+	HRESULT Hr = ::CoInitialize(NULL);
+	if( FAILED(Hr) ) return 0;
+
+	pUpdateExeWnd = new CUpdateExeWnd();
+	if( pUpdateExeWnd == NULL ) return 0;
+	pUpdateExeWnd->Create(NULL, _T("3+收藏夹漫游大师更新安装"), UI_WNDSTYLE_FRAME, 0L, 0, 0, 800, 572);
+	pUpdateExeWnd->CenterWindow();
+	::ShowWindow(*pUpdateExeWnd, SW_SHOW);
+
+	wstring strUpdatePackage = MiscHelper::GetUpdatePath();
+	strUpdatePackage += L"\\update_copy.zip";
+
+	int nRet = UnzipPackage((wchar_t*)strUpdatePackage.c_str());
+	if( nRet == -1)
+	{
+		::CoUninitialize();
+		return 0;
+	}
+
+	nRet = CopyUnPackageFile();
+	if( nRet == -1)
+	{
+		::CoUninitialize();
+		return 0;
+	}
+
+	::PostQuitMessage(0);
+	CPaintManagerUI::MessageLoop();
 	::CoUninitialize();
+
+	// 启动主程序
+	ShellExecuteW(NULL, _T("open"), strBinPath.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	return 0;
 }

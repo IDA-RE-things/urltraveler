@@ -35,7 +35,8 @@ namespace mainframe
 	// MainFrame能够处理的直接调用
 	enum E_MainFrameServiceValue
 	{
-		SERVICE_VALUE_MAINFRAME_GET_MAINWND	=	SERVICE_VALUE_MAINFRAME_BEGIN,				//	获取主窗口的句柄，一些模块需要指定主窗口为父窗口
+		//	获取主窗口的句柄，一些模块需要指定主窗口为父窗口
+		SERVICE_VALUE_MAINFRAME_GET_MAINWND	=	SERVICE_VALUE_MAINFRAME_BEGIN,				
 	};
 
 	//===========================================//
