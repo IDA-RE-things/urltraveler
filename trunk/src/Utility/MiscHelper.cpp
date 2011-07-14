@@ -394,14 +394,15 @@ wchar_t*	MiscHelper::GetUpdatePath()
 
 wchar_t*	MiscHelper::GetUnpackagePath()
 {
-	wstring wstrUpdate = PathHelper::GetAppDataDir() + L"\\urltraveler\\unpackage\\";
+	wstring wstrUpdate = PathHelper::GetTempDir() + L"\\urltraveler\\unpackage\\";
 	PathHelper::CreateMultipleDirectory(wstrUpdate);
 	return (wchar_t*)wcsdup(wstrUpdate.c_str());
 }
 
 void	 MiscHelper::DeleteUnpackagePath()
 {
-	wstring wstrUpdate = PathHelper::GetAppDataDir() + L"\\urltraveler\\unpackage";
+	/*C:\Documents and Settings\zhangzhongqing.SNDA\Local Settings\Temp\urltraveler\unpackage*/
+	wstring wstrUpdate = PathHelper::GetTempDir() + L"urltraveler\\unpackage";
 	PathHelper::RemoveDir(wstrUpdate, TRUE);
 }
 

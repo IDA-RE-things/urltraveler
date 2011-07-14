@@ -406,7 +406,7 @@ void	UpdateModule::ProcessUpdateConfig()
 
 			// 直接通知下载ok
 			Web_DownloadUpdateFileRespEvent* pEvent = new Web_DownloadUpdateFileRespEvent();
-			pEvent->desMId	=	MODULE_ID_WEB;
+			pEvent->desMId	=	MODULE_ID_UPDATE;
 			pEvent->srcMId	=	MODULE_ID_UPDATE;
 			pEvent->param0 = web::WEB_RET_SUCCESS;
 			GetModuleManager()->PushEvent(*pEvent);
