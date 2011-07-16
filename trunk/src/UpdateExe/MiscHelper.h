@@ -51,6 +51,7 @@ public:
 
 	static void	 DeleteUnpackagePath();
 
+	// 获取当前程序的版本号
 	static int GetCurrentVersion();
 
 	// 将1.0.0.0格式的字符传变成整数
@@ -62,4 +63,9 @@ public:
 	static BOOL ExistProcess(LPCTSTR pszClassName, LPCTSTR pszWindowTitle);
 
 	static BOOL KillProcess(LPCTSTR pszClassName, LPCTSTR pszWindowTitle);
+
+	// 获取EverFav的配置文件路径
+	static wchar_t* GetConfig();
+
+	static void SetVersionInConfig(int nVersion);
 };

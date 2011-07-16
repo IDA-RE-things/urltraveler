@@ -240,6 +240,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	}
 
 	wstring strBinPath = szArgList[1];
+	wstring strVersion = szArgList[2];
+	MessageBox(NULL, L"test", strVersion.c_str(), MB_OK);
 	LocalFree(szArgList);
 
 	CPaintManagerUI::SetInstance(hInstance);
@@ -270,6 +272,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 		m_pThreadObj->ShutdownThread(0);
 		m_pThreadObj->Release();
 	}
+
+	MiscHelper::SetVersionInConfig(StringHelper::ConvertToInt(StringHelper::UnicodeToANSI(strVersion)));
 
 	return 0;
 }

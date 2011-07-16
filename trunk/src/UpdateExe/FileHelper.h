@@ -48,6 +48,8 @@ public:
 
 	/// 把文件内容读出，放入buffer，注意用完buffer后，delete[] pBufOut
 	static BOOL File2Buffer(String sFile, BYTE** ppBufOut, int& nBufLenOut);
+
+	static BOOL CreateFile(String fileName);
 };
 
 #endif // !defined(AFX_UTILITY_H__9A1932AD_2109_48B4_8FDF_C2C33D76A15C__INCLUDED_)

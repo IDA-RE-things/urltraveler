@@ -6,6 +6,8 @@
 #include "StringHelper.h"
 #include "UrlTravelerHeader.h"
 #include "XString.h"
+#include "TxConfig.h"
+#include "FileHelper.h"
 
 
 MiscHelper::MiscHelper()
@@ -408,7 +410,17 @@ void	 MiscHelper::DeleteUnpackagePath()
 
 int MiscHelper::GetCurrentVersion()
 {
-	return CLIENT_VERSION;
+	wstring wstrConfig = MiscHelper::GetConfig();
+	CTxConfig txConfig;
+	BOOL bRet = txConfig.ParseConfig(StringHelper::UnicodeToANSI(wstrConfig));
+	if( bRet == FALSE)
+		return CLIENT_VERSION;
+
+	string strVersion = txConfig.GetValue(L"version");
+	if( strVersion == "")
+		return CLIENT_VERSION;
+
+	return StringHelper::ConvertToInt(strVersion);
 }
 
 // 将1.0.0.0格式的字符传变成整数
@@ -485,4 +497,36 @@ BOOL MiscHelper::KillProcess(LPCTSTR pszClassName, LPCTSTR pszWindowTitle)
     ::GetWindowThreadProcessId( TheWindow, &nProcessID );
     hProcessHandle = ::OpenProcess( PROCESS_TERMINATE, FALSE, nProcessID );
     return ::TerminateProcess( hProcessHandle, 4 );
+}
+
+// 获取EverFav的配置文件路径
+wchar_t* MiscHelper::GetConfig()
+{
+	/*C:\Documents and Settings\zhangzhongqing.SNDA\Local Settings\Temp\urltraveler\unpackage*/
+	wstring wstrUpdate = PathHelper::GetAppDataDir() + L"\\urltraveler\\";
+	if( PathHelper::IsDirExist(wstrUpdate) == FALSE)
+		PathHelper::CreateMultipleDirectory(wstrUpdate);
+
+	wstrUpdate += L"EverFav.ini";
+	if( PathHelper::IsFileExist(wstrUpdate) == FALSE)
+	{
+		FileHelper::CreateFile(wstrUpdate.c_str());
+		if( PathHelper::IsFileExist(wstrUpdate) == TRUE)
+		{
+			CTxConfig txConfig;
+			txConfig.MakeConfig(StringHelper::UnicodeToANSI(wstrUpdate));
+		}		
+	}
+
+	return wcsdup(wstrUpdate.c_str());
+}
+
+void MiscHelper::SetVersionInConfig(int nVersion)
+{
+	wchar_t* pConfig = MiscHelper::GetConfig();
+	ASSERT(pConfig != NULL);
+
+	CTxConfig txConfig;
+	txConfig.SetValue(L"version", StringHelper::ConvertFromInt(nVersion));
+	txConfig.MakeConfig(StringHelper::UnicodeToANSI(pConfig));
 }
