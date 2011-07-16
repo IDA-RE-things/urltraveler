@@ -307,7 +307,7 @@ int CopyUnPackageFile()
 		wstring wstrFileName = MiscHelper::GetUnpackagePath() + StringHelper::ANSIToUnicode(strFileName);
 		if( PathHelper::IsFileExist(wstrFileName.c_str()) == FALSE)
 		{
-			::MessageBox(NULL, L"安装包解压失败，无法拷贝更新文件", L"更新提示", MB_OK);
+			::MessageBox(NULL, L"安装包解压失败，安装包文件下载失败", L"更新提示", MB_OK);
 			break;
 		}
 
@@ -361,6 +361,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 	pUpdateExeWnd->Create(NULL, _T("EverFav 云端收藏夹更新安装"), UI_WNDSTYLE_FRAME, 0L, 0, 0, 800, 572);
 	pUpdateExeWnd->CenterWindow();
 	::ShowWindow(*pUpdateExeWnd, SW_SHOW);
+
+	// 终止UrlTraveler进程
+	BOOL bRet = MiscHelper::KillProcess(L"UrlTravelerd.exe", L"EverFav");
+	while(MiscHelper::ExistProcess(L"UrlTravelerd.exe", L"EverFav"))
+	{
+		Sleep(10);
+	}
+
+	Sleep(500);
 
 	wstring strUpdatePackage = MiscHelper::GetUpdatePath();
 	strUpdatePackage += L"\\update_copy.zip";

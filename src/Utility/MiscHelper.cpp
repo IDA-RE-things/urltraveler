@@ -459,3 +459,15 @@ wchar_t* MiscHelper::GetStringFromVersion(int nVersion)
 	wstrVerson.Trim(L'.');
 	return wcsdup(wstrVerson.GetData());
 }
+
+int MiscHelper::KillProcess(LPCTSTR pszClassName, LPCTSTR pszWindowTitle)
+{
+	HANDLE hProcessHandle;  
+    ULONG nProcessID;
+    HWND TheWindow;
+
+    TheWindow = ::FindWindow( NULL, pszWindowTitle );
+    ::GetWindowThreadProcessId( TheWindow, &nProcessID );
+    hProcessHandle = ::OpenProcess( PROCESS_TERMINATE, FALSE, nProcessID );
+    return ::TerminateProcess( hProcessHandle, 4 );
+}

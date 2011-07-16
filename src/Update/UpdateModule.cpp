@@ -228,15 +228,10 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 	if(m_pUpdateWnd && ::IsWindow(m_pUpdateWnd->GetHWND()))
 	{
 		m_pUpdateWnd->SetDownLoadProgress( 100);
+		m_pUpdateWnd->Close();
 
 		// 再次检查MD5值
-
-		//	启动UpdateExe文件
 		LaunchUpdateExe();
-
-		GetModuleManager()->PushEvent(
-			MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
-			MODULE_ID_CORE));
 	}
 }
 
@@ -404,6 +399,7 @@ void	UpdateModule::ProcessUpdateConfig()
 		pEvent->nLastestVersion = nHighVersion;
 		STRNCPY(pEvent->szDownloadUrl, updateInfo.strDownloadUrl.c_str());
 		STRNCPY(pEvent->szSavePath, updateInfo.strTempSavePath.c_str());
+		STRNCPY(pEvent->szMD5, updateInfo.strMd5.c_str());
 		pEvent->bForce = TRUE;
 		GetModuleManager()->PushEvent(*pEvent);
 	}
@@ -462,6 +458,11 @@ void UpdateModule::QueryDownloadUpdateFileProcess()
 
 void	UpdateModule::LaunchUpdateExe()
 {
+	//	启动UpdateExe文件
+	GetModuleManager()->PushEvent(
+		MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
+		MODULE_ID_CORE));
+	
 	std::wstring strUpdateExe = PathHelper::GetModuleDir();
 	strUpdateExe += UPDATE_PROGRAM;
 	if (PathHelper::IsFileExist(strUpdateExe.c_str()))
