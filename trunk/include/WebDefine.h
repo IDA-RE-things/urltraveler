@@ -18,25 +18,10 @@ namespace web
 	#define READY_SEQNO		1		// 数据已经就绪，不需要去网站访问
 	#define NOT_READY_SEQNO	2		// 不需要访问网站，但是数据不存在
 
-	// Web对外公开的事件
-	enum E_WebEventValue
-	{
-		EVENT_VALUE_WEB_DOWNLOAD_FILE_RESP	=	EVENT_VALUE_WEB_BEGIN,		
-		EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG_RESP,
-		EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP,
-		EVENT_VALUE_WEB_GET_FAVICON_RESP,						// 获取到图标的响应事件
-	};
-
-	// Web能够可能对外发送的广播消息
-	enum E_WebMessageValue
-	{
-	};
-
 	// Web能够处理的直接调用
 	enum E_WebServiceValue
 	{
-		// Favicon对应的图标
-		SERVICE_VALUE_WEB_GET_FAVICON = SERVICE_VALUE_WEB_BEGIN,	// 通知去拉取Favorite图标
+		SERVICE_VALUE_WEB_GET_FAVICON = SERVICE_VALUE_WEB_BEGIN,		// 通知去拉取Favorite图标
 		SERVICE_VALUE_WEB_OPEN_URLTRAVELER,						// 打开URLTRAVELER软件
 		SERVICE_VALUE_WEB_CLOSE_URLTRAVELER,						// 关闭URLTRAVELER软件
 		SERVICE_VALUE_WEB_LOGININ_URLTRAVELER,					// 注册登录用户
@@ -51,6 +36,35 @@ namespace web
 		SERVICE_VALUE_WEB_FAVICON_LOAD ,							//	加载特定的URL的收藏夹图标
 		SERVICE_VALUE_WEB_QUERY_DOWNLOAD_FILE_PROESS,			// 查询正在下载的文件的进度
 	};
+
+	// Web对外公开的事件
+	// 需要注意的是，每次在SERVICE中增加一个Service，则必须在WebEvent中增加一个对应的RESP，
+	// 即使RESP不会被使用
+	enum E_WebEventValue
+	{
+		EVENT_VALUE_WEB_GET_FAVICON_RESP = EVENT_VALUE_WEB_BEGIN,		// 通知去拉取Favorite图标
+		EVENT_VALUE_WEB_OPEN_URLTRAVELER_RESP,						// 打开URLTRAVELER软件
+		EVENT_VALUE_WEB_CLOSE_URLTRAVELER_RESP,						// 关闭URLTRAVELER软件
+		EVENT_VALUE_WEB_LOGININ_URLTRAVELER_RESP,					// 注册登录用户
+		EVENT_VALUE_WEB_LOGINOUT_URLTRAVELER_RESP,					// 登出用户
+		EVENT_VALUE_WEB_REPORT_USERINFO_RESP,						// 上报用户信息
+		EVENT_VALUE_WEB_GET_VISITED_URL_RESP,							// 从服务器拉取需要访问的URL列表
+		EVENT_VALUE_WEB_DOWNLOAD_FILE_RESP,							// 下载给定的文件
+
+		EVENT_VALUE_WEB_CHECK_UPDATE_CONFIG_RESP,					// 获取更新配置信息
+		EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP,					// 下载需要更新的文件
+
+		EVENT_VALUE_WEB_FAVICON_LOAD_RESP ,							//	加载特定的URL的收藏夹图标
+		EVENT_VALUE_WEB_QUERY_DOWNLOAD_FILE_PROESS_RESP,			// 查询正在下载的文件的进度
+
+	};
+
+	// Web能够可能对外发送的广播消息
+	enum E_WebMessageValue
+	{
+	};
+
+
 
 	// 返回给上层调用者的错误响应信息
 	enum E_WebRespCode

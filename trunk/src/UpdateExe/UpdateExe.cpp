@@ -358,7 +358,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 
 	pUpdateExeWnd = new CUpdateExeWnd();
 	if( pUpdateExeWnd == NULL ) return 0;
-	pUpdateExeWnd->Create(NULL, _T("3+收藏夹漫游大师更新安装"), UI_WNDSTYLE_FRAME, 0L, 0, 0, 800, 572);
+	pUpdateExeWnd->Create(NULL, _T("EverFav 云端收藏夹更新安装"), UI_WNDSTYLE_FRAME, 0L, 0, 0, 800, 572);
 	pUpdateExeWnd->CenterWindow();
 	::ShowWindow(*pUpdateExeWnd, SW_SHOW);
 

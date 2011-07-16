@@ -192,7 +192,7 @@ void WebModule::ProcessGetResponse()
 			Event e;
 			e.param0 = httpContext.uOpPolicy;
 			e.param2 = httpContext.nReqSeq;
-			e.eventValue = httpContext.nEventValue + 1;
+			e.eventValue = httpContext.nEventValue - SERVICE_VALUE_WEB_BEGIN + EVENT_VALUE_WEB_BEGIN;
 			e.srcMId = MODULE_ID_WEB;
  
 			std::map<uint32, uint32>::iterator itr = g_WebModule->m_mapSeqNo2ModuleId.find( httpContext.nReqSeq);
