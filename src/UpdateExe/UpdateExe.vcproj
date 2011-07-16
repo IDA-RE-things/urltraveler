@@ -381,6 +381,38 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="thread"
+			>
+			<File
+				RelativePath=".\ThreadImpl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreadImpl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreadObject_i.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreadProcess.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ThreadProcess.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UpdateThread.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UpdateThread.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\res\urltraveler16.ico"
 			>
