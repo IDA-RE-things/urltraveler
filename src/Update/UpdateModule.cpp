@@ -73,6 +73,7 @@ BEGIN_EVENT_MAP(UpdateModule)
 	ON_EVENT(EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP, OnEvent_UpdateFileDownloaded)
 	ON_EVENT(EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND,OnEvent_ShowUpdateInfoWnd)
 	ON_EVENT(EVENT_VALUE_UPDATE_SHOW_DOWNLOADING_WND, OnEvent_ShowUpdateDownloadingWnd)
+	ON_EVENT(EVENT_VALUE_UPDATE_BEGINT_TO_UPDATE, OnEvent_BeginToUpdate)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(UpdateModule)
@@ -179,6 +180,11 @@ void	UpdateModule::OnEvent_UpdateInfoArrive(Event* pEvent)
 	ProcessUpdateConfig();
 }
 
+void	UpdateModule::OnEvent_BeginToUpdate(Event* pEvent)
+{
+
+}
+
 // 通知更新包已经下载结束
 void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 {
@@ -237,13 +243,26 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 void	UpdateModule::OnEvent_ShowUpdateDownloadingWnd(Event* pEvent)
 {
 	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_UPDATE_SHOW_DOWNLOADING_WND)
-		return;
+		return;	  
 
 	Update_ShowUpdateDownloadingEvent* pDownloadEvent = (Update_ShowUpdateDownloadingEvent*)pEvent->m_pstExtraInfo;
 	int nLastestVersion	=	 pDownloadEvent->nLastestVersion;
 	wstring	wstrUrl	=	pDownloadEvent->szDownloadUrl;
-	wstring	wstrPath	=	pDownloadEvent->szSavePath;
+	wstring	wstrPath	=	pDownloadEvent->szSavePath;   
+	wstring	wstrMD5 = pDownloadEvent->szMD5;
 	BOOL bForce = pDownloadEvent->bForce;
+
+	// 检查文件是否存在，并且检查MD5
+	if( PathHelper::IsFileExist(m_strUpdateFileName) == TRUE)
+	{
+		string strExistMD5 = CMD5Checksum::GetMD5W(m_strUpdateFileName);
+		if( String(wstrMD5.c_str()).ToLower() == String(StringHelper::ANSIToUnicode(strExistMD5).c_str()).ToLower())
+		{
+			// 直接执行启动
+			LaunchUpdateExe();
+			return;
+		}
+	}
 
 	Web_DownloadUpdateFileService downloadUpdateFileService;
 	downloadUpdateFileService.srcMId = MODULE_ID_UPDATE;
@@ -310,6 +329,7 @@ void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
 	}
 	ASSERT(m_pUpdateHintWnd->GetHWND() != NULL);
 
+	m_pUpdateHintWnd->SetMD5(pUpdateInfoEvent->szMD5);
 	m_pUpdateHintWnd->SetDownloadUrl(pUpdateInfoEvent->szDownloadUrl);
 	m_pUpdateHintWnd->SetSavePath(pUpdateInfoEvent->szSavePath);
 	m_pUpdateHintWnd->SetVersion(MiscHelper::GetStringFromVersion(pUpdateInfoEvent->nVersion + 12));
@@ -319,7 +339,6 @@ void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
 	{
 		m_pUpdateHintWnd->AddUpdateDetail(pUpdateInfoEvent->szUpdateDetail[i]);
 	}
-
 	m_pUpdateHintWnd->BeginToShowUpdateInfoWnd();
 }
 
@@ -372,25 +391,6 @@ void	UpdateModule::ProcessUpdateConfig()
 	wstring wstrPath = wstring(wszUpdatePath) + wstring(L"\\") + strUrl.GetData();
 	updateInfo.strTempSavePath = wstrPath;
 
-	// 检查文件是否存在，并且检查MD5
-	if( PathHelper::IsFileExist(wstrPath.c_str()) == TRUE)
-	{
-		string strExistMD5 = CMD5Checksum::GetMD5W(wstrPath);
-		if( updateInfo.strMd5 == StringHelper::ANSIToUnicode(strExistMD5))
-		{
-			m_strUpdateFileName	=	wstrPath;
-
-			// 直接通知下载ok
-			Web_DownloadUpdateFileRespEvent* pEvent = new Web_DownloadUpdateFileRespEvent();
-			pEvent->desMId	=	MODULE_ID_UPDATE;
-			pEvent->srcMId	=	MODULE_ID_UPDATE;
-			pEvent->param0 = web::WEB_RET_SUCCESS;
-			GetModuleManager()->PushEvent(*pEvent);
-
-			return;
-		}
-	}
-
 	m_strUpdateFileName =	 wstring(wszUpdatePath) + updateInfo.strFileName;
 
 	free(wszUpdatePath);
@@ -421,7 +421,7 @@ void	UpdateModule::ProcessUpdateConfig()
 		pEvent->nVersion = nHighVersion;
 		STRNCPY(pEvent->szDownloadUrl, updateInfo.strDownloadUrl.c_str());
 		STRNCPY(pEvent->szSavePath, updateInfo.strTempSavePath.c_str());
-
+		STRNCPY(pEvent->szMD5, updateInfo.strMd5.c_str());
 		pEvent->nUpdateDetailNum = vDetail.size();
 		for( size_t i=0; i<vDetail.size();i++)
 		{

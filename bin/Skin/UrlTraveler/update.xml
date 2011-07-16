@@ -9,7 +9,7 @@
     <VerticalLayout name="VerticalLayoutUI1" pos="0,0,425,315" width="425" height="315" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,1,0">
         <HorizontalLayout name="VerticalLayoutUI2" pos="1,0,425,31" width="424" height="31">
             <HorizontalLayout name="HorizontalLayoutUI7" pos="0,0,361,30" width="361" height="30">
-                <Text name="TextUI17" text="{b}3+收藏夹漫游大师版本更新{/b}" float="true" pos="38,8,218,24" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                <Text name="TextUI17" text="{b}EverFav 云端收藏夹版本更新{/b}" float="true" pos="38,8,218,24" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                 <Label name="LabelUI2" float="true" pos="8,4,30,26" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             </HorizontalLayout>
             <HorizontalLayout name="HorizontalLayoutUI8" pos="361,0,422,29" width="61" height="29">
