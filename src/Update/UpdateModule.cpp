@@ -350,6 +350,7 @@ void	UpdateModule::ProcessUpdateConfig()
 	string& strCurrentVersion = versionNode["high_version"].asString();
 	int nLowVersion = MiscHelper::GetVersionFromString(strLowVersion.c_str());
 	int nHighVersion = MiscHelper::GetVersionFromString(strCurrentVersion.c_str());
+	m_nNewVersion = nHighVersion;
 
 	// 更新明细结点
 	Json::Value& detailNode = root["updateinfo"];
@@ -469,6 +470,8 @@ void	UpdateModule::LaunchUpdateExe()
 	{
 		// 参数
 		std::wstring strParam = PathHelper::GetModulePath();
+		strParam += L" ";
+		strParam += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(m_nNewVersion));
 		ShellExecuteW(NULL, _T("open"), strUpdateExe.c_str(), strParam.c_str(), NULL, SW_SHOWNORMAL);
 	}
 	else

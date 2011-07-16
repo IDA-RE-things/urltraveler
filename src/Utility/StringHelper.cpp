@@ -22,7 +22,7 @@ string	StringHelper::MakeLower( string in_str)
 {
 	string instr = in_str;
 	std::transform( instr.begin(), instr.end(), instr.begin(),tolower);
-	
+
 	return instr;
 }
 
@@ -30,7 +30,7 @@ string	StringHelper::MakeUpper( string in_str )
 {
 	string instr = in_str;
 	std::transform( instr.begin(), instr.end(), instr.begin(),toupper);
-	
+
 	return instr;
 }
 
@@ -124,7 +124,7 @@ string	StringHelper::Reverse(string& src_string)
 {
 	string inner_src = src_string;
 	std::reverse( inner_src.begin(), inner_src.end());
-	
+
 	return inner_src;
 }
 
@@ -152,12 +152,12 @@ string StringHelper::TrimAll( string src_str )
 wstring	StringHelper::Utf8ToUnicode( string strUtf8)
 {
 	int len = ::MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, NULL, 0);   
-    if (len == 0) return L"";   
-	
-    std::vector<wchar_t> unicode(len);   
-    ::MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, &unicode[0], len);   
-	
-    return &unicode[0];   
+	if (len == 0) return L"";   
+
+	std::vector<wchar_t> unicode(len);   
+	::MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, &unicode[0], len);   
+
+	return &unicode[0];   
 }
 
 /*
@@ -167,12 +167,12 @@ wstring	StringHelper::Utf8ToUnicode( string strUtf8)
 string	StringHelper::UnicodeToUtf8( wstring strUnicode)
 {
 	int len = ::WideCharToMultiByte(CP_UTF8, 0, strUnicode.c_str(), -1, 0, 0, 0, 0);   
-    if (len == 0) return "";   
-	
-    std::vector<char> utf8(len);   
-    ::WideCharToMultiByte(CP_UTF8, 0, strUnicode.c_str(), -1, &utf8[0], len, 0, 0);   
-	
-    return &utf8[0];   
+	if (len == 0) return "";   
+
+	std::vector<char> utf8(len);   
+	::WideCharToMultiByte(CP_UTF8, 0, strUnicode.c_str(), -1, &utf8[0], len, 0, 0);   
+
+	return &utf8[0];   
 }
 
 /*
@@ -186,13 +186,13 @@ wstring	StringHelper::ANSIToUnicode( string strAnsi)
 {
 	int nCodePage = AreFileApisANSI() ? CP_ACP : CP_OEMCP;
 
-    int len = ::MultiByteToWideChar(nCodePage, 0, strAnsi.c_str(), -1, NULL, 0)*sizeof(WCHAR);   
-    if (len == 0) return L"";   
-	
-    std::vector<wchar_t> unicode(len);   
-    ::MultiByteToWideChar(nCodePage, 0, strAnsi.c_str(), -1, &unicode[0], len);   
-	
-    return &unicode[0];   
+	int len = ::MultiByteToWideChar(nCodePage, 0, strAnsi.c_str(), -1, NULL, 0)*sizeof(WCHAR);   
+	if (len == 0) return L"";   
+
+	std::vector<wchar_t> unicode(len);   
+	::MultiByteToWideChar(nCodePage, 0, strAnsi.c_str(), -1, &unicode[0], len);   
+
+	return &unicode[0];   
 }
 
 /*
@@ -206,13 +206,13 @@ string	StringHelper::UnicodeToANSI( wstring strUnicode)
 {
 	int nCodePage = AreFileApisANSI() ? CP_ACP : CP_OEMCP;
 
-    int len = ::WideCharToMultiByte(nCodePage, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);   
-    if (len == 0) return "";   
-	
-    std::vector<char> utf8(len);   
-    ::WideCharToMultiByte(nCodePage, 0, strUnicode.c_str(), -1, &utf8[0], len, NULL, NULL);   
-	
-    return &utf8[0];   
+	int len = ::WideCharToMultiByte(nCodePage, 0, strUnicode.c_str(), -1, NULL, 0, NULL, NULL);   
+	if (len == 0) return "";   
+
+	std::vector<char> utf8(len);   
+	::WideCharToMultiByte(nCodePage, 0, strUnicode.c_str(), -1, &utf8[0], len, NULL, NULL);   
+
+	return &utf8[0];   
 }
 
 string	StringHelper::ANSIToUft8( string strAnsi)
@@ -228,15 +228,15 @@ string	StringHelper::Utf8ToANSI( string strUtf8)
 }
 
 string	StringHelper::Replace( string strSrc, 
-							  const string &strReplaced, 
-							  const string &strReplacing )
+			      const string &strReplaced, 
+			      const string &strReplacing )
 {
 	string strResult = strSrc;
 
 	string::size_type pos = 0;
 	string::size_type srclen = strReplaced.size();
 	string::size_type dstlen = strReplacing.size();
-	
+
 	while( (pos =strSrc.find(strReplaced, pos)) != string::npos )
 	{
 		strResult.replace( pos, srclen, strReplacing );

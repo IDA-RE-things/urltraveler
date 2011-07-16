@@ -11,6 +11,7 @@
 #include "WinVer.h"
 #include "XString.h"
 #include "shellapi.h"
+#include <fstream>
 
 //////////////////////////////////////////////////////////////////////////
 /** 根据文件的HANDLE获取文件的名称
@@ -26,7 +27,7 @@ DWORD FileHelper::GetFileSize(String sFilePath, DWORD* pdwHigh)
 {
 	DWORD dwRet = -1;
 
-	HANDLE hFile = CreateFile(sFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, 
+	HANDLE hFile = ::CreateFile(sFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, 
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
@@ -72,7 +73,7 @@ BOOL FileHelper::IsFileReadable(LPCTSTR szFilePath)
 		return false;
 	}
 
-	HANDLE hFile = CreateFile(szFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 
+	HANDLE hFile = ::CreateFile(szFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 
 		FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
@@ -94,7 +95,7 @@ BOOL FileHelper::IsFileWriteable(LPCTSTR szFilePath)
 		return false;
 	}
 
-	HANDLE hFile = CreateFile(szFilePath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, 
+	HANDLE hFile = ::CreateFile(szFilePath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, 
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
@@ -180,4 +181,18 @@ BOOL FileHelper::ModifyFileAttribute(String sPath, DWORD dwAttributeAdd, DWORD d
 	DWORD dwAttributeNew = (dwAttributeOld | dwAttributeAdd) & ~dwAttributeRemove;
 	
 	return SetFileAttributes(sPath, dwAttributeNew);
+}
+
+/*
+功能：在指定路径下创建文件
+@fileName: 要创建的文件的全路径
+@content: 文件内容
+@canBeEmptyFile: 文件内容是否可以为空，默认值为FALSE
+*/
+BOOL FileHelper::CreateFile(String fileName)
+{
+	ofstream outFile;
+	outFile.open(fileName, ios::out);
+	outFile.close();
+	return TRUE;
 }

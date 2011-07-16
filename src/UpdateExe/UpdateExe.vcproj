@@ -260,6 +260,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TxConfig.cpp"
+				>
+			</File>
+			<File
 				RelativePath="UpdateExe.cpp"
 				>
 			</File>
@@ -306,6 +310,10 @@
 			</File>
 			<File
 				RelativePath=".\StringHelper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TxConfig.h"
 				>
 			</File>
 			<File
