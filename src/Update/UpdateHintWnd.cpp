@@ -80,9 +80,9 @@ void CUpdateHintWnd::Notify(TNotifyUI& msg)
 
 			Close();
 		}
-		else if( msg.pSender->GetName() == L"RemindNow" )
+		else if( msg.pSender->GetName() == L"RemindLater" )
 		{ 
-			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0); return; 
+			Close();
 		}
 	}
 }

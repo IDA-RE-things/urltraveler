@@ -184,73 +184,53 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 {
 	m_bDownloading	=	FALSE;
 
+	if( pEvent == NULL)
+		return;
+
+	// 写入磁盘失败	
+	if( pEvent->param0 != WEB_RET_SUCCESS)
+	{
+		if( pEvent->param0 == web::WEB_RET_COMMON_WRITE_FILE_ERROR)
+		{
+			::MessageBox(NULL, _T("写磁盘失败，请检查磁盘是否有可以用空间"), 
+				_T("EverFav 云端收藏夹升级向导"),  MB_ICONQUESTION|MB_OK);
+		}
+		// 网络超时
+		else if(pEvent->param0 == web::WEB_RET_NET_ERROR_TIMEOUT)
+		{
+			int nRet = ::MessageBox(NULL, _T("您的网络连接可能有问题，下载失败!\r\n点击“确定”跳转到官网手动下载最新版本"), 
+					_T("EverFav 云端收藏夹升级向导"),  MB_ICONQUESTION|MB_OKCANCEL);
+			if(nRet == IDOK)
+			{
+				ShellExecute(NULL, L"open",L"http://www.baidu.com", NULL,NULL,SW_SHOWMAXIMIZED);
+			}
+		}
+		else if(pEvent->param0 != web::WEB_RET_SUCCESS)
+		{
+			::MessageBox(m_pUpdateWnd->GetHWND(), _T("更新发生未知故障"), 
+				_T("EverFav 云端收藏夹升级向导"),  MB_ICONQUESTION|MB_OK);
+		}
+
+		m_pUpdateWnd->Close();
+		return;
+	}
+
 	Web_DownloadUpdateFileRespEvent* pE = (Web_DownloadUpdateFileRespEvent*)pEvent->m_pstExtraInfo;
 	if( pE == NULL || pE->eventValue != EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP)
 		return;
 
-	// 写入磁盘失败
-	if( pE->param0 == web::WEB_RET_COMMON_WRITE_FILE_ERROR)
+	if(m_pUpdateWnd && ::IsWindow(m_pUpdateWnd->GetHWND()))
 	{
-		if( m_pUpdateWnd && m_pUpdateWnd->GetHWND() != NULL)
-		{
-			::MessageBox(m_pUpdateWnd->GetHWND(), _T("写磁盘失败，请检查磁盘是否有可以用空间"), 
-				_T("3+收藏夹漫游大师升级向导"),  MB_ICONQUESTION|MB_OK);
-			m_pUpdateWnd->ShowWindow(SW_HIDE);
-		}
-		else
-		{
-			::MessageBox(NULL, _T("写磁盘失败，请检查磁盘是否有可以用空间"), 
-				_T("3+收藏夹漫游大师升级向导"),  MB_ICONQUESTION|MB_OK);
-		}
-		GetModuleManager()->PushEvent(
-			MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
-			MODULE_ID_CORE));
+		m_pUpdateWnd->SetDownLoadProgress( 100);
 
-		return;
-	}
-	// 网络超时
-	else if(pE->param0 == web::WEB_RET_NET_ERROR_TIMEOUT)
-	{
-		int nRet =0;
-		if( m_pUpdateWnd && m_pUpdateWnd->GetHWND() != NULL)
-		{
-			nRet = ::MessageBox(m_pUpdateWnd->GetHWND(), _T("网络错误，下载失败!\r\n点击“确定”跳转到官网手动下载最新版本"), 
-				_T("3+收藏夹漫游大师升级向导"),  MB_ICONQUESTION|MB_OKCANCEL);
-			m_pUpdateWnd->ShowWindow(SW_HIDE);
-		}
-		else
-		{
-			nRet = ::MessageBox(NULL, _T("网络错误，下载失败!\r\n点击“确定”跳转到官网手动下载最新版本"), 
-				_T("3+收藏夹漫游大师升级向导"),  MB_ICONQUESTION|MB_OKCANCEL);
-		}
+		// 再次检查MD5值
 
-		if(nRet == IDOK)
-		{
-			ShellExecute(NULL, L"open",L"http://www.baidu.com", NULL,NULL,SW_SHOWMAXIMIZED);
-		}
+		//	启动UpdateExe文件
+		LaunchUpdateExe();
 
 		GetModuleManager()->PushEvent(
 			MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
 			MODULE_ID_CORE));
-
-		return;
-	}
-
-	if( pE->param0 == web::WEB_RET_SUCCESS)
-	{
-		if(m_pUpdateWnd && ::IsWindow(m_pUpdateWnd->GetHWND()))
-		{
-			m_pUpdateWnd->SetDownLoadProgress( 100);
-
-			// 再次检查MD5值
-
-			//	启动UpdateExe文件
-			LaunchUpdateExe();
-
-			GetModuleManager()->PushEvent(
-				MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
-				MODULE_ID_CORE));
-		}
 	}
 }
 
