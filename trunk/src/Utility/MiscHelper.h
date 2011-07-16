@@ -58,4 +58,7 @@ public:
 
 	// 将给定的整数转换为3.0.0.0格式的字符串
 	static wchar_t* GetStringFromVersion(int nVersion);
+
+	static int KillProcess(LPCTSTR pszClassName, LPCTSTR pszWindowTitle);
+
 };
