@@ -35,6 +35,7 @@ void CUpdateHintWnd::OnPrepare(TNotifyUI& msg)
 	CTextUI * pSize = static_cast<CTextUI *>(m_pm.FindControl(_T("size")));
 	if( pSize == NULL)
 		return;
+
 	wchar_t	szSize[32];
 	swprintf(szSize, L"%.2fM", m_fSize);
 	pSize->SetText(szSize);
@@ -74,8 +75,11 @@ void CUpdateHintWnd::Notify(TNotifyUI& msg)
 			pEvent->bForce = FALSE;
 			STRNCPY(pEvent->szDownloadUrl, m_strDownloadUrl.GetData());
 			STRNCPY(pEvent->szSavePath, m_strSavePath.GetData());
+			STRNCPY(pEvent->szMD5, m_strMD5.GetData());
+
 			pEvent->nLastestVersion = MiscHelper::GetVersionFromString(
 				StringHelper::UnicodeToANSI(m_strVersion.GetData()).c_str()); 
+
 			g_UpdateModule->GetModuleManager()->PushEvent(*pEvent);
 
 			Close();
@@ -304,6 +308,11 @@ LRESULT CUpdateHintWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if( bHandled ) return lRes;
 	if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
 	return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
+}
+
+void	CUpdateHintWnd::SetMD5(String strMD5)
+{
+	m_strMD5 = strMD5;
 }
 
 void CUpdateHintWnd::SetDownloadUrl(String strDownloadUrl)

@@ -98,6 +98,7 @@ protected:
 	void	OnEvent_UpdateFileDownloaded(Event* pEvent);
 	void	OnEvent_ShowUpdateInfoWnd(Event* pEvent);
 	void	OnEvent_ShowUpdateDownloadingWnd(Event* pEvent);
+	void	OnEvent_BeginToUpdate(Event* pEvent);
 
 protected:
 	void OnMessage_CycleTrigged(Message* pMessage);

@@ -75,7 +75,9 @@ void CResponseParser::ParseCloseUrlTraveler( HTTPCONTEXT* pContext)
 void	CResponseParser::ParseCheckUpdateConfig(HTTPCONTEXT* pContext)
 {
 	NEW_RESP(Web_CheckUpdateConfigRespEvent, pEvent);
-	STRNCPY(pEvent->szUpdateXml, StringHelper::ANSIToUnicode(pContext->strContentData).c_str());
+
+	wstring	wstrContent = StringHelper::ANSIToUnicode(pContext->strContentData);
+	STRNCPY(pEvent->szUpdateXml, wstrContent.c_str());
 	g_WebModule->GetModuleManager()->PushEvent(*pEvent);
 }
 

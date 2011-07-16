@@ -95,10 +95,16 @@ typedef unsigned long ulong;
 #endif /* #ifndef FAILURE */
 
 
+#ifndef PARRAYSIZE
+#define PARRAYSIZE(array) ((sizeof(array)/sizeof(array[0])))
+#endif
+
+// 仅仅适用于dstPtr为数组的情况，如果dstPtr为指向数组的指针，则不能使用
 #ifndef STRNCPY
 #define STRNCPY(dstPtr,srcPtr) \
-	memset(dstPtr, 0x0, sizeof(dstPtr)); \
-	wcsncpy_s(dstPtr, sizeof(dstPtr)/sizeof(wchar_t)-1, srcPtr, sizeof(dstPtr)/sizeof(wchar_t)-1); 
+	memset(dstPtr, 0x0, sizeof( dstPtr));	\
+	wcsncpy_s(dstPtr, PARRAYSIZE(dstPtr), srcPtr, _TRUNCATE); \
+	dstPtr[PARRAYSIZE(dstPtr) -1] = 0;
 #endif
 
 #ifndef ZEROMEM
@@ -106,10 +112,7 @@ typedef unsigned long ulong;
 	memset(ptr, 0x0,sizeof(ptr));
 #endif
 
-// 获取数组的维数 [7/1/2008 温辉敏]
-#ifndef PARRAYSIZE
-#define PARRAYSIZE(array) ((sizeof(array)/sizeof(array[0])))
-#endif
+
 
 /** Declare all the standard PWlib class information.
 This macro is used to provide the basic run-time typing capability needed

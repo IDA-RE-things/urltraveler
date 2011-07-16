@@ -10,7 +10,7 @@
         <VerticalLayout name="VerticalLayoutUI2" pos="1,0,322,30" width="321" height="30">
             <Button name="closebtn" float="true" pos="273,1,318,18" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
             <Label name="LabelUI1" float="true" pos="3,3,25,25" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-            <Label name="LabelUI2" text="{b}3+ 收藏夹漫游大师{/b}" float="true" pos="31,4,153,25" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" />
+            <Label name="LabelUI2" text="{b}EverFav 云端收藏夹{/b}" float="true" pos="31,4,153,25" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" />
         </VerticalLayout>
         <VerticalLayout name="VerticalLayoutUI3" pos="1,30,322,99" width="321" height="69" bkcolor="#FFFFFFFF" inset="1,0,0,0">
             <Text name="TextUI1" text="{f 4}{b}hi，我们发现最新版本{/b}{/f}" float="true" pos="28,10,295,36" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
@@ -28,6 +28,6 @@
             <Text name="update_detail" text="更新内容：{n}{n} {x 2}{i ball.png}  增加了对Chrome浏览器的支持 {n}{n} {x 2}{i ball.png}  修改了FireFox插件的bug" float="true" pos="7,6,313,110" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
         </VerticalLayout>
         <Button name="UpdateNow" text="立即升级" float="true" pos="144,248,224,272" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-        <Button name="RemindLater" text="稍后再说" float="true" pos="233,248,313,272" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+        <Button name="RemindLater" text="下次更新" float="true" pos="233,248,313,272" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
     </VerticalLayout>
 </Window>

@@ -301,6 +301,7 @@ namespace web
 		}
 
 		int	nId;
+
 		//	需要下载的文件的URL
 		wchar_t	szUpdateFileUrl[MAX_PATH];
 		wchar_t	szSavePath[MAX_PATH];	//	下载存放的路径

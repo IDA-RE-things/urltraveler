@@ -52,6 +52,7 @@ public:
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
+	void	SetMD5(String strMD5);
 	void SetDownloadUrl(String strDownloadUrl);
 	void	SetSavePath(String strSavePath);
 	void	SetVersion(String	strVersion);
@@ -65,6 +66,7 @@ public:
 	// 更新内容相关
 	String	m_strDownloadUrl;
 	String	m_strSavePath;
+	String	m_strMD5;
 	String	m_strVersion;
 	float		m_fSize;
 	std::vector<wstring>	m_vUpdateDetail;
