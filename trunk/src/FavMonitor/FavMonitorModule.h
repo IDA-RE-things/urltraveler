@@ -14,6 +14,7 @@ class FavMonitorModule : public ModuleImpl
 {
 	DECLEAR_EVENT_MAP(FavMonitorModule)
 	DECLEAR_MESSAGE_MAP(FavMonitorModule)
+	DECLEAR_SERVICE_MAP(FavMonitorModule)
 
 public:
 	FavMonitorModule();
@@ -78,7 +79,12 @@ public:
 	//		@param	lparam			参数1
 	//		@param	rparam			参数2
 	//----------------------------------------------------------------------------------------
-	int32 CallDirect(const param lparam, param wparam);
+	int32 CallDirect(const ServiceValue lServiceValue, param wparam);
+private:
+	int32 OnService_AddMonitor(ServiceValue lServiceValue, param	lParam);
+	int32 OnService_RemoveMonitor(ServiceValue lServiceValue, param	lParam);
+protected:
+	static void WINAPI NotifyRotuine(LPSTR pPath,int iActionType); 
 };
 
 class FavMonitorModuleFactory : public ModuleFactoryImpl<FavMonitorModule>{};

@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "FavMonitorModule.h"
+#include "FavMonitorDefine.h"
+#include "Filemon.h"
+#include "StringHelper.h"
 #include <sstream>
 
 HMODULE	g_hModule = NULL;
@@ -26,14 +29,16 @@ FavMonitorModule::~FavMonitorModule()
 }
 
 BEGIN_EVENT_MAP(FavMonitorModule)
-	//ON_EVENT(EVENT_VALUE_TRAYICON_SHOW,OnEvent_ShowTrayIcon)
-	//ON_EVENT(EVENT_VALUE_TRAYICON_SHOW_UPDATE_WND, OnEvent_ShowUpdateWnd)
+	//ON_EVENT(EVENT_VALUE_FAVMONITOR_MONITOR_FILE, OnEvent_MonitorFile)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(FavMonitorModule)
-	//ON_MESSAGE(MESSAGE_VALUE_CORE_BEGIN_SHOW, OnMessage_Show)
-	//ON_MESSAGE(MESSAGE_VALUE_CORE_PRE_APP_EXIT, OnMessage_PreExit)
 END_MESSAGE_MAP()
+
+BEGIN_SERVICE_MAP(FavMonitorModule)
+	ON_SERVICE(SERVICE_VALUE_FAVMONITOR_ADD_MONITOR, OnService_AddMonitor)
+	ON_SERVICE(SERVICE_VALUE_FAVMONITOR_REMOVE_MONITOR, OnService_RemoveMonitor)
+END_SERVICE_MAP();
 
 //----------------------------------------------------------------------------------------
 //名称: Load
@@ -114,7 +119,41 @@ void FavMonitorModule::ProcessMessage(const Message& msg)
 //		@param	lparam			参数1
 //		@param	rparam			参数2
 //----------------------------------------------------------------------------------------
-int32 FavMonitorModule::CallDirect(const param lparam, param wparam) 
+int32 FavMonitorModule::CallDirect(const ServiceValue lServiceValue, param wparam) 
 {
-	return -1;
+	CALL_DIRECT(lServiceValue, wparam);
+}
+
+void FavMonitorModule::NotifyRotuine( LPSTR pPath,int iActionType )
+{
+	FavMonitor_FileChangeMessage *pFileChangeMessage = new FavMonitor_FileChangeMessage;
+
+	wcscpy_s(pFileChangeMessage->szFile, MAX_PATH - 1, StringHelper::ANSIToUnicode(pPath).c_str());
+
+	pFileChangeMessage->iActionType = iActionType;
+	g_FavMonitorModule->GetModuleManager()->PushMessage(*pFileChangeMessage);
+}
+
+int32 FavMonitorModule::OnService_AddMonitor( ServiceValue lServiceValue, param lParam )
+{
+	FavMonitor_AddMonitorService *pAddMonitorService = (FavMonitor_AddMonitorService *)lParam;
+
+	pAddMonitorService->hMonitorHandle = MonFile_Start((LPSTR)StringHelper::UnicodeToANSI(pAddMonitorService->szFile).c_str(),
+		false,
+		0,
+		FavMonitorModule::NotifyRotuine);
+
+	return 0;
+}
+
+int32 FavMonitorModule::OnService_RemoveMonitor( ServiceValue lServiceValue, param lParam )
+{
+	FavMonitor_RemoveMonitorService *pRemoveMonitorService = (FavMonitor_RemoveMonitorService *)lParam;
+
+	if (pRemoveMonitorService->hMonitorHandle != NULL)
+	{
+		MonFile_Stop(pRemoveMonitorService->hMonitorHandle);
+	}
+
+	return 0;
 }
