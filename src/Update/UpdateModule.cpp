@@ -404,10 +404,8 @@ void	UpdateModule::ProcessUpdateConfig()
 		pEvent->bForce = TRUE;
 		GetModuleManager()->PushEvent(*pEvent);
 	}
-	else 
+	else  if( nCurrentVersion < nHighVersion)
 	{
-		ASSERT( nCurrentVersion <= nHighVersion);
-
 		// 弹出提示提示用户是否需要进行更新
 
 		// 如果用户已经设置了默认更新，则不进行任何的提示
