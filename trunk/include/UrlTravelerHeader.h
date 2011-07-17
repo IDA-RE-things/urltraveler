@@ -163,6 +163,8 @@ enum EventValueRanges
 	//更新模块
  	EVENT_VALUE(UPDATE)
 
+	//FavMonitor模块
+	EVENT_VALUE(FAVMONITOR)
 };
 
 #define MESSAGE_VALUE(MODULE_NAME)	\
@@ -206,6 +208,9 @@ enum MessageValueRanges
 
 	//Update管理模块
 	MESSAGE_VALUE(UPDATE)
+
+	//FavMonitor模块
+	MESSAGE_VALUE(FAVMONITOR)
 };
 
 #define SERVICE_VALUE(MODULE_NAME)	\
@@ -240,6 +245,9 @@ enum ServiceValueRanges
 
 	//Update管理模块
 	SERVICE_VALUE(UPDATE)
+
+	//FavMonitor模块
+	SERVICE_VALUE(FAVMONITOR)
 };
 
 
