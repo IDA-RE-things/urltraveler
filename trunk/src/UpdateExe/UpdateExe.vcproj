@@ -272,6 +272,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\UpdateProcessWnd.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\XString.cpp"
 				>
 			</File>
@@ -314,6 +318,10 @@
 			</File>
 			<File
 				RelativePath=".\TxConfig.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UpdateProcessWnd.h"
 				>
 			</File>
 			<File
