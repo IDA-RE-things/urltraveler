@@ -51,7 +51,7 @@ END_SERVICE_MAP();
 BOOL FavMonitorModule::Load(IModuleManager* pManager)
 {
 	__super::Load(pManager);
-	
+
 	return TRUE;
 }
 
