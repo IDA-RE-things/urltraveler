@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include"
+				AdditionalIncludeDirectories="..\..\include;..\Utility"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;FAVMONITOR_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -65,6 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="../../lib/Utilityd.lib"
 				OutputFile="..\..\bin\FavMonitord.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -121,7 +122,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\include"
+				AdditionalIncludeDirectories="..\..\include;..\Utility"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;FAVMONITOR_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -140,6 +141,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="../../lib/Utility.lib"
 				OutputFile="..\..\bin\FavMonitor.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -181,6 +183,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\common.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\common.h"
+				>
+			</File>
+			<File
 				RelativePath=".\dllmain.cpp"
 				>
 				<FileConfiguration
@@ -211,6 +221,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Filemon.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Filemon.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -236,6 +254,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\include\FavMonitorDefine.h"
+				>
+			</File>
 			<File
 				RelativePath=".\FavMonitorModule.h"
 				>
