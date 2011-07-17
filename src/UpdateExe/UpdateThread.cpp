@@ -9,6 +9,9 @@
 #include "json/json.h"
 #include "shellapi.h"
 #include "UpdateThread.h"
+#include "UpdateProcessWnd.h"
+
+extern CUpdateProcessWnd* pUpdateExeWnd;
 
 void CUpdateThread::OnThreadEntry()
 {
@@ -31,11 +34,20 @@ int CUpdateThread::Run()
 
 	int nRet = UnzipPackage((wchar_t*)strUpdatePackage.c_str());
 	if( nRet == -1)
+	{
+		pUpdateExeWnd->SendMessage(WM_UNPACKAGE,0,0);
 		return -1;
-
+	}
+	pUpdateExeWnd->SendMessage(WM_UNPACKAGE,1,0);
+	
 	nRet = CopyUnPackageFile();
 	if( nRet == -1)
+	{
+		pUpdateExeWnd->SendMessage(WM_COPYPACKAGE,0,0);
 		return -1;
+	}
+	pUpdateExeWnd->SendMessage(WM_COPYPACKAGE,1,0);
+	pUpdateExeWnd->SendMessage(WM_UPDATESUCCESS,0,0);
 
 	return 0;
 }
