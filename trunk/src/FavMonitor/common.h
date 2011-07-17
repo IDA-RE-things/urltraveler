@@ -18,23 +18,23 @@ void __stdcall Monfile_NotiLog(LPSTR pPath,int iActionType) ;
 typedef void (__stdcall *USER_NOTIFY_FUNC)(LPSTR pPath,int iActionType); 
 
 typedef bool (WINAPI *_ReadDirectoryChangesW)(HANDLE    hDirectory,   
-											  PVOID           lpBuffer,   
-											  int             nBufferLength,   
-											  bool            bWatchSubtree,   
-											  int             dwNotifyFilter,   
-											  int*            lpBytesReturned,   
-											  OVERLAPPED*     lpOverlapped,   
-											  int             lpCompletionRoutine);
+					      PVOID           lpBuffer,   
+					      int             nBufferLength,   
+					      bool            bWatchSubtree,   
+					      int             dwNotifyFilter,   
+					      int*            lpBytesReturned,   
+					      OVERLAPPED*     lpOverlapped,   
+					      int             lpCompletionRoutine);
 
 typedef HANDLE  (__stdcall *_CreateFileW)(
-									  LPCWSTR lpFileName,                         // file name
-									  DWORD dwDesiredAccess,                      // access mode
-									  DWORD dwShareMode,                          // share mode
-									  LPSECURITY_ATTRIBUTES lpSecurityAttributes, // SD
-									  DWORD dwCreationDisposition,                // how to create
-									  DWORD dwFlagsAndAttributes,                 // file attributes
-									  HANDLE hTemplateFile                        // handle to template file
-									  );
+	LPCWSTR lpFileName,                         // file name
+	DWORD dwDesiredAccess,                      // access mode
+	DWORD dwShareMode,                          // share mode
+	LPSECURITY_ATTRIBUTES lpSecurityAttributes, // SD
+	DWORD dwCreationDisposition,                // how to create
+	DWORD dwFlagsAndAttributes,                 // file attributes
+	HANDLE hTemplateFile                        // handle to template file
+	);
 
 
 

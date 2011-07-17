@@ -13,8 +13,8 @@ extern "C"
 class FavMonitorModule : public ModuleImpl
 {
 	DECLEAR_EVENT_MAP(FavMonitorModule)
-	DECLEAR_MESSAGE_MAP(FavMonitorModule)
-	DECLEAR_SERVICE_MAP(FavMonitorModule)
+		DECLEAR_MESSAGE_MAP(FavMonitorModule)
+		DECLEAR_SERVICE_MAP(FavMonitorModule)
 
 public:
 	FavMonitorModule();
