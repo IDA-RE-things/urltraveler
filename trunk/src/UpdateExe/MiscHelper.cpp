@@ -408,23 +408,27 @@ void	 MiscHelper::DeleteUnpackagePath()
 	PathHelper::RemoveDir(wstrUpdate, TRUE);
 }
 
-int MiscHelper::GetCurrentVersion()
+long MiscHelper::GetCurrentVersion()
 {
 	wstring wstrConfig = MiscHelper::GetConfig();
 	CTxConfig txConfig;
 	BOOL bRet = txConfig.ParseConfig(StringHelper::UnicodeToANSI(wstrConfig));
 	if( bRet == FALSE)
+	{
 		return CLIENT_VERSION;
+	}
 
 	string strVersion = txConfig.GetValue(L"version");
 	if( strVersion == "")
+	{
 		return CLIENT_VERSION;
+	}
 
 	return StringHelper::ConvertToInt(strVersion);
 }
 
 // 将1.0.0.0格式的字符传变成整数
-int	MiscHelper::GetVersionFromString(const char*	pszVersion)
+long	MiscHelper::GetVersionFromString(const char*	pszVersion)
 {
 	if( pszVersion == NULL)
 		return 0;
@@ -475,12 +479,12 @@ wchar_t* MiscHelper::GetStringFromVersion(int nVersion)
 BOOL MiscHelper::ExistProcess(LPCTSTR pszClassName, LPCTSTR pszWindowTitle)
 {
 	HANDLE hProcessHandle;  
-    ULONG nProcessID;
-    HWND TheWindow;
+	ULONG nProcessID;
+	HWND TheWindow;
 
-    TheWindow = ::FindWindow( NULL, pszWindowTitle );
-    ::GetWindowThreadProcessId( TheWindow, &nProcessID );
-    hProcessHandle = ::OpenProcess( PROCESS_TERMINATE, FALSE, nProcessID );
+	TheWindow = ::FindWindow( NULL, pszWindowTitle );
+	::GetWindowThreadProcessId( TheWindow, &nProcessID );
+	hProcessHandle = ::OpenProcess( PROCESS_TERMINATE, FALSE, nProcessID );
 	if( hProcessHandle != 0)
 		return TRUE;
 
@@ -490,13 +494,13 @@ BOOL MiscHelper::ExistProcess(LPCTSTR pszClassName, LPCTSTR pszWindowTitle)
 BOOL MiscHelper::KillProcess(LPCTSTR pszClassName, LPCTSTR pszWindowTitle)
 {
 	HANDLE hProcessHandle;  
-    ULONG nProcessID;
-    HWND TheWindow;
+	ULONG nProcessID;
+	HWND TheWindow;
 
-    TheWindow = ::FindWindow( NULL, pszWindowTitle );
-    ::GetWindowThreadProcessId( TheWindow, &nProcessID );
-    hProcessHandle = ::OpenProcess( PROCESS_TERMINATE, FALSE, nProcessID );
-    return ::TerminateProcess( hProcessHandle, 4 );
+	TheWindow = ::FindWindow( NULL, pszWindowTitle );
+	::GetWindowThreadProcessId( TheWindow, &nProcessID );
+	hProcessHandle = ::OpenProcess( PROCESS_TERMINATE, FALSE, nProcessID );
+	return ::TerminateProcess( hProcessHandle, 4 );
 }
 
 // 获取EverFav的配置文件路径
@@ -528,5 +532,7 @@ void MiscHelper::SetVersionInConfig(int nVersion)
 
 	CTxConfig txConfig;
 	txConfig.SetValue(L"version", StringHelper::ConvertFromInt(nVersion));
+
+	string strVersion = txConfig.GetValue(L"version");
 	txConfig.MakeConfig(StringHelper::UnicodeToANSI(pConfig));
 }

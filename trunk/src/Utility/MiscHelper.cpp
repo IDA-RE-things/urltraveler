@@ -408,23 +408,27 @@ void	 MiscHelper::DeleteUnpackagePath()
 	PathHelper::RemoveDir(wstrUpdate, TRUE);
 }
 
-int MiscHelper::GetCurrentVersion()
+long MiscHelper::GetCurrentVersion()
 {
 	wstring wstrConfig = MiscHelper::GetConfig();
 	CTxConfig txConfig;
 	BOOL bRet = txConfig.ParseConfig(StringHelper::UnicodeToANSI(wstrConfig));
 	if( bRet == FALSE)
+	{
 		return CLIENT_VERSION;
+	}
 
 	string strVersion = txConfig.GetValue(L"version");
 	if( strVersion == "")
+	{
 		return CLIENT_VERSION;
+	}
 
 	return StringHelper::ConvertToInt(strVersion);
 }
 
 // 将1.0.0.0格式的字符传变成整数
-int	MiscHelper::GetVersionFromString(const char*	pszVersion)
+long	MiscHelper::GetVersionFromString(const char*	pszVersion)
 {
 	if( pszVersion == NULL)
 		return 0;
@@ -528,4 +532,7 @@ void MiscHelper::SetVersionInConfig(int nVersion)
 
 	CTxConfig txConfig;
 	txConfig.SetValue(L"version", StringHelper::ConvertFromInt(nVersion));
+
+	string strVersion = txConfig.GetValue(L"version");
+	txConfig.MakeConfig(StringHelper::UnicodeToANSI(pConfig));
 }
