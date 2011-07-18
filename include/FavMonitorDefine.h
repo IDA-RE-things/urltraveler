@@ -31,11 +31,13 @@ namespace favmonitor
 		SERVICE_VALUE_FAVMONITOR_END = SERVICE_VALUE_FAVMONITOR_END,		//所有的事件结束
 	};
 
-	struct FavMonitor_FileChangeMessage : Message
+	struct FavMonitor_FileChangeMessage : MessageExtraInfo
 	{
-		FavMonitor_FileChangeMessage():Message(MESSAGE_VALUE_FAVMONITOR_FILE_CHANGE, MODULE_ID_FAVMONITOR)
+		FavMonitor_FileChangeMessage()
 		{
-			//m_pstExtraInfo = this;
+			messageValue = MESSAGE_VALUE_FAVMONITOR_FILE_CHANGE;
+			srcMId = MODULE_ID_FAVMONITOR; 
+
 			memset(szFile, 0, sizeof(szFile));
 			iActionType = 0;
 		}
