@@ -17,7 +17,7 @@ namespace update
 		EVENT_VALUE_UPDATE_CHECK_UPDATEINFO = EVENT_VALUE_UPDATE_BEGIN,		// 检查当前应用程序是否存在更新
 		EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND,				//	显示更新提示窗口
 		EVENT_VALUE_UPDATE_SHOW_DOWNLOADING_WND,			//	显示下载进度窗口
-		EVENT_VALUE_UPDATE_BEGINT_TO_UPDATE,								// 直接进行更新
+		EVENT_VALUE_UPDATE_SILENCE_UPDATE,								// 直接进行更新
 	};
 
 	// Update能够可能对外发送的广播消息
@@ -93,6 +93,22 @@ namespace update
 		BOOL	bForce;		//	是否需要强制更新
 
 		int nLastestVersion;		//	最近的版本
+
+		wchar_t	szDownloadUrl[MAX_PATH];	// 下载的URL
+		wchar_t	szSavePath[MAX_PATH];
+		wchar_t	szMD5[MAX_MD5_LEN];
+	};
+
+	struct Update_SilencetUpdateEvent	:	public UpdateEvent
+	{
+		Update_SilencetUpdateEvent()
+		{
+			eventValue = EVENT_VALUE_UPDATE_SILENCE_UPDATE;
+
+			ZeroMemory(szDownloadUrl, MAX_PATH*sizeof(wchar_t));
+			ZeroMemory(szSavePath, MAX_PATH*sizeof(wchar_t));
+			ZeroMemory(szMD5, MAX_MD5_LEN* sizeof(wchar_t));
+		}
 
 		wchar_t	szDownloadUrl[MAX_PATH];	// 下载的URL
 		wchar_t	szSavePath[MAX_PATH];

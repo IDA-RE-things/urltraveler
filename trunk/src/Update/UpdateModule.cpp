@@ -73,7 +73,7 @@ BEGIN_EVENT_MAP(UpdateModule)
 	ON_EVENT(EVENT_VALUE_WEB_DOWNLOAD_UPDATE_FILE_RESP, OnEvent_UpdateFileDownloaded)
 	ON_EVENT(EVENT_VALUE_UPDATE_SHOW_UPDATE_HINT_WND,OnEvent_ShowUpdateInfoWnd)
 	ON_EVENT(EVENT_VALUE_UPDATE_SHOW_DOWNLOADING_WND, OnEvent_ShowUpdateDownloadingWnd)
-	ON_EVENT(EVENT_VALUE_UPDATE_BEGINT_TO_UPDATE, OnEvent_BeginToUpdate)
+	ON_EVENT(EVENT_VALUE_UPDATE_SILENCE_UPDATE, OnEvent_BeginToSilenceUpdate)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(UpdateModule)
@@ -180,9 +180,33 @@ void	UpdateModule::OnEvent_UpdateInfoArrive(Event* pEvent)
 	ProcessUpdateConfig();
 }
 
-void	UpdateModule::OnEvent_BeginToUpdate(Event* pEvent)
+void	UpdateModule::OnEvent_BeginToSilenceUpdate(Event* pEvent)
 {
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_UPDATE_SILENCE_UPDATE)
+		return;
 
+	Update_SilencetUpdateEvent* pUpdateEvent = (Update_SilencetUpdateEvent*)pEvent;
+	wstring	wstrUrl	=	pUpdateEvent->szDownloadUrl;
+	wstring	wstrPath	=	pUpdateEvent->szSavePath;   
+	wstring	wstrMD5 = pUpdateEvent->szMD5;
+
+	// 检查文件是否存在，并且检查MD5
+	if( PathHelper::IsFileExist(m_strUpdateFileName) == TRUE)
+	{
+		string strExistMD5 = CMD5Checksum::GetMD5W(m_strUpdateFileName);
+		if( String(wstrMD5.c_str()).ToLower() == String(StringHelper::ANSIToUnicode(strExistMD5).c_str()).ToLower())
+		{
+			// 如果已经存在，则记录是否需要更新
+			return;
+		}
+	}
+
+	Web_DownloadUpdateFileService downloadUpdateFileService;
+	downloadUpdateFileService.srcMId = MODULE_ID_UPDATE;
+	STRNCPY(downloadUpdateFileService.szUpdateFileUrl, wstrUrl.c_str());
+	STRNCPY(downloadUpdateFileService.szSavePath, wstrPath.c_str());
+	m_nDownloadSeqNo = GetModuleManager()->CallService(downloadUpdateFileService.serviceId, 
+		(param)&downloadUpdateFileService);	
 }
 
 // 通知更新包已经下载结束
@@ -205,7 +229,7 @@ void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 		else if(pEvent->param0 == web::WEB_RET_NET_ERROR_TIMEOUT)
 		{
 			int nRet = ::MessageBox(NULL, _T("您的网络连接可能有问题，下载失败!\r\n点击“确定”跳转到官网手动下载最新版本"), 
-					_T("EverFav 云端收藏夹升级向导"),  MB_ICONQUESTION|MB_OKCANCEL);
+				_T("EverFav 云端收藏夹升级向导"),  MB_ICONQUESTION|MB_OKCANCEL);
 			if(nRet == IDOK)
 			{
 				ShellExecute(NULL, L"open",L"http://www.baidu.com", NULL,NULL,SW_SHOWMAXIMIZED);
@@ -465,7 +489,7 @@ void	UpdateModule::LaunchUpdateExe()
 	GetModuleManager()->PushEvent(
 		MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
 		MODULE_ID_CORE));
-	
+
 	std::wstring strUpdateExe = PathHelper::GetModuleDir();
 	strUpdateExe += UPDATE_PROGRAM;
 	if (PathHelper::IsFileExist(strUpdateExe.c_str()))
