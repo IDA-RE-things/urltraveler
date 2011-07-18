@@ -2,8 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by TrayIcon.rc
 //
-#define IDI_URLUPLOAD                   101
-#define IDI_URLDOWNLOAD                 102
 #define IDI_URLTRAVELER                 103
 #define IDR_APPMENU                     104
 #define ID_Menu                         40002
