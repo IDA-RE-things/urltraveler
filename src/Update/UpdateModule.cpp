@@ -212,6 +212,13 @@ void	UpdateModule::OnEvent_BeginToSilenceUpdate(Event* pEvent)
 // 通知更新包已经下载结束
 void	UpdateModule::OnEvent_UpdateFileDownloaded(Event* pEvent)
 {
+	DataCenter_GetIsAutoUpdateService  checkAutoUpdateService;
+	g_UpdateModule->CallDirect(checkAutoUpdateService.serviceId, (param)&checkAutoUpdateService);
+
+	// 非静默升级
+	if(checkAutoUpdateService.bAutoUpdate == TRUE)
+		return;
+
 	m_bDownloading	=	FALSE;
 
 	if( pEvent == NULL)
@@ -359,6 +366,8 @@ void	UpdateModule::OnEvent_ShowUpdateInfoWnd(Event* pEvent)
 		m_pUpdateHintWnd->AddUpdateDetail(pUpdateInfoEvent->szUpdateDetail[i]);
 	}
 	m_pUpdateHintWnd->BeginToShowUpdateInfoWnd();
+
+	return;
 }
 
 void	UpdateModule::ProcessUpdateConfig()
@@ -419,7 +428,7 @@ void	UpdateModule::ProcessUpdateConfig()
 
 	free(wszUpdatePath);
 
-	// 此时是强制更新
+	// 此时是强制更新。强制更新没有静默
 	int nCurrentVersion = MiscHelper::GetCurrentVersion();
 	if( nCurrentVersion <= nLowVersion)
 	{
@@ -435,23 +444,52 @@ void	UpdateModule::ProcessUpdateConfig()
 	else  if( nCurrentVersion < nToUpdateVersion)
 	{
 		// 弹出提示提示用户是否需要进行更新
+		// 检查更新文件是否存在，并且MD5是否正确
+ 		// 检查文件是否存在，并且检查MD5
+		if( PathHelper::IsFileExist(m_strUpdateFileName) == TRUE)
+		{
+			string strExistMD5 = CMD5Checksum::GetMD5W(m_strUpdateFileName);
+			if( String(updateInfo.strMd5.c_str()).ToLower() == String(StringHelper::ANSIToUnicode(strExistMD5).c_str()).ToLower())
+			{
+				// 直接执行启动
+				LaunchUpdateExe();
+				return;
+			}
+		}
 
 		// 如果用户已经设置了默认更新，则不进行任何的提示
 
-		// 右下角弹出更新提示框
-		Update_ShowUpdateInfoEvent* pEvent = new Update_ShowUpdateInfoEvent();
-		pEvent->srcMId = MODULE_ID_UPDATE;
-		pEvent->nVersion = nHighVersion;
-		STRNCPY(pEvent->szDownloadUrl, updateInfo.strDownloadUrl.c_str());
-		STRNCPY(pEvent->szSavePath, updateInfo.strTempSavePath.c_str());
-		STRNCPY(pEvent->szMD5, updateInfo.strMd5.c_str());
-		pEvent->nUpdateDetailNum = vDetail.size();
-		for( size_t i=0; i<vDetail.size();i++)
+  		// 检查是否是静默升级
+		DataCenter_GetIsAutoUpdateService  checkAutoUpdateService;
+		g_UpdateModule->CallDirect(checkAutoUpdateService.serviceId, (param)&checkAutoUpdateService);
+
+		// 非静默升级
+		if(checkAutoUpdateService.bAutoUpdate == FALSE)
 		{
-			STRNCPY(pEvent->szUpdateDetail[i], vDetail[i].c_str());
+			// 右下角弹出更新提示框
+			Update_ShowUpdateInfoEvent* pEvent = new Update_ShowUpdateInfoEvent();
+			pEvent->srcMId = MODULE_ID_UPDATE;
+			pEvent->nVersion = nHighVersion;
+			STRNCPY(pEvent->szDownloadUrl, updateInfo.strDownloadUrl.c_str());
+			STRNCPY(pEvent->szSavePath, updateInfo.strTempSavePath.c_str());
+			STRNCPY(pEvent->szMD5, updateInfo.strMd5.c_str());
+			pEvent->nUpdateDetailNum = vDetail.size();
+			for( size_t i=0; i<vDetail.size();i++)
+			{
+				STRNCPY(pEvent->szUpdateDetail[i], vDetail[i].c_str());
+			}
+
+			GetModuleManager()->PushEvent(*pEvent);
+			return;
 		}
 
-		GetModuleManager()->PushEvent(*pEvent);
+		// 静默升级
+ 		Web_DownloadUpdateFileService downloadUpdateFileService;
+		downloadUpdateFileService.srcMId = MODULE_ID_UPDATE;
+		STRNCPY(downloadUpdateFileService.szUpdateFileUrl, updateInfo.strDownloadUrl.c_str());
+		STRNCPY(downloadUpdateFileService.szSavePath, updateInfo.strTempSavePath.c_str());
+		m_nDownloadSeqNo = GetModuleManager()->CallService(downloadUpdateFileService.serviceId, (param)&downloadUpdateFileService);
+		m_bDownloading = FALSE;
 	}
 }
 
