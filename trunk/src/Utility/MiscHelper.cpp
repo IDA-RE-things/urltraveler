@@ -527,12 +527,24 @@ wchar_t* MiscHelper::GetConfig()
 
 void MiscHelper::SetVersionInConfig(int nVersion)
 {
+	MiscHelper::SaveKeyValueConfig(L"version", StringHelper::ConvertFromInt(nVersion).c_str());
+}
+
+void	 MiscHelper::SaveKeyValueConfig(LPCTSTR pszKeyName, LPCSTR pszValue)
+{
+	if( pszKeyName == NULL)
+		return;
+
 	wchar_t* pConfig = MiscHelper::GetConfig();
 	ASSERT(pConfig != NULL);
 
 	CTxConfig txConfig;
-	txConfig.SetValue(L"version", StringHelper::ConvertFromInt(nVersion));
+	txConfig.ParseConfig(StringHelper::UnicodeToANSI(pConfig).c_str());
 
-	string strVersion = txConfig.GetValue(L"version");
+	if( pszValue == NULL)
+		txConfig.SetValue(pszKeyName, "");
+	else
+		txConfig.SetValue(pszKeyName, pszValue);
+
 	txConfig.MakeConfig(StringHelper::UnicodeToANSI(pConfig));
 }

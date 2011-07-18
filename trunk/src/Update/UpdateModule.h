@@ -114,7 +114,7 @@ private:
 protected:
 	wstring	m_strUpdateXml;	//	更新的xml文件内容
 	wstring	m_strUpdateFileName;	//	更新的文件名称
-	int	m_nNewVersion;
+	int	m_nHighestVersion;
 
 	BOOL	m_bDownloading;	//	是否正在下载安装包
 	int		m_nDownloadSeqNo;

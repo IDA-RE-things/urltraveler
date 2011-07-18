@@ -4,6 +4,9 @@
 #include "DatabaseDefine.h"
 #include "WebDefine.h"
 #include "ImageHelper.h"
+#include "TxConfig.h"
+#include "MiscHelper.h"
+#include "StringHelper.h"
 
 using namespace datacenter;
 using namespace database;
@@ -141,6 +144,7 @@ unsigned char szDefaultIcon[] = {
 DataCenterModule::DataCenterModule()
 {
 	m_hDefaultIcon = ImageHelper::CreateIconFromBuffer((LPBYTE)szDefaultIcon, sizeof(szDefaultIcon), 16);
+	m_bAutoUpdate = FALSE;
 }
 
 DataCenterModule::~DataCenterModule()
@@ -155,6 +159,7 @@ BEGIN_EVENT_MAP(DataCenterModule)
 	ON_EVENT(EVENT_VALUE_WEB_GET_FAVICON_RESP, OnEvent_FavoriteIconArrive)
 	ON_EVENT(EVENT_VALUE_DATACENTER_DELETE_FAVORITE, OnEvent_DeleteFavorite)
 	ON_EVENT(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD, OnEvent_DeleteFavoriteFolder)
+	ON_EVENT(EVENT_VALUE_DATACENTER_SET_AUTOUPDATE, OnEvent_SetAutoUpdate)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(DataCenterModule)
@@ -163,7 +168,35 @@ BEGIN_SERVICE_MAP(DataCenterModule)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON,OnService_GetFavoriteIcon)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_CHECK_EXIST_SUBFOLD, OnService_CheckExistSubFolder)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_SUBFOLD_ID, OnService_GetSubFolderId)
+	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_AUTOUPDATE, OnService_GetAutoUpdate)
 END_SERVICE_MAP()
+
+//----------------------------------------------------------------------------------------
+//名称: Load
+//描述: 主程序通过该方法对模块进行加载
+//参数: 
+//		@param	pManager			主模块总线的指针	
+//返回: 
+//		如果加载成功，返回TRUE，否则返回FALSE
+//----------------------------------------------------------------------------------------
+BOOL DataCenterModule::Load(IModuleManager* pManager)
+{
+	__super::Load(pManager);
+
+	wchar_t* pConfig = MiscHelper::GetConfig();
+	ASSERT(pConfig != NULL);
+
+	CTxConfig txConfig;
+	txConfig.ParseConfig(StringHelper::UnicodeToANSI(pConfig).c_str());
+
+	string strAutoUpdate = txConfig.GetValue(L"AutoUpdate");
+	if( strAutoUpdate == "0" || StringHelper::TrimAll(strAutoUpdate) == "")
+		m_bAutoUpdate = FALSE;
+	else 
+		m_bAutoUpdate = TRUE;
+
+	return TRUE;
+}
 
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
@@ -330,6 +363,21 @@ void	DataCenterModule::OnEvent_DeleteFavoriteFolder(Event* pEvent)
 		MODULE_ID_MAINFRAME, pData->nId));
 }
 
+void	DataCenterModule::OnEvent_SetAutoUpdate(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_DATACENTER_SET_AUTOUPDATE)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	int nParam0 = (int)pEvent->param0;
+	if( nParam0 == 0)
+		m_bAutoUpdate = FALSE;
+	else
+		m_bAutoUpdate = TRUE;
+}
+
 void	DataCenterModule::OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam)
 {
 	DataCenter_GetFavoriteVectorService* pGetFavoriteServiceVector = (DataCenter_GetFavoriteVectorService*)lParam;
@@ -454,6 +502,14 @@ void	DataCenterModule::OnService_GetSubFolderId(ServiceValue lServiceValue, para
 	{
 		pGetSubFolderIdService->pIdNum[i] = vSubFolderId[i];	
 	}
+}
+
+void	DataCenterModule::OnService_GetAutoUpdate(ServiceValue lServiceValue, param lParam)
+{
+	DataCenter_GetIsAutoUpdateService* pGetAutoUpdateService = (DataCenter_GetIsAutoUpdateService*)lParam;
+	ASSERT(pGetAutoUpdateService != NULL);
+
+	pGetAutoUpdateService->bAutoUpdate = m_bAutoUpdate;
 }
 
 void DataCenterModule::DeleteFavoriteFold( int nId )

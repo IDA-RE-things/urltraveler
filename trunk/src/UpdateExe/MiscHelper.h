@@ -68,4 +68,6 @@ public:
 	static wchar_t* GetConfig();
 
 	static void SetVersionInConfig(int nVersion);
+
+	static void	 SaveKeyValueConfig(LPCTSTR pszKeyName, LPCSTR pszValue);
 };

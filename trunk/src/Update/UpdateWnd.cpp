@@ -23,7 +23,7 @@ void	CUpdateWnd::SetHintMsg(String strMsg)
 
 void	CUpdateWnd::SetNewVersion(int nNewVersion) 
 {
-	m_nNewVersion = nNewVersion;
+	m_nHighestVersion = nNewVersion;
 }
 
 void	CUpdateWnd::SetCurrentVersion(int nCurrentVersion) 
@@ -43,7 +43,7 @@ void CUpdateWnd::OnPrepare(TNotifyUI& msg)
 	if( pNewVersion == NULL)
 		return;
 	String strNewVersion = L"{c #ff0000}{b}";
-	strNewVersion += MiscHelper::GetStringFromVersion(m_nNewVersion) ;
+	strNewVersion += MiscHelper::GetStringFromVersion(m_nHighestVersion) ;
 	strNewVersion += L"{/b}{/c}";
 	pNewVersion->SetText(strNewVersion.GetData());
 

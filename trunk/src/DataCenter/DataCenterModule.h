@@ -26,12 +26,22 @@ public:
 	~DataCenterModule();
 
 	//----------------------------------------------------------------------------------------
+	//名称: Load
+	//描述: 主程序通过该方法对模块进行加载
+	//参数: 
+	//		@param	pManager			主模块总线的指针	
+	//返回: 
+	//		如果加载成功，返回TRUE，否则返回FALSE
+	//----------------------------------------------------------------------------------------
+	virtual BOOL Load(IModuleManager* pManager);
+
+	//----------------------------------------------------------------------------------------
 	//名称: GetModuleName
 	//描述: 主程序通过该方法获取当前模块的名字，每一个模块都有一个唯一的名字
 	//返回: 
 	//		如果卸载成功，返回TRUE，否则返回FALSE
 	//----------------------------------------------------------------------------------------
-	const wchar_t* GetModuleName();
+	virtual const wchar_t* GetModuleName();
 
  	//----------------------------------------------------------------------------------------
 	//名称: GetModuleId
@@ -39,7 +49,7 @@ public:
 	//返回: 
 	//		返回该模块的唯一的ID
 	//----------------------------------------------------------------------------------------
-	uint32 const GetModuleId();
+	virtual uint32 const GetModuleId();
 
  	//----------------------------------------------------------------------------------------
 	//名称: ProcessEvent
@@ -47,7 +57,7 @@ public:
 	//参数: 
 	//		@param	evt			需要处理的事件
 	//----------------------------------------------------------------------------------------
-	void ProcessEvent(const Event& evt);
+	virtual void ProcessEvent(const Event& evt);
 
  	//----------------------------------------------------------------------------------------
 	//名称: ProcessMessage
@@ -56,7 +66,7 @@ public:
 	//参数: 
 	//		@param	msg			需要处理的广播消息
 	//----------------------------------------------------------------------------------------
-	void ProcessMessage(const Message& msg);
+	virtual void ProcessMessage(const Message& msg);
 
  	//----------------------------------------------------------------------------------------
 	//名称: CallDirect
@@ -66,13 +76,14 @@ public:
 	//		@param	lparam			参数1
 	//		@param	rparam			参数2
 	//----------------------------------------------------------------------------------------
-	int32 CallDirect(const ServiceValue lServiceValue, param wparam);
+	virtual int32 CallDirect(const ServiceValue lServiceValue, param wparam);
 
 protected:
 
 	void	OnEvent_FavoriteIconArrive(Event* pEvent);		//	网址对应的ICON图标达到
 	void	OnEvent_DeleteFavorite(Event* pEvent);			//	删除特定的URL
 	void	OnEvent_DeleteFavoriteFolder(Event* pEvent);		//	删除指定的收藏夹
+	void	OnEvent_SetAutoUpdate(Event* pEvent);			//	设置自动更新不提示
 
 
 protected:
@@ -82,6 +93,7 @@ protected:
 	void	OnService_GetFavoriteIcon(ServiceValue lServiceValue, param lParam);
 	void	OnService_CheckExistSubFolder(ServiceValue	lServiceValue, param	 lParam);
 	void	OnService_GetSubFolderId(ServiceValue lServiceValue, param lParam);
+	void	OnService_GetAutoUpdate(ServiceValue lServiceValue, param lParam);
 
 private:
 
@@ -100,6 +112,10 @@ protected:
 	//	保存Domain与对应的收藏夹图标之间的关系
 	std::map<wstring, HICON>	m_mapDomain2Icon;
 	HICON                       m_hDefaultIcon;
+
+	// 保存一些Key Value设置
+	//	是否自动更新
+	BOOL	m_bAutoUpdate;		
 };
 
 class DataCenterModuleFactory : public ModuleFactoryImpl<DataCenterModule>{};
