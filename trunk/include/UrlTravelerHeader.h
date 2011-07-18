@@ -251,7 +251,7 @@ enum ServiceValueRanges
 };
 
 
-struct ExtraInfo;
+struct EventExtraInfo;
 struct Event
 {
 	Event()
@@ -273,7 +273,7 @@ struct Event
 		param const param1=0,
 		param const param2=0,
 		param const param3=0,
-		ExtraInfo *extraInfo=NULL)
+		EventExtraInfo *extraInfo=NULL)
 		:eventValue(eventValue),
 		param0(param0),
 		param1(param1),
@@ -297,7 +297,7 @@ struct Event
 		param param3;
 	};
 
-	ExtraInfo* m_pstExtraInfo;//附加信息放这里	
+	EventExtraInfo* m_pstExtraInfo;//附加信息放这里	
 };
 
 
@@ -310,7 +310,7 @@ struct  MakeEvent
 		param const param1=0,
 		param const param2=0,
 		param const param3=0,
-		ExtraInfo *extraInfo=NULL)
+		EventExtraInfo *extraInfo=NULL)
 	{
 		return Event(eventValue,
 			srcId,
@@ -324,18 +324,18 @@ struct  MakeEvent
 };
 
 // 额外的附加消息，由各个模块自行去实现对应的Event。释放由各个模块自行释放
-struct ExtraInfo : public Event
+struct EventExtraInfo : public Event
 {
-	ExtraInfo()
+	EventExtraInfo()
 	{
 		this->m_pstExtraInfo = this;
 	}
 
-	virtual ~ExtraInfo(){} ;
-
+	virtual ~EventExtraInfo(){} ;
 };
 
 
+struct MessageExtraInfo;
 // 广播消息结构
 struct Message
 {
@@ -356,7 +356,7 @@ struct Message
 		param const param1=0,
 		param const param2=0,
 		param const param3=0,
-		ExtraInfo   *extraInfo=NULL)
+		MessageExtraInfo   *extraInfo=NULL)
 		:messageValue(messageValue),
 		param0(param0),
 		param1(param1),
@@ -374,7 +374,7 @@ struct Message
 	param param1;
 	param param2;
 	param param3;
-	ExtraInfo* m_pstExtraInfo;//附加信息放这里	
+	MessageExtraInfo* m_pstExtraInfo;//附加信息放这里	
 };
 
 template<ModuleIdentity id>
@@ -385,7 +385,7 @@ struct MakeMessage
 	param const param1=0,
 	param const param2=0,
 	param const param3=0,
-	ExtraInfo *extraInfo=NULL)
+	MessageExtraInfo *extraInfo=NULL)
 	{
 		return Message(messageValue,
 			id,
@@ -395,6 +395,17 @@ struct MakeMessage
 			param3,
 			extraInfo);
 	}
+};
+
+// 额外的附加消息，由各个模块自行去实现对应的Message。释放由各个模块自行释放
+struct MessageExtraInfo : public Message
+{
+	MessageExtraInfo()
+	{
+		this->m_pstExtraInfo = this;
+	}
+
+	virtual ~MessageExtraInfo(){} ;
 };
 
 struct Service
@@ -410,7 +421,7 @@ struct Service
 // 定义版本号
 enum ClientVersion
 {
-	MAIN_VERSION	  =          0,
+	MAIN_VERSION	  =          2,
 	SUB_VERSION		  =          1,
 	PATCH_VERSION	  =          0,
 	BUILD_VERSION	  =          0,

@@ -145,7 +145,7 @@ namespace web
 	//============================================================================//
 	//                   Web中所使用到的event结构  			              //
 	//============================================================================//
-	struct WebReqEvent	:	public ExtraInfo
+	struct WebReqEvent	:	public EventExtraInfo
 	{
 		WebReqEvent()
 		{
@@ -154,7 +154,7 @@ namespace web
 		}
 	};
 
-	struct WebRespEvent	:	public ExtraInfo
+	struct WebRespEvent	:	public EventExtraInfo
 	{
 		WebRespEvent()
 		{

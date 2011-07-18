@@ -40,7 +40,7 @@ namespace update
 	//============================================================================//
 	//                   Update中所使用到的event结构  			              //
 	//============================================================================//
-	struct UpdateEvent	:	public ExtraInfo
+	struct UpdateEvent	:	public EventExtraInfo
 	{
 		UpdateEvent()
 		{
