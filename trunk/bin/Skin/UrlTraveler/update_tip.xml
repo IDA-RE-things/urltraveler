@@ -27,7 +27,8 @@
         <VerticalLayout name="VerticalLayoutUI10" pos="1,129,322,242" width="321" height="113" bkcolor="#FFFFFFFF" inset="1,0,0,0">
             <Text name="update_detail" text="更新内容：{n}{n} {x 2}{i ball.png}  增加了对Chrome浏览器的支持 {n}{n} {x 2}{i ball.png}  修改了FireFox插件的bug" float="true" pos="7,6,313,110" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
         </VerticalLayout>
-        <Button name="UpdateNow" text="立即升级" float="true" pos="144,248,224,272" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+        <Button name="UpdateNow" text="立即升级" float="true" pos="49,248,129,272" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
         <Button name="RemindLater" text="下次更新" float="true" pos="233,248,313,272" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+        <Button name="AutoUpdate" text="自动更新不提示" float="true" pos="136,248,227,272" bordercolor="#000000FF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
     </VerticalLayout>
 </Window>
