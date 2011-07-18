@@ -267,7 +267,7 @@ void TrayIconModule::OnEvent_ShowTrayIcon(Event* pEvent)
 {
 	m_TrayMgr.Init();
 	
-	HICON hIcon = LoadIconW(g_hModule, MAKEINTRESOURCE(IDI_URLUPLOAD));
+	HICON hIcon = LoadIconW(g_hModule, MAKEINTRESOURCE(IDI_URLTRAVELER));
 	m_TrayMgr.Add(hIcon, L"UrlTraveler");
 	m_TrayMgr.AddEventHandler(this);
 }
@@ -299,7 +299,7 @@ void TrayIconModule::OnMessage_Show(Message* pMessage)
 {
 	m_TrayMgr.Init();
 	
-	HICON hIcon = LoadIconW(g_hModule, MAKEINTRESOURCE(IDI_URLUPLOAD));
+	HICON hIcon = LoadIconW(g_hModule, MAKEINTRESOURCE(IDI_URLTRAVELER));
 	m_TrayMgr.Add(hIcon, L"UrlTraveler");
 	m_TrayMgr.AddEventHandler(this);
 }
