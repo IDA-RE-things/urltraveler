@@ -36,7 +36,7 @@ namespace plugin
 	//=================================================================//
 	//                   PlugIn中所使用到的event结构	   		 	  //
 	//=================================================================//
-	struct PlugInEvent	:	public ExtraInfo
+	struct PlugInEvent	:	public EventExtraInfo
 	{
 	public:
 		PlugInEvent()

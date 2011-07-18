@@ -26,7 +26,7 @@ namespace trayicon
 	//===========================================//
 	//                   TrayIcon中所使用到的event结构					      //
 	//===========================================//
-	struct TrayIconEvent	:	public ExtraInfo
+	struct TrayIconEvent	:	public EventExtraInfo
 	{
 	public:
 		TrayIconEvent()

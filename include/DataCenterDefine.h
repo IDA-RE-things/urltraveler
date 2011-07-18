@@ -127,7 +127,7 @@ namespace datacenter
 	//===========================================//
 	//                   DataCenter中所使用到的event结构			              //
 	//===========================================//
-	struct DataCenterEvent	:	public ExtraInfo
+	struct DataCenterEvent	:	public EventExtraInfo
 	{
 	public:
 		DataCenterEvent()

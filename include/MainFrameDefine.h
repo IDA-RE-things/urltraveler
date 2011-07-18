@@ -42,7 +42,7 @@ namespace mainframe
 	//===========================================//
 	//                   MainFrame中所使用到的event结构								 	  //
 	//===========================================//
-	struct MainFrameEvent	:	public ExtraInfo
+	struct MainFrameEvent	:	public EventExtraInfo
 	{
 	public:
 		MainFrameEvent()

@@ -29,7 +29,7 @@ namespace setting
 	//===========================================//
 	//                   Setting中所使用到的event结构								 	  //
 	//===========================================//
-	struct SettingEvent	:	public ExtraInfo
+	struct SettingEvent	:	public EventExtraInfo
 	{
 		SettingEvent()
 		{

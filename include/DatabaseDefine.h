@@ -44,7 +44,7 @@ namespace database
 	//============================================================================//
 	//                   Database中所使用到的event结构  			              //
 	//============================================================================//
-	struct DatabaseEvent	:	public ExtraInfo
+	struct DatabaseEvent	:	public EventExtraInfo
 	{
 		DatabaseEvent()
 		{
