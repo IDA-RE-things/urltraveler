@@ -21,10 +21,19 @@ extern "C"
 // 需要更新的文件信息
 typedef struct UpdateFileInfo
 {
+	UpdateFileInfo()
+	{
+		nVersion = 0;
+		bForceUpdate = FALSE;
+	}
+
 	wstring	strFileName;		//	文件名
 	wstring	strMd5;		
 	wstring	strDownloadUrl;
 	wstring	strTempSavePath;	//	下载之后的临时存放目录
+	wstring	strType;			//	更新类型，Copy还是Install
+	int	nVersion;		//	当前安装的版本号
+	BOOL	bForceUpdate;		//	是否是强制更新
 
 }UPDATEFILEINFO, *PUPDATEFILEINFO;
 
