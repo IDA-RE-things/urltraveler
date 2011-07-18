@@ -95,6 +95,14 @@ void CUpdateHintWnd::Notify(TNotifyUI& msg)
 				MODULE_ID_DATACENTER,1));
 
 			// Æô¶¯¾²Ä¬Éý¼¶
+			Update_SilencetUpdateEvent* pEvent = new Update_SilencetUpdateEvent();
+			pEvent->srcMId = MODULE_ID_UPDATE;
+			STRNCPY(pEvent->szDownloadUrl, m_strDownloadUrl.GetData());
+			STRNCPY(pEvent->szSavePath, m_strSavePath.GetData());
+			STRNCPY(pEvent->szMD5, m_strMD5.GetData());
+			g_UpdateModule->GetModuleManager()->PushEvent(*pEvent);
+
+			Close();
 		}
 	}
 }
