@@ -88,6 +88,14 @@ void CUpdateHintWnd::Notify(TNotifyUI& msg)
 		{ 
 			Close();
 		}
+		else if( msg.pSender->GetName() == L"AutoUpdate" )
+		{ 
+			g_UpdateModule->GetModuleManager()->PushEvent(
+				MakeEvent<MODULE_ID_UPDATE>()(EVENT_VALUE_DATACENTER_SET_AUTOUPDATE, 
+				MODULE_ID_DATACENTER,1));
+
+			// Æô¶¯¾²Ä¬Éý¼¶
+		}
 	}
 }
 

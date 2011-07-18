@@ -19,6 +19,7 @@ namespace datacenter
 		EVENT_VALUE_DATACENTER_DELETE_FAVORITE,		//删除某个收藏的URL
 		EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,	//删除某个收藏夹的所有数据, param0为需要删除的收藏夹id
 		EVENT_VALUE_DATACENTER_TREELIST_SELECT,		//	在树中某个结点被删除后，需要将焦点移动到上一个结点或者父结点中
+		EVENT_VALUE_DATACENTER_SET_AUTOUPDATE,	//	获取自动更新的信息
 
 		EVENT_VALUE_DATACENTER_END = EVENT_VALUE_DATACENTER_END ,		//所有的事件结束
 	};
@@ -36,6 +37,7 @@ namespace datacenter
 		SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON,		//	获取给定Domain对应的URL
 		SERVICE_VALUE_DATACENTER_CHECK_EXIST_SUBFOLD,		//	检查给定文件夹下是否存在子文件夹
 		SERVICE_VALUE_DATACENTER_GET_SUBFOLD_ID,			//	获取给定文件夹下的所有子文件夹的id
+		SERVICE_VALUE_DATACENTER_GET_AUTOUPDATE,			//	获取自动更新的信息
 	};
 
 	//===========================================//
@@ -235,5 +237,16 @@ namespace datacenter
 
 		int nIdNum;
 		int*	pIdNum;
+	};
+
+	struct DataCenter_GetIsAutoUpdateService : public Service
+	{
+		DataCenter_GetIsAutoUpdateService()
+		{
+			serviceId =  SERVICE_VALUE_DATACENTER_GET_AUTOUPDATE;
+			bAutoUpdate = FALSE;
+		}
+
+		BOOL	bAutoUpdate;
 	};
 };

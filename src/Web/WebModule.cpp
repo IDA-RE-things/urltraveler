@@ -5,6 +5,7 @@
 #include <string>
 #include "RequestManager.h"
 #include "HttpClient.h"
+#include "MiscHelper.h"
 
 HMODULE	g_hModule = NULL;
 
@@ -321,9 +322,11 @@ int32	WebModule::OnService_CheckUpdateConfig(ServiceValue lService, param wparam
 		ASSERT(0);
 		return -1;
 	}
-	
-	uint32 nSeqNo = m_pRequestManager->PushUrl(pService->serviceId,0,
-		L"http://urltraveler.sinaapp.com/getversion.php?type=copy&clientVersion=1.1",NULL);
+
+	wstring	wstrVersion = MiscHelper::GetStringFromVersion(MiscHelper::GetCurrentVersion());
+	wstring wstrUrl = L"http://urltraveler.sinaapp.com/getversion.php?type=copy&clientVersion=";
+	wstrUrl += wstrVersion;
+	uint32 nSeqNo = m_pRequestManager->PushUrl(pService->serviceId,0,wstrUrl.c_str(),NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{
 		m_mapSeqNo2ModuleId[nSeqNo] = pService->srcMId;

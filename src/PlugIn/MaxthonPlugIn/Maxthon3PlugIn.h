@@ -85,8 +85,10 @@ public:
 	//      回返收藏网址条数
 	//----------------------------------------------------------------------------------------
 	virtual int32 GetFavoriteCount();
+
 protected:
 	BOOL SaveDatabase();
+
 private:
 	winFileMem *m_pMemFavoriteDB;
 };

@@ -53,7 +53,7 @@ public:
 	CPaintManagerUI m_pm;
 	CProgressUI*	m_pProcess;
 	
-	int	m_nNewVersion;
+	int	m_nHighestVersion;
 	int	m_nCurrentVersion;
 	String	m_strHintMsg;
 };

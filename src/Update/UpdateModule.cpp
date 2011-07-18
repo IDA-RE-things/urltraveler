@@ -347,10 +347,14 @@ void	UpdateModule::ProcessUpdateConfig()
 	// 版本结点
 	Json::Value& versionNode = root["version"];
 	string& strLowVersion = versionNode["low_version"].asString();
-	string& strCurrentVersion = versionNode["high_version"].asString();
+	string&	strHighestVersion = versionNode["high_version"].asString();
+	string& strToUpdateVersion = versionNode["version"].asString();
 	int nLowVersion = MiscHelper::GetVersionFromString(strLowVersion.c_str());
-	int nHighVersion = MiscHelper::GetVersionFromString(strCurrentVersion.c_str());
-	m_nNewVersion = nHighVersion;
+	int nHighVersion = MiscHelper::GetVersionFromString(strHighestVersion.c_str());
+	int nToUpdateVersion = MiscHelper::GetVersionFromString(strToUpdateVersion.c_str());
+	ASSERT( nToUpdateVersion <= nHighVersion);
+
+	m_nHighestVersion = nHighVersion;
 
 	// 更新明细结点
 	Json::Value& detailNode = root["updateinfo"];
@@ -404,7 +408,7 @@ void	UpdateModule::ProcessUpdateConfig()
 		pEvent->bForce = TRUE;
 		GetModuleManager()->PushEvent(*pEvent);
 	}
-	else  if( nCurrentVersion < nHighVersion)
+	else  if( nCurrentVersion < nToUpdateVersion)
 	{
 		// 弹出提示提示用户是否需要进行更新
 
@@ -469,7 +473,7 @@ void	UpdateModule::LaunchUpdateExe()
 		// 参数
 		std::wstring strParam = PathHelper::GetModulePath();
 		strParam += L" ";
-		strParam += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(m_nNewVersion));
+		strParam += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(m_nHighestVersion));
 		ShellExecuteW(NULL, _T("open"), strUpdateExe.c_str(), strParam.c_str(), NULL, SW_SHOWNORMAL);
 	}
 	else
