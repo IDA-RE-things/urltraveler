@@ -323,9 +323,9 @@ int32	WebModule::OnService_CheckUpdateConfig(ServiceValue lService, param wparam
 		return -1;
 	}
 
-	wstring	wstrVersion = MiscHelper::GetStringFromVersion(MiscHelper::GetCurrentVersion());
-	wstring wstrUrl = L"http://urltraveler.sinaapp.com/getversion.php?type=copy&clientVersion=1.1";
-	//wstrUrl += wstrVersion;
+	wstring	wstrVersion = StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(MiscHelper::GetCurrentVersion()));
+	wstring wstrUrl = L"http://urltraveler.sinaapp.com/getversion.php?type=copy&clientVersion=";
+	wstrUrl += wstrVersion;
 	uint32 nSeqNo = m_pRequestManager->PushUrl(pService->serviceId,0,wstrUrl.c_str(),NULL);
 	if( nSeqNo != INVALID_SEQNO)
 	{

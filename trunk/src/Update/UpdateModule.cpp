@@ -379,13 +379,8 @@ void	UpdateModule::ProcessUpdateConfig()
 
 	// 版本结点
 	Json::Value& versionNode = root["version"];
-	string& strLowVersion = versionNode["low_version"].asString();
 	string&	strHighestVersion = versionNode["high_version"].asString();
-	string& strToUpdateVersion = versionNode["version"].asString();
-	int nLowVersion = MiscHelper::GetVersionFromString(strLowVersion.c_str());
-	int nHighVersion = MiscHelper::GetVersionFromString(strHighestVersion.c_str());
-	int nToUpdateVersion = MiscHelper::GetVersionFromString(strToUpdateVersion.c_str());
-	ASSERT( nToUpdateVersion <= nHighVersion);
+	int nHighVersion = StringHelper::ConvertToInt(strHighestVersion.c_str());
 
 	m_nHighestVersion = nHighVersion;
 
@@ -413,6 +408,16 @@ void	UpdateModule::ProcessUpdateConfig()
 	updateInfo.strFileName = StringHelper::ANSIToUnicode(updateFileNode["filename"].asString());
 	updateInfo.strMd5 = StringHelper::ANSIToUnicode(updateFileNode["md5"].asString());
 	updateInfo.strDownloadUrl = StringHelper::ANSIToUnicode(updateFileNode["downloadurl"].asString());
+	updateInfo.nVersion = StringHelper::ConvertToInt(updateFileNode["version"].asString());
+	updateInfo.strType = StringHelper::ANSIToUnicode(updateFileNode["type"].asString());
+	int nToUpdateVersion = updateInfo.nVersion;
+	ASSERT( nToUpdateVersion <= nHighVersion);
+
+	string strForceUpdate = updateFileNode["forceupdate"].asString();
+	if( strForceUpdate == "0")
+		updateInfo.bForceUpdate = FALSE;
+	else
+		updateInfo.bForceUpdate = TRUE;
 
 	// 得到下载的文件名
 	String strUrl = (LPCTSTR)updateInfo.strDownloadUrl.c_str();
@@ -423,14 +428,11 @@ void	UpdateModule::ProcessUpdateConfig()
 	strUrl = strUrl.Right(strUrl.GetLength() - nInex - 1);
 	wstring wstrPath = wstring(wszUpdatePath) + wstring(L"\\") + strUrl.GetData();
 	updateInfo.strTempSavePath = wstrPath;
-
 	m_strUpdateFileName =	 wstring(wszUpdatePath) + updateInfo.strFileName;
-
 	free(wszUpdatePath);
 
 	// 此时是强制更新。强制更新没有静默
-	int nCurrentVersion = MiscHelper::GetCurrentVersion();
-	if( nCurrentVersion <= nLowVersion)
+	if( updateInfo.bForceUpdate == TRUE)
 	{
 		Update_ShowUpdateDownloadingEvent* pEvent = new Update_ShowUpdateDownloadingEvent();
 		pEvent->srcMId = MODULE_ID_UPDATE;
@@ -441,7 +443,8 @@ void	UpdateModule::ProcessUpdateConfig()
 		pEvent->bForce = TRUE;
 		GetModuleManager()->PushEvent(*pEvent);
 	}
-	else  if( nCurrentVersion < nToUpdateVersion)
+	// 非强制更新
+	else
 	{
 		// 弹出提示提示用户是否需要进行更新
 		// 检查更新文件是否存在，并且MD5是否正确
