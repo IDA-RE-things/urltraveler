@@ -54,8 +54,6 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_URLUPLOAD           ICON                    "res\\earth_download16.ico"
-IDI_URLDOWNLOAD         ICON                    "res\\earth_upload16.ico"
 IDI_URLTRAVELER         ICON                    "res\\earth16.ico"
 
 /////////////////////////////////////////////////////////////////////////////

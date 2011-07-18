@@ -393,7 +393,6 @@ void	UpdateModule::ProcessUpdateConfig()
 
 	// 此时是强制更新
 	int nCurrentVersion = MiscHelper::GetCurrentVersion();
-	MessageBoxA(NULL, StringHelper::ConvertFromInt(nCurrentVersion).c_str(), "UpdateModule", MB_OK);
 	if( nCurrentVersion <= nLowVersion)
 	{
 		Update_ShowUpdateDownloadingEvent* pEvent = new Update_ShowUpdateDownloadingEvent();

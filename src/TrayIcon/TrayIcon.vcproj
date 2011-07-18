@@ -281,14 +281,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\earth_download16.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\res\earth_upload16.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\TrayIcon.rc"
 				>
 			</File>
