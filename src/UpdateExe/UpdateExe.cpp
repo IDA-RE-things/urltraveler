@@ -70,6 +70,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE  hPrevInstance , LPSTR  lpCm
 		// Æô¶¯Ö÷³ÌÐò
 		ShellExecuteW(NULL, _T("open"), strBinPath.c_str(), NULL, NULL, SW_SHOWNORMAL);
 		MiscHelper::SetVersionInConfig(StringHelper::ConvertToInt(StringHelper::UnicodeToANSI(strVersion)));
+
 	}
 
 	return 0;

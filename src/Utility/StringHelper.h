@@ -21,7 +21,7 @@ public:
 	static std::string StringToHex(std::wstring strString);
 	
 	static string	ConvertFromInt( long	in_int);
-	static int		ConvertToInt( string in_str);
+	static long	ConvertToInt( string in_str);
 
 	static wstring	Utf8ToUnicode( string strUtf8);
 	static string	UnicodeToUtf8( wstring strUnicode);

@@ -114,11 +114,10 @@ string	StringHelper::ConvertFromInt( long	in_int)
 	return instr;
 }
 
-int	StringHelper::ConvertToInt( string in_str)
+long	StringHelper::ConvertToInt( string in_str)
 {
-	return atoi( in_str.c_str());
+	return atol( in_str.c_str());
 }
-
 
 string	StringHelper::Reverse(string& src_string)
 {
