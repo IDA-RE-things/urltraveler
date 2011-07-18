@@ -52,6 +52,8 @@ UpdateModule::UpdateModule()
 
 	m_pUpdateWnd	=	NULL;
 	m_pUpdateHintWnd	=	NULL;
+
+	m_nCurrentVersion	=	0;
 }
 
 UpdateModule::~UpdateModule()
@@ -410,8 +412,8 @@ void	UpdateModule::ProcessUpdateConfig()
 	updateInfo.strDownloadUrl = StringHelper::ANSIToUnicode(updateFileNode["downloadurl"].asString());
 	updateInfo.nVersion = StringHelper::ConvertToInt(updateFileNode["version"].asString());
 	updateInfo.strType = StringHelper::ANSIToUnicode(updateFileNode["type"].asString());
-	int nToUpdateVersion = updateInfo.nVersion;
-	ASSERT( nToUpdateVersion <= nHighVersion);
+	m_nCurrentVersion = updateInfo.nVersion;
+	ASSERT( m_nCurrentVersion <= nHighVersion);
 
 	string strForceUpdate = updateFileNode["forceupdate"].asString();
 	if( strForceUpdate == "0")
