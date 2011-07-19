@@ -45,4 +45,9 @@ public:
 
 public:
 	CPaintManagerUI m_pm;
+
+private:
+
+	BOOL	m_bSettingChange;		//	设置是否已经发生了变更
+
 };

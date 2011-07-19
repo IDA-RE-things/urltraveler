@@ -181,22 +181,14 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	{
 		CStdString name = msg.pSender->GetName();
 		CTabLayoutUI* pControl = static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("switch")));
-		if(name==_T("examine"))
+		if(name==_T("FavTravelerTab"))
 			pControl->SelectItem(0);
-		else if(name==_T("trojan"))
+		else if(name==_T("FavSyncTab"))
 			pControl->SelectItem(1);
-		else if(name==_T("plugins"))
+		else if(name==_T("CookieSyncTab"))
 			pControl->SelectItem(2);
-		else if(name==_T("vulnerability"))
+		else if(name==_T("SettingTab"))
 			pControl->SelectItem(3);
-		else if(name==_T("rubbish"))
-			pControl->SelectItem(4);
-		else if(name==_T("cleanup"))
-			pControl->SelectItem(5);
-		else if(name==_T("fix"))
-			pControl->SelectItem(6);
-		else if(name==_T("tool"))
-			pControl->SelectItem(7);
 	}
 	else if( msg.sType == _T("itemclick") ) 
 	{
