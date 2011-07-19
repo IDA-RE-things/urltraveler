@@ -39,6 +39,17 @@ void CSettingWnd::Notify(TNotifyUI& msg)
 	else if( msg.sType == _T("itemclick") ) 
 	{
 	}
+	else if(msg.sType==_T("setfocus"))
+	{
+		CStdString name = msg.pSender->GetName();
+		CTabLayoutUI* pControl = static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("switch")));
+		if(name==_T("NormalTab"))
+			pControl->SelectItem(0);
+		else if(name==_T("ProxyTab"))
+			pControl->SelectItem(1);
+		else if(name==_T("UpdateTab"))
+			pControl->SelectItem(2);
+	}
 }
 
 LRESULT CSettingWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
