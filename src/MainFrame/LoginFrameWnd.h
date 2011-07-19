@@ -32,7 +32,7 @@ public:
 	void Notify(TNotifyUI& msg)
 	{
 		if( msg.sType == _T("click") ) {
-			if( msg.pSender->GetName() == _T("closebtn") ) { PostQuitMessage(0); return; }
+			if( msg.pSender->GetName() == _T("closebtn") ) { Close(); return; }
 			else if( msg.pSender->GetName() == _T("loginBtn") ) { Close(); return; }
 		}
 		else if( msg.sType == _T("itemselect") ) {
@@ -156,7 +156,7 @@ public:
 				return true;
 			}
 			else if( wParam == VK_ESCAPE ) {
-				PostQuitMessage(0);
+				Close();
 				return true;
 			}
 

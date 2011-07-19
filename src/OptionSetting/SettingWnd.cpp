@@ -61,14 +61,11 @@ LRESULT CSettingWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 LRESULT CSettingWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
-
 	return 0;
 }
 
 LRESULT CSettingWnd::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	::PostQuitMessage(0L);
-
 	bHandled = FALSE;
 	return 0;
 }
