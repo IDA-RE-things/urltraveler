@@ -8,6 +8,7 @@
 #include "MiscHelper.h"
 #include "WebDefine.h"
 #include "json/json.h"
+#include "json/value.h"
 #include "XString.h"
 #include "MD5Checksum.h"
 #include "UpdateWnd.h"
@@ -388,6 +389,9 @@ void	UpdateModule::ProcessUpdateConfig()
 
 	// 更新明细结点
 	Json::Value& detailNode = root["updateinfo"];
+	if( detailNode == Json::nullValue)
+		return;
+
 	ASSERT(detailNode.isArray() == true);
 
 	int nNodeNum = detailNode.size();
@@ -404,6 +408,9 @@ void	UpdateModule::ProcessUpdateConfig()
 
 	// 文件结点
 	Json::Value& updateFileNode = root["package"];
+	if( updateFileNode == Json::nullValue)
+		return;
+
 	wchar_t* wszUpdatePath = MiscHelper::GetUpdatePath();
 
 	UPDATEFILEINFO	updateInfo;
