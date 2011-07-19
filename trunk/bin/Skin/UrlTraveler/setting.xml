@@ -23,6 +23,13 @@
                     <Container name="ContainerUI2" pos="136,0,145,358" width="9" height="358" bkcolor="#FFB9E6F9" />
                     <HorizontalLayout name="HorizontalLayoutUI25" pos="145,0,594,357" width="449" height="357">
                         <TabLayout name="switch" pos="0,0,448,355" width="448" height="355">
+                            <HorizontalLayout name="HorizontalLayoutUI6">
+                                <Text name="TextUI2" text="[升级]" float="true" pos="15,17,58,37" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="centerwrap" />
+                                <Label name="LabelUI3" float="true" pos="64,24,429,25" bkimage="imgGrayBackground0.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                                <Option name="ClostUpdateHint" float="true" pos="39,44,53,58" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
+                                <Text name="TextUI1" text="自动下载更新，在安装的时候提示您。" float="true" pos="58,45,271,63" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                                <Text name="TextUI11" text="{b}（推荐）{/b}" float="true" pos="283,45,345,63" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                            </HorizontalLayout>
                             <HorizontalLayout name="HorizontalLayoutUI13">
                                 <Text name="TextUI2" text="[常规]" float="true" pos="15,17,58,37" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="centerwrap" />
                                 <Label name="LabelUI3" float="true" pos="64,24,429,25" bkimage="imgGrayBackground0.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
@@ -47,19 +54,13 @@
                             <HorizontalLayout name="HorizontalLayoutUI12">
                                 <Text name="TextUI15" text="代理设置" float="true" pos="3,4,447,353" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
                             </HorizontalLayout>
-                            <HorizontalLayout name="HorizontalLayoutUI6">
-                                <Text name="TextUI2" text="[升级]" float="true" pos="15,17,58,37" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="centerwrap" />
-                                <Label name="LabelUI3" float="true" pos="64,24,429,25" bkimage="imgGrayBackground0.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                                <Option name="AutoStart" float="true" pos="39,44,53,58" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
-                                <Text name="TextUI1" text="自动下载更新，在安装的时候提示您。" float="true" pos="58,45,271,63" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-                                <Text name="TextUI11" text="{b}（推荐）{/b}" float="true" pos="283,45,345,63" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                            </HorizontalLayout>
                         </TabLayout>
                     </HorizontalLayout>
                 </HorizontalLayout>
             </Container>
-            <Button name="ButtonUI6" text="确定" bordersize="0" float="true" pos="392,377,452,407" bkimage="btn00.png" bkcolor="#FFFFFFFF" bkcolor2="#00FFFFFF" bordercolor="#00FFFFFF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-            <Button name="ButtonUI7" text="取消" bordersize="0" float="true" pos="475,377,535,407" bkimage="btn00.png" bordercolor="#00000080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+            <Button name="OK" text="确定" bordersize="0" float="true" pos="363,377,423,407" bkimage="btn00.png" bkcolor="#FFFFFFFF" bkcolor2="#00FFFFFF" bordercolor="#00FFFFFF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+            <Button name="ButtonUI7" text="取消" bordersize="0" float="true" pos="510,377,570,407" bkimage="btn00.png" bordercolor="#00000080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+            <Button name="Apply" text="应用" bordersize="0" float="true" pos="438,377,498,407" bkimage="btn00.png" bkcolor="#FFFFFFFF" bkcolor2="#00FFFFFF" bordercolor="#00FFFFFF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
         </HorizontalLayout>
     </VerticalLayout>
 </Window>
