@@ -26,33 +26,33 @@
                             <HorizontalLayout name="HorizontalLayoutUI13">
                                 <Text name="TextUI2" text="[常规]" float="true" pos="15,17,58,37" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="centerwrap" />
                                 <Label name="LabelUI3" float="true" pos="64,24,429,25" bkimage="imgGrayBackground0.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-
                                 <Option name="AutoStart" float="true" pos="39,44,53,58" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
                                 <Text name="TextUI1" text="启动Windows时候自动启动" float="true" pos="58,45,201,63" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
                                 <Option name="RememberPwd" float="true" pos="40,73,54,87" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
                                 <Text name="TextUI3" text="记住密码" float="true" pos="59,74,202,92" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
                                 <Option name="AutoLogin" float="true" pos="40,102,54,116" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
                                 <Text name="TextUI4" text="自动登录" float="true" pos="59,103,202,121" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-
-
-								<Text name="TextUI5" text="[同步]" float="true" pos="15,184,58,204" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="centerwrap" />
+                                <Text name="TextUI5" text="[同步]" float="true" pos="15,184,58,204" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="centerwrap" />
                                 <Label name="LabelUI5" float="true" pos="63,189,428,190" bkimage="imgGrayBackground0.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-								<Option name="AutoSync" float="true" pos="40,212,54,226" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
-								<Text name="TextUI6" text="定时自动本地同步" float="true" pos="59,213,202,231" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-								<Option name="AutoRemoteSaving" float="true" pos="40,239,54,253" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
-								<Text name="TextUI7" text="自动服务器漫游" float="true" pos="58,240,201,258" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-								<Text name="TextUI8" text="关闭主窗口时：" float="true" pos="40,130,183,148" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-								<Text name="TextUI9" text="最小化窗口" float="true" pos="60,157,137,175" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-								<Option name="MinWnd" float="true" pos="40,157,54,171" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" selectedimage="radio_selected.png" />
-								<Text name="TextUI10" text="退出程序" float="true" pos="183,157,260,175" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-								<Option name="CloseWnd" float="true" pos="164,157,178,171" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" selectedimage="radio_selected.png" />
-
+                                <Option name="AutoSync" float="true" pos="40,212,54,226" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
+                                <Text name="TextUI6" text="定时自动本地同步" float="true" pos="59,213,202,231" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                                <Option name="AutoRemoteSaving" float="true" pos="40,239,54,253" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
+                                <Text name="TextUI7" text="自动服务器漫游" float="true" pos="58,240,201,258" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                                <Text name="TextUI8" text="关闭主窗口时：" float="true" pos="40,130,183,148" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                                <Text name="TextUI9" text="最小化窗口" float="true" pos="60,157,137,175" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                                <Option name="MinWnd" float="true" pos="40,157,54,171" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" group="1" selectedimage="radio_selected.png" />
+                                <Text name="TextUI10" text="退出程序" float="true" pos="183,157,260,175" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                                <Option name="CloseWnd" float="true" pos="164,157,178,171" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" group="1" selectedimage="radio_selected.png" />
                             </HorizontalLayout>
                             <HorizontalLayout name="HorizontalLayoutUI12">
                                 <Text name="TextUI15" text="代理设置" float="true" pos="3,4,447,353" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
                             </HorizontalLayout>
                             <HorizontalLayout name="HorizontalLayoutUI6">
-                                <Text name="TextUI1" text="升级设置" float="true" pos="8,6,444,353" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                                <Text name="TextUI2" text="[升级]" float="true" pos="15,17,58,37" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="centerwrap" />
+                                <Label name="LabelUI3" float="true" pos="64,24,429,25" bkimage="imgGrayBackground0.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+                                <Option name="AutoStart" float="true" pos="39,44,53,58" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
+                                <Text name="TextUI1" text="自动下载更新，在安装的时候提示您。" float="true" pos="58,45,271,63" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                                <Text name="TextUI11" text="{b}（推荐）{/b}" float="true" pos="283,45,345,63" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                             </HorizontalLayout>
                         </TabLayout>
                     </HorizontalLayout>
