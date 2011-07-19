@@ -8,20 +8,32 @@
     <Font name="SimSun" size="12" bold="true" italic="false" />
     <VerticalLayout name="VerticalLayoutUI1" pos="0,0,850,484" width="850" height="484" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
         <VerticalLayout name="VerticalLayoutUI10" pos="0,0,612,30" width="612" height="30" bkcolor="#00B9E6F9" bkcolor2="#00FFFFFF">
-            <Label name="LabelUI1" text="{b}EverFav 设置{/b}" float="true" pos="35,1,116,31" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-            <Button name="closebtn" float="true" pos="562,2,607,19" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+            <Label name="LabelUI1" text="{b}EverFav 设置{/b}" float="true" pos="35,1,116,31" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" />
+            <Button name="closebtn" float="true" pos="565,2,610,19" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
             <Label name="LabelUI2" float="true" pos="7,3,29,25" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
         </VerticalLayout>
         <HorizontalLayout name="HorizontalLayoutUI16" pos="0,30,612,445" width="612" height="415" inset="8,8,8,8">
             <Container name="ContainerUI1" pos="8,8,604,366" width="596" height="358" bkcolor="#FFFFFFFF">
                 <HorizontalLayout name="HorizontalLayoutUI21" pos="97,205,157,235" width="60" height="30">
                     <HorizontalLayout name="HorizontalLayoutUI22" pos="0,0,136,357" width="136" height="357">
-                        <Button name="NormalSetting" text="常规设置" float="true" pos="21,13,117,43" bordercolor="#00A6CAF0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-                        <Button name="ProxySetting" text="代理设置" float="true" pos="21,59,117,89" bordercolor="#00A6CAF0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-                        <Button name="UpdateSetting" text="升级设置" float="true" pos="20,107,116,137" bordercolor="#00A6CAF0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+                        <Button name="NormalTab" text="常规设置" float="true" pos="21,13,117,43" bordercolor="#00A6CAF0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+                        <Button name="ProxyTab" text="代理设置" float="true" pos="21,59,117,89" bordercolor="#00A6CAF0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+                        <Button name="UpdateTab" text="升级设置" float="true" pos="20,107,116,137" bordercolor="#00A6CAF0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
                     </HorizontalLayout>
                     <Container name="ContainerUI2" pos="136,0,145,358" width="9" height="358" bkcolor="#FFB9E6F9" />
-                    <HorizontalLayout name="HorizontalLayoutUI25" pos="145,0,594,357" width="449" height="357" />
+                    <HorizontalLayout name="HorizontalLayoutUI25" pos="145,0,594,357" width="449" height="357">
+                        <TabLayout name="switch" pos="0,0,448,355" width="448" height="355">
+                            <HorizontalLayout name="HorizontalLayoutUI13">
+                                <Text name="TextUI16" text="设置" float="true" pos="2,3,445,354" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                            </HorizontalLayout>
+                            <HorizontalLayout name="HorizontalLayoutUI12">
+                                <Text name="TextUI15" text="cookie同步" float="true" pos="3,4,447,353" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                            </HorizontalLayout>
+                            <HorizontalLayout name="HorizontalLayoutUI6">
+                                <Text name="TextUI1" text="历史同步" float="true" pos="8,6,444,353" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
+                            </HorizontalLayout>
+                        </TabLayout>
+                    </HorizontalLayout>
                 </HorizontalLayout>
             </Container>
             <Button name="ButtonUI6" text="确定" bordersize="0" float="true" pos="392,377,452,407" bkimage="btn00.png" bkcolor="#FFFFFFFF" bkcolor2="#00FFFFFF" bordercolor="#00FFFFFF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
