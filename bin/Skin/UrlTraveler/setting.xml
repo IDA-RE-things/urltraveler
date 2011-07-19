@@ -8,8 +8,9 @@
     <Font name="SimSun" size="12" bold="true" italic="false" />
     <VerticalLayout name="VerticalLayoutUI1" pos="0,0,850,484" width="850" height="484" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
         <VerticalLayout name="VerticalLayoutUI10" pos="0,0,612,30" width="612" height="30" bkcolor="#00B9E6F9" bkcolor2="#00FFFFFF">
-            <Label name="LabelUI1" text="设置" float="true" pos="10,1,70,31" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-            <Button name="ButtonUI8" float="true" pos="562,2,607,19" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" hotimage="file=&apos;sys_dlg_close.png&apos; source=&apos;45,0,90,17&apos;" pushedimage="file=&apos;sys_dlg_close.png&apos; source=&apos;0,0,45,17&apos;" />
+            <Label name="LabelUI1" text="{b}EverFav 设置{/b}" float="true" pos="35,1,116,31" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+            <Button name="closebtn" float="true" pos="562,2,607,19" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+            <Label name="LabelUI2" float="true" pos="7,3,29,25" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
         </VerticalLayout>
         <HorizontalLayout name="HorizontalLayoutUI16" pos="0,30,612,445" width="612" height="415" inset="8,8,8,8">
             <Container name="ContainerUI1" pos="8,8,604,366" width="596" height="358" bkcolor="#FFFFFFFF">
@@ -23,8 +24,8 @@
                     <HorizontalLayout name="HorizontalLayoutUI25" pos="145,0,594,357" width="449" height="357" />
                 </HorizontalLayout>
             </Container>
-            <Button name="ButtonUI6" text="确定" bordersize="0" float="true" pos="392,377,452,407" bkimage="E:\urltraveler\bin\Skin\UrlTraveler\btn00.png" bkcolor="#FFFFFFFF" bkcolor2="#00FFFFFF" bordercolor="#00FFFFFF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-            <Button name="ButtonUI7" text="取消" bordersize="0" float="true" pos="475,377,535,407" bkimage="E:\urltraveler\bin\Skin\UrlTraveler\btn00.png" bordercolor="#00000080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+            <Button name="ButtonUI6" text="确定" bordersize="0" float="true" pos="392,377,452,407" bkimage="btn00.png" bkcolor="#FFFFFFFF" bkcolor2="#00FFFFFF" bordercolor="#00FFFFFF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+            <Button name="ButtonUI7" text="取消" bordersize="0" float="true" pos="475,377,535,407" bkimage="btn00.png" bordercolor="#00000080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
         </HorizontalLayout>
     </VerticalLayout>
 </Window>
