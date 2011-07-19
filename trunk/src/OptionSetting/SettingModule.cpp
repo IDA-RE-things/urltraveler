@@ -98,18 +98,14 @@ void	SettingModule::OnEvent_OpenSettingWnd(Event* pEvent)
 
 	Setting_OpenEvent* pOpenEvent = (Setting_OpenEvent*)pEvent->m_pstExtraInfo;
 
-	if( m_pSettingWnd == NULL)
-		m_pSettingWnd = new CSettingWnd();
+	mainframe::MainFrame_GetWndService stGetWnd;
+	m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWnd);
 
-	if( m_pSettingWnd != NULL )
-	{ 
-		if( m_pSettingWnd->GetHWND() == NULL)
-		{
-			m_pSettingWnd->Create(NULL, _T(""), UI_WNDSTYLE_FRAME/*UI_WNDSTYLE_DIALOG*/, 0);
-		}
+	CWindowWnd* pParentWnd = reinterpret_cast<CWindowWnd*>(stGetWnd.pBaseWnd);
+	ASSERT(pParentWnd != NULL);
 
-		m_pSettingWnd->CenterWindow();
-		m_pSettingWnd->ShowWindow(true);
-	}
-
+	CSettingWnd* pSettingWnd = new CSettingWnd();
+	pSettingWnd->Create(*pParentWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);	
+	pSettingWnd->CenterWindow();
+	pParentWnd->ShowModal(pSettingWnd->GetHWND());
 }
