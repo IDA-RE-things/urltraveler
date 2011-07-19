@@ -23,7 +23,7 @@ void CSettingWnd::Notify(TNotifyUI& msg)
 	if( msg.sType == _T("windowinit") ) OnPrepare(msg);
 	else if( msg.sType == _T("click") ) {
 		if( msg.pSender->GetName() == L"closebtn" ) {
-			PostQuitMessage(0);
+			Close();
 			return; 
 		}
 		else if( msg.pSender->GetName() == L"minbtn" ) { 
