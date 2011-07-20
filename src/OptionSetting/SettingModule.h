@@ -5,6 +5,7 @@
 #include "ModuleImpl.h"
 
 #include "SettingWnd.h"
+#include "OptionCenter.h"
 
 
 extern "C" 
@@ -64,6 +65,10 @@ public:
 	//----------------------------------------------------------------------------------------
 	int32 CallDirect(const param lparam, param wparam);
 
+public:
+
+	OptionCenter	m_OptionCenter;  
+
 protected:
 
 	void	OnEvent_OpenSettingWnd(Event* pEvent);
@@ -80,3 +85,5 @@ namespace setting
 	extern SettingModule*	g_SettingModule;
 	extern SettingModuleFactory*	g_SettingModuleFactory;
 }
+
+#define  OPTION_CENTER         (g_SettingModule->m_OptionCenter)

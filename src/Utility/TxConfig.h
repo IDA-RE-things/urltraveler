@@ -23,7 +23,8 @@ typedef struct TxConfig
 	BYTE byMinorVer;
 	WORD wNumOfItems;
 	TxItem stItem[0];
-};
+
+}TxConfig;
 #pragma pop()
 
 class UTILITY_API CTxConfig
