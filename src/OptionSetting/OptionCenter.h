@@ -2,6 +2,9 @@
 
 #include <vector>
 #include <xstring>
+#include "SettingDefine.h"
+
+using namespace setting;
 
 // 常规配置
 #define KEY_AUTO_START			L"KeyAutoStart"
@@ -27,15 +30,6 @@
 
 // 更新
 #define KEY_AUTOUPDATE			L"KeyAutoUpdate"
-
-// 更新的类型
-enum EUpdateType
-{
-	UPDATE_AUTO,					//	有更新的时候自动更新并安装
-	UPDATE_INSTALL_QUERY,	//	自动下载，安装的时候询问
-	UPDATE_TIP,							//	不自动更新，有更新的时候进行提示
-	UPDATE_CLOSE,					//	关闭自动更新
-};
 
 class OptionCenter
 {

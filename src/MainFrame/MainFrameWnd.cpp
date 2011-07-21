@@ -22,6 +22,7 @@
 using namespace datacenter;
 using namespace mainframe;
 using namespace web;
+using namespace setting;
 
 
 CMainFrameWnd::CMainFrameWnd()
@@ -148,23 +149,46 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 
 void CMainFrameWnd::Notify(TNotifyUI& msg)
 {
-	if( msg.sType == _T("windowinit") ) OnPrepare(msg);
+	if( msg.sType == _T("windowinit") ) 
+	{
+		OnPrepare(msg);
+	}
 	else if( msg.sType == _T("click") ) {
-		if( msg.pSender->GetName() == L"closebtn" ) {
+		if( msg.pSender->GetName() == L"closebtn" ) 
+		{
+			// 检查是否要最小化
+			setting::Setting_GetExitWhenCloseWndService service;
+			g_MainFrameModule->CallDirect(service.serviceId, (param)&service);
+			if( service.bExit == TRUE)
+			{
+				// 发送请求至服务器，统计在线人数
+				CurlHttp* pHttp  = CurlHttp::Instance();
+				string strData = pHttp->RequestGet(L"http://1.urltraveler.sinaapp.com/logout.php");
 
-			// 发送请求至服务器，统计在线人数
-			CurlHttp* pHttp  = CurlHttp::Instance();
-			string strData = pHttp->RequestGet(L"http://1.urltraveler.sinaapp.com/logout.php");
+				PostQuitMessage(0);
+			}
+			else
+			{
+				::ShowWindow(GetHWND(), SW_HIDE);
+			}
 
-			PostQuitMessage(0);
 			return; 
 		}
-		else if( msg.pSender->GetName() == L"minbtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0); return; }
-		else if( msg.pSender->GetName() == L"maxbtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0); return; }
-		else if( msg.pSender->GetName() == L"restorebtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_RESTORE, 0); return; }
+		else if( msg.pSender->GetName() == L"minbtn" ) 
+		{ 
+			SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0); 
+			return; 
+		}
+		else if( msg.pSender->GetName() == L"maxbtn" ) 
+		{ 
+			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0); 
+			return; 
+		}
+		else if( msg.pSender->GetName() == L"restorebtn" ) 
+		{ 
+			SendMessage(WM_SYSCOMMAND, SC_RESTORE, 0); 
+			return; 
+		}
 		else if( msg.pSender->GetName() == L"menubtn" ) 
 		{ 
 			HMENU	hPopMenu;

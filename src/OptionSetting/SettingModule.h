@@ -17,6 +17,7 @@ extern "C"
 class SettingModule : public ModuleImpl
 {
 	DECLEAR_EVENT_MAP(SettingModule);
+	DECLEAR_SERVICE_MAP(SettingModule);
 
 public:
 	SettingModule();
@@ -73,7 +74,7 @@ public:
 	//		@param	lparam			参数1
 	//		@param	rparam			参数2
 	//----------------------------------------------------------------------------------------
-	virtual int32 CallDirect(const param lparam, param wparam);
+	virtual int32 CallDirect(const param lServiceValue, param wparam);
 
 public:
 
@@ -82,6 +83,16 @@ public:
 protected:
 
 	void	OnEvent_OpenSettingWnd(Event* pEvent);
+
+protected:
+
+	int	OnService_GetAutoStartWithWindow(ServiceValue lServiceValue, param	lParam);
+	int	OnService_GetRememberPassword(ServiceValue lServiceValue, param	lParam);
+	int	OnService_GetAutoLogin(ServiceValue lServiceValue, param	lParam);
+	int	OnService_GetExitWhenCloseWnd(ServiceValue lServiceValue, param	lParam);
+	int	OnService_GetAutoLocalSync(ServiceValue lServiceValue, param	lParam);
+	int	OnService_GetAutoRemoteSync(ServiceValue lServiceValue, param	lParam);
+	int	OnService_GetUpdateType(ServiceValue lServiceValue, param	lParam);
 
 protected:
 	CSettingWnd*	m_pSettingWnd;
