@@ -31,10 +31,10 @@
 // 更新的类型
 enum EUpdateType
 {
-	UPDATE_AUTO,			//	有更新的时候自动更新
+	UPDATE_AUTO,					//	有更新的时候自动更新并安装
 	UPDATE_INSTALL_QUERY,	//	自动下载，安装的时候询问
-	UPDATE_TIP,			//	不自动更新，有更新的时候进行提示
-	UPDATE_CLOSE,		//	关闭自动更新
+	UPDATE_TIP,							//	不自动更新，有更新的时候进行提示
+	UPDATE_CLOSE,					//	关闭自动更新
 };
 
 class OptionCenter
@@ -63,7 +63,7 @@ public:
 	BOOL		m_bUpdateSettingChange;	//升级设置是否发生变化
 
 	//常规
-	BOOL		m_bAutoStart;					//	是否跟随window自动启动
+	BOOL		m_bAutoStart;						//	是否跟随window自动启动
 	BOOL		m_bAutoLogin;						//是否自动进行登录。默认是自动登录
 	BOOL		m_bRememberPwd;				//记住密码
 	BOOL		m_bShowExitTip;					//退出程序时是否提示
@@ -80,5 +80,5 @@ public:
 	std::wstring	m_strProxyDomain[2];		//域
 
 	//更新方式
-
+	EUpdateType	m_eUpdateType;			//自动更新方式
 };
