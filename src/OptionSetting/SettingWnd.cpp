@@ -113,6 +113,10 @@ void	CSettingWnd::SaveProxy()
 
 void CSettingWnd::OnPrepare(TNotifyUI& msg) 
 { 
+	CButtonUI* pButton = static_cast<CButtonUI*>(m_pm.FindControl(_T("Apply")));
+	if( pButton)
+		pButton->SetEnabled(FALSE);
+
 	PrepareCommon();
 	PrepareProxy();
 	PrepareUpdate();
@@ -138,6 +142,10 @@ void	CSettingWnd::OnBtnApply()
 	{
 		SaveUpdate();
 	}
+
+	CButtonUI* pButton = static_cast<CButtonUI*>(m_pm.FindControl(_T("Apply")));
+	if( pButton)
+		pButton->SetEnabled(FALSE);
 }
 
 void	CSettingWnd::OnBtnClose()
@@ -204,7 +212,10 @@ void CSettingWnd::Notify(TNotifyUI& msg)
 			|| msg.pSender->GetName() == L"CloseWnd"
 			) 
 		{ 
-			OPTION_CENTER.m_bNormalSettingChange = TRUE; 
+			OPTION_CENTER.m_bNormalSettingChange = TRUE;
+			CButtonUI* pButton = static_cast<CButtonUI*>(m_pm.FindControl(_T("Apply")));
+			if( pButton)
+				pButton->SetEnabled(TRUE);
 		}
 		else if( msg.pSender->GetName() == L"UpdateAutoComplete" 
 			|| msg.pSender->GetName() == L"UpdateInstallHint"
@@ -213,6 +224,9 @@ void CSettingWnd::Notify(TNotifyUI& msg)
 			) 
 		{ 
 			OPTION_CENTER.m_bUpdateSettingChange = TRUE; 
+			CButtonUI* pButton = static_cast<CButtonUI*>(m_pm.FindControl(_T("Apply")));
+			if( pButton)
+				pButton->SetEnabled(TRUE);
 		}
 	}
 	else if( msg.sType == _T("itemclick") ) 
