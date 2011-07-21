@@ -37,15 +37,14 @@ enum ModuleId
 	MODULE_ID_CORE = 0X01,
 	MODULE_ID_MAINFRAME,			//	主界面模块
 	MODULE_ID_SETTING,				//	设置模块
-	MODULE_ID_DB,					//	数据库处理的相关模块
 	MODULE_ID_TRAYICON,				//	任务栏图标管理模块
 	MODULE_ID_DATACENTER,			//	数据中心模块
-	MODULE_ID_LOGIN,				//	登录窗口模块 
-	MODULE_ID_PLUGIN,				//	创建加载模块
+	MODULE_ID_LOGIN,					//	登录窗口模块 
+	MODULE_ID_PLUGIN,					//	创建加载模块
 	MODULE_ID_DATABASE,				//	数据库模块
-	MODULE_ID_WEB,					//	Web模块，全面负责所有的HTTP请求处理
+	MODULE_ID_WEB,						//	Web模块，全面负责所有的HTTP请求处理
 	MODULE_ID_UPDATE,					//	Web模块，全面负责所有的HTTP请求处理
-	MODULE_ID_FAVMONITOR,           //  监控模块
+	MODULE_ID_FAVMONITOR,		//  监控模块
 
 	MODULE_ID_END,//最后一个，边界判断
 };

@@ -6,6 +6,7 @@
 #include "DataCenterDefine.h"
 #include "WebDefine.h"
 #include "SettingDefine.h"
+#include "LoginDefine.h"
 
 #include "ImageHelper.h"
 #include "MiscHelper.h"
@@ -539,11 +540,15 @@ LRESULT CMainFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		// µ¯³öµÇÂ¼¶Ô»°¿ò
 	case IDM_LOGIN:
 		{
+/*
 			CLoginFrameWnd* pLoginFrame = new CLoginFrameWnd();
 			if( pLoginFrame == NULL ) { Close(); return 0; }
 			pLoginFrame->Create(m_hWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
 			pLoginFrame->CenterWindow();
 			ShowModal(*pLoginFrame);
+*/
+			g_MainFrameModule->GetModuleManager()->PushEvent(
+				MakeEvent<MODULE_ID_MAINFRAME>()(login::EVENT_VALUE_LOGIN_OPEN, MODULE_ID_LOGIN));
 		}
 
 		break;

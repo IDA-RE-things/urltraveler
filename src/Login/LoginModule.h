@@ -2,8 +2,9 @@
 
 #include "SndaBase.h"
 #include "Module.h"
-#include "ModuleImp.h"
-
+#include "ModuleImpl.h"
+#include "PlugIn.h"
+#include "LoginPreWnd.h"
 
 extern "C" 
 {
@@ -11,11 +12,15 @@ extern "C"
 	DLLEXPORT void	ReleaseModuleFactory( IModuleFactory*);
 }
 
-class DataCenterModule : public ModuleImpl
+class LoginModule : public ModuleImpl
 {
+	DECLEAR_SERVICE_MAP(LoginModule)
+	DECLEAR_EVENT_MAP(LoginModule)
+	DECLEAR_MESSAGE_MAP(LoginModule)
+
 public:
-	DataCenterModule();
-	~DataCenterModule();
+	LoginModule();
+	~LoginModule();
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetModuleName
@@ -70,12 +75,17 @@ public:
 	//		@param	pExtraInfo	需要释放的ExtraInfo数据
 	//----------------------------------------------------------------------------------------
 	void PaybackExtraInfo(uint32 valudId, void* pExtraInfo);
+
+protected:
+
+	void	OnEvent_OpenLoginDlg(Event* pEvent);
+
 };
 
-class CDataCenterModuleFactory : public ModuleFactoryImpl<DataCenterModule>{};
+class LoginModuleFactory : public ModuleFactoryImpl<LoginModule>{};
 
-namespace datacenter
+namespace login
 {
-	extern DataCenterModule*	g_DataCenterModule;
-	extern CDataCenterModuleFactory*	g_DataCenterModuleFactory;
+	extern LoginModule*	g_LoginModule;
+	extern LoginModuleFactory*	g_LoginModuleFactory;
 }

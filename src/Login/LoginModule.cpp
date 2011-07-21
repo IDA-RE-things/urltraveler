@@ -1,47 +1,47 @@
 #include "stdafx.h"
-#include "DataCenterModule.h"
+#include "UIlib.h"
+#include "LoginModule.h"
+#include "MiscHelper.h"
+#include "LoginDefine.h"
+#include "WebDefine.h"
+#include "ImageHelper.h"
+#include "TxConfig.h"
+#include "MiscHelper.h"
+#include "StringHelper.h"
+#include "MainFrameDefine.h"
 
-using namespace datacenter;
+using namespace login;
+using namespace mainframe;
 
-namespace datacenter
+namespace login
 {
-	DataCenterModule*	g_DataCenterModule = NULL;
-	CDataCenterModuleFactory*	g_DataCenterModuleFactory = NULL;
+	LoginModule*	g_LoginModule = NULL;
+	LoginModuleFactory*	g_LoginModuleFactory = NULL;
 }
 
 // 导出借口实现
-IModuleFactory*	GetModuleFactory()
-{
-	if( g_DataCenterModuleFactory == NULL)
-	{
-		g_DataCenterModuleFactory = new CDataCenterModuleFactory();
-		g_DataCenterModuleFactory->QueryModulePoint(1, (IModule*&)g_DataCenterModule);
-		
-		ASSERT( g_DataCenterModule != NULL);
-	}
+EXPORT_GETMODULEFACTORY(LoginModule)
+EXPORT_RELEASEMODULEFACTORY(LoginModule)
 
-	return g_DataCenterModuleFactory;
-}
-
-void	ReleaseModuleFactory( IModuleFactory* p)
-{
-	ASSERT( g_DataCenterModuleFactory == p);
-	if( g_DataCenterModuleFactory  != NULL)
-	{
-		delete g_DataCenterModuleFactory;
-		g_DataCenterModuleFactory = NULL;
-	}
-}
-
-DataCenterModule::DataCenterModule()
+LoginModule::LoginModule()
 {
 
 }
 
-DataCenterModule::~DataCenterModule()
+LoginModule::~LoginModule()
 {
 
 }
+
+BEGIN_EVENT_MAP(LoginModule)
+	ON_EVENT(EVENT_VALUE_LOGIN_OPEN, OnEvent_OpenLoginDlg)
+END_EVENT_MAP()
+
+BEGIN_SERVICE_MAP(LoginModule)
+END_SERVICE_MAP()
+
+BEGIN_MESSAGE_MAP(LoginModule)
+END_MESSAGE_MAP()
 
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
@@ -49,9 +49,9 @@ DataCenterModule::~DataCenterModule()
 //返回: 
 //		如果卸载成功，返回TRUE，否则返回FALSE
 //----------------------------------------------------------------------------------------
-const wchar_t* DataCenterModule::GetModuleName() 
+const wchar_t* LoginModule::GetModuleName() 
 {
-	return L"DataCenterModule";
+	return L"LoginModule";
 }
 
 //----------------------------------------------------------------------------------------
@@ -60,9 +60,9 @@ const wchar_t* DataCenterModule::GetModuleName()
 //返回: 
 //		返回该模块的唯一的ID
 //----------------------------------------------------------------------------------------
-uint32 const DataCenterModule::GetModuleId()
+uint32 const LoginModule::GetModuleId()
 {
-	return MODULE_ID_SETTING;
+	return MODULE_ID_LOGIN;
 }
 
 //----------------------------------------------------------------------------------------
@@ -71,8 +71,9 @@ uint32 const DataCenterModule::GetModuleId()
 //参数: 
 //		@param	evt			需要处理的事件
 //----------------------------------------------------------------------------------------
-void DataCenterModule::ProcessEvent(const Event& evt)
+void LoginModule::ProcessEvent(const Event& evt)
 {
+	PROCESS_EVENT(evt);
 }
 
 //----------------------------------------------------------------------------------------
@@ -82,8 +83,9 @@ void DataCenterModule::ProcessEvent(const Event& evt)
 //参数: 
 //		@param	msg			需要处理的广播消息
 //----------------------------------------------------------------------------------------
-void DataCenterModule::ProcessMessage(const Message& msg) 
+void LoginModule::ProcessMessage(const Message& msg) 
 {
+	PROCESS_MESSAGE(msg);
 }
 
 //----------------------------------------------------------------------------------------
@@ -94,9 +96,9 @@ void DataCenterModule::ProcessMessage(const Message& msg)
 //		@param	lparam			参数1
 //		@param	rparam			参数2
 //----------------------------------------------------------------------------------------
-int32 DataCenterModule::CallDirect(const param lparam, param wparam) 
+int32 LoginModule::CallDirect(const param lparam, param wparam) 
 {
-	return -1;
+	CALL_DIRECT(lparam, wparam);
 }
 
 //----------------------------------------------------------------------------------------
@@ -108,7 +110,29 @@ int32 DataCenterModule::CallDirect(const param lparam, param wparam)
 //		@param	valudId			对应的pExtraInfo的值，内部根据该值进行对应的释放，该值只有模块自己理解
 //		@param	pExtraInfo	需要释放的ExtraInfo数据
 //----------------------------------------------------------------------------------------
-void DataCenterModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
+void LoginModule::PaybackExtraInfo(uint32 valudId, void* pExtraInfo)
 {
 	return;
+}
+
+void	LoginModule::OnEvent_OpenLoginDlg(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_LOGIN_OPEN)
+		return;
+
+	// 强制弹出更新窗口进行升级
+	mainframe::MainFrame_GetWndService stGetWndService;
+	m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWndService);
+
+	CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
+	ASSERT(pMainFrameWnd != NULL);
+	pMainFrameWnd->ShowWindow(SW_NORMAL);
+
+	CLoginPreWnd* pLoginFrame = new CLoginPreWnd();
+	if( pLoginFrame == NULL )
+		return ;
+
+	pLoginFrame->Create(pMainFrameWnd->GetHWND(), _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+	pLoginFrame->CenterWindow();
+	pMainFrameWnd->ShowModal(*pLoginFrame);
 }

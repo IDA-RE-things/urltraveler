@@ -3,6 +3,7 @@
 // Login的对外的头文件信息
 
 #include "SndaBase.h"
+#include "UrlTravelerHeader.h"
 
 
 namespace login
@@ -10,11 +11,8 @@ namespace login
 	// Login对外公开的事件
 	enum E_LoginEventValue
 	{
-		EVENT_VALUE_LOGIN_OPEN = EVENT_VALUE_LOGIN_BEGIN,		//打开主界面
-		EVENT_VALUE_LOGIN_HIDE,							//	隐藏当前主界面
-		EVENT_VALUE_LOGIN_CLOSE,						//	关闭当前主界面
-
-		EVENT_VALUE_LOGIN_END = EVENT_VALUE_LOGIN_END ,			//所有的事件结束
+		EVENT_VALUE_LOGIN_OPEN = EVENT_VALUE_LOGIN_BEGIN,		//	打开登陆界面
+		
 	};
 
 	// Login能够可能对外发送的广播消息
@@ -31,7 +29,7 @@ namespace login
 	//===========================================//
 	//                   Login中所使用到的event结构								 	  //
 	//===========================================//
-	struct LoginEvent	:	public ExtraInfo
+	struct LoginEvent	:	public EventExtraInfo
 	{
 	public:
 		LoginEvent()
@@ -40,5 +38,7 @@ namespace login
 			desMId	=	MODULE_ID_LOGIN;
 		}
 	};
+
+
 
 };
