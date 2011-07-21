@@ -165,8 +165,8 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0); return; }
 		else if( msg.pSender->GetName() == L"restorebtn" ) { 
 			SendMessage(WM_SYSCOMMAND, SC_RESTORE, 0); return; }
-		else if( msg.pSender->GetName() == L"menubtn" ) { 
-
+		else if( msg.pSender->GetName() == L"menubtn" ) 
+		{ 
 			HMENU	hPopMenu;
 			hPopMenu = ::LoadMenuW(g_hModule, MAKEINTRESOURCE(IDR_MENU1)); 
 			hPopMenu = ::GetSubMenu(hPopMenu, 0);
@@ -175,7 +175,12 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			GetCursorPos(&pt);
 			::TrackPopupMenu(hPopMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x - 10,pt.y + 17,0, this->m_hWnd, NULL);
 		}
-
+		else if( msg.pSender->GetName() == L"SettingTab" ) 
+		{
+			setting::Setting_OpenEvent* pEvent = new setting::Setting_OpenEvent();
+			pEvent->srcMId = MODULE_ID_MAINFRAME;
+			g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+		}
 	}
 	else if(msg.sType==_T("setfocus"))
 	{
@@ -187,8 +192,6 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			pControl->SelectItem(1);
 		else if(name==_T("CookieSyncTab"))
 			pControl->SelectItem(2);
-		else if(name==_T("SettingTab"))
-			pControl->SelectItem(3);
 	}
 	else if( msg.sType == _T("itemclick") ) 
 	{
