@@ -1,3 +1,4 @@
+#include <stdafx.h>
 #include "UpdateProcessWnd.h"
 
 extern BOOL	g_bRestart;

@@ -49,6 +49,7 @@ END_EVENT_MAP()
 BEGIN_SERVICE_MAP(PlugInModule)
 	ON_SERVICE(SERVICE_VALUE_PLUGIN_GET_AVAILABLE_PLUGIN, OnService_GetAvailablePlugIns)
 END_SERVICE_MAP()
+
 //----------------------------------------------------------------------------------------
 //名称: Unload
 //描述: 主程序通过该方法对模块进行卸载
@@ -433,7 +434,6 @@ int PlugInModule::Run()
 
 	// 进行广度遍历排序
 	sort(pvFavoriteData->begin(), pvFavoriteData->end());
-	//SortByBreadth(&(*pvFavoriteData)[0], m_nSumFavorite);
 
 	ReArrange(&(*pvFavoriteData)[0], m_nSumFavorite);
 	

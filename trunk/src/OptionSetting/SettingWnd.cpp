@@ -5,36 +5,157 @@
 #include "StringHelper.h"
 #include "MiscHelper.h"
 #include "XString.h"
+#include "OptionCenter.h"
+#include "SettingModule.h"
 
 CSettingWnd::CSettingWnd()
 {
+	m_eCurrentTab	=	TAB_NORMAL;
 }
 
 CSettingWnd::~CSettingWnd()
 {
 }
 
+void	CSettingWnd::PrepareCommon()
+{
+	COptionUI* pAutoStart = static_cast<COptionUI*>(m_pm.FindControl(_T("AutoStart")));
+	pAutoStart->Selected(OPTION_CENTER.m_bAutoStart);
+
+	COptionUI* pAutoLogin = static_cast<COptionUI*>(m_pm.FindControl(_T("AutoLogin")));
+	pAutoLogin->Selected(OPTION_CENTER.m_bAutoLogin);
+
+	COptionUI* pRememberPasswd = static_cast<COptionUI*>(m_pm.FindControl(_T("RememberPwd")));
+	pRememberPasswd->Selected(OPTION_CENTER.m_bRememberPwd);
+
+	COptionUI* pMinWnd = static_cast<COptionUI*>(m_pm.FindControl(_T("MinWnd")));
+	COptionUI* pCloseWnd = static_cast<COptionUI*>(m_pm.FindControl(_T("CloseWnd")));
+	if( OPTION_CENTER.m_bMinToTray == TRUE)
+		pMinWnd->Selected(TRUE);
+	else
+		pCloseWnd->Selected(TRUE);
+
+	COptionUI* pAutoLocalSync = static_cast<COptionUI*>(m_pm.FindControl(_T("AutoLocalSync")));
+	pAutoLocalSync->Selected(OPTION_CENTER.m_bAutoLocalSync);
+
+	COptionUI* pAutoRemoteSync = static_cast<COptionUI*>(m_pm.FindControl(_T("AutoRemoteSync")));
+	pAutoRemoteSync->Selected(OPTION_CENTER.m_bAutoRemotingSync);
+}
+
+void	CSettingWnd::PrepareUpdate()
+{
+}
+
+void	CSettingWnd::PrepareProxy()
+{
+}
+
 void CSettingWnd::OnPrepare(TNotifyUI& msg) 
 { 
+	PrepareCommon();
+	PrepareProxy();
+	PrepareUpdate();
+}
+
+void	CSettingWnd::OnBtnOK()
+{
+	OnBtnApply();
+	Close();
+}
+
+void	CSettingWnd::OnBtnApply()
+{
+	if( m_eCurrentTab == TAB_NORMAL)
+	{
+		COptionUI* pAutoStart = static_cast<COptionUI*>(m_pm.FindControl(_T("AutoStart")));
+		OPTION_CENTER.m_bAutoStart = pAutoStart->IsSelected();
+
+		COptionUI* pAutoLogin = static_cast<COptionUI*>(m_pm.FindControl(_T("AutoLogin")));
+		OPTION_CENTER.m_bAutoLogin = pAutoLogin->IsSelected();
+
+		COptionUI* pRememberPasswd = static_cast<COptionUI*>(m_pm.FindControl(_T("RememberPwd")));
+		OPTION_CENTER.m_bRememberPwd = pRememberPasswd->IsSelected();
+
+		COptionUI* pMinWnd = static_cast<COptionUI*>(m_pm.FindControl(_T("MinWnd")));
+		OPTION_CENTER.m_bMinToTray = pMinWnd->IsSelected();
+
+		COptionUI* pAutoLocalSync = static_cast<COptionUI*>(m_pm.FindControl(_T("AutoLocalSync")));
+		OPTION_CENTER.m_bAutoLocalSync = pAutoLocalSync->IsSelected();
+
+		COptionUI* pAutoRemoteSync = static_cast<COptionUI*>(m_pm.FindControl(_T("AutoRemoteSync")));
+		OPTION_CENTER.m_bAutoRemotingSync = pAutoRemoteSync->IsSelected();
+
+		OPTION_CENTER.SaveSetting();
+		OPTION_CENTER.m_bNormalSettingChange = FALSE;
+	}
+}
+
+void	CSettingWnd::OnBtnClose()
+{
+	if( m_eCurrentTab == TAB_NORMAL )
+	{
+		if( OPTION_CENTER.m_bNormalSettingChange == TRUE)
+		{
+			int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
+			if( nRet == MB_OK)
+				OnBtnApply();
+		}
+	}
+	else if( m_eCurrentTab == TAB_PROXY )
+	{
+		if( OPTION_CENTER.m_bProxySettingChange == TRUE)
+		{
+			int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
+			if( nRet == MB_OK)
+				OnBtnApply();
+		}
+	}
+	else if( m_eCurrentTab == TAB_UPDATE )
+	{
+		if( OPTION_CENTER.m_bUpdateSettingChange == TRUE)
+		{
+			int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
+			if( nRet == MB_OK)
+				OnBtnApply();
+		}
+	}
+
+	Close();
 }
 
 void CSettingWnd::Notify(TNotifyUI& msg)
 {
-	if( msg.sType == _T("windowinit") ) OnPrepare(msg);
-	else if( msg.sType == _T("click") ) {
-		if( msg.pSender->GetName() == L"closebtn" ) {
-			Close();
-			return; 
+	if( msg.sType == _T("windowinit") )
+	{
+		OnPrepare(msg);
+	}
+	else if( msg.sType == _T("click") ) 
+	{
+		// 关闭按钮
+		if( msg.pSender->GetName() == L"closebtn" || msg.pSender->GetName() == L"Cancel") 
+		{
+			OnBtnClose();
 		}
-		else if( msg.pSender->GetName() == L"minbtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0); return; }
-		else if( msg.pSender->GetName() == L"maxbtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0); return; }
-		else if( msg.pSender->GetName() == L"restorebtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_RESTORE, 0); return; }
-		else if( msg.pSender->GetName() == L"menubtn" ) { 
+		else if(msg.pSender->GetName() == L"OK")
+		{
+			OnBtnOK();
 		}
-
+		// 应用
+		else if(msg.pSender->GetName() == L"Apply")
+		{
+			OnBtnApply();
+		}
+		else if( msg.pSender->GetName() == L"AutoStart" 
+			|| msg.pSender->GetName() == L"RememberPwd"
+			|| msg.pSender->GetName() == L"AutoLogin"
+			|| msg.pSender->GetName() == L"AutoSync"
+			|| msg.pSender->GetName() == L"AutoRemoteSaving"
+			|| msg.pSender->GetName() == L"MinWnd"
+			|| msg.pSender->GetName() == L"CloseWnd"
+			) 
+		{ 
+			OPTION_CENTER.m_bNormalSettingChange = TRUE; 
+		}
 	}
 	else if( msg.sType == _T("itemclick") ) 
 	{
@@ -44,11 +165,20 @@ void CSettingWnd::Notify(TNotifyUI& msg)
 		CStdString name = msg.pSender->GetName();
 		CTabLayoutUI* pControl = static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("switch")));
 		if(name==_T("NormalTab"))
+		{
+			m_eCurrentTab = TAB_NORMAL;
 			pControl->SelectItem(0);
+		}
 		else if(name==_T("ProxyTab"))
+		{
+			m_eCurrentTab = TAB_PROXY;
 			pControl->SelectItem(1);
+		}
 		else if(name==_T("UpdateTab"))
+		{
+			m_eCurrentTab = TAB_UPDATE;
 			pControl->SelectItem(2);
+		}
 	}
 }
 
