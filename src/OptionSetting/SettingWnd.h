@@ -18,6 +18,13 @@ using namespace DuiLib;
 
 extern HMODULE	g_hModule;
 
+enum ESettingTab
+{
+	TAB_NORMAL,
+	TAB_PROXY,
+	TAB_UPDATE,
+};
+
 class CSettingWnd : public CWindowWnd, public INotifyUI
 {
 public:
@@ -43,11 +50,23 @@ public:
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+	//========================================
+	//                         控件消息处理相关的函数
+	//========================================
+	void	OnBtnOK();
+	void	OnBtnApply();
+	void	OnBtnClose();
+
+private:
+
+	void	PrepareCommon();
+	void	PrepareUpdate();
+	void	PrepareProxy();
+
 public:
 	CPaintManagerUI m_pm;
 
 private:
 
-	BOOL	m_bSettingChange;		//	设置是否已经发生了变更
-
+	ESettingTab	m_eCurrentTab;		//	当前的正在展示的标签页
 };

@@ -23,12 +23,22 @@ public:
 	~SettingModule();
 
 	//----------------------------------------------------------------------------------------
+	//名称: Load
+	//描述: 主程序通过该方法对模块进行加载
+	//参数: 
+	//		@param	pManager			主模块总线的指针	
+	//返回: 
+	//		如果加载成功，返回TRUE，否则返回FALSE
+	//----------------------------------------------------------------------------------------
+	virtual BOOL Load(IModuleManager* pManager);
+
+	//----------------------------------------------------------------------------------------
 	//名称: GetModuleName
 	//描述: 主程序通过该方法获取当前模块的名字，每一个模块都有一个唯一的名字
 	//返回: 
 	//		如果卸载成功，返回TRUE，否则返回FALSE
 	//----------------------------------------------------------------------------------------
-	const wchar_t* GetModuleName();
+	virtual const wchar_t* GetModuleName();
 
  	//----------------------------------------------------------------------------------------
 	//名称: GetModuleId
@@ -36,7 +46,7 @@ public:
 	//返回: 
 	//		返回该模块的唯一的ID
 	//----------------------------------------------------------------------------------------
-	uint32 const GetModuleId();
+	virtual uint32 const GetModuleId();
 
  	//----------------------------------------------------------------------------------------
 	//名称: ProcessEvent
@@ -44,7 +54,7 @@ public:
 	//参数: 
 	//		@param	evt			需要处理的事件
 	//----------------------------------------------------------------------------------------
-	void ProcessEvent(const Event& evt);
+	virtual void ProcessEvent(const Event& evt);
 
  	//----------------------------------------------------------------------------------------
 	//名称: ProcessMessage
@@ -53,7 +63,7 @@ public:
 	//参数: 
 	//		@param	msg			需要处理的广播消息
 	//----------------------------------------------------------------------------------------
-	void ProcessMessage(const Message& msg);
+	virtual void ProcessMessage(const Message& msg);
 
  	//----------------------------------------------------------------------------------------
 	//名称: CallDirect
@@ -63,7 +73,7 @@ public:
 	//		@param	lparam			参数1
 	//		@param	rparam			参数2
 	//----------------------------------------------------------------------------------------
-	int32 CallDirect(const param lparam, param wparam);
+	virtual int32 CallDirect(const param lparam, param wparam);
 
 public:
 
@@ -86,4 +96,4 @@ namespace setting
 	extern SettingModuleFactory*	g_SettingModuleFactory;
 }
 
-#define  OPTION_CENTER         (g_SettingModule->m_OptionCenter)
+#define  OPTION_CENTER         (setting::g_SettingModule->m_OptionCenter)

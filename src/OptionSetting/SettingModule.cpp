@@ -2,6 +2,7 @@
 #include "SettingDefine.h"
 #include "MainFrameDefine.h"
 #include "SettingModule.h"
+#include "OptionCenter.h"
 
 using namespace setting;
 using namespace mainframe;
@@ -33,6 +34,22 @@ SettingModule::~SettingModule()
 BEGIN_EVENT_MAP(SettingModule)
 	ON_EVENT(EVENT_VALUE_SETTING_OPEN, OnEvent_OpenSettingWnd)
 END_EVENT_MAP(SettingModule)
+
+//----------------------------------------------------------------------------------------
+//名称: Load
+//描述: 主程序通过该方法对模块进行加载
+//参数: 
+//		@param	pManager			主模块总线的指针	
+//返回: 
+//		如果加载成功，返回TRUE，否则返回FALSE
+//----------------------------------------------------------------------------------------
+BOOL SettingModule::Load(IModuleManager* pManager)
+{
+	__super::Load(pManager);
+
+	m_OptionCenter.LoadSetting();
+	return TRUE;
+}
 
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
