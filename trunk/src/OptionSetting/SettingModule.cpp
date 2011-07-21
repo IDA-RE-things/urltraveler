@@ -35,6 +35,16 @@ BEGIN_EVENT_MAP(SettingModule)
 	ON_EVENT(EVENT_VALUE_SETTING_OPEN, OnEvent_OpenSettingWnd)
 END_EVENT_MAP(SettingModule)
 
+BEGIN_SERVICE_MAP(SettingModule)
+	ON_SERVICE(SERVICE_VALUE_SETTING_GET_AUTO_START, OnService_GetAutoStartWithWindow)
+	ON_SERVICE(SERVICE_VALUE_SETTING_GET_REMEMBER_PWD, OnService_GetRememberPassword)
+	ON_SERVICE(SERVICE_VALUE_SETTING_GET_AUTO_LOGIN, OnService_GetAutoLogin)
+	ON_SERVICE(SERVICE_VALUE_SETTING_GET_CLOSE_WND_WHEN_EXIT, OnService_GetExitWhenCloseWnd)
+	ON_SERVICE(SERVICE_VALUE_SETTING_GET_LOCAL_SYNC, OnService_GetAutoLocalSync)
+	ON_SERVICE(SERVICE_VALUE_SETTING_GET_REMOTE_SYNC, OnService_GetAutoRemoteSync)
+	ON_SERVICE(SERVICE_VALUE_SETTING_GET_UPDATE_TYPE, OnService_GetUpdateType)
+END_SERVICE_MAP();
+
 //----------------------------------------------------------------------------------------
 //名称: Load
 //描述: 主程序通过该方法对模块进行加载
@@ -103,9 +113,9 @@ void SettingModule::ProcessMessage(const Message& msg)
 //		@param	lparam			参数1
 //		@param	rparam			参数2
 //----------------------------------------------------------------------------------------
-int32 SettingModule::CallDirect(const param lparam, param wparam) 
+int32 SettingModule::CallDirect(const param lServiceValue, param wparam) 
 {
-	return -1;
+	CALL_DIRECT(lServiceValue, wparam);
 }
 
 void	SettingModule::OnEvent_OpenSettingWnd(Event* pEvent)
@@ -125,4 +135,48 @@ void	SettingModule::OnEvent_OpenSettingWnd(Event* pEvent)
 	pSettingWnd->Create(*pParentWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);	
 	pSettingWnd->CenterWindow();
 	pParentWnd->ShowModal(pSettingWnd->GetHWND());
+}
+
+int	SettingModule::OnService_GetAutoStartWithWindow(ServiceValue lServiceValue, param	lParam)
+{
+	Setting_GetStartWithWindowService* pService = (Setting_GetStartWithWindowService*)lParam;
+	pService->bStart = OPTION_CENTER.m_bAutoStart;
+	return -1;
+}
+
+int	SettingModule::OnService_GetRememberPassword(ServiceValue lServiceValue, param	lParam)
+{
+	Setting_GetRememberPwdService* pService = (Setting_GetRememberPwdService*)lParam;
+	return -1;
+}
+
+int	SettingModule::OnService_GetAutoLogin(ServiceValue lServiceValue, param	lParam)
+{
+	Setting_GetAutoLoginService* pService = (Setting_GetAutoLoginService*)lParam;
+	return -1;
+}
+
+int	SettingModule::OnService_GetExitWhenCloseWnd(ServiceValue lServiceValue, param	lParam)
+{
+	Setting_GetExitWhenCloseWndService* pService = (Setting_GetExitWhenCloseWndService*)lParam;
+	pService->bExit = !OPTION_CENTER.m_bMinToTray;
+	return -1;
+}
+
+int	SettingModule::OnService_GetAutoLocalSync(ServiceValue lServiceValue, param	lParam)
+{
+	Setting_GetAutoLocalSyncService* pService = (Setting_GetAutoLocalSyncService*)lParam;
+	return -1;
+}
+
+int	SettingModule::OnService_GetAutoRemoteSync(ServiceValue lServiceValue, param	lParam)
+{
+	Setting_GetAutoRemoteSyncService* pService = (Setting_GetAutoRemoteSyncService*)lParam;
+	return -1;
+}
+
+int	SettingModule::OnService_GetUpdateType(ServiceValue lServiceValue, param	lParam)
+{
+	Setting_GetUpateTypeService* pService = (Setting_GetUpateTypeService*)lParam;
+	return -1;
 }
