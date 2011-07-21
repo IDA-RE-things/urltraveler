@@ -18,6 +18,8 @@ OptionCenter::OptionCenter()
 
 	m_bAutoLocalSync = TRUE;
 	m_bAutoRemotingSync = TRUE;
+
+	m_eUpdateType	=	UPDATE_TIP;
 }
 
 OptionCenter::~OptionCenter()
@@ -145,13 +147,45 @@ void	OptionCenter::SaveProxySetting()
 
 }
 
-
 void	OptionCenter::LoadUpdateSetting()
 {
+	wchar_t* pConfig = MiscHelper::GetConfig();
+	if( pConfig == NULL)
+		return;
 
+	CTxConfig txConfig;
+	BOOL bRet = txConfig.ParseConfig(StringHelper::UnicodeToANSI(pConfig));
+	if( bRet == FALSE)
+		return ;
+
+	string strValue = txConfig.GetValue(KEY_AUTOUPDATE);
+	if( StringHelper::TrimAll(strValue) != "")
+	{
+		int nType =	StringHelper::ConvertToInt(StringHelper::TrimAll(strValue));
+		if(nType == (int)UPDATE_AUTO)
+			m_eUpdateType = UPDATE_AUTO;
+		else  if( nType == (int)UPDATE_INSTALL_QUERY)
+			m_eUpdateType = UPDATE_INSTALL_QUERY;
+		else  if( nType == (int)UPDATE_TIP)
+			m_eUpdateType = UPDATE_TIP;
+		else  if( nType == (int)UPDATE_CLOSE)
+			m_eUpdateType = UPDATE_CLOSE;
+		else
+			m_eUpdateType = UPDATE_TIP;
+	}
 }
 
 void	OptionCenter::SaveUpdateSetting()
 {
+	wchar_t* pConfig = MiscHelper::GetConfig();
+	if( pConfig == NULL)
+		return;
 
+	CTxConfig txConfig;
+	BOOL bRet = txConfig.ParseConfig(StringHelper::UnicodeToANSI(pConfig));
+	if( bRet == FALSE)
+		return ;
+
+	txConfig.SetValue(KEY_AUTOUPDATE, StringHelper::ConvertFromInt((int)m_eUpdateType));
+	txConfig.MakeConfig(StringHelper::UnicodeToANSI(pConfig));
 }

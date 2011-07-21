@@ -42,31 +42,8 @@ void	CSettingWnd::PrepareCommon()
 	pAutoRemoteSync->Selected(OPTION_CENTER.m_bAutoRemotingSync);
 }
 
-void	CSettingWnd::PrepareUpdate()
+void	CSettingWnd::SaveCommon()
 {
-}
-
-void	CSettingWnd::PrepareProxy()
-{
-}
-
-void CSettingWnd::OnPrepare(TNotifyUI& msg) 
-{ 
-	PrepareCommon();
-	PrepareProxy();
-	PrepareUpdate();
-}
-
-void	CSettingWnd::OnBtnOK()
-{
-	OnBtnApply();
-	Close();
-}
-
-void	CSettingWnd::OnBtnApply()
-{
-	if( m_eCurrentTab == TAB_NORMAL)
-	{
 		COptionUI* pAutoStart = static_cast<COptionUI*>(m_pm.FindControl(_T("AutoStart")));
 		OPTION_CENTER.m_bAutoStart = pAutoStart->IsSelected();
 
@@ -87,6 +64,79 @@ void	CSettingWnd::OnBtnApply()
 
 		OPTION_CENTER.SaveSetting();
 		OPTION_CENTER.m_bNormalSettingChange = FALSE;
+}
+
+void	CSettingWnd::PrepareUpdate()
+{
+	COptionUI* pUpateAutoComplete = static_cast<COptionUI*>(m_pm.FindControl(_T("UpdateAutoComplete")));
+	COptionUI* pUpdateInstallHint = static_cast<COptionUI*>(m_pm.FindControl(_T("UpdateInstallHint")));
+	COptionUI* pUpdateHint = static_cast<COptionUI*>(m_pm.FindControl(_T("UpdateHint")));
+	COptionUI* pUpdateClose = static_cast<COptionUI*>(m_pm.FindControl(_T("UpdateClose")));
+
+	if(OPTION_CENTER.m_eUpdateType == UPDATE_AUTO) 
+		pUpateAutoComplete->Selected(TRUE);
+	else if( OPTION_CENTER.m_eUpdateType == UPDATE_INSTALL_QUERY  )
+		pUpdateInstallHint->Selected(TRUE);
+	else if( OPTION_CENTER.m_eUpdateType == UPDATE_TIP  )
+		pUpdateHint->Selected(TRUE);
+	else if( OPTION_CENTER.m_eUpdateType == UPDATE_CLOSE  )
+		pUpdateClose->Selected(TRUE);
+}
+
+void	CSettingWnd::SaveUpdate()
+{
+	COptionUI* pUpateAutoComplete = static_cast<COptionUI*>(m_pm.FindControl(_T("UpdateAutoComplete")));
+	COptionUI* pUpdateInstallHint = static_cast<COptionUI*>(m_pm.FindControl(_T("UpdateInstallHint")));
+	COptionUI* pUpdateHint = static_cast<COptionUI*>(m_pm.FindControl(_T("UpdateHint")));
+	COptionUI* pUpdateClose = static_cast<COptionUI*>(m_pm.FindControl(_T("UpdateClose")));
+
+	if( pUpateAutoComplete->IsSelected())
+		OPTION_CENTER.m_eUpdateType = UPDATE_AUTO;
+	else if(pUpdateInstallHint->IsSelected())
+		OPTION_CENTER.m_eUpdateType = UPDATE_INSTALL_QUERY;
+	else if(pUpdateHint->IsSelected())
+		OPTION_CENTER.m_eUpdateType = UPDATE_TIP;
+	else if(pUpdateClose->IsSelected())
+		OPTION_CENTER.m_eUpdateType = UPDATE_CLOSE;
+
+	OPTION_CENTER.SaveSetting();
+	OPTION_CENTER.m_bUpdateSettingChange = FALSE;
+}
+
+void	CSettingWnd::PrepareProxy()
+{
+}
+
+void	CSettingWnd::SaveProxy()
+{
+}
+
+void CSettingWnd::OnPrepare(TNotifyUI& msg) 
+{ 
+	PrepareCommon();
+	PrepareProxy();
+	PrepareUpdate();
+}
+
+void	CSettingWnd::OnBtnOK()
+{
+	OnBtnApply();
+	Close();
+}
+
+void	CSettingWnd::OnBtnApply()
+{
+	if( m_eCurrentTab == TAB_NORMAL)
+	{
+		SaveCommon();
+	}
+	else if( m_eCurrentTab == TAB_PROXY)
+	{
+		SaveProxy();
+	}
+	if( m_eCurrentTab == TAB_UPDATE)
+	{
+		SaveUpdate();
 	}
 }
 
@@ -156,6 +206,14 @@ void CSettingWnd::Notify(TNotifyUI& msg)
 		{ 
 			OPTION_CENTER.m_bNormalSettingChange = TRUE; 
 		}
+		else if( msg.pSender->GetName() == L"UpdateAutoComplete" 
+			|| msg.pSender->GetName() == L"UpdateInstallHint"
+			|| msg.pSender->GetName() == L"UpdateHint"
+			|| msg.pSender->GetName() == L"UpdateClose"
+			) 
+		{ 
+			OPTION_CENTER.m_bUpdateSettingChange = TRUE; 
+		}
 	}
 	else if( msg.sType == _T("itemclick") ) 
 	{
@@ -166,18 +224,60 @@ void CSettingWnd::Notify(TNotifyUI& msg)
 		CTabLayoutUI* pControl = static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("switch")));
 		if(name==_T("NormalTab"))
 		{
-			m_eCurrentTab = TAB_NORMAL;
-			pControl->SelectItem(0);
+			if( m_eCurrentTab != TAB_NORMAL)
+			{
+				m_eCurrentTab = TAB_NORMAL;
+
+				// 检测代理和更新是否更改过，更改过则提醒
+				if( OPTION_CENTER.m_bProxySettingChange == TRUE 
+					|| OPTION_CENTER.m_bUpdateSettingChange == TRUE)
+				{
+					int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
+					if( nRet == MB_OK)
+					{
+						OnBtnApply();
+					}
+				}
+				pControl->SelectItem(0);
+			}
 		}
 		else if(name==_T("ProxyTab"))
 		{
-			m_eCurrentTab = TAB_PROXY;
-			pControl->SelectItem(1);
+			if( m_eCurrentTab != TAB_PROXY)
+			{
+				m_eCurrentTab = TAB_PROXY;
+
+				// 检测常规和更新是否更改过，更改过则提醒
+				if( OPTION_CENTER.m_bNormalSettingChange == TRUE 
+					|| OPTION_CENTER.m_bUpdateSettingChange == TRUE)
+				{
+					int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
+					if( nRet == MB_OK)
+					{
+						OnBtnApply();
+					}
+				}
+				pControl->SelectItem(1);
+			}
 		}
 		else if(name==_T("UpdateTab"))
 		{
-			m_eCurrentTab = TAB_UPDATE;
-			pControl->SelectItem(2);
+			if( m_eCurrentTab != TAB_UPDATE)
+			{
+				m_eCurrentTab = TAB_UPDATE;
+
+				// 检测常规和代理是否更改过，更改过则提醒
+				if( OPTION_CENTER.m_bNormalSettingChange == TRUE 
+					|| OPTION_CENTER.m_bProxySettingChange == TRUE)
+				{
+					int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
+					if( nRet == MB_OK)
+					{
+						OnBtnApply();
+					}
+				}
+				pControl->SelectItem(2);
+			}
 		}
 	}
 }

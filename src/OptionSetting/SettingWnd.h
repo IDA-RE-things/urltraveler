@@ -60,8 +60,13 @@ public:
 private:
 
 	void	PrepareCommon();
+	void	SaveCommon();
+
 	void	PrepareUpdate();
+	void	SaveUpdate();
+
 	void	PrepareProxy();
+	void	SaveProxy();
 
 public:
 	CPaintManagerUI m_pm;
