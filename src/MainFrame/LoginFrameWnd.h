@@ -23,10 +23,6 @@ public:
 	};
 
 	void Init() {
-		CComboUI* pAccountCombo = static_cast<CComboUI*>(m_pm.FindControl(_T("accountcombo")));
-		CEditUI* pAccountEdit = static_cast<CEditUI*>(m_pm.FindControl(_T("accountedit")));
-		if( pAccountCombo && pAccountEdit ) pAccountEdit->SetText(pAccountCombo->GetText());
-		pAccountEdit->SetFocus();
 	}
 
 	void Notify(TNotifyUI& msg)
