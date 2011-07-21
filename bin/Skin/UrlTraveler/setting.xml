@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<Window size="614,446" sizebox="0,0,800,30" caption="0,0,0,30">
+<Window size="614,434" sizebox="0,0,800,30" caption="0,0,0,30">
     <Font name="宋体" size="13" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="false" italic="false" default="true" />
@@ -12,7 +12,7 @@
             <Button name="closebtn" float="true" pos="565,2,610,19" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
             <Label name="LabelUI2" float="true" pos="7,3,29,25" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
         </VerticalLayout>
-        <HorizontalLayout name="HorizontalLayoutUI16" pos="0,30,612,445" width="612" height="415" inset="8,8,8,8">
+        <HorizontalLayout name="HorizontalLayoutUI16" pos="0,30,612,441" width="612" height="411" inset="8,8,8,8">
             <Container name="ContainerUI1" pos="8,8,604,366" width="596" height="358" bkcolor="#FFFFFFFF">
                 <HorizontalLayout name="HorizontalLayoutUI21" pos="97,205,157,235" width="60" height="30">
                     <HorizontalLayout name="HorizontalLayoutUI22" pos="0,0,136,358" width="136" height="358" bordercolor="#00B5BFB4">
@@ -23,7 +23,6 @@
                     <Container name="ContainerUI2" pos="136,0,145,358" width="9" height="358" bkcolor="#FFB9E6F9" />
                     <HorizontalLayout name="HorizontalLayoutUI25" pos="145,0,596,357" width="451" height="357" bordercolor="#00B4BFB5">
                         <TabLayout name="switch" pos="0,0,446,355" width="446" height="355">
-
                             <HorizontalLayout name="HorizontalLayoutUI13">
                                 <Text name="TextUI2" text="[常规]" float="true" pos="15,17,58,37" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="centerwrap" />
                                 <Label name="LabelUI3" float="true" pos="64,24,429,25" bkimage="imgGrayBackground0.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
@@ -52,33 +51,27 @@
                             <HorizontalLayout name="HorizontalLayoutUI6" pos="0,0,448,355" width="448" height="355">
                                 <Text name="TextUI2" text="[自动升级]" float="true" pos="15,17,80,37" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="centerwrap" />
                                 <Label name="LabelUI3" float="true" pos="84,24,429,25" bkimage="imgGrayBackground0.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                                
-
-                                <Option name="UpdateAutoComplete" float="true" pos="39,44,53,58" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" selectedimage="radio_selected.png" group="2"/>
+                                <Option name="UpdateAutoComplete" float="true" pos="39,44,53,58" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" group="2" selectedimage="radio_selected.png" />
                                 <Text name="UpdateAutoCompleteText" text="自动下载更新并安装" float="true" pos="58,44,271,62" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-
-								<Option name="UpdateInstallHint" float="true" pos="39,73,53,87" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" selectedimage="radio_selected.png" group="2"/>
+                                <Option name="UpdateInstallHint" float="true" pos="39,73,53,87" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" group="2" selectedimage="radio_selected.png" />
                                 <Text name="UpdateInstallHintText" text="自动下载更新，在安装的时候提示您。" float="true" pos="58,73,271,91" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
                                 <Text name="TextUI11" text="{b}（推荐）{/b}" float="true" pos="281,73,343,91" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                                
-								<Option name="UpdateHint" float="true" pos="39,104,53,118" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" selectedimage="radio_selected.png" group="2"/>
+                                <Option name="UpdateHint" float="true" pos="39,104,53,118" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" group="2" selectedimage="radio_selected.png" />
                                 <Text name="UpdateHintText" text="不自动更新，有更新时候进行提示" float="true" pos="58,104,271,122" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-                                
-								<Option name="UpdateClose" float="true" pos="39,136,53,150" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" selectedimage="radio_selected.png" group="2"/>
+                                <Option name="UpdateClose" float="true" pos="39,136,53,150" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="radio_normal.png" group="2" selectedimage="radio_selected.png" />
                                 <Text name="UpdateCloseText" text="关闭自动更新" float="true" pos="58,136,271,154" relativepos="50,50,0,0" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-
                                 <Text name="TextUI15" text="[手工升级]" float="true" pos="15,171,81,190" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="centerwrap" />
                                 <Label name="LabelUI4" float="true" pos="84,177,429,178" bkimage="imgGrayBackground0.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                                 <Label name="LabelUI6" text="您可以立即检查更新，升级到最新版本" float="true" pos="42,197,256,220" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                                 <Button name="UpdateNow" text="立即升级" float="true" pos="286,194,365,224" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
                             </HorizontalLayout>
-						</TabLayout>
+                        </TabLayout>
                     </HorizontalLayout>
                 </HorizontalLayout>
             </Container>
-            <Button name="OK" text="确定" bordersize="0" float="true" pos="363,377,423,407" bkimage="btn00.png" bkcolor="#FFFFFFFF" bkcolor2="#00FFFFFF" bordercolor="#00FFFFFF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-            <Button name="Cancel" text="取消" bordersize="0" float="true" pos="510,377,570,407" bkimage="btn00.png" bordercolor="#00000080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-            <Button name="Apply" text="应用" bordersize="0" float="true" pos="438,377,498,407" bkimage="btn00.png" bkcolor="#FFFFFFFF" bkcolor2="#00FFFFFF" bordercolor="#00FFFFFF" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+            <Button name="OK" text="确定" float="true" pos="328,371,407,398" bkcolor="#FFFFFFFF" bordercolor="#00A6CAF0" textcolor="#FF000000"  align="center" />
+            <Button name="Apply" text="应用" float="true" pos="419,371,498,398" bkcolor="#FFFFFFFF" bordercolor="#00A6CAF0" textcolor="#FF000000" disabledtextcolor="#FF999999" align="center" />
+            <Button name="Cancel" text="取消" float="true" pos="510,371,589,398" bkcolor="#FFFFFFFF" bordercolor="#00A6CAF0" textcolor="#FF000000" align="center" />
         </HorizontalLayout>
     </VerticalLayout>
 </Window>
