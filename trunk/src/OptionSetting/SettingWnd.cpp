@@ -147,7 +147,7 @@ void	CSettingWnd::OnBtnClose()
 		if( OPTION_CENTER.m_bNormalSettingChange == TRUE)
 		{
 			int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
-			if( nRet == MB_OK)
+			if( nRet == IDOK)
 				OnBtnApply();
 		}
 	}
@@ -156,7 +156,7 @@ void	CSettingWnd::OnBtnClose()
 		if( OPTION_CENTER.m_bProxySettingChange == TRUE)
 		{
 			int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
-			if( nRet == MB_OK)
+			if( nRet == IDOK)
 				OnBtnApply();
 		}
 	}
@@ -165,7 +165,7 @@ void	CSettingWnd::OnBtnClose()
 		if( OPTION_CENTER.m_bUpdateSettingChange == TRUE)
 		{
 			int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
-			if( nRet == MB_OK)
+			if( nRet == IDOK)
 				OnBtnApply();
 		}
 	}
@@ -226,18 +226,17 @@ void CSettingWnd::Notify(TNotifyUI& msg)
 		{
 			if( m_eCurrentTab != TAB_NORMAL)
 			{
-				m_eCurrentTab = TAB_NORMAL;
-
 				// 检测代理和更新是否更改过，更改过则提醒
 				if( OPTION_CENTER.m_bProxySettingChange == TRUE 
 					|| OPTION_CENTER.m_bUpdateSettingChange == TRUE)
 				{
 					int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
-					if( nRet == MB_OK)
+					if( nRet == IDOK)
 					{
 						OnBtnApply();
 					}
 				}
+				m_eCurrentTab = TAB_NORMAL;
 				pControl->SelectItem(0);
 			}
 		}
@@ -245,18 +244,17 @@ void CSettingWnd::Notify(TNotifyUI& msg)
 		{
 			if( m_eCurrentTab != TAB_PROXY)
 			{
-				m_eCurrentTab = TAB_PROXY;
-
 				// 检测常规和更新是否更改过，更改过则提醒
 				if( OPTION_CENTER.m_bNormalSettingChange == TRUE 
 					|| OPTION_CENTER.m_bUpdateSettingChange == TRUE)
 				{
 					int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
-					if( nRet == MB_OK)
+					if( nRet == IDOK)
 					{
 						OnBtnApply();
 					}
 				}
+				m_eCurrentTab = TAB_PROXY;
 				pControl->SelectItem(1);
 			}
 		}
@@ -264,18 +262,17 @@ void CSettingWnd::Notify(TNotifyUI& msg)
 		{
 			if( m_eCurrentTab != TAB_UPDATE)
 			{
-				m_eCurrentTab = TAB_UPDATE;
-
 				// 检测常规和代理是否更改过，更改过则提醒
 				if( OPTION_CENTER.m_bNormalSettingChange == TRUE 
 					|| OPTION_CENTER.m_bProxySettingChange == TRUE)
 				{
 					int nRet = ::MessageBoxW(NULL, L"您已经修改了设置，需要保存吗?",L"提示", MB_OKCANCEL);
-					if( nRet == MB_OK)
+					if( nRet == IDOK)
 					{
 						OnBtnApply();
 					}
 				}
+				m_eCurrentTab = TAB_UPDATE;
 				pControl->SelectItem(2);
 			}
 		}
