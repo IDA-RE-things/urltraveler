@@ -242,11 +242,29 @@ void TrayIconModule::OnTrayEvent(WPARAM w, LPARAM l)
 			}
 
 		case WM_LBUTTONDBLCLK:
+		case WM_LBUTTONDOWN:
 			{
-				// 通知各个模块退出之前进行必要的准备工作
-				GetModuleManager()->PushEvent(
-					MakeEvent<MODULE_ID_TRAYICON>()(mainframe::EVENT_VALUE_MAINFRAME_SHOW, 
-						MODULE_ID_MAINFRAME));
+				mainframe::MainFrame_GetWndService stGetWnd;
+				m_pModuleManager->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, (param)&stGetWnd);
+
+				CWindowWnd* pParentWnd = reinterpret_cast<CWindowWnd*>(stGetWnd.pBaseWnd);
+				ASSERT(pParentWnd != NULL);
+
+				LONG styleValue = ::GetWindowLong(pParentWnd->GetHWND(), GWL_STYLE);
+				if( (styleValue & WS_VISIBLE) == WS_VISIBLE)
+				{
+					// 通知各个模块退出之前进行必要的准备工作
+					GetModuleManager()->PushEvent(
+						MakeEvent<MODULE_ID_TRAYICON>()(mainframe::EVENT_VALUE_MAINFRAME_HIDE, 
+							MODULE_ID_MAINFRAME));
+				}
+				else
+				{
+					// 通知各个模块退出之前进行必要的准备工作
+					GetModuleManager()->PushEvent(
+						MakeEvent<MODULE_ID_TRAYICON>()(mainframe::EVENT_VALUE_MAINFRAME_SHOW, 
+							MODULE_ID_MAINFRAME));
+				}
 			}
 
 		break;
@@ -301,7 +319,7 @@ void TrayIconModule::OnMessage_Show(Message* pMessage)
 	m_TrayMgr.Init();
 	
 	HICON hIcon = LoadIconW(g_hModule, MAKEINTRESOURCE(IDI_URLTRAVELER));
-	m_TrayMgr.Add(hIcon, L"UrlTraveler");
+	m_TrayMgr.Add(hIcon, L"EverFav云中收藏夹");
 	m_TrayMgr.AddEventHandler(this);
 }
 
