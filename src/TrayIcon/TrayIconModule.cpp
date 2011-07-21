@@ -73,14 +73,6 @@ static LRESULT CALLBACK AppCycleProc(HWND inWindow, UINT inMsg, WPARAM wParam, L
 						MakeMessage<MODULE_ID_TRAYICON>()(MESSAGE_VALUE_CORE_PRE_APP_EXIT));
 
 					// 通知正式退出
-/*
-					Event e;
-					e.eventValue = EVENT_VALUE_CORE_MAIN_LOOP_EXIT;
-					e.srcMId = MODULE_ID_TRAYICON;
-					e.desMId = MODULE_ID_CORE;
-					pTrayIconModule->GetModuleManager()->PushEvent(e);
-*/
-
 					pTrayIconModule->GetModuleManager()->PushEvent(
 						MakeEvent<MODULE_ID_TRAYICON>()(EVENT_VALUE_CORE_MAIN_LOOP_EXIT, 
 							MODULE_ID_CORE));
@@ -238,16 +230,25 @@ void TrayIconModule::OnTrayEvent(WPARAM w, LPARAM l)
 	uint32 uMsgId = l;
 	switch (uMsgId)
 	{
-	case WM_RBUTTONUP:
-		{
-			HMENU	hPopMenu;
-			hPopMenu = ::LoadMenuW(g_hModule, MAKEINTRESOURCE(IDR_APPMENU)); 
-			hPopMenu = ::GetSubMenu(hPopMenu, 0);
+		case WM_RBUTTONUP:
+			{
+				HMENU	hPopMenu;
+				hPopMenu = ::LoadMenuW(g_hModule, MAKEINTRESOURCE(IDR_APPMENU)); 
+				hPopMenu = ::GetSubMenu(hPopMenu, 0);
 
-			POINT pt;
-			GetCursorPos(&pt);
-			::TrackPopupMenu(hPopMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x,pt.y,0, m_hMsgWnd, NULL);
-		}
+				POINT pt;
+				GetCursorPos(&pt);
+				::TrackPopupMenu(hPopMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x,pt.y,0, m_hMsgWnd, NULL);
+			}
+
+		case WM_LBUTTONDBLCLK:
+			{
+				// 通知各个模块退出之前进行必要的准备工作
+				GetModuleManager()->PushEvent(
+					MakeEvent<MODULE_ID_TRAYICON>()(mainframe::EVENT_VALUE_MAINFRAME_SHOW, 
+						MODULE_ID_MAINFRAME));
+			}
+
 		break;
 
 	}
