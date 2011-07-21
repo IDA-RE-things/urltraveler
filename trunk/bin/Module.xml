@@ -7,24 +7,27 @@
 		<IModule Id="3" desc="MODULE_ID_SETTING"/>
 	</Module>
 	<Module Name="TrayIcond.dll">
-		<IModule Id="5" desc="MODULE_ID_TRAYICON"/>
+		<IModule Id="4" desc="MODULE_ID_TRAYICON"/>
 	</Module>
 	<Module Name="DataCenterd.dll">
+		<IModule Id="5" desc="MODULE_ID_DATACENTER"/>
+	</Module>
+	<Module Name="Logind.dll">
 		<IModule Id="6" desc="MODULE_ID_DATACENTER"/>
 	</Module>
 	<Module Name="PlugInManagerd.dll">
-		<IModule Id="8" desc="MODULE_ID_PLUGIN"/>
+		<IModule Id="7" desc="MODULE_ID_PLUGIN"/>
 	</Module>
 	<Module Name="Databased.dll">
-		<IModule Id="9" desc="MODULE_ID_DATABASE"/>
+		<IModule Id="8" desc="MODULE_ID_DATABASE"/>
 	</Module>
 	<Module Name="Webd.dll">
-		<IModule Id="10" desc="MODULE_ID_WEB"/>
+		<IModule Id="9" desc="MODULE_ID_WEB"/>
 	</Module>
 	<Module Name="Updated.dll">
-		<IModule Id="11" desc="MODULE_ID_UPDATE"/>
+		<IModule Id="10" desc="MODULE_ID_UPDATE"/>
 	</Module>
 	<Module Name="FavMonitord.dll">
-		<IModule Id="12" desc="MODULE_ID_FAVMONITOR"/>
+		<IModule Id="11" desc="MODULE_ID_FAVMONITOR"/>
 	</Module>
 </ModuleManager>
