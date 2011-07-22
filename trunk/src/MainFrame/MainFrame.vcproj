@@ -290,6 +290,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\TipWnd.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\TipWnd.h"
 					>
 				</File>

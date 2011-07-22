@@ -71,7 +71,8 @@ public:
 		if( msg.sType == _T("itemselect") ) {
 			Close();
 		}
-		else if( msg.sType == _T("itemclick") ) {
+		else if( msg.sType == _T("itemclick") ) 
+		{
 			if( msg.pSender->GetName() == _T("menu_Add") ) 
 			{
 				OnAdd();

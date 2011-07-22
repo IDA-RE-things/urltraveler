@@ -146,31 +146,224 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 	}
 }
 
+void	CMainFrameWnd::OnTabChange(TNotifyUI& msg)
+{
+	CStdString name = msg.pSender->GetName();
+	CTabLayoutUI* pControl = static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("switch")));
+	if(name==_T("FavTravelerTab"))
+		pControl->SelectItem(0);
+	else if(name==_T("FavSyncTab"))
+		pControl->SelectItem(1);
+	else if(name==_T("CookieSyncTab"))
+		pControl->SelectItem(2);
+}
+
+void	CMainFrameWnd::OnSystemMenu(TNotifyUI& msg)
+{
+	HMENU	hPopMenu;
+	hPopMenu = ::LoadMenuW(g_hModule, MAKEINTRESOURCE(IDR_MENU1)); 
+	hPopMenu = ::GetSubMenu(hPopMenu, 0);
+
+	POINT pt;
+	GetCursorPos(&pt);
+	::TrackPopupMenu(hPopMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x - 10,pt.y + 17,0, this->m_hWnd, NULL);
+}
+
+void	CMainFrameWnd::OnBtnClose(TNotifyUI& msg)
+{
+	// 检查是否要最小化
+	setting::Setting_GetExitWhenCloseWndService service;
+	g_MainFrameModule->CallDirect(service.serviceId, (param)&service);
+	if( service.bExit == TRUE)
+	{
+		// 发送请求至服务器，统计在线人数
+		CurlHttp* pHttp  = CurlHttp::Instance();
+		string strData = pHttp->RequestGet(L"http://1.urltraveler.sinaapp.com/logout.php");
+
+		PostQuitMessage(0);
+	}
+	else
+	{
+		::ShowWindow(GetHWND(), SW_HIDE);
+	}
+}
+
+void	CMainFrameWnd::OnFavoriteTreeListItemClick(TNotifyUI& msg)
+{
+	// 点击收藏夹目录的响应代码
+	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
+	if( pFavoriteTree->GetItemIndex(msg.pSender) != -1 )
+	{
+		if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) 
+		{
+			TreeListUI::Node* node = (TreeListUI::Node*)msg.pSender->GetTag();
+
+			POINT pt = { 0 };
+			::GetCursorPos(&pt);
+			::ScreenToClient(m_pm.GetPaintWindow(), &pt);
+			pt.x -= msg.pSender->GetX();
+			pt.y -= msg.pSender->GetY();
+			SIZE sz = pFavoriteTree->GetExpanderSizeX(node);
+			if( pt.x >= sz.cx && pt.y < sz.cy )                     
+				pFavoriteTree->SetChildVisible(node, !node->data()._child_visible);
+
+			// 得到该结点对应的nId
+			std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(node);
+			if( itr != m_mapNodeId.end())
+			{
+				int nId = itr->second;
+				m_nTreeNodeId = nId;
+				m_pCurrentTreeNode	=	itr->first;
+				ShowFavoriteTreeList(nId);
+			}
+		}
+	}
+
+	// 点击收藏夹条目的响应代码
+	if (msg.pSender->GetParent()->GetParent()->GetName() == L"favoritefilelist")
+	{
+		if (m_pTipWnd)
+		{
+			m_pTipWnd->HideTip();
+		}
+	}
+}
+
+void	CMainFrameWnd::OnFavoriteListItemHover(TNotifyUI& msg)
+{
+	CListElementUI *pItem = (CListElementUI *)msg.pSender;
+	if (pItem)
+	{
+		FAVORITELINEDATA *pData = (FAVORITELINEDATA *)pItem->GetTag();
+
+		CStdString strTips;
+		wstring strIcon;
+
+		wstring wstrDomain = MiscHelper::GetDomainFromUrl(m_vFavoriteNodeAtTreeNode[pItem->GetIndex()]->szUrl, FALSE);
+
+		strTips += pData->szTitle;
+		strTips += L"\n";
+		strTips += L"<y 20><a>";
+		strTips += pData->szUrl;
+		strTips += L"</a>";
+
+		wstring strIconName;
+		strIcon = L"<i ";
+		strIcon = strIcon + wstrDomain;
+		strIcon += L".ico></i>";
+
+		m_pTipWnd->ShowTips(1000, strTips, strIcon.c_str());
+	}
+}
+
+void	CMainFrameWnd::OnFavoriteListItemUnHover(TNotifyUI& msg)
+{
+	if (m_pTipWnd)
+	{
+		m_pTipWnd->HideTip();
+	}
+}
+
+void	CMainFrameWnd::OnShowMenu(TNotifyUI& msg)
+{
+	if( msg.pSender->GetName() == _T("favoritefilelist") ) 
+	{
+		CFavoriteListMenu* pMenu = new CFavoriteListMenu(L"list_menu.xml");
+		if( pMenu == NULL ) { return; }
+		POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
+		::ClientToScreen(*this, &pt);
+		if (((CListUI *)msg.pSender)->GetCurSel() >= 0)
+		{
+			pMenu->StoreLanuchPos(msg.ptMouse.x, msg.ptMouse.y);
+			pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 172));
+		}
+	}
+	else 	if( msg.pSender->GetName() == _T("favoritetreelist") ) 
+	{
+		CTreeListMenu* pMenu = new CTreeListMenu(L"tree_menu.xml");
+		if( pMenu == NULL ) { return; }
+		POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
+		::ClientToScreen(*this, &pt);
+		pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 125));
+
+		TreeListUI* pTree = (TreeListUI*)msg.pSender;
+		int nSelIndex = pTree->GetCurSel();
+		if( nSelIndex == 0)
+		{
+			pMenu->Enable(L"menu_Delete", false);
+		}
+	}
+}
+
+void	CMainFrameWnd::OnFavoriteListItemEditFinished(TNotifyUI& msg)
+{
+	CControlUI *pControl = msg.pSender;
+	if (_tcscmp(pControl->GetName(), _T("favoritefilelist")) == 0)
+	{
+		CListUI *pListUI = (CListUI *)pControl;
+
+		int nRow = HIWORD(msg.wParam);
+		int nColomn = LOWORD(msg.wParam);
+
+		if( nRow > pListUI->GetCount() - 1)
+			return;
+
+		FAVORITELINEDATA* pData = m_vFavoriteNodeAtTreeNode[nRow];
+		if( pData == NULL)
+			return;
+
+		if( nColomn == 1)
+		{
+			STRNCPY(pData->szTitle, pListUI->GetEditText());
+		}
+		else if( nColomn == 2)
+		{
+			String	strUrl = pListUI->GetEditText();
+			if( strUrl.Left(7) != L"http://" && strUrl.Left(8) != L"https://")
+			{
+				strUrl = String(L"http://") + strUrl;
+			}
+			STRNCPY(pData->szUrl, strUrl.GetData());
+			GetWebSiteFavIcon(pData->szUrl, nRow);
+		}
+		pListUI->Invalidate();
+	}
+}
+
+void	CMainFrameWnd::OnFavoriteListItemDelete(TNotifyUI& msg)
+{
+	CControlUI *pControl = msg.pSender;
+	if (_tcscmp(pControl->GetName(), _T("favoritefilelist")) == 0)
+	{
+		CListUI *pList = (CListUI *)pControl;
+
+		int nRow = msg.wParam;
+		if( nRow < 0 || nRow > pList->GetCount() - 1)
+			return;
+
+		FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)(pList->GetSubItem(nRow)->GetTag());
+		pSelNode->bDelete = true;
+		pList->RemoveAt(nRow);
+
+		// 从数据中心中删除该Item
+		MainFrame_DeleteFavoriteEvent* pEvent = new MainFrame_DeleteFavoriteEvent();
+		pEvent->desMId = MODULE_ID_MAINFRAME;
+		pEvent->nDeleteNodeId = pSelNode->nId;
+		g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+	}
+}
+
 void CMainFrameWnd::Notify(TNotifyUI& msg)
 {
 	if( msg.sType == _T("windowinit") ) 
 	{
 		OnPrepare(msg);
 	}
-	else if( msg.sType == _T("click") ) {
+	else if( msg.sType == _T("click") ) 
+	{
 		if( msg.pSender->GetName() == L"closebtn" ) 
 		{
-			// 检查是否要最小化
-			setting::Setting_GetExitWhenCloseWndService service;
-			g_MainFrameModule->CallDirect(service.serviceId, (param)&service);
-			if( service.bExit == TRUE)
-			{
-				// 发送请求至服务器，统计在线人数
-				CurlHttp* pHttp  = CurlHttp::Instance();
-				string strData = pHttp->RequestGet(L"http://1.urltraveler.sinaapp.com/logout.php");
-
-				PostQuitMessage(0);
-			}
-			else
-			{
-				::ShowWindow(GetHWND(), SW_HIDE);
-			}
-
+			OnBtnClose(msg);
 			return; 
 		}
 		else if( msg.pSender->GetName() == L"minbtn" ) 
@@ -190,13 +383,8 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		}
 		else if( msg.pSender->GetName() == L"menubtn" ) 
 		{ 
-			HMENU	hPopMenu;
-			hPopMenu = ::LoadMenuW(g_hModule, MAKEINTRESOURCE(IDR_MENU1)); 
-			hPopMenu = ::GetSubMenu(hPopMenu, 0);
-
-			POINT pt;
-			GetCursorPos(&pt);
-			::TrackPopupMenu(hPopMenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x - 10,pt.y + 17,0, this->m_hWnd, NULL);
+			OnSystemMenu(msg);
+			return;
 		}
 		else if( msg.pSender->GetName() == L"SettingTab" ) 
 		{
@@ -207,162 +395,44 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	}
 	else if(msg.sType==_T("setfocus"))
 	{
-		CStdString name = msg.pSender->GetName();
-		CTabLayoutUI* pControl = static_cast<CTabLayoutUI*>(m_pm.FindControl(_T("switch")));
-		if(name==_T("FavTravelerTab"))
-			pControl->SelectItem(0);
-		else if(name==_T("FavSyncTab"))
-			pControl->SelectItem(1);
-		else if(name==_T("CookieSyncTab"))
-			pControl->SelectItem(2);
+		OnTabChange(msg);
+		return;
 	}
 	else if( msg.sType == _T("itemclick") ) 
 	{
-		// 点击收藏夹目录的响应代码
-		TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
-		if( pFavoriteTree->GetItemIndex(msg.pSender) != -1 )
-		{
-			if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) 
-			{
-				TreeListUI::Node* node = (TreeListUI::Node*)msg.pSender->GetTag();
-
-				POINT pt = { 0 };
-				::GetCursorPos(&pt);
-				::ScreenToClient(m_pm.GetPaintWindow(), &pt);
-				pt.x -= msg.pSender->GetX();
-				pt.y -= msg.pSender->GetY();
-				SIZE sz = pFavoriteTree->GetExpanderSizeX(node);
-				if( pt.x >= sz.cx && pt.y < sz.cy )                     
-					pFavoriteTree->SetChildVisible(node, !node->data()._child_visible);
-
-				// 得到该结点对应的nId
-				std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(node);
-				if( itr != m_mapNodeId.end())
-				{
-					int nId = itr->second;
-					m_nTreeNodeId = nId;
-					m_pCurrentTreeNode	=	itr->first;
-					ShowFavoriteTreeList(nId);
-				}
-			}
-		}
-
-		// 点击收藏夹条目的响应代码
-		if (msg.pSender->GetParent()->GetParent()->GetName() == L"favoritefilelist")
-		{
-			if (m_pTipWnd)
-			{
-				m_pTipWnd->HideTip();
-			}
-		}
+		OnFavoriteTreeListItemClick(msg);
+		return;
 	}
 	else if(msg.sType == L"itemhot")
 	{
 		if (msg.pSender->GetParent()->GetParent()->GetName() == L"favoritefilelist")
 		{
-			CListElementUI *pItem = (CListElementUI *)msg.pSender;
-
-			if (pItem)
-			{
-				FAVORITELINEDATA *pData = (FAVORITELINEDATA *)pItem->GetTag();
-
-				CStdString strTips;
-				wstring strIcon;
-
-				wstring wstrDomain = MiscHelper::GetDomainFromUrl(m_vFavoriteNodeAtTreeNode[pItem->GetIndex()]->szUrl, FALSE);
-
-				strTips += pData->szTitle;
-				strTips += L"\n";
-				strTips += L"<y 20><a>";
-				strTips += pData->szUrl;
-				strTips += L"</a>";
-
-				wstring strIconName;
-				strIcon = L"<i ";
-				strIcon = strIcon + wstrDomain;
-				strIcon += L".ico></i>";
-
-				m_pTipWnd->ShowTips(1000, strTips, strIcon.c_str());
-			}
+			OnFavoriteListItemHover(msg);
+			return;
 		}
 	}
 	else if(msg.sType == L"itemunhot")
 	{
 		if (msg.pSender->GetParent()->GetParent()->GetName() == L"favoritefilelist")
 		{
-			if (m_pTipWnd)
-			{
-				m_pTipWnd->HideTip();
-			}
+			OnFavoriteListItemUnHover(msg);
+			return;
 		}
 	}
 	else if(msg.sType == L"menu") 
 	{
-		if( msg.pSender->GetName() == _T("favoritefilelist") ) 
-		{
-			CFavoriteListMenu* pMenu = new CFavoriteListMenu(L"list_menu.xml");
-			if( pMenu == NULL ) { return; }
-			POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
-			::ClientToScreen(*this, &pt);
-			if (((CListUI *)msg.pSender)->GetCurSel() >= 0)
-			{
-				pMenu->StoreLanuchPos(msg.ptMouse.x, msg.ptMouse.y);
-				pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 172));
-			}
-		}
-		else 	if( msg.pSender->GetName() == _T("favoritetreelist") ) 
-		{
-			CTreeListMenu* pMenu = new CTreeListMenu(L"tree_menu.xml");
-			if( pMenu == NULL ) { return; }
-			POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
-			::ClientToScreen(*this, &pt);
-			pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 125));
-
-			TreeListUI* pTree = (TreeListUI*)msg.pSender;
-			int nSelIndex = pTree->GetCurSel();
-			if( nSelIndex == 0)
-			{
-				pMenu->Enable(L"menu_Delete", false);
-			}
-		}
+		OnShowMenu(msg);
 		return;
 	}
 	else if(msg.sType == L"listeditfinish")
 	{
-		CControlUI *pControl = msg.pSender;
-
-		if (_tcscmp(pControl->GetName(), _T("favoritefilelist")) == 0)
-		{
-			CListUI *pListUI = (CListUI *)pControl;
-
-			int nRow = HIWORD(msg.wParam);
-			int nColomn = LOWORD(msg.wParam);
-
-			if( nRow > pListUI->GetCount() - 1)
-				return;
-
-			FAVORITELINEDATA* pData = m_vFavoriteNodeAtTreeNode[nRow];
-			if( pData == NULL)
-				return;
-
-			if( nColomn == 1)
-			{
-				STRNCPY(pData->szTitle, pListUI->GetEditText());
-			}
-			else if( nColomn == 2)
-			{
-				String	strUrl = pListUI->GetEditText();
-				if( strUrl.Left(7) != L"http://" && strUrl.Left(8) != L"https://")
-				{
-					strUrl = String(L"http://") + strUrl;
-				}
-				STRNCPY(pData->szUrl, strUrl.GetData());
-				GetWebSiteFavIcon(pData->szUrl, nRow);
-			}
-			pListUI->Invalidate();
-
-			// 通知DataCenter更新数据
-		}
+		OnFavoriteListItemEditFinished(msg);
+		return;
+	}
+	else if(msg.sType == L"listitemdelete")
+	{
+		OnFavoriteListItemDelete(msg);
+		return;
 	}
 }
 
@@ -445,7 +515,8 @@ LRESULT CMainFrameWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 LRESULT CMainFrameWnd::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	SIZE szRoundCorner = m_pm.GetRoundCorner();
-	if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
+	if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) )
+	{
 		CRect rcWnd;
 		::GetWindowRect(*this, &rcWnd);
 		rcWnd.Offset(-rcWnd.left, -rcWnd.top);
@@ -488,8 +559,10 @@ LRESULT CMainFrameWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 	BOOL bZoomed = ::IsZoomed(*this);
 	LRESULT lRes = CWindowWnd::HandleMessage(uMsg, wParam, lParam);
-	if( ::IsZoomed(*this) != bZoomed ) {
-		if( !bZoomed ) {
+	if( ::IsZoomed(*this) != bZoomed ) 
+	{
+		if( !bZoomed ) 
+		{
 			CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(_T("maxbtn")));
 			if( pControl ) pControl->SetVisible(false);
 			pControl = static_cast<CControlUI*>(m_pm.FindControl(_T("restorebtn")));
