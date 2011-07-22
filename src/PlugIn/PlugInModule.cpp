@@ -448,16 +448,16 @@ int PlugInModule::Run()
 	m_pModuleManager->PushMessage(
 		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED));
 
-	/*
+	
 	for( int i=0; i<nNumOfPlugIns; i++)
 	{
 		IPlugIn* pPlugIn = m_vPlugIns.at(i);
 		if( pPlugIn == NULL)
 			continue;
 
-		pPlugIn->ImportFavoriteData(&m_vFavoriateLineData[0], m_nSumFavorite);
+		pPlugIn->ImportFavoriteData(&(*pvFavoriteData)[0], m_nSumFavorite);
 	}
-	*/
+	
 
 	//使线程直接退掉返回0，否则需要自己去Shutdown
 	return 0;

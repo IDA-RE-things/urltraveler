@@ -15,7 +15,7 @@
 #include <algorithm>
 #include "json/json.h"
 #include "time.h"
-#include "icu_utf.h"
+#include "icu/icu_utf.h"
 
 
 #pragma comment(lib, "shlwapi.lib")
@@ -657,7 +657,7 @@ BOOL CChromePlugIn::Int64ToString(int64 nTime, std::string& strTime)
 	while (nQuot != 0)
 	{
 		nMod = nQuot % 10;	
-		_i64toa(nMod, &szMod[0], 10);
+		_i64toa_s(nMod, &szMod[0], sizeof(szMod), 10);
 		strTime.append(std::string(&szMod[0]));
 		nQuot = nQuot / 10;
 	}

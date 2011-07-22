@@ -3,7 +3,7 @@
 #include "json/json.h"
 #include <vector>
 #include <map>
-#include "md5.h"
+#include "md5/md5.h"
 
 class CChromePlugIn : public PlugInImp
 {
