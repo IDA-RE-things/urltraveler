@@ -57,6 +57,19 @@ public:
 	void	CopyUrl(int nIndex);
 	void	SelectTreeList(int nId);
 
+private:
+
+	//	各种消息响应处理函数
+	void	OnTabChange(TNotifyUI& msg);
+	void	OnSystemMenu(TNotifyUI& msg);
+	void	OnBtnClose(TNotifyUI& msg);
+	void	OnFavoriteTreeListItemClick(TNotifyUI& msg);
+	void	OnFavoriteListItemHover(TNotifyUI& msg);
+	void	OnFavoriteListItemUnHover(TNotifyUI& msg);
+	void	OnShowMenu(TNotifyUI& msg);
+	void	OnFavoriteListItemEditFinished(TNotifyUI& msg);
+	void	OnFavoriteListItemDelete(TNotifyUI& msg);
+
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);
 	void	ShowFavoriteTreeList(int nId);
