@@ -277,6 +277,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LoginOAuthWnd.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LoginOAuthWnd.h"
+				>
+			</File>
+			<File
 				RelativePath=".\LoginPreWnd.cpp"
 				>
 			</File>
