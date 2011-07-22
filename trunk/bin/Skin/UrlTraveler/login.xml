@@ -19,12 +19,12 @@
             <Button name="ButtonUI1" text="{u}{l}注册新用户{/l}{/u}" tooltip="如果你还没有账号，请点击注册一个账号" float="true" pos="279,17,349,39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" />
             <Label name="LabelUI3" text="密码：" float="true" pos="7,58,75,78" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="right" />
             <Edit name="pwdedit" tooltip="请在这里输入您的密码" float="true" pos="82,55,269,82" bkcolor="#FFFFFFFF" bordercolor="#FF4EA0D1" textpadding="4,3,4,3" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" password="true" />
-            <Button name="ButtonUI2" text="{u}{l}忘记密码？{/l}{/u}" tooltip="如果你忘记了密码，请点击找回密码" float="true" pos="279,58,349,78" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" />
+            <Button name="ButtonUI2" text="{i get_password.png}{u}{l}忘记密码？{/l}{/u}" tooltip="如果你忘记了密码，请点击找回密码" float="true" pos="279,58,349,78" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" />
             <Button name="loginBtn" text="登录" tooltip="点击这里登录游戏" float="true" pos="134,98,209,125" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" hotimage="button_over.bmp" pushedimage="button_down.bmp" />
             <Edit name="EditUI1" tooltip="请在这里输入您的密码" float="true" pos="82,15,269,42" bkcolor="#FFFFFFFF" bordercolor="#FF4EA0D1" textpadding="4,3,4,3" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" password="true" />
         </Container>
         <VerticalLayout name="VerticalLayoutUI2" pos="1,233,364,236" width="363" height="3" bkimage="blue_line.png" />
-        <Button name="ButtonUI4" text="重新选择登录帐号" float="true" pos="10,247,142,277" bkcolor="#FFFFFFFF" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+        <Button name="SelectLoginAccountBtn" text="<< 重新选择登录帐号" float="true" pos="10,247,142,277" bkcolor="#FFFFFFFF" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
         <Option name="ButtonUI5" float="true" pos="177,256,191,270" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
         <Option name="ButtonUI6" float="true" pos="279,256,293,270" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
         <Label name="LabelUI5" text="记住密码" float="true" pos="192,248,252,278" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
