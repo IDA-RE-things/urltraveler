@@ -1,11 +1,9 @@
 #include "stdafx.h"
 #include "PlugIn.h"
-#include "360SE3PlugIn.h"
 #include <shlwapi.h>
 #include "StringHelper.h"
 #include "TimeHelper.h"
 #include "PathHelper.h"
-#include "CppSQLite3.h"
 #include <algorithm>
 #include "CRCHash.h"
 #include "PathHelper.h"
@@ -26,7 +24,7 @@ using namespace n360seplugin;
 #pragma comment(lib, "shlwapi.lib")
 
 
-C360ChromePlugIn::C360ChromePlugIn()
+C360ChromePlugIn::C360ChromePlugIn() : m_nMaxDepth(0), m_nIndex(0)
 {
 	m_mapDepthInfo.clear();
 	m_mapPidInfo.clear();
