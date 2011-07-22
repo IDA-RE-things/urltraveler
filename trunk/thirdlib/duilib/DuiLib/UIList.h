@@ -145,6 +145,10 @@ namespace DuiLib {
 		void SetItemLineColor(DWORD dwLineColor);
 		bool IsItemShowHtml();
 		void SetItemShowHtml(bool bShowHtml = true);
+
+		bool	IsItemMultiSelect();
+		void SetItemMultiSelect(bool bMultiSelect = true);
+
 		RECT GetItemTextPadding() const;
 		DWORD GetItemTextColor() const;
 		DWORD GetItemBkColor() const;
@@ -199,9 +203,14 @@ namespace DuiLib {
 		void HideEditText();
 		bool EditItem(int nX, int nY);
 		CStdString GetEditText();
+
 	public:
 		void Notify(TNotifyUI& msg);
 		virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
+
+	protected:
+		void	SelectMultiItem();
+
 	protected:
 		bool m_bScrollSelect;
 		int m_iCurSel;
@@ -215,6 +224,7 @@ namespace DuiLib {
 		int      m_nEditRow;
 		int      m_nEditColomn;
 		bool     m_bShowEdit;
+		bool		m_bMultiSelect;	// 是否支持多选
 	};
 
 	/////////////////////////////////////////////////////////////////////////////////////

@@ -35,6 +35,8 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
 	m_ListInfo.bMultiExpandable = false;
 	::ZeroMemory(&m_ListInfo.rcTextPadding, sizeof(m_ListInfo.rcTextPadding));
 	::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
+
+	m_bMultiSelect	=	false;
 }
 
 void CListUI::Notify(TNotifyUI& msg)
@@ -322,6 +324,16 @@ void CListUI::SetPos(RECT rc)
 	}
 }
 
+void	CListUI::SelectMultiItem()
+{
+	// 检查Shitf键盘是否被按下
+	if ( GetKeyState(VK_SHIFT)   &   0x8000   )
+	{
+		int i = 0;
+		i++;
+	}
+}
+
 void CListUI::DoEvent(TEventUI& event)
 {
 	if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) 
@@ -334,6 +346,11 @@ void CListUI::DoEvent(TEventUI& event)
 	if( event.Type == UIEVENT_SETFOCUS ) 
 	{
 		m_bFocused = true;
+		if( m_bMultiSelect == true)
+		{
+			SelectMultiItem();	
+		}
+
 		return;
 	}
 	if( event.Type == UIEVENT_KILLFOCUS ) 
@@ -641,6 +658,16 @@ void CListUI::SetDisabledItemImage(LPCTSTR pStrImage)
 	Invalidate();
 }
 
+bool	CListUI::IsItemMultiSelect()
+{
+	return m_bMultiSelect;
+}
+
+void CListUI::SetItemMultiSelect(bool bMultiSelect)
+{
+	m_bMultiSelect = bMultiSelect;
+}
+
 DWORD CListUI::GetDisabledItemTextColor() const
 {
 	return m_ListInfo.dwDisabledTextColor;
@@ -835,6 +862,7 @@ void CListUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		SetItemLineColor(clrColor);
 	}
 	else if( _tcscmp(pstrName, _T("itemshowhtml")) == 0 ) SetItemShowHtml(_tcscmp(pstrValue, _T("true")) == 0);
+	else if( _tcscmp(pstrName, _T("multiselect")) == 0 ) SetItemMultiSelect(_tcscmp(pstrValue, _T("true")) == 0);
 	else CVerticalLayoutUI::SetAttribute(pstrName, pstrValue);
 }
 
