@@ -29,7 +29,8 @@ FavMonitorModule::~FavMonitorModule()
 }
 
 BEGIN_EVENT_MAP(FavMonitorModule)
-	//ON_EVENT(EVENT_VALUE_FAVMONITOR_MONITOR_FILE, OnEvent_MonitorFile)
+	ON_EVENT(EVENT_VALUE_FAVMONITOR_START_MONITOR, OnEvent_StartMonitor)
+	ON_EVENT(EVENT_VALUE_FAVMONITOR_STOP_MONITOR, OnEvent_StopMonitor)
 END_EVENT_MAP()
 
 BEGIN_MESSAGE_MAP(FavMonitorModule)
@@ -122,6 +123,14 @@ void FavMonitorModule::ProcessMessage(const Message& msg)
 int32 FavMonitorModule::CallDirect(const ServiceValue lServiceValue, param wparam) 
 {
 	CALL_DIRECT(lServiceValue, wparam);
+}
+
+void	FavMonitorModule::OnEvent_StartMonitor(Event* pEvent)
+{
+}
+
+void	FavMonitorModule::OnEvent_StopMonitor(Event* pEvent)
+{
 }
 
 void FavMonitorModule::NotifyRotuine( LPSTR pPath,int iActionType )

@@ -80,9 +80,15 @@ public:
 	//		@param	rparam			²ÎÊý2
 	//----------------------------------------------------------------------------------------
 	int32 CallDirect(const ServiceValue lServiceValue, param wparam);
+	
+protected:
+	void	OnEvent_StartMonitor(Event* pEvent);
+	void	OnEvent_StopMonitor(Event* pEvent);
+
 private:
 	int32 OnService_AddMonitor(ServiceValue lServiceValue, param	lParam);
 	int32 OnService_RemoveMonitor(ServiceValue lServiceValue, param	lParam);
+
 protected:
 	static void WINAPI NotifyRotuine(LPSTR pPath,int iActionType); 
 };

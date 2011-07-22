@@ -175,7 +175,6 @@ wchar_t* IEPlugIn::GetFavoriteDataPath()
 	std::wstring strPath = PathHelper::GetHomeDir() + L"\\Favorites";
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
-
 	return wcsdup(strPath.c_str());
 }
 

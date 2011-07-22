@@ -107,7 +107,6 @@ wchar_t* SogouPlugIn::GetFavoriteDataPath()
 	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer\\Favorite2.dat";
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
-
 	return _wcsdup(strPath.c_str());
 }
 
