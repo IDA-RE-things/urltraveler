@@ -21,9 +21,9 @@
         <VerticalLayout name="VerticalLayoutUI5" pos="1,129,324,132" width="323" height="3" bkimage="blue_line.png" bkcolor="#FFFFFFFF" />
         <VerticalLayout name="VerticalLayoutUI4" pos="1,156,324,231" width="323" height="75" bkcolor="#FFFFFFFF">
             <Label name="LabelUI4" text="没有帐号？您可以用以下帐号登录：" float="true" pos="6,12,193,34" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-            <Button name="ButtonUI3" text="QQ" float="true" pos="76,44,118,66" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-            <Button name="ButtonUI4" text="人人" float="true" pos="138,44,180,65" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-            <Button name="ButtonUI5" text="豆瓣" float="true" pos="203,43,245,65" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+            <Button name="QQLogin" text="QQ" float="true" pos="76,44,118,66" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+            <Button name="RenRenLogin" text="人人" float="true" pos="138,44,180,65" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+            <Button name="DouBanLogin" text="豆瓣" float="true" pos="203,43,245,65" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
         </VerticalLayout>
     </VerticalLayout>
 </Window>
