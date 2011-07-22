@@ -10,7 +10,6 @@
 #include <comdef.h>
 #include "TreeList.h"
 #include "resource.h"
-#include "LoginFrameWnd.h"
 #include "PlugIn.h"
 #include <map>
 #include <vector>
@@ -66,7 +65,6 @@ public:
 	CPaintManagerUI m_pm;
 
 private:
-	CLoginFrameWnd* m_pLoginFrame;
 	std::map<int, TreeListUI::Node*>	m_mapIdNode;	//	id到node的关联关系
 	std::map<TreeListUI::Node*, int>	m_mapNodeId;	//	node到map的映射
 

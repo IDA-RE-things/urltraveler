@@ -183,26 +183,6 @@ LRESULT COAuthLoginWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	int wmId    = LOWORD(wParam);
 	int wmEvent = HIWORD(wParam);
 
-// 	switch (wmId)
-// 	{
-// 		// µ¯³öµÇÂ¼¶Ô»°¿ò
-// 	case IDM_LOGIN:
-// 		{
-// 			/*
-// 			CLoginFrameWnd* pLoginFrame = new CLoginFrameWnd();
-// 			if( pLoginFrame == NULL ) { Close(); return 0; }
-// 			pLoginFrame->Create(m_hWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
-// 			pLoginFrame->CenterWindow();
-// 			ShowModal(*pLoginFrame);
-// 			*/
-// 		}
-// 
-// 		break;
-// 
-// 	default:
-// 		break;
-// 	}
-
 	return 0;
 }
 
