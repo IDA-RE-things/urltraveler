@@ -39,8 +39,10 @@ void CLoginFrameWnd::Notify(TNotifyUI& msg)
 			//pMainFrameWnd->ShowModal(*pLoginFrame);
 		}
 	}
-	else if( msg.sType == _T("itemselect") ) {
-		if( msg.pSender->GetName() == _T("accountcombo") ) {
+	else if( msg.sType == _T("itemselect") ) 
+	{
+		if( msg.pSender->GetName() == _T("accountcombo") ) 
+		{
 			CEditUI* pAccountEdit = static_cast<CEditUI*>(m_pm.FindControl(_T("accountedit")));
 			if( pAccountEdit ) pAccountEdit->SetText(msg.pSender->GetText());
 		}
