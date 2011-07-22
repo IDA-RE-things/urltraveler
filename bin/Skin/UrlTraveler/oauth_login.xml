@@ -10,13 +10,13 @@
         <HorizontalLayout name="HorizontalLayoutUI1" pos="1,0,363,26" width="362" height="26" inset="2,2,2,0">
             <Label name="LabelUI1" pos="3,3,25,25" width="22" height="22" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             <Label name="LabelUI4" text="{b}EverFav网络账户登录{/b}" float="true" pos="34,5,209,21" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" />
-            <Button name="closebtn" float="true" pos="315,1,360,18" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+            <Button name="closebtn" float="true" pos="317,1,362,18" width="45" height="17" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_close.png' source='90,0,135,17'" hotimage="file='sys_dlg_close.png' source='45,0,90,17'" pushedimage="file='sys_dlg_close.png' source='0,0,45,17'" />
         </HorizontalLayout>
         <Option name="ButtonUI5" float="true" pos="177,256,191,270" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
         <Option name="ButtonUI6" float="true" pos="279,256,293,270" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
         <Label name="LabelUI5" text="记住密码" float="true" pos="192,248,252,278" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
         <Label name="LabelUI6" text="自动登录" float="true" pos="295,248,355,278" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-        <Button name="SelectLoginAccountBtn" text="{i prev.png} 重新选择登录帐号" float="true" pos="16,246,141,276" bkcolor="#FFFFFFFF" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" />
+        <Button name="SelectLoginAccountBtn" text="重新选择登录帐号" bordersize="0" float="true" pos="16,250,141,275" bkcolor="#FFFFFFFF" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" normalimage="long_btn_normal.png" hotimage="long_btn_hover.png" pushedimage="long_btn_down.png" />
         <Container name="ContainerUI1" pos="1,29,363,238" width="362" height="209" bkcolor="#FFFFFFFF">
 			<ActiveX name="ie" clsid="{8856F961-340A-11D0-A96B-00C04FD705A2}" delaycreate="false"/>
         </Container>

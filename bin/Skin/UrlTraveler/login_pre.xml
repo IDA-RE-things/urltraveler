@@ -6,24 +6,23 @@
     <Font name="宋体" size="14" bold="true" italic="false" />
     <Font name="宋体" size="22" bold="true" italic="true" />
     <Font name="SimSun" size="12" bold="true" italic="false" />
-    <VerticalLayout name="VerticalLayoutUI1" pos="0,-9,325,211" width="325" height="220" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,0,0">
-        <VerticalLayout name="VerticalLayoutUI2" pos="1,0,324,30" width="323" height="30">
-            <Button name="closebtn" float="true" pos="274,1,319,18" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+    <VerticalLayout name="VerticalLayoutUI1" pos="0,211,325,431" width="325" height="220" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,0,0">
+        <VerticalLayout name="VerticalLayoutUI2" pos="1,0,324,81" width="323" height="81" bkimage="top.png">
+            <Button name="closebtn" float="true" pos="276,1,321,18" width="45" height="17" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_close.png' source='90,0,135,17'" hotimage="file='sys_dlg_close.png' source='45,0,90,17'" pushedimage="file='sys_dlg_close.png' source='0,0,45,17'" />
             <Label name="LabelUI1" float="true" pos="3,3,25,25" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             <Label name="LabelUI2" text="{b}网络账户登录{/b}" float="true" pos="31,4,120,22" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" />
         </VerticalLayout>
-        <VerticalLayout name="VerticalLayoutUI3" pos="1,30,324,83" width="323" height="53" bkimage="login_heade.png" bkcolor="#FFFFFFFF" inset="1,0,0,0" />
         <VerticalLayout name="VerticalLayoutUI4" pos="1,83,324,155" width="323" height="72" bkcolor="#FFFFFFFF">
             <Label name="LabelUI3" text="已有EverFav帐号？" float="true" pos="6,22,111,52" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-            <Button name="EverAccountLoginBtn" text="使用EverFav帐号登录" float="true" pos="114,22,238,52" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-            <Button name="EverAacountRegisterBtn" text="{c #0000FF}{l}帐号注册{/l}{/c}" float="true" pos="250,23,310,53" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" />
+            <Button name="EverAccountLoginBtn" text="使用EverFav帐号登录" bordersize="0" float="true" pos="114,24,238,49" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="long_btn_normal.png" hotimage="long_btn_hover.png" pushedimage="long_btn_down.png" />
+            <Button name="ButtonUI2" text="{c #0000FF}{l}帐号注册{/l}{/c}" float="true" pos="250,23,310,53" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" />
         </VerticalLayout>
         <VerticalLayout name="VerticalLayoutUI5" pos="1,129,324,132" width="323" height="3" bkimage="blue_line.png" bkcolor="#FFFFFFFF" />
         <VerticalLayout name="VerticalLayoutUI4" pos="1,156,324,231" width="323" height="75" bkcolor="#FFFFFFFF">
             <Label name="LabelUI4" text="没有帐号？您可以用以下帐号登录：" float="true" pos="6,12,193,34" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-            <Button name="QQLogin" text="QQ" float="true" pos="76,44,118,66" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-            <Button name="RenRenLogin" text="人人" float="true" pos="138,44,180,65" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-            <Button name="DouBanLogin" text="豆瓣" float="true" pos="203,43,245,65" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+            <Button name="QQLogin" text="{i QQ.png} QQ" float="true" pos="76,42,118,67" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" normalimage="btn_normal.png" hotimage="btn_hover.png" pushedimage="btn_down.png" />
+            <Button name="RenRenLogin" text="人人" float="true" pos="138,43,180,68" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="btn_normal.png" hotimage="btn_hover.png" pushedimage="btn_down.png" />
+            <Button name="DouBanLogin" text="豆瓣" float="true" pos="203,43,245,68" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="btn_normal.png" hotimage="btn_hover.png" pushedimage="btn_down.png" />
         </VerticalLayout>
     </VerticalLayout>
 </Window>
