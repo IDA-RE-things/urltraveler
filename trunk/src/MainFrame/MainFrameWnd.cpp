@@ -745,7 +745,8 @@ void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, HICON hIcon )
 
 void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 {
-	for( int i=0; i<m_vFavoriteNodeAtTreeNode.size(); i++)
+	size_t i = 0;
+	for( i=0; i<m_vFavoriteNodeAtTreeNode.size(); i++)
 	{
 		FAVORITELINEDATA* pData = m_vFavoriteNodeAtTreeNode[i];
 		if( pData->nId == nDeleteNodeId)
@@ -761,6 +762,12 @@ void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 		return;
 
 	pUserList->Invalidate();
+
+	// 下一个Item获取设置为被选中状态
+	if( i < m_vFavoriteNodeAtTreeNode.size() )
+	{
+		pUserList->SelectItem(i);
+	}
 }
 
 void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)

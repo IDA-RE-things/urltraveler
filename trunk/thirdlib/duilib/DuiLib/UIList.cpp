@@ -250,7 +250,8 @@ bool CListUI::Remove(CControlUI* pControl)
 
 bool CListUI::RemoveAt(int iIndex)
 {
-	if (!m_pList->RemoveAt(iIndex)) return false;
+	if (!m_pList->RemoveAt(iIndex)) 
+		return false;
 
 	for(int i = iIndex; i < m_pList->GetCount(); ++i)
 	{
@@ -261,7 +262,24 @@ bool CListUI::RemoveAt(int iIndex)
 		}
 	}
 
-	SelectItem(FindSelectable(m_iCurSel, false));
+	int nNextSelect = FindSelectable(m_iCurSel, false);
+
+	// 如果当前删除的Item的位置小于被选中的Item的位置，则删除后，原来被选中的item的索引要减1
+	if( m_iCurSel != -1)
+	{
+		if( iIndex < m_iCurSel)
+		{
+			m_iCurSel--;
+		}
+		// 如果删除的正式被选中的项，则
+		else if( iIndex == m_iCurSel)
+		{
+			m_iCurSel = -1;
+		}
+	}
+
+	SelectItem(nNextSelect);
+
 	return true;
 }
 
@@ -428,7 +446,8 @@ int CListUI::GetCurSel() const
 bool CListUI::SelectItem(int iIndex)
 {
 	HideEditText();
-	if( iIndex == m_iCurSel ) return true;
+	if( iIndex == m_iCurSel ) 
+		return true;
 
 	// We should first unselect the currently selected item
 	if( m_iCurSel >= 0 ) {
