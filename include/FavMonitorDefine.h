@@ -1,6 +1,6 @@
 #pragma once
 
-// DataCenter的对外的头文件信息
+// FavMonitor的对外的头文件信息
 
 #include "SndaBase.h"
 #include "UrlTravelerHeader.h"
@@ -11,23 +11,26 @@ using namespace std;
 
 namespace favmonitor 
 {
-	// DataCenter对外公开的事件
+	// FavMonitor对外公开的事件
 	enum E_FavMonitorEventValue
 	{
+		EVENT_VALUE_FAVMONITOR_START_MONITOR	=	EVENT_VALUE_FAVMONITOR_BEGIN,	//	启动监控
+		EVENT_VALUE_FAVMONITOR_STOP_MONITOR,	//	停止监控
 	};
 
-	// DataCenter能够可能对外发送的广播消息
+	// FavMonitor能够可能对外发送的广播消息
 	enum E_FavMonitorMessageValue
 	{
 		MESSAGE_VALUE_FAVMONITOR_FILE_CHANGE = MESSAGE_VALUE_FAVMONITOR_BEGIN,
 		MESSAGE_VALUE_FAVMONITOR_END = MESSAGE_VALUE_FAVMONITOR_END,
 	};
 
-	// DataCenter能够处理的直接调用
+	// FavMonitor能够处理的直接调用
 	enum E_FavMonitorServiceValue
 	{
 		SERVICE_VALUE_FAVMONITOR_ADD_MONITOR = SERVICE_VALUE_FAVMONITOR_BEGIN,	
 		SERVICE_VALUE_FAVMONITOR_REMOVE_MONITOR,
+
 		SERVICE_VALUE_FAVMONITOR_END = SERVICE_VALUE_FAVMONITOR_END,		//所有的事件结束
 	};
 
@@ -41,7 +44,6 @@ namespace favmonitor
 			memset(szFile, 0, sizeof(szFile));
 			iActionType = 0;
 		}
-
 
 		wchar_t szFile[MAX_PATH];
 		int iActionType;
