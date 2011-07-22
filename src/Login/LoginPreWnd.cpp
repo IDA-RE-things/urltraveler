@@ -1,10 +1,14 @@
 #include "stdafx.h"
+#include "ControlEx.h"
 #include "LoginPreWnd.h"
 
 #include "MiscHelper.h"
 #include "StringHelper.h"
 #include "MiscHelper.h"
 #include "XString.h"
+#include "LoginFrameWnd.h"
+#include "MainFrameDefine.h"
+#include "LoginModule.h"
 
 
 CLoginPreWnd::CLoginPreWnd()
@@ -21,24 +25,41 @@ void CLoginPreWnd::OnPrepare(TNotifyUI& msg)
 
 void CLoginPreWnd::Notify(TNotifyUI& msg)
 {
-	if( msg.sType == _T("windowinit") ) OnPrepare(msg);
-	else if( msg.sType == _T("click") ) {
-		if( msg.pSender->GetName() == L"closebtn" ) {
+	if( msg.sType == _T("windowinit") ) 
+	{
+		OnPrepare(msg);
+	}
+	else if( msg.sType == _T("click") ) 
+	{
+		if( msg.pSender->GetName() == L"closebtn" ) 
+		{
 			Close();
 			return; 
 		}
-		else if( msg.pSender->GetName() == L"minbtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_MINIMIZE, 0); return; }
-		else if( msg.pSender->GetName() == L"maxbtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_MAXIMIZE, 0); return; }
-		else if( msg.pSender->GetName() == L"restorebtn" ) { 
-			SendMessage(WM_SYSCOMMAND, SC_RESTORE, 0); return; }
-		else if( msg.pSender->GetName() == L"menubtn" ) { 
-		}
+		else if( msg.pSender->GetName() == L"EverAccountLoginBtn" ) 
+		{ 
+			Close();
 
-	}
-	else if( msg.sType == _T("itemclick") ) 
-	{
+			// 强制弹出更新窗口进行升级
+			mainframe::MainFrame_GetWndService stGetWndService;
+			login::g_LoginModule->GetModuleManager()->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, 
+				(param)&stGetWndService);
+
+			CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
+			ASSERT(pMainFrameWnd != NULL);
+
+			CLoginFrameWnd* pLoginFrame = new CLoginFrameWnd();
+			pLoginFrame->Create(pMainFrameWnd->GetHWND(), _T(""), 
+				UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+			pLoginFrame->CenterWindow();
+/*
+			pMainFrameWnd->ShowModal(*pLoginFrame);
+*/
+			return;
+		}
+		else if( msg.pSender->GetName() == L"EverAacountRegisterBtn" ) 
+		{ 
+		}
 	}
 }
 

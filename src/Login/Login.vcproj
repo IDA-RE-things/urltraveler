@@ -265,6 +265,18 @@
 			Name="Ext"
 			>
 			<File
+				RelativePath=".\ControlEx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LoginFrameWnd.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LoginFrameWnd.h"
+				>
+			</File>
+			<File
 				RelativePath=".\LoginPreWnd.cpp"
 				>
 			</File>
