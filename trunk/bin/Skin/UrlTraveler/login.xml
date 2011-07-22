@@ -6,28 +6,26 @@
     <Font name="宋体" size="14" bold="true" italic="false" />
     <Font name="宋体" size="22" bold="true" italic="true" />
     <Font name="SimSun" size="12" bold="true" italic="false" />
-    <VerticalLayout name="VerticalLayoutUI1" pos="0,0,325,190" width="325" height="190" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,0,0">
-        <HorizontalLayout name="HorizontalLayoutUI1" pos="1,0,363,26" width="362" height="26" inset="2,2,2,0">
+    <VerticalLayout name="VerticalLayoutUI1" pos="0,0,365,283" width="365" height="283" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,0,0">
+        <HorizontalLayout name="HorizontalLayoutUI1" pos="1,0,365,78" width="364" height="78" bkimage="top.png" inset="2,2,2,0">
             <Label name="LabelUI1" pos="3,3,25,25" width="22" height="22" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             <Label name="LabelUI4" text="{b}EverFav网络账户登录{/b}" float="true" pos="34,5,209,21" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" />
-            <Button name="closebtn" float="true" pos="315,1,360,18" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+            <Button name="closebtn" float="true" pos="317,1,362,18" width="45" height="17" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_close.png' source='90,0,135,17'" hotimage="file='sys_dlg_close.png' source='45,0,90,17'" pushedimage="file='sys_dlg_close.png' source='0,0,45,17'" />
         </HorizontalLayout>
-        <Control name="ControlUI2" pos="1,26,363,86" width="362" height="60" bkimage="login_heade.png" bkcolor="#FFFF0000" />
-        <Progress name="ProgressUI1" pos="0,0,0,10" height="10" bkcolor="#FFF8B343" bordercolor="#FF4EA0D1" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" min="0" max="100" value="0" hor="true" />
-        <Container name="ContainerUI1" pos="1,96,364,233" width="363" height="137" bkcolor="#FFFFFFFF">
+        <Container name="ContainerUI1" pos="1,78,364,236" width="363" height="158" bkcolor="#FFFFFFFF">
             <Label name="LabelUI2" text="用户名：" float="true" pos="7,16,75,38" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="right" />
             <Button name="ButtonUI1" text="{i add_account.png}{u}{l}注册新用户{/l}{/u}" tooltip="如果你还没有账号，请点击注册一个账号" float="true" pos="279,17,357,39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" />
             <Label name="LabelUI3" text="密码：" float="true" pos="7,58,75,78" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="right" />
             <Edit name="pwdedit" tooltip="请在这里输入您的密码" float="true" pos="82,55,269,82" bkcolor="#FFFFFFFF" bordercolor="#FF4EA0D1" textpadding="4,3,4,3" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" password="true" />
             <Button name="ButtonUI2" text="{i get_password.png}{u}{l}忘记密码？{/l}{/u}" tooltip="如果你忘记了密码，请点击找回密码" float="true" pos="279,58,357,78" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" />
-            <Button name="loginBtn" text="登录" tooltip="点击这里登录游戏" float="true" pos="134,98,209,125" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" hotimage="button_over.bmp" pushedimage="button_down.bmp" />
+            <Button name="loginBtn" text="登录" tooltip="点击这里登录游戏" bordersize="0" float="true" pos="134,127,209,152" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="btn_normal.png" hotimage="btn_hover.png" pushedimage="btn_down.png" />
             <Edit name="EditUI1" tooltip="请在这里输入您的密码" float="true" pos="82,15,269,42" bkcolor="#FFFFFFFF" bordercolor="#FF4EA0D1" textpadding="4,3,4,3" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" password="true" />
         </Container>
         <VerticalLayout name="VerticalLayoutUI2" pos="1,233,364,236" width="363" height="3" bkimage="blue_line.png" />
-        <Option name="ButtonUI5" float="true" pos="177,256,191,270" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
-        <Option name="ButtonUI6" float="true" pos="279,256,293,270" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
-        <Label name="LabelUI5" text="记住密码" float="true" pos="192,248,252,278" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-        <Label name="LabelUI6" text="自动登录" float="true" pos="295,248,355,278" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-        <Button name="SelectLoginAccountBtn" text="{i prev.png} 重新选择登录帐号" float="true" pos="16,246,141,276" bkcolor="#FFFFFFFF" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" showhtml="true"/>
+        <Option name="ButtonUI5" float="true" pos="83,177,97,191" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
+        <Option name="ButtonUI6" float="true" pos="194,178,208,192" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="checkbox_normal.png" selectedimage="checkbox_selected.png" />
+        <Label name="LabelUI5" text="记住密码" float="true" pos="98,169,158,199" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+        <Label name="LabelUI6" text="自动登录" float="true" pos="210,170,270,200" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+        <Button name="SelectLoginAccountBtn" text="重新选择登录帐号" bordersize="0" float="true" pos="16,249,141,274" bkcolor="#FFFFFFFF" bordercolor="#00666666" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="center" normalimage="long_btn_normal.png" hotimage="long_btn_hover.png" pushedimage="long_btn_down.png" />
     </VerticalLayout>
 </Window>

@@ -9,7 +9,7 @@
     <VerticalLayout name="VerticalLayoutUI1" pos="0,0,850,484" width="850" height="484" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
         <VerticalLayout name="VerticalLayoutUI10" pos="0,0,612,30" width="612" height="30" bkcolor="#00B9E6F9" bkcolor2="#00FFFFFF">
             <Label name="LabelUI1" text="{b}EverFav 设置{/b}" float="true" pos="35,1,116,31" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" />
-            <Button name="closebtn" float="true" pos="565,2,610,19" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+            <Button name="closebtn" float="true" pos="567,2,612,19" width="45" height="17" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_close.png' source='90,0,135,17'" hotimage="file='sys_dlg_close.png' source='45,0,90,17'" pushedimage="file='sys_dlg_close.png' source='0,0,45,17'" />
             <Label name="LabelUI2" float="true" pos="7,3,29,25" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
         </VerticalLayout>
         <HorizontalLayout name="HorizontalLayoutUI16" pos="0,30,612,441" width="612" height="411" inset="8,8,8,8">
@@ -69,9 +69,9 @@
                     </HorizontalLayout>
                 </HorizontalLayout>
             </Container>
-            <Button name="OK" text="确定" float="true" pos="328,371,407,398" bkcolor="#FFFFFFFF" bordercolor="#00A6CAF0" textcolor="#FF000000"  align="center" />
+            <Button name="OK" text="确定" float="true" pos="328,371,407,398" bkcolor="#FFFFFFFF" bordercolor="#00A6CAF0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
             <Button name="Apply" text="应用" float="true" pos="419,371,498,398" bkcolor="#FFFFFFFF" bordercolor="#00A6CAF0" textcolor="#FF000000" disabledtextcolor="#FF999999" align="center" />
-            <Button name="Cancel" text="取消" float="true" pos="510,371,589,398" bkcolor="#FFFFFFFF" bordercolor="#00A6CAF0" textcolor="#FF000000" align="center" />
+            <Button name="Cancel" text="取消" float="true" pos="510,371,589,398" bkcolor="#FFFFFFFF" bordercolor="#00A6CAF0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
         </HorizontalLayout>
     </VerticalLayout>
 </Window>
