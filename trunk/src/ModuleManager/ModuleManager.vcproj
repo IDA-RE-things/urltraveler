@@ -63,12 +63,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Utilityd.lib vldmtdll.lib"
-				OutputFile="..\..\bin\UrlTravelerd.exe"
+				OutputFile="..\..\bin\EverFavd.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"
+				ImportLibrary="..\..\lib\$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -140,7 +141,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="Utility.lib"
-				OutputFile="..\..\bin\UrlTraveler.exe"
+				OutputFile="..\..\bin\EverFav.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../lib"
 				GenerateDebugInformation="true"
@@ -148,6 +149,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				ImportLibrary="..\..\lib\$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
