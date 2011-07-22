@@ -1,30 +1,38 @@
 #include "stdafx.h"
+#include "LoginOAuthWnd.h"
 #include "ControlEx.h"
-#include "LoginPreWnd.h"
-
-#include "MiscHelper.h"
-#include "StringHelper.h"
-#include "MiscHelper.h"
-#include "XString.h"
-#include "LoginFrameWnd.h"
 #include "MainFrameDefine.h"
 #include "LoginModule.h"
-#include "LoginOAuthWnd.h"
+
+using namespace mainframe;
 
 
-CLoginPreWnd::CLoginPreWnd()
+COAuthLoginWnd::COAuthLoginWnd()
 {
 }
 
-CLoginPreWnd::~CLoginPreWnd()
+COAuthLoginWnd::~COAuthLoginWnd()
 {
 }
 
-void CLoginPreWnd::OnPrepare(TNotifyUI& msg) 
+void COAuthLoginWnd::OnPrepare(TNotifyUI& msg) 
 { 
 }
 
-void CLoginPreWnd::Notify(TNotifyUI& msg)
+void COAuthLoginWnd::Init()
+{
+	CActiveXUI* pActiveXUI = static_cast<CActiveXUI*>(m_pm.FindControl(_T("ie")));
+	if( pActiveXUI ) {
+		IWebBrowser2* pWebBrowser = NULL;
+		pActiveXUI->GetControl(IID_IWebBrowser2, (void**)&pWebBrowser);
+		if( pWebBrowser != NULL ) {
+			pWebBrowser->Navigate(L"http://www.baidu.com",NULL,NULL,NULL,NULL);  
+			pWebBrowser->Release();
+		}
+	}
+}
+
+void COAuthLoginWnd::Notify(TNotifyUI& msg)
 {
 	if( msg.sType == _T("windowinit") ) 
 	{
@@ -37,9 +45,9 @@ void CLoginPreWnd::Notify(TNotifyUI& msg)
 			Close();
 			return; 
 		}
-		else if( msg.pSender->GetName() == L"EverAccountLoginBtn" ) 
+		else if( msg.pSender->GetName() == _T("SelectLoginAccountBtn") ) 
 		{ 
-			Close();
+			Close(); 
 
 			// 强制弹出更新窗口进行升级
 			mainframe::MainFrame_GetWndService stGetWndService;
@@ -49,39 +57,19 @@ void CLoginPreWnd::Notify(TNotifyUI& msg)
 			CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
 			ASSERT(pMainFrameWnd != NULL);
 
-			CLoginFrameWnd* pLoginFrame = new CLoginFrameWnd();
-			pLoginFrame->Create(pMainFrameWnd->GetHWND(), _T(""), 
-				UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+			CLoginPreWnd* pLoginFrame = new CLoginPreWnd();
+			if( pLoginFrame == NULL )
+				return ;
+
+			pLoginFrame->Create(pMainFrameWnd->GetHWND(), _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
 			pLoginFrame->CenterWindow();
-/*
-			pMainFrameWnd->ShowModal(*pLoginFrame);
-*/
-			return;
+			//pMainFrameWnd->ShowModal(*pLoginFrame);
 		}
-		else if( msg.pSender->GetName() == L"EverAacountRegisterBtn" ) 
-		{ 
-		}
-		else if( msg.pSender->GetName() == L"QQLogin" ) 
-		{
-			Close();
 
-			// 强制弹出更新窗口进行升级
-			mainframe::MainFrame_GetWndService stGetWndService;
-			login::g_LoginModule->GetModuleManager()->CallService(mainframe::SERVICE_VALUE_MAINFRAME_GET_MAINWND, 
-				(param)&stGetWndService);
-
-			CWindowWnd* pMainFrameWnd = reinterpret_cast<CWindowWnd*>(stGetWndService.pBaseWnd);
-			ASSERT(pMainFrameWnd != NULL);
-
-			COAuthLoginWnd* pLoginFrame = new COAuthLoginWnd();
-			pLoginFrame->Create(pMainFrameWnd->GetHWND(), _T(""), 
-				UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
-			pLoginFrame->CenterWindow();
-		}
 	}
 }
 
-LRESULT CLoginPreWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT COAuthLoginWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
 	styleValue &= ~WS_CAPTION;
@@ -89,7 +77,7 @@ LRESULT CLoginPreWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
 	m_pm.Init(m_hWnd);
 	CDialogBuilder builder;
-	CControlUI* pRoot = builder.Create(_T("login_pre.xml"), (UINT)0,  NULL, &m_pm);
+	CControlUI* pRoot = builder.Create(_T("oauth_login.xml"), (UINT)0,  NULL, &m_pm);
 	ASSERT(pRoot && "Failed to parse XML");
 	m_pm.AttachDialog(pRoot);
 	m_pm.AddNotifier(this);
@@ -98,29 +86,29 @@ LRESULT CLoginPreWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 	return 0;
 }
 
-LRESULT CLoginPreWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT COAuthLoginWnd::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
 	return 0;
 }
 
-LRESULT CLoginPreWnd::OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT COAuthLoginWnd::OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	if( ::IsIconic(*this) ) bHandled = FALSE;
 	return (wParam == 0) ? TRUE : FALSE;
 }
 
-LRESULT CLoginPreWnd::OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT COAuthLoginWnd::OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	return 0;
 }
 
-LRESULT CLoginPreWnd::OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT COAuthLoginWnd::OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	return 0;
 }
 
-LRESULT CLoginPreWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT COAuthLoginWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	POINT pt; pt.x = GET_X_LPARAM(lParam); pt.y = GET_Y_LPARAM(lParam);
 	::ScreenToClient(*this, &pt);
@@ -141,7 +129,7 @@ LRESULT CLoginPreWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	return HTCLIENT;
 }
 
-LRESULT CLoginPreWnd::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT COAuthLoginWnd::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	SIZE szRoundCorner = m_pm.GetRoundCorner();
 	if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
@@ -158,7 +146,7 @@ LRESULT CLoginPreWnd::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 	return 0;
 }
 
-LRESULT CLoginPreWnd::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT COAuthLoginWnd::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	MONITORINFO oMonitor = {};
 	oMonitor.cbSize = sizeof(oMonitor);
@@ -176,7 +164,7 @@ LRESULT CLoginPreWnd::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	return 0;
 }
 
-LRESULT CLoginPreWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT COAuthLoginWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	// 有时会在收到WM_NCDESTROY后收到wParam为SC_CLOSE的WM_SYSCOMMAND
 	if( wParam == SC_CLOSE ) {
@@ -190,7 +178,7 @@ LRESULT CLoginPreWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	return lRes;
 }
 
-LRESULT CLoginPreWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT COAuthLoginWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	int wmId    = LOWORD(wParam);
 	int wmEvent = HIWORD(wParam);
@@ -219,7 +207,7 @@ LRESULT CLoginPreWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 }
 
 
-LRESULT CLoginPreWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT COAuthLoginWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lRes = 0;
 	BOOL bHandled = TRUE;

@@ -875,7 +875,7 @@ void String::Split(TCHAR chSplit, String* pString, uint16& nNum)
 		}
 	}
 
-	for( int i =0; i< vResult.size(); i++)
+	for( size_t i =0; i< vResult.size(); i++)
 	{
 		pString[i]	=	vResult[i];		
 	}
