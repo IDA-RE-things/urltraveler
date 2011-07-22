@@ -758,6 +758,30 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="icu"
+			>
+			<File
+				RelativePath=".\icu\icu_utf.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\icu\icu_utf.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="md5"
+			>
+			<File
+				RelativePath=".\md5\md5.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\md5\md5.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>

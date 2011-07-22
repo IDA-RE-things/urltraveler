@@ -1,5 +1,9 @@
 #pragma once
 #include "PlugIn.h"
+#include "json/json.h"
+#include <vector>
+#include <map>
+#include "md5/md5.h"
 
 //===========================================================
 //				360SE 2.0 版本
@@ -80,4 +84,54 @@ public:
 	//      回返收藏网址条数
 	//----------------------------------------------------------------------------------------
 	virtual int32 GetFavoriteCount();
+
+private:
+	BOOL ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum);
+	BOOL ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum);
+	BOOL MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_obj, uint32& nIndex);
+	BOOL MakeUrlNode(FAVORITELINEDATA stData, Json::Value& url_obj, uint32& nIndex);
+	BOOL MakeSpecialFolderNode(wchar_t *pszName, uint32& nIndex, Json::Value& folder_obj);
+
+	BOOL EnumNode(Json::Value& folder_obj, int32& nCount);
+	BOOL TraverseNode(PFAVORITELINEDATA pData, int32 nDepth);
+
+	BOOL StringToInt64(std::string strTime, int64& nTime);
+	BOOL Int64ToString(int64 nTime, std::string& strTime);
+	inline bool IsValidCharacter(uint32 code_point);
+	bool IsStringUTF8(const std::string& str);
+
+	void InitializeChecksum();
+	void UpdateChecksum(const std::string& str);
+	void UpdateChecksum(const std::wstring& str);
+	void UpdateChecksumWithUrlNode(const std::string& id, const std::wstring& title, const std::string& url);
+	void UpdateChecksumWithFolderNode(const std::string& id, const std::wstring& title); 
+	void FinalizeChecksum();
+
+	void SortByDepth(PFAVORITELINEDATA pData, int32 nDataNum);
+	void SortNode(PFAVORITELINEDATA pData, int32 nDataNum, PFAVORITELINEDATA& pSortData, int32 nParentId);
+
+private:
+	typedef struct NodeInfo
+	{
+		int32 nIndex;
+		Json::Value node_obj;
+	} NODEINFO, *PNODEINFO;
+
+	int32 m_nMaxDepth;
+	uint32 m_nIndex;
+
+	typedef std::multimap<int32, int32> MAP_DEPTH_INFO;
+	MAP_DEPTH_INFO m_mapDepthInfo;
+
+	typedef std::map<int32, int32> MAP_PID_INFO;
+	MAP_PID_INFO m_mapPidInfo;
+
+	typedef std::map<int32, Json::Value> MAP_PID_NODE_INFO;
+	MAP_PID_NODE_INFO m_mapPidNodeInfo;
+
+	MD5Context m_szMd5Context;
+	std::string m_strCheckSum;
+
+	typedef std::map<int32, int32> MAP_ID_INDEX_INFO;
+	MAP_ID_INDEX_INFO m_mapIdIndexInfo;
 };
