@@ -36,7 +36,7 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
 	::ZeroMemory(&m_ListInfo.rcTextPadding, sizeof(m_ListInfo.rcTextPadding));
 	::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
 
-	m_bMultiSelect	=	false;
+	m_ListInfo.bMultiSelect	=	false;
 }
 
 void CListUI::Notify(TNotifyUI& msg)
@@ -413,11 +413,6 @@ void CListUI::DoEvent(TEventUI& event)
 	if( event.Type == UIEVENT_SETFOCUS ) 
 	{
 		m_bFocused = true;
-		if( m_bMultiSelect == true)
-		{
-			SelectMultiItem();	
-		}
-
 		return;
 	}
 	if( event.Type == UIEVENT_KILLFOCUS ) 
@@ -727,12 +722,12 @@ void CListUI::SetDisabledItemImage(LPCTSTR pStrImage)
 
 bool	CListUI::IsItemMultiSelect()
 {
-	return m_bMultiSelect;
+	return m_ListInfo.bMultiSelect;
 }
 
 void CListUI::SetItemMultiSelect(bool bMultiSelect)
 {
-	m_bMultiSelect = bMultiSelect;
+	m_ListInfo.bMultiSelect = bMultiSelect;
 }
 
 DWORD CListUI::GetDisabledItemTextColor() const
@@ -1854,9 +1849,11 @@ void CListElementUI::Invalidate()
 {
 	if( !IsVisible() ) return;
 
-	if( GetParent() ) {
+	if( GetParent() )
+	{
 		CContainerUI* pParentContainer = static_cast<CContainerUI*>(GetParent()->GetInterface(_T("Container")));
-		if( pParentContainer ) {
+		if( pParentContainer ) 
+		{
 			RECT rc = pParentContainer->GetPos();
 			RECT rcInset = pParentContainer->GetInset();
 			rc.left += rcInset.left;
@@ -1933,9 +1930,21 @@ bool CListElementUI::Expand(bool /*bExpand = true*/)
 
 void CListElementUI::DoEvent(TEventUI& event)
 {
+	// 如果当前列表项不允许处理鼠标消息，则将该消息交给上层处理
 	if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
 		if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
 		else CControlUI::DoEvent(event);
+		return;
+	}
+
+	if( event.Type == UIEVENT_BUTTONDOWN )
+	{
+		if( IsEnabled() ) 
+		{
+			m_pManager->SendNotify(this, _T("itemclick"));
+			Select();
+			Invalidate();
+		}
 		return;
 	}
 
@@ -1950,7 +1959,8 @@ void CListElementUI::DoEvent(TEventUI& event)
 	}
 	if( event.Type == UIEVENT_KEYDOWN && IsEnabled() )
 	{
-		if( event.chKey == VK_RETURN ) {
+		if( event.chKey == VK_RETURN ) 
+		{
 			Activate();
 			Invalidate();
 			return;
@@ -2053,7 +2063,7 @@ void CListLabelElementUI::DoEvent(TEventUI& event)
 		return;
 	}
 
-	if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_RBUTTONDOWN )
+	if( event.Type == UIEVENT_RBUTTONDOWN )
 	{
 		if( IsEnabled() ) {
 			m_pManager->SendNotify(this, _T("itemclick"));
