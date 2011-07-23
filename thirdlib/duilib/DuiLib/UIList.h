@@ -3,7 +3,8 @@
 
 #pragma once
 
-namespace DuiLib {
+namespace DuiLib 
+{
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 
@@ -87,6 +88,7 @@ namespace DuiLib {
 
 	class CListBodyUI;
 	class CListHeaderUI;
+	class CListHeaderItemUI;
 	class CListElementUI;
 
 	class UILIB_API CListUI : public CVerticalLayoutUI, public IListUI, public INotifyUI
@@ -115,11 +117,23 @@ namespace DuiLib {
 		int GetRowCount() const;
 		// get num of columns [6/8/2011 zhangzhongqing]
 		int GetColumnCount() const;
+
 		bool Add(CControlUI* pControl);
 		bool AddAt(CControlUI* pControl, int iIndex);
 		bool Remove(CControlUI* pControl);
-		bool RemoveAt(int iIndex);
 		void RemoveAll();
+
+		//列表头操作
+		bool AddHeader(CListHeaderUI* pHeader);
+		bool RemoveHeader();
+		bool	AddHeaderItem(CListHeaderItemUI* pHeaderItem);
+		bool	AddHeaderItemAt(CListHeaderItemUI* pHeaderItem, int iIndex);
+
+		// 增加和删除列表中的Item项
+		bool AddItem(CListElementUI* pItem);
+		bool AddItemAt(CListElementUI* pItem, int iIndex);
+		bool RemoveItem(CListElementUI* pListItem);
+		bool RemoveItemAt(int iIndex);
 
 		void EnsureVisible(int iIndex);
 		void Scroll(int dx, int dy);

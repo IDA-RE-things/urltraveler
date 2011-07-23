@@ -135,13 +135,75 @@ int CListUI::GetColumnCount() const
 	return m_ListInfo.nColumns;
 }
 
+bool CListUI::AddItem(CListElementUI* pItem)
+{
+	if( pItem == NULL)
+	{
+		ASSERT(0);
+		return false;
+	}
+
+	return Add(static_cast<CListElementUI*>(pItem));	
+}
+
+bool CListUI::AddItemAt(CListElementUI* pItem, int iIndex)
+{
+	if( pItem == NULL)
+	{
+		ASSERT(0);
+		return false;
+	}
+
+	return AddAt(static_cast<CListElementUI*>(pItem), iIndex);	
+}
+
+bool CListUI::AddHeader(CListHeaderUI* pHeader)
+{
+	if( pHeader == NULL)
+	{
+		ASSERT(0);
+		return false;
+	}
+
+	return Add(static_cast<CListHeaderUI*>(pHeader));	
+}
+
+bool CListUI::RemoveHeader()
+{
+	return true;
+}
+
+bool	CListUI::AddHeaderItem(CListHeaderItemUI* pHeaderItem)
+{
+	if( pHeaderItem == NULL)
+	{
+		ASSERT(0);
+		return false;
+	}
+
+	return Add(static_cast<CListHeaderItemUI*>(pHeaderItem));	
+}
+
+bool	CListUI::AddHeaderItemAt(CListHeaderItemUI* pHeaderItem, int iIndex)
+{
+	if( pHeaderItem == NULL)
+	{
+		ASSERT(0);
+		return false;
+	}
+
+	return AddAt(static_cast<CListHeaderItemUI*>(pHeaderItem), iIndex);	
+}
+
 bool CListUI::Add(CControlUI* pControl)
 {
 	// Override the Add() method so we can add items specifically to
 	// the intended widgets. Headers are assumed to be
 	// answer the correct interface so we can add multiple list headers.
-	if( pControl->GetInterface(_T("ListHeader")) != NULL ) {
-		if( m_pHeader != pControl && m_pHeader->GetCount() == 0 ) {
+	if( pControl->GetInterface(_T("ListHeader")) != NULL ) 
+	{
+		if( m_pHeader != pControl && m_pHeader->GetCount() == 0 ) 
+		{
 			CVerticalLayoutUI::Remove(m_pHeader);
 			m_pHeader = static_cast<CListHeaderUI*>(pControl);
 		}
@@ -226,6 +288,11 @@ bool CListUI::AddAt(CControlUI* pControl, int iIndex)
 	return true;
 }
 
+bool CListUI::RemoveItem(CListElementUI* pListItem)
+{
+	return Remove(pListItem);
+}
+
 bool CListUI::Remove(CControlUI* pControl)
 {
 	if( pControl->GetInterface(_T("ListHeader")) != NULL ) return CVerticalLayoutUI::Remove(pControl);
@@ -250,7 +317,7 @@ bool CListUI::Remove(CControlUI* pControl)
 	return true;
 }
 
-bool CListUI::RemoveAt(int iIndex)
+bool CListUI::RemoveItemAt(int iIndex)
 {
 	if (!m_pList->RemoveAt(iIndex)) 
 		return false;
@@ -1874,7 +1941,8 @@ void CListElementUI::DoEvent(TEventUI& event)
 
 	if( event.Type == UIEVENT_DBLCLICK )
 	{
-		if( IsEnabled() ) {
+		if( IsEnabled() )
+		{
 			Activate();
 			Invalidate();
 		}
