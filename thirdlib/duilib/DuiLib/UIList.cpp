@@ -1,6 +1,9 @@
 #include "StdAfx.h"
 
-namespace DuiLib {
+#define IsShiftKeyDown() (GetKeyState(VK_SHIFT)   &   0x8000)
+
+namespace DuiLib 
+{
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -8,6 +11,7 @@ namespace DuiLib {
 
 CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m_iExpandedItem(-1)
 {
+	m_iLastClick = -1;
 	m_nEditRow = -1;
 	m_nEditColomn = -1;
 	m_bAddNotifyer = false;
@@ -37,6 +41,8 @@ CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m
 	::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
 
 	m_ListInfo.bMultiSelect	=	false;
+
+	m_vCurSel.clear();
 }
 
 void CListUI::Notify(TNotifyUI& msg)
@@ -51,6 +57,11 @@ void CListUI::Notify(TNotifyUI& msg)
 			CListUI *pListUI = (CListUI *)pControl;
 			pListUI->HideEditText();
 		}
+	}
+	else if(msg.sType == L"itemclick")
+	{
+		int nIndex = msg.wParam;
+		SelectItem(nIndex);
 	}
 }
 
@@ -1931,7 +1942,8 @@ bool CListElementUI::Expand(bool /*bExpand = true*/)
 void CListElementUI::DoEvent(TEventUI& event)
 {
 	// 如果当前列表项不允许处理鼠标消息，则将该消息交给上层处理
-	if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
+	if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) 
+	{
 		if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
 		else CControlUI::DoEvent(event);
 		return;
@@ -1941,9 +1953,17 @@ void CListElementUI::DoEvent(TEventUI& event)
 	{
 		if( IsEnabled() ) 
 		{
-			m_pManager->SendNotify(this, _T("itemclick"));
-			Select();
+			TNotifyUI notify;
+			notify.sType = _T("itemclick");
+			notify.pSender = this;
+			notify.wParam = m_iIndex;
+			m_pManager->SendNotify(notify);
+/*
+
+			// 判断是否支持多选
+			Select(true);
 			Invalidate();
+*/
 		}
 		return;
 	}
@@ -2057,7 +2077,8 @@ LPVOID CListLabelElementUI::GetInterface(LPCTSTR pstrName)
 
 void CListLabelElementUI::DoEvent(TEventUI& event)
 {
-	if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
+	if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND )
+	{
 		if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
 		else CListElementUI::DoEvent(event);
 		return;
@@ -2065,7 +2086,8 @@ void CListLabelElementUI::DoEvent(TEventUI& event)
 
 	if( event.Type == UIEVENT_RBUTTONDOWN )
 	{
-		if( IsEnabled() ) {
+		if( IsEnabled() )
+		{
 			m_pManager->SendNotify(this, _T("itemclick"));
 			Select();
 			Invalidate();
