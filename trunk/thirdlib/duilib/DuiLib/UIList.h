@@ -34,6 +34,8 @@ namespace DuiLib
 		DWORD dwLineColor;
 		bool bShowHtml;
 		bool bMultiExpandable;
+		bool	bMultiSelect;	// 是否支持多选
+
 	} TListInfoUI;
 
 
@@ -238,7 +240,6 @@ namespace DuiLib
 		int      m_nEditRow;
 		int      m_nEditColomn;
 		bool     m_bShowEdit;
-		bool		m_bMultiSelect;	// 是否支持多选
 	};
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -341,7 +342,7 @@ namespace DuiLib
 
 
 	/////////////////////////////////////////////////////////////////////////////////////
-	//
+	//					列表项
 
 	class UILIB_API CListElementUI : public CControlUI, public IListItemUI
 	{
