@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <vector>
+using namespace std;
+
 namespace DuiLib 
 {
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -228,18 +231,23 @@ namespace DuiLib
 		void	SelectMultiItem();
 
 	protected:
-		bool m_bScrollSelect;
-		int m_iCurSel;
-		int m_iExpandedItem;
+		int	m_iCurSel;
+		int	m_iLastClick;				//	最后一次点击的Item
+		std::vector<int>	m_vCurSel;	//	当前所有被选中的列表项
+
+		bool	m_bScrollSelect;
+		int	m_iExpandedItem;
+
 		IListCallbackUI* m_pCallback;
 		CListBodyUI* m_pList;
 		CListHeaderUI* m_pHeader;
 		TListInfoUI m_ListInfo;
-		CEditUI* m_pEditUI;			//	编辑框，用来对给定的列编辑
-		bool     m_bAddNotifyer;
-		int      m_nEditRow;
-		int      m_nEditColomn;
-		bool     m_bShowEdit;
+		CEditUI*	m_pEditUI;			//	编辑框，用来对给定的列编辑
+
+		bool		m_bAddNotifyer;
+		bool		m_bShowEdit;
+		int		m_nEditRow;
+		int		m_nEditColomn;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////////////
