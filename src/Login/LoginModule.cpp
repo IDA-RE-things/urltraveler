@@ -134,5 +134,5 @@ void	LoginModule::OnEvent_OpenLoginDlg(Event* pEvent)
 
 	pLoginFrame->Create(pMainFrameWnd->GetHWND(), _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
 	pLoginFrame->CenterWindow();
-	pMainFrameWnd->ShowModal(*pLoginFrame);
+	pLoginFrame->ShowModal();
 }

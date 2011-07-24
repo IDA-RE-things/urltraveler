@@ -901,7 +901,7 @@ void	CMainFrameWnd::CopyUrl(int nIndex)
 	BOOL bRet = MiscHelper::SaveTextToClipboard(StringHelper::UnicodeToANSI(pData->szUrl).c_str());
 	if( bRet == TRUE)
 	{
-		MessageBox(L"URL地址已经成功复制到剪贴板", L"复制成功", MB_OK);
+		::MessageBox(NULL,L"URL地址已经成功复制到剪贴板", L"复制成功", MB_OK);
 	}
 }
 

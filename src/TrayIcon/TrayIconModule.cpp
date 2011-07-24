@@ -302,7 +302,7 @@ void TrayIconModule::OnEvent_ShowAboutDialog( Event *pEvent )
 	CAboutDlg dlg;
 	dlg.Create(*pParentWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);	
 	dlg.CenterWindow();
-	pParentWnd->ShowModal(dlg);
+	dlg.ShowModal();
 }
 
 void TrayIconModule::OnEvent_ShowUpdateWnd(Event* pEvent)

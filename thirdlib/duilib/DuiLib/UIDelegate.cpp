@@ -24,9 +24,9 @@ namespace DuiLib {
 		return m_pObject == rhs.m_pObject && m_pFn == rhs.m_pFn; 
 	}
 
-	bool CDelegateBase::operator() (TEventUI& event) 
+	bool CDelegateBase::operator() (void* param) 
 	{
-		return Invoke(event); 
+		return Invoke(param); 
 	}
 
 	void* CDelegateBase::GetFn() 
@@ -45,6 +45,11 @@ namespace DuiLib {
 			CDelegateBase* pObject = static_cast<CDelegateBase*>(m_aDelegates[i]);
 			if( pObject) delete pObject;
 		}
+	}
+
+	CEventSource::operator bool()
+	{
+		return m_aDelegates.GetSize() > 0;
 	}
 
 	void CEventSource::operator+= (CDelegateBase& d)
@@ -78,11 +83,11 @@ namespace DuiLib {
 		(*this) -= MakeDelegate(pFn);
 	}
 
-	bool CEventSource::operator() (TEventUI& event) 
+	bool CEventSource::operator() (void* param) 
 	{
 		for( int i = 0; i < m_aDelegates.GetSize(); i++ ) {
 			CDelegateBase* pObject = static_cast<CDelegateBase*>(m_aDelegates[i]);
-			if( pObject && !(*pObject)(event) ) return false;
+			if( pObject && !(*pObject)(param) ) return false;
 		}
 		return true;
 	}
