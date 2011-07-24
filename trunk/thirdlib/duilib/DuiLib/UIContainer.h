@@ -13,7 +13,7 @@ public:
     virtual CControlUI* GetItemAt(int iIndex) const = 0;
     virtual int GetItemIndex(CControlUI* pControl) const  = 0;
     virtual bool SetItemIndex(CControlUI* pControl, int iIndex)  = 0;
-    virtual int GetCount() const = 0;
+    virtual int GetRowCount() const = 0;
     virtual bool Add(CControlUI* pControl) = 0;
     virtual bool AddAt(CControlUI* pControl, int iIndex)  = 0;
     virtual bool Remove(CControlUI* pControl) = 0;
@@ -39,7 +39,7 @@ public:
     CControlUI* GetItemAt(int iIndex) const;
     int GetItemIndex(CControlUI* pControl) const;
     bool SetItemIndex(CControlUI* pControl, int iIndex);
-    int GetCount() const;
+    int GetRowCount() const;
     bool Add(CControlUI* pControl);
     bool AddAt(CControlUI* pControl, int iIndex);
     bool Remove(CControlUI* pControl);

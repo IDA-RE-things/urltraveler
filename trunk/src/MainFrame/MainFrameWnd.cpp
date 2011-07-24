@@ -305,7 +305,7 @@ void	CMainFrameWnd::OnFavoriteListItemEditFinished(TNotifyUI& msg)
 		int nRow = HIWORD(msg.wParam);
 		int nColomn = LOWORD(msg.wParam);
 
-		if( nRow > pListUI->GetCount() - 1)
+		if( nRow > pListUI->GetRowCount() - 1)
 			return;
 
 		FAVORITELINEDATA* pData = m_vFavoriteNodeAtTreeNode[nRow];
@@ -338,12 +338,11 @@ void	CMainFrameWnd::OnFavoriteListItemDelete(TNotifyUI& msg)
 		CListUI *pList = (CListUI *)pControl;
 
 		int nRow = msg.wParam;
-		if( nRow < 0 || nRow > pList->GetCount() - 1)
+		if( nRow < 0 || nRow > pList->GetRowCount() - 1)
 			return;
 
-		FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)(pList->GetSubItem(nRow)->GetTag());
+		FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)m_vFavoriteNodeAtTreeNode[nRow];
 		pSelNode->bDelete = true;
-		pList->RemoveAt(nRow);
 
 		// 从数据中心中删除该Item
 		MainFrame_DeleteFavoriteEvent* pEvent = new MainFrame_DeleteFavoriteEvent();
@@ -762,12 +761,6 @@ void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 		return;
 
 	pUserList->Invalidate();
-
-	// 下一个Item获取设置为被选中状态
-	if( i < m_vFavoriteNodeAtTreeNode.size() )
-	{
-		pUserList->SelectItem(i);
-	}
 }
 
 void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
@@ -901,7 +894,7 @@ void	CMainFrameWnd::CopyUrl(int nIndex)
 	BOOL bRet = MiscHelper::SaveTextToClipboard(StringHelper::UnicodeToANSI(pData->szUrl).c_str());
 	if( bRet == TRUE)
 	{
-		::MessageBox(NULL,L"URL地址已经成功复制到剪贴板", L"复制成功", MB_OK);
+		MessageBox(NULL,L"URL地址已经成功复制到剪贴板", L"复制成功", MB_OK);
 	}
 }
 
@@ -928,7 +921,7 @@ void	CMainFrameWnd::SelectTreeList(int nId)
 	if( itr->second == NULL)
 		return;
 
-	int nCount = pFavoriteTree->GetCount();
+	int nCount = pFavoriteTree->GetRowCount();
 	for( int i =0; i<nCount;i++)
 	{
 		CListLabelElementUI* pElement = (CListLabelElementUI*)pFavoriteTree->GetSubItem(i);

@@ -95,6 +95,10 @@ namespace DuiLib
 			SelectItem(nIndex);
 			m_iLastClickSel	=	nIndex;
 		}
+		else if(msg.sType == L"itemdelete")
+		{
+			DeleteSelected();
+		}
 	}
 
 	LPCTSTR CListUI::GetClass() const
@@ -153,10 +157,10 @@ namespace DuiLib
 		IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
 		if( pListItem != NULL )
 		{
-			pListItem->SetIndex(GetRowCount()); // 本来是GetCount() - 1的，不过后面有减一
+			pListItem->SetIndex(GetRowCount()); // 本来是GetRowCount() - 1的，不过后面有减一
 		}
 
-		for(int i = iOrginIndex; i < m_pList->GetCount(); ++i)
+		for(int i = iOrginIndex; i < m_pList->GetRowCount(); ++i)
 		{
 			CControlUI* p = m_pList->GetItemAt(i);
 			pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
@@ -170,14 +174,9 @@ namespace DuiLib
 		return true;
 	}
 
-	int CListUI::GetCount() const
-	{
-		return m_pList->GetCount();
-	}
-
 	int CListUI::GetRowCount() const
 	{
-		return m_pList->GetCount();
+		return m_pList->GetRowCount();
 	}
 
 	int CListUI::GetColumnCount() const
@@ -252,12 +251,12 @@ namespace DuiLib
 		// answer the correct interface so we can add multiple list headers.
 		if( pControl->GetInterface(_T("ListHeader")) != NULL ) 
 		{
-			if( m_pHeader != pControl && m_pHeader->GetCount() == 0 ) 
+			if( m_pHeader != pControl && m_pHeader->GetRowCount() == 0 ) 
 			{
 				CVerticalLayoutUI::Remove(m_pHeader);
 				m_pHeader = static_cast<CListHeaderUI*>(pControl);
 			}
-			m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
+			m_ListInfo.nColumns = MIN(m_pHeader->GetRowCount(), UILIST_MAX_COLUMNS);
 			return CVerticalLayoutUI::AddAt(pControl, 0);
 		}
 
@@ -286,7 +285,7 @@ namespace DuiLib
 		if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) 
 		{
 			bool ret = m_pHeader->Add(pControl);
-			m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
+			m_ListInfo.nColumns = MIN(m_pHeader->GetRowCount(), UILIST_MAX_COLUMNS);
 			return ret;
 		}
 		// The list items should know about us
@@ -305,19 +304,19 @@ namespace DuiLib
 		// answer the correct interface so we can add multiple list headers.
 		if( pControl->GetInterface(_T("ListHeader")) != NULL ) 
 		{
-			if( m_pHeader != pControl && m_pHeader->GetCount() == 0 )
+			if( m_pHeader != pControl && m_pHeader->GetRowCount() == 0 )
 			{
 				CVerticalLayoutUI::Remove(m_pHeader);
 				m_pHeader = static_cast<CListHeaderUI*>(pControl);
 			}
-			m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
+			m_ListInfo.nColumns = MIN(m_pHeader->GetRowCount(), UILIST_MAX_COLUMNS);
 			return CVerticalLayoutUI::AddAt(pControl, 0);
 		}
 		// We also need to recognize header sub-items
 		if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) 
 		{
 			bool ret = m_pHeader->AddAt(pControl, iIndex);
-			m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
+			m_ListInfo.nColumns = MIN(m_pHeader->GetRowCount(), UILIST_MAX_COLUMNS);
 			return ret;
 		}
 		if (!m_pList->AddAt(pControl, iIndex)) return false;
@@ -330,7 +329,7 @@ namespace DuiLib
 			pListItem->SetIndex(iIndex);
 		}
 
-		for(int i = iIndex + 1; i < m_pList->GetCount(); ++i)
+		for(int i = iIndex + 1; i < m_pList->GetRowCount(); ++i)
 		{
 			CControlUI* p = m_pList->GetItemAt(i);
 			pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
@@ -361,7 +360,7 @@ namespace DuiLib
 
 		if (!m_pList->RemoveAt(iIndex)) return false;
 
-		for(int i = iIndex; i < m_pList->GetCount(); ++i)
+		for(int i = iIndex; i < m_pList->GetRowCount(); ++i)
 		{
 			CControlUI* p = m_pList->GetItemAt(i);
 			IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
@@ -380,34 +379,15 @@ namespace DuiLib
 		if (!m_pList->RemoveAt(iIndex)) 
 			return false;
 
-		for(int i = iIndex; i < m_pList->GetCount(); ++i)
+		for(int i = iIndex; i < m_pList->GetRowCount(); ++i)
 		{
 			CControlUI* p = m_pList->GetItemAt(i);
 			IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
-			if( pListItem != NULL ) {
+			if( pListItem != NULL ) 
+			{
 				pListItem->SetIndex(pListItem->GetIndex() - 1);
 			}
 		}
-
-		int nNextSelect = FindSelectable(m_iLastClickSel, false);
-
-/*
-		// 如果当前删除的Item的位置小于被选中的Item的位置，则删除后，原来被选中的item的索引要减1
-		if( m_iLastClickSel != -1)
-		{
-			if( iIndex < m_iLastClickSel)
-			{
-				m_iLastClickSel--;
-			}
-			// 如果删除的正式被选中的项，则
-			else if( iIndex == m_iCurSel)
-			{
-				m_iCurSel = -1;
-			}
-		}
-
-*/
-		SelectItem(nNextSelect);
 
 		return true;
 	}
@@ -424,7 +404,7 @@ namespace DuiLib
 		CVerticalLayoutUI::SetPos(rc);
 		if( m_pHeader == NULL ) return;
 		// Determine general list information and the size of header columns
-		m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
+		m_ListInfo.nColumns = MIN(m_pHeader->GetRowCount(), UILIST_MAX_COLUMNS);
 		// The header/columns may or may not be visible at runtime. In either case
 		// we should determine the correct dimensions...
 
@@ -529,11 +509,8 @@ namespace DuiLib
 			case VK_DELETE:
 				{
 					TNotifyUI notify;
-					notify.sType = _T("listitemdelete");
+					notify.sType = _T("itemdelete");
 					notify.pSender = this;
-				#define MAKEDWORD(w1,w2) (((w1)<<16)|(w2))
-
-					notify.wParam = m_iCurSel;
 					m_pManager->SendNotify(notify);
 				}
 				return;
@@ -614,6 +591,50 @@ namespace DuiLib
 		}
 	}
 
+	void	CListUI::DeleteSelected()
+	{
+		IListItemUI* pListNextToSelectItem = NULL;
+		for( int i=m_iLastClickSel; i<GetRowCount(); i++)
+		{
+			CControlUI* p = m_pList->GetItemAt(i);
+			pListNextToSelectItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
+			if( pListNextToSelectItem != NULL && pListNextToSelectItem->IsSelected() == false ) 
+			{
+				break;
+			}
+		}
+
+		std::vector<int> vSel = m_vCurSel;
+		for( size_t i=0; i<vSel.size(); i++)
+		{
+			RemoveItemAt(vSel[i]);
+			if( m_pManager != NULL ) 
+			{
+				TNotifyUI notify;
+				notify.sType = _T("listitemdelete");
+				notify.pSender = this;
+				notify.wParam = vSel[i];
+				m_pManager->SendNotify(notify);
+			}
+		}
+
+		for(int i=0; i<GetRowCount(); i++)
+		{
+			CControlUI* p = m_pList->GetItemAt(i);
+			IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
+			if( pListItem != NULL && pListItem->IsSelected() == true ) 
+			{
+				UnSelectItem(i);
+			}
+		}
+		m_vCurSel.clear();
+
+		if( pListNextToSelectItem != NULL)
+			pListNextToSelectItem->Select(true);
+
+		Invalidate();
+	}
+
 	bool CListUI::UnSelectItem(int iIndex)
 	{
 		if( iIndex < 0 ) return false;
@@ -637,7 +658,6 @@ namespace DuiLib
 		{
 			m_pManager->SendNotify(this, _T("itemunselect"), iIndex);
 		}
-
 		return true;
 	}
 
@@ -1267,7 +1287,7 @@ namespace DuiLib
 		pt.x = nX;
 		pt.y = nY;
 
-		for (int i = 0; i < m_pList->GetCount(); i++)
+		for (int i = 0; i < m_pList->GetRowCount(); i++)
 		{
 			CListTextEditElementUI *pItem = (CListTextEditElementUI *)m_pList->GetItemAt(i);
 			RECT rcItem = pItem->GetPos();
@@ -1349,7 +1369,7 @@ namespace DuiLib
 			CListHeaderUI* pHeader = m_pOwner->GetHeader();
 			if( pHeader == NULL ) return;
 			TListInfoUI* pInfo = m_pOwner->GetListInfo();
-			pInfo->nColumns = MIN(pHeader->GetCount(), UILIST_MAX_COLUMNS);
+			pInfo->nColumns = MIN(pHeader->GetRowCount(), UILIST_MAX_COLUMNS);
 
 			if( !pHeader->IsVisible() ) pHeader->SetInternVisible(true);
 			for( int i = 0; i < pInfo->nColumns; i++ ) {
@@ -1414,7 +1434,7 @@ namespace DuiLib
 
 		if( m_pOwner ) {
 			CListHeaderUI* pHeader = m_pOwner->GetHeader();
-			if( pHeader != NULL && pHeader->GetCount() > 0 ) {
+			if( pHeader != NULL && pHeader->GetRowCount() > 0 ) {
 				cxNeeded = MAX(0, pHeader->EstimateSize(CSize(rc.right - rc.left, rc.bottom - rc.top)).cx);
 			}
 		}
