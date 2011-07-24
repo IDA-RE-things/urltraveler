@@ -485,31 +485,41 @@ namespace DuiLib
 			switch( event.chKey ) 
 			{
 			case VK_UP:
-				SelectItem(FindSelectable(m_iLastClickSel - 1, false));
+				ClearSelectedItem();
+				m_iLastClickSel = FindSelectable(m_iLastClickSel - 1, true);
+				SelectItem(m_iLastClickSel);
 				return;
 
 			case VK_DOWN:
-				SelectItem(FindSelectable(m_iLastClickSel + 1, true));
+				ClearSelectedItem();
+				m_iLastClickSel = FindSelectable(m_iLastClickSel + 1, true);
+				SelectItem(m_iLastClickSel);
 				return;
 
 			case VK_PRIOR:
+				ClearSelectedItem();
 				PageUp();
 				return;
 
 			case VK_NEXT:
+				ClearSelectedItem();
 				PageDown();
 				return;
 
 			case VK_HOME:
-				SelectItem(FindSelectable(0, false));
+				ClearSelectedItem();
+				m_iLastClickSel = FindSelectable(0, true);
+				SelectItem(m_iLastClickSel);
 				return;
 
 			case VK_END:
+				ClearSelectedItem();
 				SelectItem(FindSelectable(GetRowCount() - 1, true));
 				return;
 
 			case VK_RETURN:
-				if( m_iLastClickSel != -1 ) GetItemAt(m_iLastClickSel)->Activate();
+				if( m_iLastClickSel != -1 ) 
+					GetItemAt(m_iLastClickSel)->Activate();
 				return;
 
 			case VK_F2:
@@ -933,7 +943,7 @@ namespace DuiLib
 
 	void CListUI::EnsureVisible(int iIndex)
 	{
-		if( m_iCurSel < 0 ) return;
+		if( m_iLastClickSel < 0 ) return;
 		RECT rcItem = m_pList->GetItemAt(iIndex)->GetPos();
 		RECT rcList = m_pList->GetPos();
 		RECT rcListInset = m_pList->GetInset();
