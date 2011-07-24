@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <algorithm>
 
 #define IsShiftKeyDown() (GetKeyState(VK_SHIFT)   &   0x8000)
 
@@ -7,11 +8,10 @@ namespace DuiLib
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
-	//
 
-	CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iCurSel(-1), m_iExpandedItem(-1)
+	CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iExpandedItem(-1)
 	{
-		m_iLastClick = -1;
+		m_iLastClickSel = -1;
 		m_nEditRow = -1;
 		m_nEditColomn = -1;
 		m_bAddNotifyer = false;
@@ -61,6 +61,36 @@ namespace DuiLib
 		else if(msg.sType == L"itemclick")
 		{
 			int nIndex = msg.wParam;
+
+			// 如果支持多选
+			if( IsItemMultiSelect() == true)
+			{
+				// 如果Shift键被按下
+				if( GetKeyState(VK_CONTROL)   &   0x8000)
+				{
+					if( IsItemSelected(nIndex))
+					{
+						UnSelectItem(nIndex);
+					}
+					else
+					{
+						SelectItem(nIndex);
+					}
+
+					return;
+				}
+			}
+
+			// 如果是单选或者如果是多选，但是没有按下Ctrl键
+			// 此时只选中一个 
+			if( m_vCurSel.size() > 0)
+			{
+				std::vector<int> vSel = m_vCurSel;
+				for( size_t i=0; i<vSel.size(); i++)
+				{
+					UnSelectItem(vSel[i]);
+				}
+			}
 			SelectItem(nIndex);
 		}
 	}
@@ -87,32 +117,40 @@ namespace DuiLib
 	{
 		// 获取子控件 [5/1/2011 linjinming]
 		return m_pList->GetItemAt(iIndex);
-		return CVerticalLayoutUI::GetItemAt(iIndex);
 	}
 
 	int CListUI::GetItemIndex(CControlUI* pControl) const
 	{
-		if( pControl->GetInterface(_T("ListHeader")) != NULL ) return CVerticalLayoutUI::GetItemIndex(pControl);
+		if( pControl->GetInterface(_T("ListHeader")) != NULL ) 
+			return CVerticalLayoutUI::GetItemIndex(pControl);
+
 		// We also need to recognize header sub-items
-		if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) return m_pHeader->GetItemIndex(pControl);
+		if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) 
+			return m_pHeader->GetItemIndex(pControl);
 
 		return m_pList->GetItemIndex(pControl);
 	}
 
 	bool CListUI::SetItemIndex(CControlUI* pControl, int iIndex)
 	{
-		if( pControl->GetInterface(_T("ListHeader")) != NULL ) return CVerticalLayoutUI::SetItemIndex(pControl, iIndex);
+		if( pControl->GetInterface(_T("ListHeader")) != NULL ) 
+			return CVerticalLayoutUI::SetItemIndex(pControl, iIndex);
+
 		// We also need to recognize header sub-items
-		if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) return m_pHeader->SetItemIndex(pControl, iIndex);
+		if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) 
+			return m_pHeader->SetItemIndex(pControl, iIndex);
 
 		int iOrginIndex = m_pList->GetItemIndex(pControl);
-		if (iOrginIndex == -1) return false;
+		if (iOrginIndex == -1) 
+			return false;
 
-		if (!m_pList->SetItemIndex(pControl, iIndex)) return false;
+		if (!m_pList->SetItemIndex(pControl, iIndex))
+			return false;
 
 		// The list items should know about us
 		IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
-		if( pListItem != NULL ) {
+		if( pListItem != NULL )
+		{
 			pListItem->SetIndex(GetRowCount()); // 本来是GetCount() - 1的，不过后面有减一
 		}
 
@@ -120,20 +158,19 @@ namespace DuiLib
 		{
 			CControlUI* p = m_pList->GetItemAt(i);
 			pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
-			if( pListItem != NULL ) {
+			if( pListItem != NULL ) 
+			{
 				pListItem->SetIndex(pListItem->GetIndex() - 1);
 			}
 		}
 
-		SelectItem(FindSelectable(m_iCurSel, false));
-
+		SelectItem(FindSelectable(m_iLastClickSel, false));
 		return true;
 	}
 
 	int CListUI::GetCount() const
 	{
 		return m_pList->GetCount();
-		return CVerticalLayoutUI::GetCount();
 	}
 
 	int CListUI::GetRowCount() const
@@ -264,8 +301,10 @@ namespace DuiLib
 		// Override the AddAt() method so we can add items specifically to
 		// the intended widgets. Headers and are assumed to be
 		// answer the correct interface so we can add multiple list headers.
-		if( pControl->GetInterface(_T("ListHeader")) != NULL ) {
-			if( m_pHeader != pControl && m_pHeader->GetCount() == 0 ) {
+		if( pControl->GetInterface(_T("ListHeader")) != NULL ) 
+		{
+			if( m_pHeader != pControl && m_pHeader->GetCount() == 0 )
+			{
 				CVerticalLayoutUI::Remove(m_pHeader);
 				m_pHeader = static_cast<CListHeaderUI*>(pControl);
 			}
@@ -273,7 +312,8 @@ namespace DuiLib
 			return CVerticalLayoutUI::AddAt(pControl, 0);
 		}
 		// We also need to recognize header sub-items
-		if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) {
+		if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) 
+		{
 			bool ret = m_pHeader->AddAt(pControl, iIndex);
 			m_ListInfo.nColumns = MIN(m_pHeader->GetCount(), UILIST_MAX_COLUMNS);
 			return ret;
@@ -292,7 +332,8 @@ namespace DuiLib
 		{
 			CControlUI* p = m_pList->GetItemAt(i);
 			pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
-			if( pListItem != NULL ) {
+			if( pListItem != NULL ) 
+			{
 				pListItem->SetIndex(pListItem->GetIndex() + 1);
 			}
 		}
@@ -306,9 +347,12 @@ namespace DuiLib
 
 	bool CListUI::Remove(CControlUI* pControl)
 	{
-		if( pControl->GetInterface(_T("ListHeader")) != NULL ) return CVerticalLayoutUI::Remove(pControl);
+		if( pControl->GetInterface(_T("ListHeader")) != NULL ) 
+			return CVerticalLayoutUI::Remove(pControl);
+
 		// We also need to recognize header sub-items
-		if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) return m_pHeader->Remove(pControl);
+		if( _tcsstr(pControl->GetClass(), _T("ListHeaderItemUI")) != NULL ) 
+			return m_pHeader->Remove(pControl);
 
 		int iIndex = m_pList->GetItemIndex(pControl);
 		if (iIndex == -1) return false;
@@ -319,7 +363,8 @@ namespace DuiLib
 		{
 			CControlUI* p = m_pList->GetItemAt(i);
 			IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
-			if( pListItem != NULL ) {
+			if( pListItem != NULL ) 
+			{
 				pListItem->SetIndex(pListItem->GetIndex() - 1);
 			}
 		}
@@ -342,14 +387,15 @@ namespace DuiLib
 			}
 		}
 
-		int nNextSelect = FindSelectable(m_iCurSel, false);
+		int nNextSelect = FindSelectable(m_iLastClickSel, false);
 
+/*
 		// 如果当前删除的Item的位置小于被选中的Item的位置，则删除后，原来被选中的item的索引要减1
-		if( m_iCurSel != -1)
+		if( m_iLastClickSel != -1)
 		{
-			if( iIndex < m_iCurSel)
+			if( iIndex < m_iLastClickSel)
 			{
-				m_iCurSel--;
+				m_iLastClickSel--;
 			}
 			// 如果删除的正式被选中的项，则
 			else if( iIndex == m_iCurSel)
@@ -358,6 +404,7 @@ namespace DuiLib
 			}
 		}
 
+*/
 		SelectItem(nNextSelect);
 
 		return true;
@@ -379,37 +426,35 @@ namespace DuiLib
 		// The header/columns may or may not be visible at runtime. In either case
 		// we should determine the correct dimensions...
 
-		if( !m_pHeader->IsVisible() ) {
+		if( !m_pHeader->IsVisible() ) 
+		{
 			m_pHeader->SetInternVisible(true);
 			m_pHeader->SetPos(CRect(rc.left, 0, rc.right, 0));
 		}
 		int iOffset = m_pList->GetScrollPos().cx;
-		for( int i = 0; i < m_ListInfo.nColumns; i++ ) {
+		for( int i = 0; i < m_ListInfo.nColumns; i++ )
+		{
 			CControlUI* pControl = static_cast<CControlUI*>(m_pHeader->GetItemAt(i));
 			if( !pControl->IsVisible() ) continue;
 			if( pControl->IsFloat() ) continue;
 
 			RECT rcPos = pControl->GetPos();
-			if( iOffset > 0 ) {
+			if( iOffset > 0 ) 
+			{
 				rcPos.left -= iOffset;
 				rcPos.right -= iOffset;
 				pControl->SetPos(rcPos);
 			}
 			m_ListInfo.rcColumn[i] = pControl->GetPos();
 		}
-		if( !m_pHeader->IsVisible() ) {
+		if( !m_pHeader->IsVisible() ) 
+		{
 			m_pHeader->SetInternVisible(false);
 		}
 	}
 
 	void	CListUI::SelectMultiItem()
 	{
-		// 检查Shitf键盘是否被按下
-		if ( GetKeyState(VK_SHIFT)   &   0x8000   )
-		{
-			int i = 0;
-			i++;
-		}
 	}
 
 	void CListUI::DoEvent(TEventUI& event)
@@ -438,11 +483,11 @@ namespace DuiLib
 			switch( event.chKey ) 
 			{
 			case VK_UP:
-				SelectItem(FindSelectable(m_iCurSel - 1, false));
+				SelectItem(FindSelectable(m_iLastClickSel - 1, false));
 				return;
 
 			case VK_DOWN:
-				SelectItem(FindSelectable(m_iCurSel + 1, true));
+				SelectItem(FindSelectable(m_iLastClickSel + 1, true));
 				return;
 
 			case VK_PRIOR:
@@ -462,7 +507,7 @@ namespace DuiLib
 				return;
 
 			case VK_RETURN:
-				if( m_iCurSel != -1 ) GetItemAt(m_iCurSel)->Activate();
+				if( m_iLastClickSel != -1 ) GetItemAt(m_iLastClickSel)->Activate();
 				return;
 
 			case VK_F2:
@@ -474,7 +519,7 @@ namespace DuiLib
 					TNotifyUI notify;
 					notify.sType = _T("listitemdelete");
 					notify.pSender = this;
-#define MAKEDWORD(w1,w2) (((w1)<<16)|(w2))
+				#define MAKEDWORD(w1,w2) (((w1)<<16)|(w2))
 
 					notify.wParam = m_iCurSel;
 					m_pManager->SendNotify(notify);
@@ -489,14 +534,14 @@ namespace DuiLib
 				{
 				case SB_LINEUP:
 					if( m_bScrollSelect ) 
-						SelectItem(FindSelectable(m_iCurSel - 1, false));
+						SelectItem(FindSelectable(m_iLastClickSel - 1, false));
 					else 
 						LineUp();
 					return;
 
 				case SB_LINEDOWN:
 					if( m_bScrollSelect ) 
-						SelectItem(FindSelectable(m_iCurSel + 1, true));
+						SelectItem(FindSelectable(m_iLastClickSel + 1, true));
 					else 
 						LineDown();
 					return;
@@ -533,24 +578,55 @@ namespace DuiLib
 		return m_iCurSel;
 	}
 
-	bool CListUI::SelectItem(int iIndex)
+	bool	CListUI::IsItemSelected(int iIndex)
 	{
-		HideEditText();
-		if( iIndex == m_iCurSel ) 
-			return true;
+		CControlUI* pControl = m_pList->GetItemAt(iIndex);
+		if( pControl != NULL) 
+		{
+			IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
+			if( pListItem == NULL ) 
+				return false;
 
-		// We should first unselect the currently selected item
-		if( m_iCurSel >= 0 ) {
-			CControlUI* pControl = m_pList->GetItemAt(m_iCurSel);
-			if( pControl != NULL) {
-				IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
-				if( pListItem != NULL ) pListItem->Select(false);
-			}
-
-			m_iCurSel = -1;
+			return pListItem->IsSelected();
 		}
+
+		return false;
+	}
+
+	bool CListUI::UnSelectItem(int iIndex)
+	{
 		if( iIndex < 0 ) return false;
 
+		HideEditText();
+
+		CControlUI* pControl = m_pList->GetItemAt(iIndex);
+		if( pControl == NULL ) return false;
+		if( !pControl->IsEnabled() ) return false;
+
+		IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
+		if( pListItem == NULL ) return false;
+		pControl->SetFocus();
+		pListItem->Select(false);
+
+		std::vector<int>::iterator itr = std::find(m_vCurSel.begin(), m_vCurSel.end(), iIndex);
+		if( itr != m_vCurSel.end())
+			m_vCurSel.erase(itr);
+
+		if( m_pManager != NULL ) 
+		{
+			m_pManager->SendNotify(this, _T("itemunselect"), iIndex);
+		}
+
+		return true;
+	}
+
+	bool CListUI::SelectItem(int iIndex)
+	{
+		if( iIndex < 0 ) return false;
+
+		HideEditText();
+
+		// We should first unselect the currently selected item
 		CControlUI* pControl = m_pList->GetItemAt(iIndex);
 		if( pControl == NULL ) return false;
 		if( !pControl->IsVisible() ) return false;
@@ -558,15 +634,17 @@ namespace DuiLib
 
 		IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
 		if( pListItem == NULL ) return false;
-		m_iCurSel = iIndex;
-		if( !pListItem->Select(true) ) {
-			m_iCurSel = -1;
-			return false;
-		}
-		EnsureVisible(m_iCurSel);
+		pListItem->Select(true);
+		EnsureVisible(iIndex);
 		pControl->SetFocus();
-		if( m_pManager != NULL ) {
-			m_pManager->SendNotify(this, _T("itemselect"));
+
+		std::vector<int>::iterator  itr = std::find(m_vCurSel.begin(), m_vCurSel.end(), iIndex);
+		if( itr == m_vCurSel.end())
+			m_vCurSel.push_back(iIndex);
+
+		if( m_pManager != NULL ) 
+		{
+			m_pManager->SendNotify(this, _T("itemselect"), iIndex);
 		}
 
 		return true;
@@ -787,22 +865,26 @@ namespace DuiLib
 
 	bool CListUI::ExpandItem(int iIndex, bool bExpand /*= true*/)
 	{
-		if( m_iExpandedItem >= 0 && !m_ListInfo.bMultiExpandable) {
+		if( m_iExpandedItem >= 0 && !m_ListInfo.bMultiExpandable)
+		{
 			CControlUI* pControl = GetItemAt(m_iExpandedItem);
-			if( pControl != NULL ) {
+			if( pControl != NULL ) 
+			{
 				IListItemUI* pItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
 				if( pItem != NULL ) pItem->Expand(false);
 			}
 			m_iExpandedItem = -1;
 		}
-		if( bExpand ) {
+		if( bExpand ) 
+		{
 			CControlUI* pControl = GetItemAt(iIndex);
 			if( pControl == NULL ) return false;
 			if( !pControl->IsVisible() ) return false;
 			IListItemUI* pItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
 			if( pItem == NULL ) return false;
 			m_iExpandedItem = iIndex;
-			if( !pItem->Expand(true) ) {
+			if( !pItem->Expand(true) )
+			{
 				m_iExpandedItem = -1;
 				return false;
 			}
@@ -853,21 +935,26 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("scrollselect")) == 0 ) SetScrollSelect(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("multiexpanding")) == 0 ) SetMultiExpanding(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("itemfont")) == 0 ) m_ListInfo.nFont = _ttoi(pstrValue);
-		else if( _tcscmp(pstrName, _T("itemalign")) == 0 ) {
-			if( _tcsstr(pstrValue, _T("left")) != NULL ) {
+		else if( _tcscmp(pstrName, _T("itemalign")) == 0 ) 
+		{
+			if( _tcsstr(pstrValue, _T("left")) != NULL ) 
+			{
 				m_ListInfo.uTextStyle &= ~(DT_CENTER | DT_RIGHT);
 				m_ListInfo.uTextStyle |= DT_LEFT;
 			}
-			if( _tcsstr(pstrValue, _T("center")) != NULL ) {
+			if( _tcsstr(pstrValue, _T("center")) != NULL ) 
+			{
 				m_ListInfo.uTextStyle &= ~(DT_LEFT | DT_RIGHT);
 				m_ListInfo.uTextStyle |= DT_CENTER;
 			}
-			if( _tcsstr(pstrValue, _T("right")) != NULL ) {
+			if( _tcsstr(pstrValue, _T("right")) != NULL )
+			{
 				m_ListInfo.uTextStyle &= ~(DT_LEFT | DT_CENTER);
 				m_ListInfo.uTextStyle |= DT_RIGHT;
 			}
 		}
-		if( _tcscmp(pstrName, _T("itemtextpadding")) == 0 ) {
+		if( _tcscmp(pstrName, _T("itemtextpadding")) == 0 ) 
+		{
 			RECT rcTextPadding = { 0 };
 			LPTSTR pstr = NULL;
 			rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
@@ -876,59 +963,68 @@ namespace DuiLib
 			rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
 			SetItemTextPadding(rcTextPadding);
 		}
-		else if( _tcscmp(pstrName, _T("itemtextcolor")) == 0 ) {
+		else if( _tcscmp(pstrName, _T("itemtextcolor")) == 0 ) 
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetItemTextColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("itembkcolor")) == 0 ) {
+		else if( _tcscmp(pstrName, _T("itembkcolor")) == 0 ) 
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetItemBkColor(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("itemimage")) == 0 ) SetItemImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("itemselectedtextcolor")) == 0 ) {
+		else if( _tcscmp(pstrName, _T("itemselectedtextcolor")) == 0 )
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetSelectedItemTextColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("itemselectedbkcolor")) == 0 ) {
+		else if( _tcscmp(pstrName, _T("itemselectedbkcolor")) == 0 )
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetSelectedItemBkColor(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("itemselectedimage")) == 0 ) SetSelectedItemImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("itemhottextcolor")) == 0 ) {
+		else if( _tcscmp(pstrName, _T("itemhottextcolor")) == 0 ) 
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetHotItemTextColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("itemhotbkcolor")) == 0 ) {
+		else if( _tcscmp(pstrName, _T("itemhotbkcolor")) == 0 ) 
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetHotItemBkColor(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("itemhotimage")) == 0 ) SetHotItemImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("itemdisabledtextcolor")) == 0 ) {
+		else if( _tcscmp(pstrName, _T("itemdisabledtextcolor")) == 0 ) 
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetDisabledItemTextColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("itemdisabledbkcolor")) == 0 ) {
+		else if( _tcscmp(pstrName, _T("itemdisabledbkcolor")) == 0 ) 
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetDisabledItemBkColor(clrColor);
 		}
 		else if( _tcscmp(pstrName, _T("itemdisabledimage")) == 0 ) SetDisabledItemImage(pstrValue);
-		else if( _tcscmp(pstrName, _T("itemlinecolor")) == 0 ) {
+		else if( _tcscmp(pstrName, _T("itemlinecolor")) == 0 ) 
+		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
@@ -1057,6 +1153,7 @@ namespace DuiLib
 		}
 		else
 			return;
+
 		m_pEditUI->SetPos(CRect(0, 0, 0, 0));
 
 		TNotifyUI notify;
