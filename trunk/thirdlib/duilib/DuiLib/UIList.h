@@ -108,7 +108,10 @@ namespace DuiLib
 		bool GetScrollSelect();
 		void SetScrollSelect(bool bScrollSelect);
 		int GetCurSel() const;
+
 		bool SelectItem(int iIndex);
+		bool UnSelectItem(int iIndex);
+		bool	IsItemSelected(int iIndex);
 
 		CListHeaderUI* GetHeader() const;  
 		CContainerUI* GetList() const;
@@ -232,7 +235,7 @@ namespace DuiLib
 
 	protected:
 		int	m_iCurSel;
-		int	m_iLastClick;				//	最后一次点击的Item
+		int	m_iLastClickSel;				//	最后一次点击的Item
 		std::vector<int>	m_vCurSel;	//	当前所有被选中的列表项
 
 		bool	m_bScrollSelect;
