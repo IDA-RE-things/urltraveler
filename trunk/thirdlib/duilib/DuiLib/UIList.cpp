@@ -79,11 +79,7 @@ namespace DuiLib
 				// 如果Shift键被按下
 				if( GetKeyState(VK_SHIFT)   &   0x8000)
 				{
-					for(size_t i=0; i<m_vCurSel.size(); i++)
-					{
-						UnSelectItem(nIndex);
-					}
-
+					ClearSelectedItem();
 					SelectContinualItem(nIndex);
 					return;
 				}
@@ -93,11 +89,7 @@ namespace DuiLib
 			// 此时只选中一个 
 			if( m_vCurSel.size() > 0)
 			{
-				std::vector<int> vSel = m_vCurSel;
-				for( size_t i=0; i<vSel.size(); i++)
-				{
-					UnSelectItem(vSel[i]);
-				}
+				ClearSelectedItem();
 			}
 			SelectItem(nIndex);
 			m_iLastClickSel	=	nIndex;
@@ -600,6 +592,15 @@ namespace DuiLib
 		}
 
 		return false;
+	}
+
+	void	CListUI::ClearSelectedItem()
+	{
+		std::vector<int> vSel = m_vCurSel;
+		for( size_t i=0; i<vSel.size(); i++)
+		{
+			UnSelectItem(vSel[i]);
+		}
 	}
 
 	bool CListUI::UnSelectItem(int iIndex)

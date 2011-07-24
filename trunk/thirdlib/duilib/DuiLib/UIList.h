@@ -113,6 +113,7 @@ namespace DuiLib
 		bool SelectItem(int iIndex);
 		bool UnSelectItem(int iIndex);
 		bool SelectContinualItem(int iIndex);
+		void	ClearSelectedItem();
 
 		CListHeaderUI* GetHeader() const;  
 		CContainerUI* GetList() const;
