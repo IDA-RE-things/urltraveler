@@ -465,15 +465,27 @@ namespace DuiLib
 			switch( event.chKey ) 
 			{
 			case VK_UP:
-				ClearSelectedItem();
-				m_iLastClickSel = FindSelectable(m_iLastClickSel - 1, true);
-				SelectItem(m_iLastClickSel);
+				{
+					ClearSelectedItem();
+
+					int n = m_iLastClickSel - 1;
+					m_iLastClickSel = FindSelectable(n, true);
+
+					if( m_iLastClickSel - 1 == n)
+					{
+						int i=0;
+						i++;
+					}
+					SelectItem(m_iLastClickSel);
+					Invalidate();
+				}
 				return;
 
 			case VK_DOWN:
 				ClearSelectedItem();
-				m_iLastClickSel = FindSelectable(m_iLastClickSel + 1, true);
+				m_iLastClickSel = FindSelectable(m_iLastClickSel + 1, false);
 				SelectItem(m_iLastClickSel);
+				Invalidate();
 				return;
 
 			case VK_PRIOR:
@@ -2118,12 +2130,6 @@ namespace DuiLib
 				notify.pSender = this;
 				notify.wParam = m_iIndex;
 				m_pManager->SendNotify(notify);
-				/*
-
-				// 判断是否支持多选
-				Select(true);
-				Invalidate();
-				*/
 			}
 			return;
 		}
