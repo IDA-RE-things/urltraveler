@@ -73,6 +73,7 @@ namespace DuiLib
 					else
 						SelectItem(nIndex);
 
+					m_iLastClickSel	=	nIndex;
 					return;
 				}
 
