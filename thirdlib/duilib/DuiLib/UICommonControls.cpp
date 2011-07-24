@@ -141,10 +141,6 @@ namespace DuiLib {
 				m_uTextStyle |= DT_BOTTOM;
 			}
 		}
-		else if( _tcscmp(pstrName, _T("endellipsis")) == 0 ) {
-			if( _tcscmp(pstrValue, _T("true")) == 0 ) m_uTextStyle |= DT_END_ELLIPSIS;
-			else m_uTextStyle &= ~DT_END_ELLIPSIS;
-		}    
 		else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
@@ -519,7 +515,7 @@ namespace DuiLib {
 	//
 	//
 
-	COptionUI::COptionUI() : m_bSelected(false), m_dwSelectedTextColor(0)
+	COptionUI::COptionUI() : m_bSelected(false)
 	{
 	}
 
@@ -614,15 +610,6 @@ namespace DuiLib {
 		else Selected(!m_bSelected);
 
 		return true;
-	}
-
-	void COptionUI::SetEnabled(bool bEnable)
-	{
-		CControlUI::SetEnabled(bEnable);
-		if( !IsEnabled() ) {
-			if( m_bSelected ) m_uButtonState = UISTATE_SELECTED;
-			else m_uButtonState = 0;
-		}
 	}
 
 	LPCTSTR COptionUI::GetSelectedImage()
@@ -833,6 +820,24 @@ Label_ForeImage:
 		CLabelUI::DoEvent(event);
 	}
 
+	void CTextUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
+	{
+		if( _tcscmp(pstrName, _T("wordbreak")) == 0 ) {
+			if( _tcsstr(pstrValue, _T("breakall")) != NULL ) {
+				m_uTextStyle &= ~DT_SINGLELINE;
+				m_uTextStyle |= DT_WORDBREAK;
+			}
+			else if( _tcsstr(pstrValue, _T("normal")) != NULL ) {
+				m_uTextStyle &= ~DT_WORDBREAK;
+				m_uTextStyle |= DT_SINGLELINE;
+			}
+		}
+		else
+		{
+			CLabelUI::SetAttribute(pstrName, pstrValue);
+		}
+	}
+
 	SIZE CTextUI::EstimateSize(SIZE szAvailable)
 	{
 		RECT rcText = { 0, 0, MAX(szAvailable.cx, m_cxyFixed.cx), 9999 };
@@ -895,6 +900,8 @@ Label_ForeImage:
 
 	CProgressUI::CProgressUI() : m_bHorizontal(true), m_nMin(0), m_nMax(100), m_nValue(0)
 	{
+		m_dwBorderColor = 0xFF4EA0D1;
+		m_nBorderSize = 1;
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
 		SetFixedHeight(12);
 	}
@@ -2389,7 +2396,6 @@ Label_ForeImage:
 					}
 				}
 			}
-			if( m_pManager != NULL && m_pOwner == NULL ) m_pManager->SendNotify(this, _T("scroll"));
 			return;
 		}
 		if( event.Type == UIEVENT_BUTTONUP )
@@ -2509,7 +2515,6 @@ Label_ForeImage:
 					}
 				}
 			}
-			if( m_pManager != NULL && m_pOwner == NULL ) m_pManager->SendNotify(this, _T("scroll"));
 			return;
 		}
 		if( event.Type == UIEVENT_MOUSEENTER )
@@ -2609,7 +2614,6 @@ Label_ForeImage:
 
 	void CScrollBarUI::PaintButton1(HDC hDC)
 	{
-		if( !m_bShowButton1 ) return;
 		if( !IsEnabled() ) m_uButton1State |= UISTATE_DISABLED;
 		else m_uButton1State &= ~ UISTATE_DISABLED;
 
@@ -2642,14 +2646,12 @@ Label_ForeImage:
 		}
 
 		DWORD dwBorderColor = 0xFF85E4FF;
-		int nBorderSize = 2;
+		int nBorderSize = 1;
 		CRenderEngine::DrawRect(hDC, m_rcButton1, nBorderSize, dwBorderColor);
 	}
 
 	void CScrollBarUI::PaintButton2(HDC hDC)
 	{
-		if( !m_bShowButton2 ) return;
-
 		if( !IsEnabled() ) m_uButton2State |= UISTATE_DISABLED;
 		else m_uButton2State &= ~ UISTATE_DISABLED;
 
@@ -2682,7 +2684,7 @@ Label_ForeImage:
 		}
 
 		DWORD dwBorderColor = 0xFF85E4FF;
-		int nBorderSize = 2;
+		int nBorderSize = 1;
 		CRenderEngine::DrawRect(hDC, m_rcButton2, nBorderSize, dwBorderColor);
 	}
 
@@ -2721,7 +2723,7 @@ Label_ForeImage:
 		}
 
 		DWORD dwBorderColor = 0xFF85E4FF;
-		int nBorderSize = 2;
+		int nBorderSize = 1;
 		CRenderEngine::DrawRect(hDC, m_rcThumb, nBorderSize, dwBorderColor);
 	}
 

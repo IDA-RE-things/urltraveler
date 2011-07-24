@@ -789,41 +789,9 @@ namespace DuiLib {
 		::DeleteDC(hCloneDC);
 	}
 
-
-	bool DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc, const RECT& rcPaint, const CStdString& sImageName, \
-		const CStdString& sImageResType, RECT rcItem, RECT rcBmpPart, RECT rcCorner, DWORD dwMask, BYTE bFade, \
-		bool bHole, bool bTiledX, bool bTiledY)
-	{
-		const TImageInfo* data = NULL;
-		if( sImageResType.IsEmpty() ) {
-			data = pManager->GetImageEx((LPCTSTR)sImageName, NULL, dwMask);
-		}
-		else {
-			data = pManager->GetImageEx((LPCTSTR)sImageName, (LPCTSTR)sImageResType, dwMask);
-		}
-		if( !data ) return false;    
-
-		if( rcBmpPart.left == 0 && rcBmpPart.right == 0 && rcBmpPart.top == 0 && rcBmpPart.bottom == 0 ) {
-			rcBmpPart.right = data->nX;
-			rcBmpPart.bottom = data->nY;
-		}
-		if (rcBmpPart.right > data->nX) rcBmpPart.right = data->nX;
-		if (rcBmpPart.bottom > data->nY) rcBmpPart.bottom = data->nY;
-
-		RECT rcTemp;
-		if( !::IntersectRect(&rcTemp, &rcItem, &rc) ) return true;
-		if( !::IntersectRect(&rcTemp, &rcItem, &rcPaint) ) return true;
-
-		CRenderEngine::DrawImage(hDC, data->hBitmap, rcItem, rcPaint, rcBmpPart, rcCorner, data->alphaChannel, bFade, bHole, bTiledX, bTiledY);
-
-		return true;
-	}
-
 	bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RECT& rc, const RECT& rcPaint, 
 		LPCTSTR pStrImage, LPCTSTR pStrModify)
 	{
-		if ((pManager == NULL) || (hDC == NULL)) return false;
-
 		// 1¡¢aaa.jpg
 		// 2¡¢file='aaa.jpg' res='' restype='0' dest='0,0,0,0' source='0,0,0,0' corner='0,0,0,0' 
 		// mask='#FF0000' fade='255' hole='false' xtiled='false' ytiled='false'
@@ -839,16 +807,14 @@ namespace DuiLib {
 		bool bTiledX = false;
 		bool bTiledY = false;
 
-		int image_count = 0;
-
 		CStdString sItem;
 		CStdString sValue;
 		LPTSTR pstr = NULL;
 
-		for( int i = 0; i < 2; ++i,image_count = 0 ) {
-			if( i == 1)
+		for( int i = 0; i < 2; ++i ) {
+			if( i == 1) {
 				pStrImage = pStrModify;
-
+			}
 			if( !pStrImage ) continue;
 
 			while( *pStrImage != _T('\0') ) {
@@ -874,20 +840,10 @@ namespace DuiLib {
 				if( *pStrImage++ != _T('\'') ) break;
 				if( !sValue.IsEmpty() ) {
 					if( sItem == _T("file") || sItem == _T("res") ) {
-						if( image_count > 0 )
-							DuiLib::DrawImage(hDC, pManager, rc, rcPaint, sImageName, sImageResType,
-							rcItem, rcBmpPart, rcCorner, dwMask, bFade, bHole, bTiledX, bTiledY);
-
 						sImageName = sValue;
-						++image_count;
 					}
 					else if( sItem == _T("restype") ) {
-						if( image_count > 0 )
-							DuiLib::DrawImage(hDC, pManager, rc, rcPaint, sImageName, sImageResType,
-							rcItem, rcBmpPart, rcCorner, dwMask, bFade, bHole, bTiledX, bTiledY);
-
 						sImageResType = sValue;
-						++image_count;
 					}
 					else if( sItem == _T("dest") ) {
 						rcItem.left = rc.left + _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
@@ -930,9 +886,29 @@ namespace DuiLib {
 			}
 		}
 
-		DuiLib::DrawImage(hDC, pManager, rc, rcPaint, sImageName, sImageResType,
-			rcItem, rcBmpPart, rcCorner, dwMask, bFade, bHole, bTiledX, bTiledY);
 
+		const TImageInfo* data = NULL;
+		if( sImageResType.IsEmpty() ) {
+			data = pManager->GetImageEx((LPCTSTR)sImageName, NULL, dwMask);
+		}
+		else {
+			data = pManager->GetImageEx((LPCTSTR)sImageName, (LPCTSTR)sImageResType, dwMask);
+		}
+		if( !data ) return false;
+
+		if( hDC == NULL ) return true;
+
+		if( rcBmpPart.left == 0 && rcBmpPart.right == 0 && rcBmpPart.top == 0 && rcBmpPart.bottom == 0 ) {
+			rcBmpPart.right = data->nX;
+			rcBmpPart.bottom = data->nY;
+		}
+		if (rcBmpPart.right > data->nX) rcBmpPart.right = data->nX;
+		if (rcBmpPart.bottom > data->nY) rcBmpPart.bottom = data->nY;
+
+		RECT rcTemp;
+		if( !::IntersectRect(&rcTemp, &rcItem, &rc) ) return true;
+		if( !::IntersectRect(&rcTemp, &rcItem, &rcPaint) ) return true;
+		DrawImage(hDC, data->hBitmap, rcItem, rcPaint, rcBmpPart, rcCorner, data->alphaChannel, bFade, bHole, bTiledX, bTiledY);
 		return true;
 	}
 
@@ -1401,8 +1377,15 @@ namespace DuiLib {
 							    rcBmpPart.left = iWidth * iImageListIndex;
 							    rcBmpPart.right = iWidth * (iImageListIndex + 1);
 							    CRect rcCorner(0, 0, 0, 0);
-							    DrawImage(hDC, pImageInfo->hBitmap, rcImage, rcImage, rcBmpPart, rcCorner, \
-								    pImageInfo->alphaChannel, 255);
+							    if (pImageInfo->hBitmap)
+							    {
+								    DrawImage(hDC, pImageInfo->hBitmap, rcImage, rcImage, rcBmpPart, rcCorner, \
+									    pImageInfo->alphaChannel, 255);
+							    }
+							    else
+							    {
+								    DrawIconEx(hDC, rcImage.left, rcImage.top, pImageInfo->hIcon, pImageInfo->nX, pImageInfo->nY, 1, NULL, DI_NORMAL);
+							    }
 						    }
 
 						    cyLine = MAX(iHeight, cyLine);
@@ -1618,24 +1601,16 @@ namespace DuiLib {
 					}
 					if( pt.x + szText.cx > rc.right ) {
 						if( pt.x + szText.cx > rc.right && pt.x != rc.left) {
-							cchChars--;
-							cchSize -= (int)(pstrNext - p);
+							//cchChars--;
+							//cchSize -= (int)(pstrNext - p);
 						}
 						if( (uStyle & DT_WORDBREAK) != 0 && cchLastGoodWord > 0 ) {
 							cchChars = cchLastGoodWord;
 							cchSize = cchLastGoodSize;                 
 						}
-						if( (uStyle & DT_END_ELLIPSIS) != 0 && cchChars > 0 ) {
-							cchChars -= 1;
-							LPCTSTR pstrPrev = ::CharPrev(pstrText, p);
-							if( cchChars > 0 ) {
-								cchChars -= 1;
-								pstrPrev = ::CharPrev(pstrText, pstrPrev);
-								cchSize -= (int)(p - pstrPrev);
-							}
-							else 
-								cchSize -= (int)(p - pstrPrev);
-							pt.x = rc.right;
+						if( (uStyle & DT_END_ELLIPSIS) != 0 && cchChars > 2 ) {
+							//cchChars = cchLastGoodWord;
+							//cchSize = cchLastGoodSize;
 						}
 						bLineEnd = true;
 						cxMaxWidth = MAX(cxMaxWidth, pt.x);
@@ -1651,16 +1626,59 @@ namespace DuiLib {
 					}
 					p = ::CharNext(p);
 				}
+				if( cchChars > 0 ) {				
+					::GetTextExtentPoint32(hDC, pstrText, cchSize, &szText);
+					if( bDraw && bLineDraw ) {
+						if (pt.x + szText.cx>= rc.right && uStyle & DT_END_ELLIPSIS && cchSize > 0)
+						{
+							LPTSTR pstrTemp = new TCHAR[cchSize];
+							memcpy(pstrTemp, pstrText, cchSize * sizeof(TCHAR));
 
-				::GetTextExtentPoint32(hDC, pstrText, cchSize, &szText);
-				if( bDraw && bLineDraw ) {
-					::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize);
-					if( pt.x >= rc.right && (uStyle & DT_END_ELLIPSIS) != 0 ) 
-						::TextOut(hDC, ptPos.x + szText.cx, ptPos.y, _T("..."), 3);
+							do
+							{
+								if (cchSize == 0)
+								{
+									break;
+								}
+
+								if (cchSize >= 3)
+								{
+									pstrTemp[cchSize - 1] = _T('.');
+									pstrTemp[cchSize - 2] = _T('.');
+									pstrTemp[cchSize - 3] = _T('.');
+								}
+								else if(cchSize == 2)
+								{
+									pstrTemp[cchSize - 1] = _T('.');
+									pstrTemp[cchSize - 2] = _T('.');
+								}
+								else
+								{
+									pstrTemp[cchSize - 1] = _T('.');
+								}
+
+								::GetTextExtentPoint32(hDC, pstrTemp, cchSize, &szText);
+								cchSize -= 1;
+
+							}while(pt.x + szText.cx >= rc.right);
+
+
+							::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrTemp, cchSize + 1);
+
+							if (pstrTemp)
+							{
+								delete []pstrTemp;
+							}
+						}
+						else
+						{
+							::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize);
+						}
+					}
+					pt.x += szText.cx;
+					cxMaxWidth = MAX(cxMaxWidth, pt.x);
+					pstrText += cchSize;
 				}
-				pt.x += szText.cx;
-				cxMaxWidth = MAX(cxMaxWidth, pt.x);
-				pstrText += cchSize;
 			}
 
 			if( pt.x >= rc.right || *pstrText == _T('\n') || *pstrText == _T('\0') ) bLineEnd = true;

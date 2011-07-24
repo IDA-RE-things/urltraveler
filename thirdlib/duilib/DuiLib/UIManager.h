@@ -289,7 +289,6 @@ namespace DuiLib {
 
 		bool SetTimer(CControlUI* pControl, UINT nTimerID, UINT uElapse);
 		bool KillTimer(CControlUI* pControl, UINT nTimerID);
-		void KillTimer(CControlUI* pControl);
 		void RemoveAllTimers();
 
 		void SetCapture();
@@ -298,8 +297,8 @@ namespace DuiLib {
 
 		bool AddNotifier(INotifyUI* pControl);
 		bool RemoveNotifier(INotifyUI* pControl);   
-		void SendNotify(TNotifyUI& Msg, bool bAsync = false);
-		void SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
+		void SendNotify(TNotifyUI& Msg);
+		void SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam = 0, LPARAM lParam = 0);
 
 		bool AddPreMessageFilter(IMessageFilterUI* pFilter);
 		bool RemovePreMessageFilter(IMessageFilterUI* pFilter);
@@ -374,16 +373,15 @@ namespace DuiLib {
 		CStdPtrArray m_aMessageFilters;
 		CStdPtrArray m_aPostPaintControls;
 		CStdPtrArray m_aDelayedCleanup;
-		CStdPtrArray m_aAsyncNotify;
 		CStdStringPtrMap m_mNameHash;
 		CStdStringPtrMap m_mOptionGroup;
 		//
 		CPaintManagerUI* m_pParentResourcePM;
-		DWORD m_dwDefaultDisabledColor;
-		DWORD m_dwDefaultFontColor;
-		DWORD m_dwDefaultLinkFontColor;
-		DWORD m_dwDefaultLinkHoverFontColor;
-		DWORD m_dwDefaultSelectedBkColor;
+		DWORD m_dwDefalutDisabledColor;
+		DWORD m_dwDefalutFontColor;
+		DWORD m_dwDefalutLinkFontColor;
+		DWORD m_dwDefalutLinkHoverFontColor;
+		DWORD m_dwDefalutSelectedBkColor;
 		TFontInfo m_DefaultFontInfo;
 		CStdPtrArray m_aCustomFonts;
 
