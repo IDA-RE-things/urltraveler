@@ -109,9 +109,10 @@ namespace DuiLib
 		void SetScrollSelect(bool bScrollSelect);
 		int GetCurSel() const;
 
+		bool	IsItemSelected(int iIndex);
 		bool SelectItem(int iIndex);
 		bool UnSelectItem(int iIndex);
-		bool	IsItemSelected(int iIndex);
+		bool SelectContinualItem(int iIndex);
 
 		CListHeaderUI* GetHeader() const;  
 		CContainerUI* GetList() const;

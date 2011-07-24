@@ -65,18 +65,26 @@ namespace DuiLib
 			// 如果支持多选
 			if( IsItemMultiSelect() == true)
 			{
-				// 如果Shift键被按下
+				// 如果Ctrl键被按下
 				if( GetKeyState(VK_CONTROL)   &   0x8000)
 				{
 					if( IsItemSelected(nIndex))
+						UnSelectItem(nIndex);
+					else
+						SelectItem(nIndex);
+
+					return;
+				}
+
+				// 如果Shift键被按下
+				if( GetKeyState(VK_SHIFT)   &   0x8000)
+				{
+					for(size_t i=0; i<m_vCurSel.size(); i++)
 					{
 						UnSelectItem(nIndex);
 					}
-					else
-					{
-						SelectItem(nIndex);
-					}
 
+					SelectContinualItem(nIndex);
 					return;
 				}
 			}
@@ -92,6 +100,7 @@ namespace DuiLib
 				}
 			}
 			SelectItem(nIndex);
+			m_iLastClickSel	=	nIndex;
 		}
 	}
 
@@ -617,6 +626,28 @@ namespace DuiLib
 			m_pManager->SendNotify(this, _T("itemunselect"), iIndex);
 		}
 
+		return true;
+	}
+
+	bool CListUI::SelectContinualItem(int iIndex)
+	{
+		if( m_iLastClickSel == -1)
+			return false;
+
+		if( m_iLastClickSel > iIndex)
+		{
+			for(int i = iIndex; i<=m_iLastClickSel; i++)
+			{
+				SelectItem(i);
+			}
+		}
+		else if( iIndex > m_iLastClickSel)
+		{
+			for(int i = m_iLastClickSel; i<=iIndex; i++)
+			{
+				SelectItem(i);
+			}
+		}
 		return true;
 	}
 
