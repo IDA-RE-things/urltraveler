@@ -484,7 +484,8 @@ err:
 
 	void CTxtWinHost::TxViewChange(BOOL fUpdate) 
 	{
-		if( m_re->OnTxViewChanged() ) m_re->Invalidate();
+		if( m_re->OnTxViewChanged() )
+			::UpdateWindow(m_re->GetManager()->GetPaintWindow());
 	}
 
 	BOOL CTxtWinHost::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight)
@@ -1629,7 +1630,7 @@ err:
 			m_pTwh->SetTransparent(TRUE);
 			LRESULT lResult;
 			m_pTwh->GetTextServices()->TxSendMessage(EM_SETLANGOPTIONS, 0, 0, &lResult);
-			m_pTwh->OnTxInPlaceActivate(NULL);
+			if( m_bReadOnly ) m_pTwh->OnTxInPlaceActivate(NULL);
 			m_pManager->AddMessageFilter(this);
 		}
 	}

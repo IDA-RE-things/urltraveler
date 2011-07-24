@@ -117,7 +117,7 @@ namespace DuiLib {
 		void NeedUpdate();
 		void NeedParentUpdate();
 
-		virtual void Init();
+		virtual void Init(TEventUI& event);
 		virtual void DoInit();
 
 		virtual void Event(TEventUI& event);
@@ -140,9 +140,7 @@ namespace DuiLib {
 	public:
 		CEventSource OnInit;
 		CEventSource OnDestroy;
-		CEventSource OnSize;
 		CEventSource OnEvent;
-		CEventSource OnNotify;
 
 	protected:
 		CPaintManagerUI* m_pManager;
@@ -162,7 +160,7 @@ namespace DuiLib {
 		bool m_bMouseEnabled;
 		bool m_bFocused;
 		bool m_bFloat;
-		bool m_bSetPos; // 防止SetPos循环调用
+		bool m_bFloatSetPos; // 防止SetPos循环调用
 		TRelativePosUI m_tRelativePos;
 
 		CStdString m_sText;

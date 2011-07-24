@@ -112,7 +112,6 @@ namespace DuiLib {
 		void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
 		bool Activate();
-    void SetEnabled(bool bEnable = true);
 
 		LPCTSTR GetSelectedImage();
 		void SetSelectedImage(LPCTSTR pStrImage);
@@ -164,6 +163,8 @@ namespace DuiLib {
 		SIZE EstimateSize(SIZE szAvailable);
 
 		void PaintText(HDC hDC);
+
+		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
 	protected:
 		enum { MAX_LINK = 8 };

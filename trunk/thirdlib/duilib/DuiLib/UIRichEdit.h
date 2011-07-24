@@ -2,10 +2,10 @@
 #define __UIRICHEDIT_H__
 
 #pragma once
+
 #include "OleIdl.h"
 
-namespace DuiLib 
-{
+namespace DuiLib {
 
 	class CTxtWinHost;
 

@@ -76,11 +76,11 @@ namespace DuiLib {
 		m_bAlphaBackground(false),
 		m_pParentResourcePM(NULL)
 	{
-		m_dwDefaultDisabledColor = 0xFFA7A6AA;
-		m_dwDefaultFontColor = 0xFF000000;
-		m_dwDefaultLinkFontColor = 0xFF0000FF;
-		m_dwDefaultLinkHoverFontColor = 0xFFD3215F;
-		m_dwDefaultSelectedBkColor = 0xFFBAE4FF;
+		m_dwDefalutDisabledColor = 0xFFA7A6AA;
+		m_dwDefalutFontColor = 0xFF000000;
+		m_dwDefalutLinkFontColor = 0xFF0000FF;
+		m_dwDefalutLinkHoverFontColor = 0xFFD3215F;
+		m_dwDefalutSelectedBkColor = 0xFFBAE4FF;
 		LOGFONT lf = { 0 };
 		::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
 		lf.lfCharSet = DEFAULT_CHARSET;
@@ -116,7 +116,6 @@ namespace DuiLib {
 	{
 		// Delete the control-tree structures
 		for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
-		for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) delete static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
 		m_mNameHash.Resize(0);
 		delete m_pRoot;
 
@@ -416,19 +415,6 @@ namespace DuiLib {
 		//#endif
 		// Not ready yet?
 		if( m_hWndPaint == NULL ) return false;
-
-		TNotifyUI* pMsg = NULL;
-		while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
-			m_aAsyncNotify.Remove(0);
-			if( pMsg->pSender != NULL ) {
-				if( pMsg->pSender->OnNotify ) pMsg->pSender->OnNotify(pMsg);
-			}
-			for( int j = 0; j < m_aNotifiers.GetSize(); j++ ) {
-				static_cast<INotifyUI*>(m_aNotifiers[j])->Notify(*pMsg);
-			}
-			delete pMsg;
-		}
-
 		// Cycle through listeners
 		for( int i = 0; i < m_aMessageFilters.GetSize(); i++ ) 
 		{
@@ -443,8 +429,8 @@ namespace DuiLib {
 		switch( uMsg ) {
     case WM_APP + 1:
 	    {
-		    for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) 
-			    delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
+		    // Delayed control-tree cleanup. See AttachDialog() for details.
+		    for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
 		    m_aDelayedCleanup.Empty();
 	    }
 	    break;
@@ -484,12 +470,6 @@ namespace DuiLib {
 		    // Should we paint?
 		    RECT rcPaint = { 0 };
 		    if( !::GetUpdateRect(m_hWndPaint, &rcPaint, FALSE) ) return true;
-		    if( m_pRoot == NULL ) {
-			    PAINTSTRUCT ps = { 0 };
-			    ::BeginPaint(m_hWndPaint, &ps);
-			    ::EndPaint(m_hWndPaint, &ps);
-			    return true;
-		    }            
 		    // Do we need to resize anything?
 		    // This is the time where we layout the controls on the form.
 		    // We delay this even from the WM_SIZE messages since resizing can be
@@ -521,7 +501,7 @@ namespace DuiLib {
 				    // to submit swipes/animations.
 				    if( m_bFirstLayout ) {
 					    m_bFirstLayout = false;
-					    SendNotify(m_pRoot, _T("windowinit"),  0, 0, false);
+					    SendNotify(m_pRoot, _T("windowinit"));
 				    }
 			    }
 		    }
@@ -955,18 +935,6 @@ namespace DuiLib {
 	    break;
 		}
 
-		pMsg = NULL;
-		while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
-			m_aAsyncNotify.Remove(0);
-			if( pMsg->pSender != NULL ) {
-				if( pMsg->pSender->OnNotify ) pMsg->pSender->OnNotify(pMsg);
-			}
-			for( int j = 0; j < m_aNotifiers.GetSize(); j++ ) {
-				static_cast<INotifyUI*>(m_aNotifiers[j])->Notify(*pMsg);
-			}
-			delete pMsg;
-		}
-
 		return false;
 	}
 
@@ -1020,15 +988,11 @@ namespace DuiLib {
 		if( pControl == m_pEventHover ) m_pEventHover = NULL;
 		if( pControl == m_pEventClick ) m_pEventClick = NULL;
 		if( pControl == m_pFocus ) m_pFocus = NULL;
-		KillTimer(pControl);
+
 		const CStdString& sName = pControl->GetName();
 		if( !sName.IsEmpty() ) {
 			if( pControl == FindControl(sName) ) m_mNameHash.Remove(sName);
 		}
-		for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) {
-			TNotifyUI* pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
-			if( pMsg->pSender == pControl ) pMsg->pSender = NULL;
-		}    
 	}
 
 	bool CPaintManagerUI::AddOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl)
@@ -1233,20 +1197,6 @@ namespace DuiLib {
 		return false;
 	}
 
-	void CPaintManagerUI::KillTimer(CControlUI* pControl)
-	{
-		ASSERT(pControl!=NULL);
-		int count = m_aTimers.GetSize();
-		for( int i = 0, j = 0; i < count; i++ ) {
-			TIMERINFO* pTimer = static_cast<TIMERINFO*>(m_aTimers[i - j]);
-			if( pTimer->pSender == pControl && pTimer->hWnd == m_hWndPaint ) {
-				if( pTimer->bKilled == false ) ::KillTimer(pTimer->hWnd, pTimer->uWinTimer);
-				m_aTimers.Remove(i);
-				j++;
-			}
-		}
-	}
-
 	void CPaintManagerUI::RemoveAllTimers()
 	{
 		for( int i = 0; i < m_aTimers.GetSize(); i++ ) {
@@ -1393,38 +1343,23 @@ namespace DuiLib {
 		::PostMessage(m_hWndPaint, WM_APP + 1, 0, 0L);
 	}
 
-	void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0*/, bool bAsync /*= false*/)
+	void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0*/)
 	{
 		TNotifyUI Msg;
 		Msg.pSender = pControl;
 		Msg.sType = pstrMessage;
 		Msg.wParam = wParam;
 		Msg.lParam = lParam;
-		SendNotify(Msg, bAsync);
+		SendNotify(Msg);
 	}
 
-	void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
+	void CPaintManagerUI::SendNotify(TNotifyUI& Msg)
 	{
 		Msg.ptMouse = m_ptLastMousePos;
 		Msg.dwTimestamp = ::GetTickCount();
-		if( !bAsync ) {
-			// Send to all listeners
-			if( Msg.pSender != NULL ) {
-				if( Msg.pSender->OnNotify ) Msg.pSender->OnNotify(&Msg);
-			}
-			for( int i = 0; i < m_aNotifiers.GetSize(); i++ ) {
-				static_cast<INotifyUI*>(m_aNotifiers[i])->Notify(Msg);
-			}
-		}
-		else {
-			TNotifyUI *pMsg = new TNotifyUI;
-			pMsg->pSender = Msg.pSender;
-			pMsg->sType = Msg.sType;
-			pMsg->wParam = Msg.wParam;
-			pMsg->lParam = Msg.lParam;
-			pMsg->ptMouse = Msg.ptMouse;
-			pMsg->dwTimestamp = Msg.dwTimestamp;
-			m_aAsyncNotify.Add(pMsg);
+		// Send to all listeners
+		for( int i = 0; i < m_aNotifiers.GetSize(); i++ ) {
+			static_cast<INotifyUI*>(m_aNotifiers[i])->Notify(Msg);
 		}
 	}
 
@@ -1453,56 +1388,56 @@ namespace DuiLib {
 	DWORD CPaintManagerUI::GetDefaultDisabledColor() const
 	{
 		if( m_pParentResourcePM ) return m_pParentResourcePM->GetDefaultDisabledColor();
-		return m_dwDefaultDisabledColor;
+		return m_dwDefalutDisabledColor;
 	}
 
 	void CPaintManagerUI::SetDefaultDisabledColor(DWORD dwColor)
 	{
-		m_dwDefaultDisabledColor = dwColor;
+		m_dwDefalutDisabledColor = dwColor;
 	}
 
 	DWORD CPaintManagerUI::GetDefaultFontColor() const
 	{
 		if( m_pParentResourcePM ) return m_pParentResourcePM->GetDefaultFontColor();
-		return m_dwDefaultFontColor;
+		return m_dwDefalutFontColor;
 	}
 
 	void CPaintManagerUI::SetDefaultFontColor(DWORD dwColor)
 	{
-		m_dwDefaultFontColor = dwColor;
+		m_dwDefalutFontColor = dwColor;
 	}
 
 	DWORD CPaintManagerUI::GetDefaultLinkFontColor() const
 	{
 		if( m_pParentResourcePM ) return m_pParentResourcePM->GetDefaultLinkFontColor();
-		return m_dwDefaultLinkFontColor;
+		return m_dwDefalutLinkFontColor;
 	}
 
 	void CPaintManagerUI::SetDefaultLinkFontColor(DWORD dwColor)
 	{
-		m_dwDefaultLinkFontColor = dwColor;
+		m_dwDefalutLinkFontColor = dwColor;
 	}
 
 	DWORD CPaintManagerUI::GetDefaultLinkHoverFontColor() const
 	{
 		if( m_pParentResourcePM ) return m_pParentResourcePM->GetDefaultLinkHoverFontColor();
-		return m_dwDefaultLinkHoverFontColor;
+		return m_dwDefalutLinkHoverFontColor;
 	}
 
 	void CPaintManagerUI::SetDefaultLinkHoverFontColor(DWORD dwColor)
 	{
-		m_dwDefaultLinkHoverFontColor = dwColor;
+		m_dwDefalutLinkHoverFontColor = dwColor;
 	}
 
 	DWORD CPaintManagerUI::GetDefaultSelectedBkColor() const
 	{
 		if( m_pParentResourcePM ) return m_pParentResourcePM->GetDefaultSelectedBkColor();
-		return m_dwDefaultSelectedBkColor;
+		return m_dwDefalutSelectedBkColor;
 	}
 
 	void CPaintManagerUI::SetDefaultSelectedBkColor(DWORD dwColor)
 	{
-		m_dwDefaultSelectedBkColor = dwColor;
+		m_dwDefalutSelectedBkColor = dwColor;
 	}
 
 	TFontInfo* CPaintManagerUI::GetDefaultFontInfo()
@@ -2012,7 +1947,7 @@ namespace DuiLib {
 		const CStdString& sName = pThis->GetName();
 		if( sName.IsEmpty() ) return NULL;
 		// Add this control to the hash list
-		pManager->m_mNameHash.Set(sName, pThis);
+		pManager->m_mNameHash.Insert(sName, pThis);
 		return NULL; // Attempt to add all controls
 	}
 
