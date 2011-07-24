@@ -42,7 +42,7 @@ namespace DuiLib {
 
 		SIZE szAvailable = { rc.right - rc.left, rc.bottom - rc.top };
 		int cyFixed = 0;
-		for( int it = 0; it < pOwner->GetCount(); it++ ) {
+		for( int it = 0; it < pOwner->GetRowCount(); it++ ) {
 			CControlUI* pControl = static_cast<CControlUI*>(pOwner->GetItemAt(it));
 			if( !pControl->IsVisible() ) continue;
 			SIZE sz = pControl->EstimateSize(szAvailable);
@@ -108,7 +108,7 @@ namespace DuiLib {
 			m_pLayout->SetAutoDestroy(false);
 			m_pLayout->EnableScrollBar();
 			m_pLayout->ApplyAttributeList(m_pOwner->GetDropBoxAttributeList());
-			for( int i = 0; i < m_pOwner->GetCount(); i++ ) {
+			for( int i = 0; i < m_pOwner->GetRowCount(); i++ ) {
 				m_pLayout->Add(static_cast<CControlUI*>(m_pOwner->GetItemAt(i)));
 			}
 			m_pm.AttachDialog(m_pLayout);
@@ -277,10 +277,10 @@ namespace DuiLib {
 		// The list items should know about us
 		IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
 		if( pListItem != NULL ) {
-			pListItem->SetIndex(GetCount()); // 本来是GetCount() - 1的，不过后面有减一
+			pListItem->SetIndex(GetRowCount()); // 本来是GetRowCount() - 1的，不过后面有减一
 		}
 
-		for(int i = iOrginIndex; i < GetCount(); ++i)
+		for(int i = iOrginIndex; i < GetRowCount(); ++i)
 		{
 			CControlUI* p = GetItemAt(i);
 			pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
@@ -315,7 +315,7 @@ namespace DuiLib {
 			pListItem->SetIndex(iIndex);
 		}
 
-		for(int i = iIndex + 1; i < GetCount(); ++i)
+		for(int i = iIndex + 1; i < GetRowCount(); ++i)
 		{
 			CControlUI* p = GetItemAt(i);
 			pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
@@ -333,7 +333,7 @@ namespace DuiLib {
 
 		if (!CContainerUI::RemoveAt(iIndex)) return false;
 
-		for(int i = iIndex; i < GetCount(); ++i)
+		for(int i = iIndex; i < GetRowCount(); ++i)
 		{
 			CControlUI* p = GetItemAt(i);
 			IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
@@ -350,7 +350,7 @@ namespace DuiLib {
 	{
 		if (!CContainerUI::RemoveAt(iIndex)) return false;
 
-		for(int i = iIndex; i < GetCount(); ++i)
+		for(int i = iIndex; i < GetRowCount(); ++i)
 		{
 			CControlUI* p = GetItemAt(i);
 			IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
@@ -427,7 +427,7 @@ namespace DuiLib {
 		SelectItem(FindSelectable(0, false));
 		return;
 	case VK_END:
-		SelectItem(FindSelectable(GetCount() - 1, true));
+		SelectItem(FindSelectable(GetRowCount() - 1, true));
 		return;
 			}
 		}

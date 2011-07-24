@@ -463,11 +463,7 @@ public:
 
 private:
 
-#ifndef _UNICODE
-	std::string	m_strString;
-#else
-	std::wstring m_strString;
-#endif
+	std::wstring	m_strString;
 };
 
 

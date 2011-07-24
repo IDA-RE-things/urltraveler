@@ -114,6 +114,7 @@ namespace DuiLib
 		bool UnSelectItem(int iIndex);
 		bool SelectContinualItem(int iIndex);
 		void	ClearSelectedItem();
+		void	DeleteSelected();
 
 		CListHeaderUI* GetHeader() const;  
 		CContainerUI* GetList() const;
@@ -122,10 +123,7 @@ namespace DuiLib
 		CControlUI* GetItemAt(int iIndex) const;
 		int GetItemIndex(CControlUI* pControl) const;
 		bool SetItemIndex(CControlUI* pControl, int iIndex);
-		int GetCount() const;
-		// get num of rows of list [5/1/2011 linjinming]
 		int GetRowCount() const;
-		// get num of columns [6/8/2011 zhangzhongqing]
 		int GetColumnCount() const;
 
 		bool Add(CControlUI* pControl);

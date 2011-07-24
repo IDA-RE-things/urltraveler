@@ -68,7 +68,7 @@ bool CContainerUI::SetItemIndex(CControlUI* pControl, int iIndex)
 	return false;
 }
 
-int CContainerUI::GetCount() const
+int CContainerUI::GetRowCount() const
 {
 	return m_items.GetSize();
 }
@@ -504,18 +504,22 @@ int CContainerUI::FindSelectable(int iIndex, bool bForward /*= true*/) const
 {
 	// NOTE: This is actually a helper-function for the list/combo/ect controls
 	//       that allow them to find the next enabled/available selectable item
-	if( GetCount() == 0 ) return -1;
-	iIndex = CLAMP(iIndex, 0, GetCount() - 1);
-	if( bForward ) {
-		for( int i = iIndex; i < GetCount(); i++ ) {
+	if( GetRowCount() == 0 ) return -1;
+	iIndex = CLAMP(iIndex, 0, GetRowCount() - 1);
+	if( bForward ) 
+	{
+		for( int i = iIndex; i < GetRowCount(); i++ ) 
+		{
 			if( GetItemAt(i)->GetInterface(_T("ListItem")) != NULL 
 				&& GetItemAt(i)->IsVisible()
 				&& GetItemAt(i)->IsEnabled() ) return i;
 		}
 		return -1;
 	}
-	else {
-		for( int i = iIndex; i >= 0; --i ) {
+	else 
+	{
+		for( int i = iIndex; i >= 0; --i ) 
+		{
 			if( GetItemAt(i)->GetInterface(_T("ListItem")) != NULL 
 				&& GetItemAt(i)->IsVisible()
 				&& GetItemAt(i)->IsEnabled() ) return i;
@@ -1745,7 +1749,7 @@ bool CTabLayoutUI::Remove(CControlUI* pControl)
 
 	if( m_iCurSel == index)
 	{
-		if( GetCount() > 0 ) GetItemAt(0)->SetVisible(true);
+		if( GetRowCount() > 0 ) GetItemAt(0)->SetVisible(true);
 		NeedParentUpdate();
 	}
 	else if( m_iCurSel > index )
