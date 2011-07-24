@@ -327,12 +327,12 @@ void	UpdateModule::OnEvent_ShowUpdateDownloadingWnd(Event* pEvent)
 		if( bForce == TRUE)
 		{
 			m_pUpdateWnd->SetHintMsg(L"{b}你的版本太低，必须升级才能继续使用！{/b}");
-			pMainFrameWnd->ShowModal(*m_pUpdateWnd);
+			m_pUpdateWnd->ShowModal();
 		}
 		else
 		{
 			m_pUpdateWnd->SetHintMsg(L"{b}检测到新的版本，正在进行升级！{/b}");
-			pMainFrameWnd->ShowModal(*m_pUpdateWnd);
+			m_pUpdateWnd->ShowModal();
 		}
 	}	
 }

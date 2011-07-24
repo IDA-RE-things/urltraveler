@@ -134,7 +134,7 @@ void	SettingModule::OnEvent_OpenSettingWnd(Event* pEvent)
 	CSettingWnd* pSettingWnd = new CSettingWnd();
 	pSettingWnd->Create(*pParentWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);	
 	pSettingWnd->CenterWindow();
-	pParentWnd->ShowModal(pSettingWnd->GetHWND());
+	pSettingWnd->ShowModal();
 }
 
 int	SettingModule::OnService_GetAutoStartWithWindow(ServiceValue lServiceValue, param	lParam)
