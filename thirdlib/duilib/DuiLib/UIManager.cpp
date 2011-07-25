@@ -869,8 +869,6 @@ namespace DuiLib {
 		    event.dwTimestamp = ::GetTickCount();
 		    m_pFocus->Event(event);
 		    m_pEventKey = m_pFocus;
-
-		    TRACE(L"KEY DOWN");
 	    }
 	    break;
     case WM_KEYUP:
@@ -884,8 +882,6 @@ namespace DuiLib {
 		    event.dwTimestamp = ::GetTickCount();
 		    m_pEventKey->Event(event);
 		    m_pEventKey = NULL;
-
-		    TRACE(L"KEY UP");
 	    }
 	    break;
     case WM_SETCURSOR:

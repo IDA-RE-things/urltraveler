@@ -448,10 +448,6 @@ namespace DuiLib
 		}
 	}
 
-	void	CListUI::SelectMultiItem()
-	{
-	}
-
 	void CListUI::DoEvent(TEventUI& event)
 	{
 		//TRACE(L"DoEvent KeyUP");
@@ -479,16 +475,11 @@ namespace DuiLib
 			switch( event.chKey ) 
 			{
 			case VK_UP:
-				//TRACE(L"Key Up");
-				ClearSelectedItem();
-				m_iLastClickSel = FindSelectable(m_iLastClickSel - 1, true);
-				SelectItem(m_iLastClickSel);
+				KeyUp();
 				return;
 
 			case VK_DOWN:
-				ClearSelectedItem();
-				m_iLastClickSel = FindSelectable(m_iLastClickSel + 1, false);
-				SelectItem(m_iLastClickSel);
+				KeyDown();
 				return;
 
 			case VK_PRIOR:
@@ -1196,6 +1187,20 @@ namespace DuiLib
 	void CListUI::EndRight()
 	{
 		m_pList->EndRight();
+	}
+
+	void	CListUI::KeyUp()
+	{
+		ClearSelectedItem();
+		m_iLastClickSel = FindSelectable(m_iLastClickSel - 1, true);
+		SelectItem(m_iLastClickSel);
+	}
+
+	void	CListUI::KeyDown()
+	{
+		ClearSelectedItem();
+		m_iLastClickSel = FindSelectable(m_iLastClickSel + 1, false);
+		SelectItem(m_iLastClickSel);
 	}
 
 	void CListUI::EnableScrollBar(bool bEnableVertical, bool bEnableHorizontal)
