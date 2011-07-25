@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <Window size="425,304" sizebox="0,0,300,30" caption="0,0,0,30">
     <Font name="宋体" size="13" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="true" italic="false" />
@@ -17,7 +17,7 @@
             </HorizontalLayout>
         </HorizontalLayout>
         <HorizontalLayout name="HorizontalLayoutUI1" pos="1,31,425,270" width="424" height="239" bkcolor="#FFFFFFFF">
-            <Progress name="UpdateProgress" float="true" pos="135,165,412,195" bordercolor="#FF4EA0D1" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" min="0" max="100" value="0" hor="true" />
+            <Progress name="UpdateProgress" float="true" pos="135,165,412,195" bordercolor="#FF4EA0D1" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" min="0" max="100" value="0" hor="true" fgimage="btn_down.png"/>
             <Label name="LabelUI1" text="正在下载更新包，已经完成" float="true" pos="134,130,280,148" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             <Label name="PercentText" text="0%" float="true" pos="290,130,336,148" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             <Label name="LabelUI3" float="true" pos="1,1,112,238" bkimage="update_back.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
