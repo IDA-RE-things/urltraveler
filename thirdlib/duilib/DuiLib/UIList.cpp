@@ -2111,7 +2111,7 @@ namespace DuiLib
 			return;
 		}
 
-		if( event.Type == UIEVENT_BUTTONDOWN )
+		if( event.Type == UIEVENT_BUTTONUP )
 		{
 			if( IsEnabled() ) 
 			{
@@ -2250,17 +2250,11 @@ namespace DuiLib
 			}
 			return;
 		}
-		if( event.Type == UIEVENT_MOUSEMOVE ) 
-		{
-			return;
-		}
-		if( event.Type == UIEVENT_BUTTONUP )
-		{
-			return;
-		}
+
 		if( event.Type == UIEVENT_MOUSEENTER )
 		{
-			if( IsEnabled() ) {
+			if( IsEnabled() ) 
+			{
 				//add hot event
 				m_pManager->SendNotify(this, _T("itemhot"));
 				m_uButtonState |= UISTATE_HOT;
@@ -2420,45 +2414,60 @@ namespace DuiLib
 
 	void CListTextElementUI::DoEvent(TEventUI& event)
 	{
-		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
+		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) 
+		{
 			if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
 			else CListLabelElementUI::DoEvent(event);
 			return;
 		}
 
 		// When you hover over a link
-		if( event.Type == UIEVENT_SETCURSOR ) {
-			for( int i = 0; i < m_nLinks; i++ ) {
-				if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
+		if( event.Type == UIEVENT_SETCURSOR ) 
+		{
+			for( int i = 0; i < m_nLinks; i++ ) 
+			{
+				if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) 
+				{
 					::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
 					return;
 				}
 			}      
 		}
-		if( event.Type == UIEVENT_BUTTONUP && IsEnabled() ) {
-			for( int i = 0; i < m_nLinks; i++ ) {
-				if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
+		if( event.Type == UIEVENT_BUTTONUP && IsEnabled() ) 
+		{
+			for( int i = 0; i < m_nLinks; i++ ) 
+			{
+				if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) 
+				{
 					m_pManager->SendNotify(this, _T("link"), i);
 					return;
 				}
 			}
+
+			CListLabelElementUI::DoEvent(event);
 		}
-		if( m_nLinks > 0 && event.Type == UIEVENT_MOUSEMOVE ) {
+		if( m_nLinks > 0 && event.Type == UIEVENT_MOUSEMOVE ) 
+		{
 			int nHoverLink = -1;
-			for( int i = 0; i < m_nLinks; i++ ) {
-				if( ::PtInRect(&m_rcLinks[i], event.ptMouse) ) {
+			for( int i = 0; i < m_nLinks; i++ )
+			{
+				if( ::PtInRect(&m_rcLinks[i], event.ptMouse) )
+				{
 					nHoverLink = i;
 					break;
 				}
 			}
 
-			if(m_nHoverLink != nHoverLink) {
+			if(m_nHoverLink != nHoverLink)
+			{
 				Invalidate();
 				m_nHoverLink = nHoverLink;
 			}
 		}
-		if( m_nLinks > 0 && event.Type == UIEVENT_MOUSELEAVE ) {
-			if(m_nHoverLink != -1) {
+		if( m_nLinks > 0 && event.Type == UIEVENT_MOUSELEAVE ) 
+		{
+			if(m_nHoverLink != -1) 
+			{
 				Invalidate();
 				m_nHoverLink = -1;
 			}
@@ -2472,7 +2481,8 @@ namespace DuiLib
 		if( m_pOwner ) pInfo = m_pOwner->GetListInfo();
 
 		SIZE cXY = m_cxyFixed;
-		if( cXY.cy == 0 && m_pManager != NULL ) {
+		if( cXY.cy == 0 && m_pManager != NULL ) 
+		{
 			cXY.cy = m_pManager->GetDefaultFontInfo()->tm.tmHeight + 8;
 			if( pInfo ) cXY.cy += pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
 		}
