@@ -8,7 +8,7 @@
     <Font name="SimSun" size="12" bold="true" italic="false" />
     <VerticalLayout name="VerticalLayoutUI1" pos="0,0,323,275" width="323" height="275" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,0,0">
         <VerticalLayout name="VerticalLayoutUI2" pos="1,0,322,30" width="321" height="30">
-            <Button name="closebtn" float="true" pos="273,1,318,18" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+            <Button name="closebtn" float="true" pos="273,1,318,18" width="45" height="17" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_close.png' source='90,0,135,17'" hotimage="file='sys_dlg_close.png' source='45,0,90,17'" pushedimage="file='sys_dlg_close.png' source='0,0,45,17'" />
             <Label name="LabelUI1" float="true" pos="3,3,25,25" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             <Label name="LabelUI2" text="{b}EverFav 云端收藏夹{/b}" float="true" pos="31,4,153,25" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" />
         </VerticalLayout>

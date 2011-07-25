@@ -13,7 +13,7 @@
                 <Label name="LabelUI2" float="true" pos="8,4,30,26" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
             </HorizontalLayout>
             <HorizontalLayout name="HorizontalLayoutUI8" pos="361,0,422,29" width="61" height="29">
-                <Button name="closebtn" float="true" pos="16,2,58,19" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+                <Button name="closebtn" float="true" pos="16,2,58,19" width="45" height="17" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file='sys_dlg_close.png' source='90,0,135,17'" hotimage="file='sys_dlg_close.png' source='45,0,90,17'" pushedimage="file='sys_dlg_close.png' source='0,0,45,17'" />
             </HorizontalLayout>
         </HorizontalLayout>
         <HorizontalLayout name="HorizontalLayoutUI1" pos="1,31,425,270" width="424" height="239" bkcolor="#FFFFFFFF">
