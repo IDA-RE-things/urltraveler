@@ -441,7 +441,7 @@ namespace DuiLib
 
 	void CListUI::DoEvent(TEventUI& event)
 	{
-		TRACE(L"DoEvent KeyUP");
+		//TRACE(L"DoEvent KeyUP");
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) 
 		{
 			if( m_pParent != NULL ) m_pParent->DoEvent(event);
@@ -466,7 +466,7 @@ namespace DuiLib
 			switch( event.chKey ) 
 			{
 			case VK_UP:
-				TRACE(L"Key Up");
+				//TRACE(L"Key Up");
 				ClearSelectedItem();
 				m_iLastClickSel = FindSelectable(m_iLastClickSel - 1, true);
 				SelectItem(m_iLastClickSel);
@@ -2262,15 +2262,18 @@ namespace DuiLib
 			}
 			return;
 		}
+
 		if( event.Type == UIEVENT_MOUSELEAVE )
 		{
-			if( (m_uButtonState & UISTATE_HOT) != 0 ) {
+			if( (m_uButtonState & UISTATE_HOT) != 0 ) 
+			{
 				m_uButtonState &= ~UISTATE_HOT;
 				m_pManager->SendNotify(this, _T("itemunhot"));
 				Invalidate();
 			}
 			return;
 		}
+
 		CListElementUI::DoEvent(event);
 	}
 
@@ -2431,8 +2434,10 @@ namespace DuiLib
 					::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
 					return;
 				}
-			}      
+			}   
+
 		}
+
 		if( event.Type == UIEVENT_BUTTONUP && IsEnabled() ) 
 		{
 			for( int i = 0; i < m_nLinks; i++ ) 
@@ -2443,9 +2448,8 @@ namespace DuiLib
 					return;
 				}
 			}
-
-			CListLabelElementUI::DoEvent(event);
 		}
+
 		if( m_nLinks > 0 && event.Type == UIEVENT_MOUSEMOVE ) 
 		{
 			int nHoverLink = -1;
@@ -2464,6 +2468,7 @@ namespace DuiLib
 				m_nHoverLink = nHoverLink;
 			}
 		}
+
 		if( m_nLinks > 0 && event.Type == UIEVENT_MOUSELEAVE ) 
 		{
 			if(m_nHoverLink != -1) 
@@ -2472,6 +2477,7 @@ namespace DuiLib
 				m_nHoverLink = -1;
 			}
 		}
+
 		CListLabelElementUI::DoEvent(event);
 	}
 
