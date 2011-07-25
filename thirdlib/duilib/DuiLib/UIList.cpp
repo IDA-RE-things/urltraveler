@@ -95,6 +95,19 @@ namespace DuiLib
 			SelectItem(nIndex);
 			m_iLastClickSel	=	nIndex;
 		}
+		else if(msg.sType == L"itemrightclick")
+		{
+			int nIndex = msg.wParam;
+
+			// 如果是单选或者如果是多选，但是没有按下Ctrl键
+			// 此时只选中一个 
+			if( m_vCurSel.size() > 0)
+			{
+				ClearSelectedItem();
+			}
+			SelectItem(nIndex);
+			m_iLastClickSel	=	nIndex;
+		}
 		else if(msg.sType == L"itemdelete")
 		{
 			DeleteSelected();
@@ -2124,6 +2137,19 @@ namespace DuiLib
 			return;
 		}
 
+		if( event.Type == UIEVENT_RBUTTONDOWN )
+		{
+			if( IsEnabled() )
+			{
+				TNotifyUI notify;
+				notify.sType = _T("itemrightclick");
+				notify.pSender = this;
+				notify.wParam = m_iIndex;
+				m_pManager->SendNotify(notify);
+			}
+			return;
+		}
+
 		if( event.Type == UIEVENT_DBLCLICK )
 		{
 			if( IsEnabled() )
@@ -2133,6 +2159,7 @@ namespace DuiLib
 			}
 			return;
 		}
+
 		if( event.Type == UIEVENT_KEYDOWN && IsEnabled() )
 		{
 			if( event.chKey == VK_RETURN ) 
@@ -2145,7 +2172,10 @@ namespace DuiLib
 		// An important twist: The list-item will send the event not to its immediate
 		// parent but to the "attached" list. A list may actually embed several components
 		// in its path to the item, but key-presses etc. needs to go to the actual list.
-		if( m_pOwner != NULL ) m_pOwner->DoEvent(event); else CControlUI::DoEvent(event);
+		if( m_pOwner != NULL ) 
+			m_pOwner->DoEvent(event);
+		else
+			CControlUI::DoEvent(event);
 	}
 
 	void CListElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
@@ -2240,17 +2270,6 @@ namespace DuiLib
 			return;
 		}
 
-		if( event.Type == UIEVENT_RBUTTONDOWN )
-		{
-			if( IsEnabled() )
-			{
-				m_pManager->SendNotify(this, _T("itemclick"));
-				Select();
-				Invalidate();
-			}
-			return;
-		}
-
 		if( event.Type == UIEVENT_MOUSEENTER )
 		{
 			if( IsEnabled() ) 
@@ -2283,19 +2302,23 @@ namespace DuiLib
 
 		TListInfoUI* pInfo = m_pOwner->GetListInfo();
 		SIZE cXY = m_cxyFixed;
-		if( cXY.cy == 0 && m_pManager != NULL ) {
+		if( cXY.cy == 0 && m_pManager != NULL ) 
+		{
 			cXY.cy = m_pManager->GetDefaultFontInfo()->tm.tmHeight + 8;
 			cXY.cy += pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
 		}
 
-		if( cXY.cx == 0 && m_pManager != NULL ) {
+		if( cXY.cx == 0 && m_pManager != NULL )
+		{
 			RECT rcText = { 0, 0, 9999, cXY.cy };
-			if( pInfo->bShowHtml ) {
+			if( pInfo->bShowHtml ) 
+			{
 				int nLinks = 0;
 				CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 
 					0, NULL, NULL, nLinks, DT_SINGLELINE | DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
 			}
-			else {
+			else 
+			{
 				CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, 
 					pInfo->nFont, DT_SINGLELINE | DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
 			}
@@ -2319,13 +2342,16 @@ namespace DuiLib
 		if( m_pOwner == NULL ) return;
 		TListInfoUI* pInfo = m_pOwner->GetListInfo();
 		DWORD iTextColor = pInfo->dwTextColor;
-		if( (m_uButtonState & UISTATE_HOT) != 0 ) {
+		if( (m_uButtonState & UISTATE_HOT) != 0 ) 
+		{
 			iTextColor = pInfo->dwHotTextColor;
 		}
-		if( IsSelected() ) {
+		if( IsSelected() )
+		{
 			iTextColor = pInfo->dwSelectedTextColor;
 		}
-		if( !IsEnabled() ) {
+		if( !IsEnabled() )
+		{
 			iTextColor = pInfo->dwDisabledTextColor;
 		}
 		int nLinks = 0;
@@ -2356,7 +2382,8 @@ namespace DuiLib
 	CListTextElementUI::~CListTextElementUI()
 	{
 		CStdString* pText;
-		for( int it = 0; it < m_aTexts.GetSize(); it++ ) {
+		for( int it = 0; it < m_aTexts.GetSize(); it++ )
+		{
 			pText = static_cast<CStdString*>(m_aTexts[it]);
 			if( pText ) delete pText;
 		}
