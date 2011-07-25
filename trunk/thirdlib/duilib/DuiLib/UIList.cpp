@@ -441,6 +441,7 @@ namespace DuiLib
 
 	void CListUI::DoEvent(TEventUI& event)
 	{
+		TRACE(L"DoEvent KeyUP");
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) 
 		{
 			if( m_pParent != NULL ) m_pParent->DoEvent(event);
@@ -465,27 +466,16 @@ namespace DuiLib
 			switch( event.chKey ) 
 			{
 			case VK_UP:
-				{
-					ClearSelectedItem();
-
-					int n = m_iLastClickSel - 1;
-					m_iLastClickSel = FindSelectable(n, true);
-
-					if( m_iLastClickSel - 1 == n)
-					{
-						int i=0;
-						i++;
-					}
-					SelectItem(m_iLastClickSel);
-					Invalidate();
-				}
+				TRACE(L"Key Up");
+				ClearSelectedItem();
+				m_iLastClickSel = FindSelectable(m_iLastClickSel - 1, true);
+				SelectItem(m_iLastClickSel);
 				return;
 
 			case VK_DOWN:
 				ClearSelectedItem();
 				m_iLastClickSel = FindSelectable(m_iLastClickSel + 1, false);
 				SelectItem(m_iLastClickSel);
-				Invalidate();
 				return;
 
 			case VK_PRIOR:
