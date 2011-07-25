@@ -213,6 +213,8 @@ namespace DuiLib
 		void PageRight();
 		void HomeLeft();
 		void EndRight();
+		void	KeyUp();
+		void	KeyDown();
 		void EnableScrollBar(bool bEnableVertical = true, bool bEnableHorizontal = false);
 		virtual CScrollBarUI* GetVerticalScrollBar() const;
 		virtual CScrollBarUI* GetHorizontalScrollBar() const;
@@ -229,9 +231,6 @@ namespace DuiLib
 	public:
 		void Notify(TNotifyUI& msg);
 		virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
-
-	protected:
-		void	SelectMultiItem();
 
 	protected:
 		int	m_iCurSel;
