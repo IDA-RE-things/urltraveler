@@ -504,7 +504,9 @@ int CContainerUI::FindSelectable(int iIndex, bool bForward /*= true*/) const
 {
 	// NOTE: This is actually a helper-function for the list/combo/ect controls
 	//       that allow them to find the next enabled/available selectable item
-	if( GetRowCount() == 0 ) return -1;
+	if( GetRowCount() == 0 ) 
+		return -1;
+
 	iIndex = CLAMP(iIndex, 0, GetRowCount() - 1);
 	if( bForward ) 
 	{
@@ -512,7 +514,8 @@ int CContainerUI::FindSelectable(int iIndex, bool bForward /*= true*/) const
 		{
 			if( GetItemAt(i)->GetInterface(_T("ListItem")) != NULL 
 				&& GetItemAt(i)->IsVisible()
-				&& GetItemAt(i)->IsEnabled() ) return i;
+				&& GetItemAt(i)->IsEnabled() ) 
+				return i;
 		}
 		return -1;
 	}
@@ -522,7 +525,8 @@ int CContainerUI::FindSelectable(int iIndex, bool bForward /*= true*/) const
 		{
 			if( GetItemAt(i)->GetInterface(_T("ListItem")) != NULL 
 				&& GetItemAt(i)->IsVisible()
-				&& GetItemAt(i)->IsEnabled() ) return i;
+				&& GetItemAt(i)->IsEnabled() ) 
+				return i;
 		}
 		return FindSelectable(0, true);
 	}
