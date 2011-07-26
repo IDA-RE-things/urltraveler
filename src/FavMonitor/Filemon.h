@@ -1,23 +1,3 @@
-/*--
-
-Copyright (c) 1999-2009 Tencent
-
-Module Name:
-
-Filemon.h
-
-Abstract: 
-
-文件监控描述文件
-
-Author: 
-
-FrontLee  2009-11-25 20:34:03
-
-Revision History:
-
---*/
-
 #ifndef __FILEMON_H__
 #define __FILEMON_H__
 
@@ -25,13 +5,6 @@ Revision History:
 #include <STDIO.H>    
 #include <TIME.H>    
 #include "common.h"
-
-
-//////////////////////////////////////////////////////////////////////////
-//
-// 上面部分应该放到到共同文件中
-//
-//////////////////////////////////////////////////////////////////////////
 
 typedef struct _FileMonInfo{   
 	LPSTR                       pRoot;   

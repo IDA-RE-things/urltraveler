@@ -78,7 +78,6 @@ void ThreadMonfileMain(MONITORHANDLE* pMonitorHandle)
 
 				if( pInfo->pFileNotifyInfo == NULL)   
 				{   
-					Monfile_err_log("alloc memory error");   
 					break;   
 				} 
 
@@ -86,7 +85,7 @@ void ThreadMonfileMain(MONITORHANDLE* pMonitorHandle)
 
 				Overlapped.hEvent = pMonitorHandle->hChangeEvnets[i];   
 
-				bool bReadDirChange =  ReadDirectoryChangesW(pInfo->hFile, 
+				bReadDirChange =  ReadDirectoryChangesW(pInfo->hFile, 
 					pInfo->pFileNotifyInfo, MAX_CHANGESTREAMLENGTH, pInfo->bSubTree, 
 					pInfo->iOption, 0, &Overlapped, 0);
 			}
@@ -103,6 +102,10 @@ void ThreadMonfileMain(MONITORHANDLE* pMonitorHandle)
 				-1); 
 
 			// 文件变化事件
+
+			if ()
+			{
+			}
 			if( iEventIndex == 0 )   
 			{   
 				//FILEMONINFO* pNewInfo;   
@@ -121,11 +124,8 @@ void ThreadMonfileMain(MONITORHANDLE* pMonitorHandle)
 		}   
 		__except(EXCEPTION_EXECUTE_HANDLER)   
 		{   
-			Monfile_err_log("\n === error of main thread ===");   
 		}   
 	}while(true); 
-
-	Monfile_err_log("\n === break of main thread ===");   
 
 	SetEvent(pMonitorHandle->hStopEvent);   
 } 
