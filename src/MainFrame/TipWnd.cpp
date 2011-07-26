@@ -1,4 +1,6 @@
 #include "TipWnd.h"
+#include "XString.h"
+#include "UIHelper.h"
 
 void CTipWnd::Init(CControlUI* pOwner) 
 {
@@ -42,14 +44,53 @@ void CTipWnd::ShowTips(int nDelayMilliseconds, CStdString strTip, CStdString str
 
 	if (nDelayMilliseconds == 0)
 	{
-		POINT pt1;
-		GetCursorPos(&pt1);
+		POINT ptShowTip;
+		GetCursorPos(&ptShowTip);
+
+		// 根据m_strTip获得标题和链接的文字
+		String	strTip = m_strTip.GetData();
+		int nIndex = strTip.Find(L"<y 20>");
+		String	strTitle = strTip.SubStr(0, nIndex-1);
+
+		// 剔除<y 20><a>头部和</a>尾部
+		String	strUrl = strTip.SubStr(nIndex+6 + 3, strTip.GetLength() - 4);
+
+		SIZE szTitle = {0,0};
+		::GetTextExtentPoint32W(::GetDC(m_hWnd), strTitle.GetData(), strTitle.GetLength(), &szTitle);
+
+		SIZE szUrl = {0,0};
+		::GetTextExtentPoint32W(::GetDC(m_hWnd), strUrl.GetData(), strUrl.GetLength(), &szUrl);
+
+		int nLength = max(szTitle.cx, szUrl.cx);
+		if( nLength > 700)
+			nLength = 700;
+
+		if( szTitle.cx > nLength)
+		{
+			UINT nEndIndex = strTitle.GetLength() - 1;
+			UIHelper::GetFittableStringFromFront(GetDC(m_hWnd), NULL, strTitle.GetData(), nLength,0,nEndIndex);
+			strTitle = strTitle.SubStr(0, nEndIndex);
+			strTitle += L"...";
+		}
+
+		if( szUrl.cx > nLength)
+		{
+			UINT nEndIndex = strUrl.GetLength() - 1;
+			UIHelper::GetFittableStringFromFront(GetDC(m_hWnd), NULL, strUrl.GetData(), nLength,0,nEndIndex);
+			strUrl = strUrl.SubStr(0, nEndIndex);
+			strUrl += L"...";
+		}
+
+		m_strTip = strTitle;
+		m_strTip += L"\n<y 20><a>";
+		m_strTip += strUrl.GetData();
+		m_strTip += L"</a>";
 
 		CRect rc;
-		rc.left = pt1.x + 10;
-		rc.top = pt1.y + 10;
-		rc.right = pt1.x + 400;
-		rc.bottom = pt1.y + 100;
+		rc.left = ptShowTip.x + 10;
+		rc.top = ptShowTip.y + 10;
+		rc.right = ptShowTip.x + nLength + 10;
+		rc.bottom = ptShowTip.y + 50;
 
 		MONITORINFO oMonitor = {};
 		oMonitor.cbSize = sizeof(oMonitor);
@@ -70,6 +111,7 @@ void CTipWnd::ShowTips(int nDelayMilliseconds, CStdString strTip, CStdString str
 				rc.top = rc.bottom - nHeight;
 			}
 		}
+
 		if( rc.right > rcWork.right ) 
 		{
 			if( nWidth >= rcWork.GetWidth() ) 
@@ -84,6 +126,7 @@ void CTipWnd::ShowTips(int nDelayMilliseconds, CStdString strTip, CStdString str
 			}
 		}
 
+
 		SetWindowPos(m_hWnd, HWND_TOPMOST, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, 
 			SWP_NOACTIVATE | SWP_SHOWWINDOW);
 
@@ -96,12 +139,6 @@ void CTipWnd::ShowTips(int nDelayMilliseconds, CStdString strTip, CStdString str
 		{
 			m_pIcon->SetText(m_strIcon);
 		}
-
-		SIZE sz = {0, 0};
-
-		CRect rcTip = m_pTip->GetPos();
-		sz = m_pTip->EstimateSize(sz);
-		this->ResizeClient(sz.cx + rcTip.left + 20, sz.cy);
 
 		return;
 	}
@@ -118,7 +155,6 @@ void CTipWnd::HideTip()
 	}
 
 	::ShowWindow(m_hWnd, SW_HIDE);
-	//::SendMessage(m_hParent, WM_ACTIVATE, TRUE, 0L);
 }
 
 void CTipWnd::Notify(TNotifyUI& msg)
@@ -172,7 +208,8 @@ LRESULT CTipWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 LRESULT CTipWnd::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	SIZE szRoundCorner = m_pm.GetRoundCorner();
-	if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
+	if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) 
+	{
 		CRect rcWnd;
 		::GetWindowRect(*this, &rcWnd);
 		rcWnd.Offset(-rcWnd.left, -rcWnd.top);
@@ -192,14 +229,14 @@ LRESULT CTipWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	BOOL bHandled = TRUE;
 	switch( uMsg ) 
 	{
-			case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
-			case WM_KILLFOCUS:     lRes = OnKillFocus(uMsg, wParam, lParam, bHandled); break;
-			case WM_KEYDOWN:       lRes = OnKeyDown(uMsg, wParam, lParam, bHandled); break;
-			case WM_MOUSEWHEEL:    break;
-			case WM_SIZE:          lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
-			case WM_TIMER:         lRes = OnTimer(uMsg, wParam, lParam, bHandled); break;
-			default:
-				bHandled = FALSE;
+		case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
+		case WM_KILLFOCUS:     lRes = OnKillFocus(uMsg, wParam, lParam, bHandled); break;
+		case WM_KEYDOWN:       lRes = OnKeyDown(uMsg, wParam, lParam, bHandled); break;
+		case WM_MOUSEWHEEL:    break;
+		case WM_SIZE:          lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
+		case WM_TIMER:         lRes = OnTimer(uMsg, wParam, lParam, bHandled); break;
+		default:
+			bHandled = FALSE;
 	}
 	if( bHandled ) return lRes;
 	if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;

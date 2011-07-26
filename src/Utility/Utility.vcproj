@@ -286,6 +286,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\UIHelper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Utility.cpp"
 				>
 			</File>
@@ -381,6 +385,10 @@
 			</File>
 			<File
 				RelativePath=".\TxConfig.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UIHelper.h"
 				>
 			</File>
 			<File
