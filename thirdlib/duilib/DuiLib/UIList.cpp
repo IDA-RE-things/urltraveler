@@ -11,6 +11,7 @@ namespace DuiLib
 
 	CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iExpandedItem(-1)
 	{
+		m_iLastSel = -1;
 		m_iLastClickSel = -1;
 		m_nEditRow = -1;
 		m_nEditColomn = -1;
@@ -74,6 +75,7 @@ namespace DuiLib
 						SelectItem(nIndex);
 
 					m_iLastClickSel	=	nIndex;
+					m_iLastSel = m_iLastClickSel;
 					return;
 				}
 
@@ -82,6 +84,7 @@ namespace DuiLib
 				{
 					ClearSelectedItem();
 					SelectContinualItem(nIndex);
+					m_iLastSel = nIndex;
 					return;
 				}
 			}
@@ -94,6 +97,7 @@ namespace DuiLib
 			}
 			SelectItem(nIndex);
 			m_iLastClickSel	=	nIndex;
+			m_iLastSel = m_iLastClickSel;
 		}
 		else if(msg.sType == L"itemrightclick")
 		{
@@ -107,10 +111,16 @@ namespace DuiLib
 			}
 			SelectItem(nIndex);
 			m_iLastClickSel	=	nIndex;
+			m_iLastSel = m_iLastClickSel;
 		}
 		else if(msg.sType == L"itemdelete")
 		{
 			DeleteSelected();
+		}
+		else if(msg.sType == L"itemselectall")
+		{
+			for( int i=0; i<GetRowCount(); i++)
+				SelectItem(i);
 		}
 	}
 
@@ -520,6 +530,21 @@ namespace DuiLib
 					m_pManager->SendNotify(notify);
 				}
 				return;
+
+			case 'A':
+			case 'a':
+				{
+					// Ctrl + A
+					if( GetKeyState(VK_CONTROL)   &   0x8000)
+					{
+						TNotifyUI notify;
+						notify.sType = _T("itemselectall");
+						notify.pSender = this;
+						m_pManager->SendNotify(notify);
+					}
+				}
+
+				return;
 			}
 			break;
 
@@ -678,14 +703,19 @@ namespace DuiLib
 			{
 				SelectItem(i);
 			}
+			return true;
 		}
-		else if( iIndex > m_iLastClickSel)
+
+		if( iIndex > m_iLastClickSel)
 		{
 			for(int i = m_iLastClickSel; i<=iIndex; i++)
 			{
 				SelectItem(i);
 			}
+			return true;
 		}
+
+		SelectItem(iIndex);
 		return true;
 	}
 
@@ -1189,18 +1219,50 @@ namespace DuiLib
 		m_pList->EndRight();
 	}
 
-	void	CListUI::KeyUp()
-	{
-		ClearSelectedItem();
-		m_iLastClickSel = FindSelectable(m_iLastClickSel - 1, true);
-		SelectItem(m_iLastClickSel);
-	}
-
 	void	CListUI::KeyDown()
 	{
-		ClearSelectedItem();
-		m_iLastClickSel = FindSelectable(m_iLastClickSel + 1, false);
-		SelectItem(m_iLastClickSel);
+		TRACE(L"CListUI: Key Down");
+
+		if( IsItemMultiSelect() == false 
+			|| (IsItemMultiSelect() == true  && ((GetKeyState(VK_SHIFT)   &   0x8000)) == false))
+		{
+			ClearSelectedItem();
+			m_iLastClickSel = FindSelectable(m_iLastClickSel + 1, true);
+			m_iLastSel = m_iLastClickSel;
+			SelectItem(m_iLastClickSel);
+		}
+		else
+		{
+			m_iLastSel ++;
+			if( m_iLastSel > GetRowCount() - 1)
+				m_iLastSel = GetRowCount() - 1;
+
+			ClearSelectedItem();
+			SelectContinualItem(m_iLastSel);
+		}
+	}
+
+	void	CListUI::KeyUp()
+	{
+		TRACE(L"CListUI: Key Up");
+
+		if( IsItemMultiSelect() == false 
+			|| (IsItemMultiSelect() == true  && ((GetKeyState(VK_SHIFT)   &   0x8000)) == false))
+		{
+			ClearSelectedItem();
+			m_iLastClickSel = FindSelectable(m_iLastClickSel - 1, true);
+			m_iLastSel = m_iLastClickSel;
+			SelectItem(m_iLastClickSel);
+		}
+		else
+		{
+			m_iLastSel --;
+			if( m_iLastSel < 0)
+				m_iLastSel = 0;
+
+			ClearSelectedItem();
+			SelectContinualItem(m_iLastSel);
+		}
 	}
 
 	void CListUI::EnableScrollBar(bool bEnableVertical, bool bEnableHorizontal)
@@ -2172,6 +2234,15 @@ namespace DuiLib
 				Activate();
 				Invalidate();
 				return;
+			}
+
+			if(event.chKey == VK_UP)
+			{
+				TRACE(L"Item: Key UP");
+			}
+			if(event.chKey == VK_DOWN)
+			{
+				TRACE(L"Item: Key DOWN");
 			}
 		}
 		// An important twist: The list-item will send the event not to its immediate
