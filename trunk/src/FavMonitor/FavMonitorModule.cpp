@@ -147,10 +147,10 @@ int32 FavMonitorModule::OnService_AddMonitor( ServiceValue lServiceValue, param 
 {
 	FavMonitor_AddMonitorService *pAddMonitorService = (FavMonitor_AddMonitorService *)lParam;
 
-	pAddMonitorService->hMonitorHandle = MonFile_Start((LPSTR)StringHelper::UnicodeToANSI(pAddMonitorService->szFile).c_str(),
-		false,
-		0,
-		FavMonitorModule::NotifyRotuine);
+	//pAddMonitorService->hMonitorHandle = MonFile_Start((LPSTR)StringHelper::UnicodeToANSI(pAddMonitorService->szFile).c_str(),
+		//false,
+		//0,
+		//FavMonitorModule::NotifyRotuine);
 
 	return 0;
 }
@@ -161,7 +161,7 @@ int32 FavMonitorModule::OnService_RemoveMonitor( ServiceValue lServiceValue, par
 
 	if (pRemoveMonitorService->hMonitorHandle != NULL)
 	{
-		MonFile_Stop(pRemoveMonitorService->hMonitorHandle);
+		//MonFile_Stop(pRemoveMonitorService->hMonitorHandle);
 	}
 
 	return 0;
