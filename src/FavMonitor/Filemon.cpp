@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Filemon.h"
 
-void ThreadMonfileChangeEvent( FILEMONINFO* pInfo)   
+void NotifyChange( FILEMONINFO* pInfo)   
 {   
 	__try   
 	{   
@@ -19,7 +19,7 @@ void ThreadMonfileChangeEvent( FILEMONINFO* pInfo)
 			UnicodeToAnsi_Ptr(pWStr, pstFileNotiInfo->FileNameLength /2,
 				pChangePath + len_root );   
 
-			if( pInfo->pUserFunc )   
+			if( pInfo->pUserFunc)   
 			{   
 				EnterCriticalSection( &pInfo->CriticalSection );   
 				pInfo->pUserFunc( pChangePath,pstFileNotiInfo->Action );   
@@ -28,7 +28,7 @@ void ThreadMonfileChangeEvent( FILEMONINFO* pInfo)
 
 			delete pChangePath;   
 
-			if( pstFileNotiInfo->NextEntryOffset == 0 ) 
+			if( pstFileNotiInfo->NextEntryOffset == 0) 
 			{
 				break;   
 			}
@@ -64,7 +64,7 @@ void MonitorRotuine(MONITORHANDLE* pMonitorHandle)
 
 				memset(&Overlapped, 0, sizeof(OVERLAPPED));   
 
-				memset(&pInfo->fileNotifyInfo, 0 ,NOTIFYSTRUCTBUFLENGTH ); 
+				memset(&pInfo->fileNotifyInfo, 0 ,NOTIFYSTRUCTBUFLENGTH); 
 
 				Overlapped.hEvent = pMonitorHandle->hChangeEvnets[i];   
 
@@ -88,24 +88,13 @@ void MonitorRotuine(MONITORHANDLE* pMonitorHandle)
 
 			if (iEventIndex < pMonitorHandle->nMonitorCount)
 			{
-				ThreadMonfileChangeEvent(&pMonitorHandle->fileMonInfoList[iEventIndex]);
+				NotifyChange(&pMonitorHandle->fileMonInfoList[iEventIndex]);
 			}
 
-			if( iEventIndex == 0 )   
+			if( iEventIndex == pMonitorHandle->nMonitorCount )   
 			{   
-				//FILEMONINFO* pNewInfo;   
-				//pNewInfo = new FILEMONINFO;   
-				//memcpy( pNewInfo , pInfo, sizeof(FILEMONINFO) );   
-
-				//CreateThread(NULL,NULL,(LPTHREAD_START_ROUTINE)ThreadMonfileChangeEvent,pNewInfo,NULL,NULL);   
+				break;   
 			}
-
-			// Í£Ö¹¼à¿ØÊÂ¼þ
-			if (iEventIndex == 1 )   
-			{   
-				break;
-			}   
-
 		}   
 		__except(EXCEPTION_EXECUTE_HANDLER)   
 		{   
