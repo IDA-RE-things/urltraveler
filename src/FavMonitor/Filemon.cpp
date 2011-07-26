@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "Filemon.h"
 
-
-
 void ThreadMonfileChangeEvent( FILEMONINFO* pInfo)   
 {   
 	__try   
@@ -69,7 +67,12 @@ void ThreadMonfileMain(MONITORHANDLE* pMonitorHandle)
 			{
 				FILEMONINFO *pInfo = &pMonitorHandle->fileMonInfoList[i];
 
-				memset( &Overlapped, 0, sizeof(OVERLAPPED) );   
+				if (pInfo == NULL)
+				{
+					continue;
+				}
+
+				memset(&Overlapped, 0, sizeof(OVERLAPPED));   
 
 				pInfo->pFileNotifyInfo = (FILE_NOTIFY_INFORMATION*) new BYTE[ NOTIFYSTRUCTBUFLENGTH ];   
 
