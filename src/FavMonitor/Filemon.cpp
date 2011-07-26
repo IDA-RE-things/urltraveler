@@ -41,10 +41,8 @@ void ThreadMonfileChangeEvent( FILEMONINFO* pInfo)
 };   
 
 
-void ThreadMonfileMain(MONITORHANDLE* pMonitorHandle)   
+void MonitorRotuine(MONITORHANDLE* pMonitorHandle)   
 {   
-	HANDLE hEventList[2];   
-
 	OVERLAPPED Overlapped;   
 	bool bReadDirChange = false;
 
@@ -147,7 +145,7 @@ MONITORHANDLE* CreateMonitor()
 
 	pMonitorHandle->hThread = CreateThread(NULL, 
 		NULL,
-		(LPTHREAD_START_ROUTINE)ThreadMonfileMain,
+		(LPTHREAD_START_ROUTINE)MonitorRotuine,
 		pMonitorHandle,
 		CREATE_SUSPENDED,
 		NULL);  
