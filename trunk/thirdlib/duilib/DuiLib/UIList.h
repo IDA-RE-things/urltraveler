@@ -233,6 +233,13 @@ namespace DuiLib
 		virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
 	protected:
+		void	OnNotifyReturn(TNotifyUI& msg);
+		void	OnNotifyItemClick(TNotifyUI& msg);
+		void	OnNotifyItemRightClick(TNotifyUI& msg);
+		void	OnNotifyItemDelete(TNotifyUI& msg);
+		void	OnNotifyItemSelectAll(TNotifyUI& msg);
+
+	protected:
 		int	m_iCurSel;
 		int	m_iLastClickSel;				//	最后一次点击的Item
 		int	m_iLastSel;						//	最后一次被选中的Item，而不仅仅是被

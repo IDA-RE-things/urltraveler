@@ -12,9 +12,10 @@ void CTipWnd::Init(CControlUI* pOwner)
 	rc.right = 0;
 	rc.bottom = 0;
 
-	Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP, WS_EX_TOOLWINDOW, rc);
+	Create(pOwner->GetManager()->GetPaintWindow(), NULL, WS_POPUP, NULL, rc);
 	HWND hWndParent = m_hWnd;
-	while( ::GetParent(hWndParent) != NULL ) hWndParent = ::GetParent(hWndParent);
+	while( ::GetParent(hWndParent) != NULL ) 
+		hWndParent = ::GetParent(hWndParent);
 
 	m_hParent = hWndParent;
 }
@@ -83,7 +84,8 @@ void CTipWnd::ShowTips(int nDelayMilliseconds, CStdString strTip, CStdString str
 			}
 		}
 
-		SetWindowPos(m_hWnd, HWND_TOPMOST, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, 0);
+		SetWindowPos(m_hWnd, HWND_TOPMOST, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, 
+			SWP_NOACTIVATE | SWP_SHOWWINDOW);
 
 		if (m_pTip)
 		{
@@ -100,9 +102,6 @@ void CTipWnd::ShowTips(int nDelayMilliseconds, CStdString strTip, CStdString str
 		CRect rcTip = m_pTip->GetPos();
 		sz = m_pTip->EstimateSize(sz);
 		this->ResizeClient(sz.cx + rcTip.left + 20, sz.cy);
-
-		::ShowWindow(m_hWnd, SW_SHOW);
-		::SendMessage(m_hParent, WM_NCACTIVATE, TRUE, 0L);
 
 		return;
 	}

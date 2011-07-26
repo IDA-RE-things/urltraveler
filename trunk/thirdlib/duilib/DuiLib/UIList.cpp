@@ -46,10 +46,8 @@ namespace DuiLib
 		m_vCurSel.clear();
 	}
 
-	void CListUI::Notify(TNotifyUI& msg)
+	void	CListUI::OnNotifyReturn(TNotifyUI& msg)
 	{
-		if(msg.sType == L"return")
-		{
 			CControlUI *pControl = msg.pSender->GetParent();
 			if (pControl &&
 				_tcscmp(pControl->GetClass(), _T("ListUI")) == 0 &&
@@ -58,9 +56,10 @@ namespace DuiLib
 				CListUI *pListUI = (CListUI *)pControl;
 				pListUI->HideEditText();
 			}
-		}
-		else if(msg.sType == L"itemclick")
-		{
+	}
+
+	void	CListUI::OnNotifyItemClick(TNotifyUI& msg)
+	{
 			int nIndex = msg.wParam;
 
 			// 如果支持多选
@@ -98,9 +97,10 @@ namespace DuiLib
 			SelectItem(nIndex);
 			m_iLastClickSel	=	nIndex;
 			m_iLastSel = m_iLastClickSel;
-		}
-		else if(msg.sType == L"itemrightclick")
-		{
+	}
+
+	void	CListUI::OnNotifyItemRightClick(TNotifyUI& msg)
+	{
 			int nIndex = msg.wParam;
 
 			// 如果是单选或者如果是多选，但是没有按下Ctrl键
@@ -112,15 +112,40 @@ namespace DuiLib
 			SelectItem(nIndex);
 			m_iLastClickSel	=	nIndex;
 			m_iLastSel = m_iLastClickSel;
+	}
+
+	void	CListUI::OnNotifyItemDelete(TNotifyUI& msg)
+	{
+			DeleteSelected();
+	}
+
+	void	CListUI::OnNotifyItemSelectAll(TNotifyUI& msg)
+	{
+			for( int i=0; i<GetRowCount(); i++)
+			SelectItem(i);
+	}
+
+	void CListUI::Notify(TNotifyUI& msg)
+	{
+		if(msg.sType == L"return")
+		{
+			OnNotifyReturn(msg);
+		}
+		else if(msg.sType == L"itemclick")
+		{
+			OnNotifyItemClick(msg);
+		}
+		else if(msg.sType == L"itemrightclick")
+		{
+			OnNotifyItemRightClick(msg);
 		}
 		else if(msg.sType == L"itemdelete")
 		{
-			DeleteSelected();
+			OnNotifyItemDelete(msg);
 		}
 		else if(msg.sType == L"itemselectall")
 		{
-			for( int i=0; i<GetRowCount(); i++)
-				SelectItem(i);
+			OnNotifyItemSelectAll(msg);
 		}
 	}
 
