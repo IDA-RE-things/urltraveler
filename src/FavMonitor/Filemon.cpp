@@ -71,15 +71,17 @@ void MonitorRotuine(MONITORHANDLE* pMonitorHandle)
 				bReadDirChange =  ReadDirectoryChangesW(pInfo->hFile, 
 					&pInfo->fileNotifyInfo, MAX_CHANGESTREAMLENGTH, pInfo->bSubTree, 
 					pInfo->iOption, 0, &Overlapped, 0);
-			}
-			// 设置监控目录、缓冲区长度、是否包含子目录及监控事件
-			
-			if(!bReadDirChange)
-			{
-				break;   // 设置不成功
+
+				if(!bReadDirChange)
+				{
+					break;   // 设置不成功
+				}
 			}
 
-			int iEventIndex = WaitForMultipleObjects (pMonitorHandle->nMonitorCount, 
+			//把退出事件放在最后一个位置
+			pMonitorHandle->hChangeEvnets[pMonitorHandle->nMonitorCount] = pMonitorHandle->hStopEvent;
+
+			int iEventIndex = WaitForMultipleObjects (pMonitorHandle->nMonitorCount + 1, 
 				(const HANDLE*)&pMonitorHandle->hChangeEvnets,
 				0,
 				-1); 
