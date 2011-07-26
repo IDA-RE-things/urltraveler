@@ -235,6 +235,7 @@ namespace DuiLib
 	protected:
 		int	m_iCurSel;
 		int	m_iLastClickSel;				//	最后一次点击的Item
+		int	m_iLastSel;						//	最后一次被选中的Item，而不仅仅是被
 		std::vector<int>	m_vCurSel;	//	当前所有被选中的列表项
 
 		bool	m_bScrollSelect;
