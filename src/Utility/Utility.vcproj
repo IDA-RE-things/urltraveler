@@ -230,6 +230,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\md5\md5.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\MD5Checksum.cpp"
 				>
 			</File>
@@ -329,6 +333,10 @@
 			</File>
 			<File
 				RelativePath=".\lockmgr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\md5\md5.h"
 				>
 			</File>
 			<File
@@ -755,6 +763,18 @@
 			</File>
 			<File
 				RelativePath=".\script\scriptfunctions.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="icu"
+			>
+			<File
+				RelativePath=".\icu\icu_utf.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\icu\icu_utf.h"
 				>
 			</File>
 		</Filter>
