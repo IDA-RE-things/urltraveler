@@ -663,7 +663,7 @@ namespace DuiLib
 		std::vector<int> vSel = m_vCurSel;
 		for( size_t i=0; i<vSel.size(); i++)
 		{
-			RemoveItemAt(vSel[i]);
+			RemoveItemAt(vSel[i]-i);
 			if( m_pManager != NULL ) 
 			{
 				TNotifyUI notify;
