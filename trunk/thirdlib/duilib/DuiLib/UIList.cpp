@@ -94,6 +94,9 @@ namespace DuiLib
 			{
 				ClearSelectedItem();
 			}
+
+			TRACE(L"Click");
+
 			SelectItem(nIndex);
 			m_iLastClickSel	=	nIndex;
 			m_iLastSel = m_iLastClickSel;
@@ -2220,6 +2223,8 @@ namespace DuiLib
 		{
 			if( IsEnabled() ) 
 			{
+				TRACE(L"CListElementUI: Btn UP");
+
 				TNotifyUI notify;
 				notify.sType = _T("itemclick");
 				notify.pSender = this;
@@ -2563,7 +2568,6 @@ namespace DuiLib
 					return;
 				}
 			}   
-
 		}
 
 		if( event.Type == UIEVENT_BUTTONUP && IsEnabled() ) 
@@ -2715,14 +2719,14 @@ namespace DuiLib
 					RECT rcItem = { pInfo->rcColumn[i].left, m_rcItem.top, pInfo->rcColumn[i].right, m_rcItem.bottom };
 
 					IListCallbackUI* pCallback = m_pOwner->GetTextCallback();
-
 					CListBodyUI *pListBody = (CListBodyUI *)GetParent();
 
 					LPCTSTR pstrText = NULL;
-
 					if( pCallback ) pstrText = pCallback->GetItemText(this, m_iIndex, i);
 
 					m_pOwner->ShowEditText(pstrText, rcItem, GetIndex(), i);
+
+					TRACE(L"DB Click");
 
 					break;
 				}
@@ -2887,6 +2891,8 @@ namespace DuiLib
 				m_pManager->SendNotify(this, _T("itemclick"));
 				Select();
 				Invalidate();
+
+				TRACE(L"ExpandElement itemclick");
 			}
 			return;
 		}
@@ -3262,7 +3268,10 @@ namespace DuiLib
 		}
 		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_RBUTTONDOWN )
 		{
-			if( IsEnabled() ){
+			if( IsEnabled() )
+			{
+				TRACE(L"CListContainerElementUI itemclick");
+
 				m_pManager->SendNotify(this, _T("itemclick"));
 				Select();
 				Invalidate();
