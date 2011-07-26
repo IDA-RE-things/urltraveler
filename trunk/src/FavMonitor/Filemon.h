@@ -6,13 +6,23 @@
 #include <TIME.H>    
 #include "common.h"
 
+#ifndef MAX_CHANGESTREAMLENGTH    
+#define MAX_CHANGESTREAMLENGTH 0x20000    
+#endif    
+
+#define NOTIFYSTRUCTBUFLENGTH (sizeof(int)*3 + MAX_CHANGESTREAMLENGTH)
+
 typedef struct _FileMonInfo{   
 	LPSTR                       pRoot;   
 	int                         iOption;   
 	bool                        bSubTree;   
 	USER_NOTIFY_FUNC            pUserFunc;   
 	HANDLE                      hFile;   
-	FILE_NOTIFY_INFORMATION*    pFileNotifyInfo;   
+	union
+	{
+		FILE_NOTIFY_INFORMATION    fileNotifyInfo;
+		unsigned char szBuffer[NOTIFYSTRUCTBUFLENGTH];
+	};
 	CRITICAL_SECTION            CriticalSection;   
 	int                         iErrorCode;   
 }FILEMONINFO;   
