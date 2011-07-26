@@ -5,7 +5,7 @@ void ThreadMonfileChangeEvent( FILEMONINFO* pInfo)
 {   
 	__try   
 	{   
-		FILE_NOTIFY_INFORMATION* pstFileNotiInfo = pInfo->pFileNotifyInfo;   
+		FILE_NOTIFY_INFORMATION* pstFileNotiInfo = &pInfo->fileNotifyInfo;   
 		size_t len_root = strlen(pInfo->pRoot); 
 
 		do   
@@ -34,20 +34,12 @@ void ThreadMonfileChangeEvent( FILEMONINFO* pInfo)
 			}
 			pstFileNotiInfo = (FILE_NOTIFY_INFORMATION*) (((PBYTE)pstFileNotiInfo) + pstFileNotiInfo->NextEntryOffset);   
 		}while(1);   
-
-		delete pInfo->pFileNotifyInfo;   
-		delete pInfo;   
 	}   
 	__except(EXCEPTION_EXECUTE_HANDLER)   
 	{   
 	}
 };   
 
-#ifndef MAX_CHANGESTREAMLENGTH    
-#define MAX_CHANGESTREAMLENGTH 0x20000    
-#endif    
-
-#define NOTIFYSTRUCTBUFLENGTH sizeof(int)*3 + MAX_CHANGESTREAMLENGTH    
 
 void ThreadMonfileMain(MONITORHANDLE* pMonitorHandle)   
 {   
@@ -74,19 +66,12 @@ void ThreadMonfileMain(MONITORHANDLE* pMonitorHandle)
 
 				memset(&Overlapped, 0, sizeof(OVERLAPPED));   
 
-				pInfo->pFileNotifyInfo = (FILE_NOTIFY_INFORMATION*) new BYTE[ NOTIFYSTRUCTBUFLENGTH ];   
-
-				if( pInfo->pFileNotifyInfo == NULL)   
-				{   
-					break;   
-				} 
-
-				memset( pInfo->pFileNotifyInfo , 0 ,NOTIFYSTRUCTBUFLENGTH ); 
+				memset(&pInfo->fileNotifyInfo, 0 ,NOTIFYSTRUCTBUFLENGTH ); 
 
 				Overlapped.hEvent = pMonitorHandle->hChangeEvnets[i];   
 
 				bReadDirChange =  ReadDirectoryChangesW(pInfo->hFile, 
-					pInfo->pFileNotifyInfo, MAX_CHANGESTREAMLENGTH, pInfo->bSubTree, 
+					&pInfo->fileNotifyInfo, MAX_CHANGESTREAMLENGTH, pInfo->bSubTree, 
 					pInfo->iOption, 0, &Overlapped, 0);
 			}
 			// 设置监控目录、缓冲区长度、是否包含子目录及监控事件
@@ -103,9 +88,11 @@ void ThreadMonfileMain(MONITORHANDLE* pMonitorHandle)
 
 			// 文件变化事件
 
-			if ()
+			if (iEventIndex < pMonitorHandle->nMonitorCount)
 			{
+				ThreadMonfileChangeEvent(&pMonitorHandle->fileMonInfoList[iEventIndex]);
 			}
+
 			if( iEventIndex == 0 )   
 			{   
 				//FILEMONINFO* pNewInfo;   
