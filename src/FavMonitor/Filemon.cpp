@@ -1,41 +1,9 @@
-/*--
-
-Copyright (c) 1999-2009 Tencent
-
-Module Name:
-
-Filemon.cpp
-
-Abstract: 
-
-
-
-Author: 
-
-FrontLee  2009-11-25 20:37:41
-
-Revision History:
-
---*/
-
-
 #include "stdafx.h"
 #include "Filemon.h"
 
 
 
-
-/*++
-
-Function Name: ThreadMonfileChangeEvent
-Abstract: 
-ReturnType: void 
-Parameters:
-[in/out] - stFileMonInfo* pInfo	--> 
-Remarks:
-
-*/
-void ThreadMonfileChangeEvent( stFileMonInfo* pInfo)   
+void ThreadMonfileChangeEvent( FILEMONINFO* pInfo)   
 {   
 	__try   
 	{   
@@ -74,9 +42,7 @@ void ThreadMonfileChangeEvent( stFileMonInfo* pInfo)
 	}   
 	__except(EXCEPTION_EXECUTE_HANDLER)   
 	{   
-		Monfile_err_log(" ====== error of event thread ======");   
 	}
-	// 	Monfile_err_log("\n === break of event thread ===");   
 };   
 
 #ifndef MAX_CHANGESTREAMLENGTH    
@@ -85,24 +51,12 @@ void ThreadMonfileChangeEvent( stFileMonInfo* pInfo)
 
 #define NOTIFYSTRUCTBUFLENGTH sizeof(int)*3 + MAX_CHANGESTREAMLENGTH    
 
-
-/*++
-
-Function Name: ThreadMonfileMain
-Abstract: 
-ReturnType: void 
-Parameters:
-[in/out] - stFileMonInfo* pInfo	--> 
-Remarks:
-
-*/
-void ThreadMonfileMain( stFileMonInfo* pInfo)   
+void ThreadMonfileMain(MONITORHANDLE* pMonitorHandle)   
 {   
 	HANDLE hEventList[2];   
-	hEventList[0] = pInfo->hChangeEvent;   
-	hEventList[1] = pInfo->hStopEvent;   
 
 	OVERLAPPED Overlapped;   
+	bool bReadDirChange = false;
 
 	_ReadDirectoryChangesW ReadDirectoryChangesW;   
 	ReadDirectoryChangesW = (_ReadDirectoryChangesW) GetProcAddress(GetModuleHandleA("kernel32"),"ReadDirectoryChangesW");   
@@ -111,39 +65,48 @@ void ThreadMonfileMain( stFileMonInfo* pInfo)
 	{   
 		__try   
 		{   
-			memset( &Overlapped, 0, sizeof(OVERLAPPED) );   
-			Overlapped.hEvent = pInfo->hChangeEvent;   
+			for (int i = 0; i < pMonitorHandle->nMonitorCount; i++)
+			{
+				FILEMONINFO *pInfo = &pMonitorHandle->fileMonInfoList[i];
 
-			pInfo->pFileNotifyInfo = (FILE_NOTIFY_INFORMATION*) new BYTE[ NOTIFYSTRUCTBUFLENGTH ];   
+				memset( &Overlapped, 0, sizeof(OVERLAPPED) );   
 
-			if( pInfo->pFileNotifyInfo == NULL)   
-			{   
-				Monfile_err_log("alloc memory error");   
-				break;   
-			} 
+				pInfo->pFileNotifyInfo = (FILE_NOTIFY_INFORMATION*) new BYTE[ NOTIFYSTRUCTBUFLENGTH ];   
 
-			memset( pInfo->pFileNotifyInfo , 0 ,NOTIFYSTRUCTBUFLENGTH );   
+				if( pInfo->pFileNotifyInfo == NULL)   
+				{   
+					Monfile_err_log("alloc memory error");   
+					break;   
+				} 
 
+				memset( pInfo->pFileNotifyInfo , 0 ,NOTIFYSTRUCTBUFLENGTH ); 
+
+				Overlapped.hEvent = pMonitorHandle->hChangeEvnets[i];   
+
+				bool bReadDirChange =  ReadDirectoryChangesW(pInfo->hFile, 
+					pInfo->pFileNotifyInfo, MAX_CHANGESTREAMLENGTH, pInfo->bSubTree, 
+					pInfo->iOption, 0, &Overlapped, 0);
+			}
 			// 设置监控目录、缓冲区长度、是否包含子目录及监控事件
-			bool bReadDirChange =  ReadDirectoryChangesW(pInfo->hFile, 
-				pInfo->pFileNotifyInfo, MAX_CHANGESTREAMLENGTH, pInfo->bSubTree, 
-				pInfo->iOption, 0, &Overlapped, 0);
-
+			
 			if(!bReadDirChange)
 			{
 				break;   // 设置不成功
 			}
 
-			int iEventIndex = WaitForMultipleObjects ( 2,(const HANDLE*)&hEventList, 0, -1 );   
+			int iEventIndex = WaitForMultipleObjects (pMonitorHandle->nMonitorCount, 
+				(const HANDLE*)&pMonitorHandle->hChangeEvnets,
+				0,
+				-1); 
 
 			// 文件变化事件
 			if( iEventIndex == 0 )   
 			{   
-				stFileMonInfo* pNewInfo;   
-				pNewInfo = new stFileMonInfo;   
-				memcpy( pNewInfo , pInfo, sizeof(stFileMonInfo) );   
+				//FILEMONINFO* pNewInfo;   
+				//pNewInfo = new FILEMONINFO;   
+				//memcpy( pNewInfo , pInfo, sizeof(FILEMONINFO) );   
 
-				CreateThread(NULL,NULL,(LPTHREAD_START_ROUTINE)ThreadMonfileChangeEvent,pNewInfo,NULL,NULL);   
+				//CreateThread(NULL,NULL,(LPTHREAD_START_ROUTINE)ThreadMonfileChangeEvent,pNewInfo,NULL,NULL);   
 			}
 
 			// 停止监控事件
@@ -161,23 +124,12 @@ void ThreadMonfileMain( stFileMonInfo* pInfo)
 
 	Monfile_err_log("\n === break of main thread ===");   
 
-	SetEvent( pInfo->hStopEvent);   
+	SetEvent(pMonitorHandle->hStopEvent);   
 } 
-
-
-/*++
-
-Function Name: MonFile_Stop
-Abstract: 
-ReturnType: void 
-Parameters:
-[in/out] - PVOID pstFileMonInfo	--> 
-Remarks:
-
-*/
+/*
 void MonFile_Stop(PVOID pstFileMonInfo)   
 {   
-	stFileMonInfo* pInfo = (stFileMonInfo*) pstFileMonInfo;   
+	FILEMONINFO* pInfo = (FILEMONINFO*) pstFileMonInfo;   
 	if(pInfo == NULL)   
 		return;   
 	SetEvent ( pInfo->hStopEvent );   
@@ -197,26 +149,86 @@ void MonFile_Stop(PVOID pstFileMonInfo)
 		delete pInfo;
 		pInfo = NULL;
 	}
-}   
+} */  
 
+MONITORHANDLE* CreateMonitor()
+{
+	MONITORHANDLE *pMonitorHandle = new MONITORHANDLE;
 
-/*++
+	pMonitorHandle->hThread = CreateThread(NULL, 
+		NULL,
+		(LPTHREAD_START_ROUTINE)ThreadMonfileMain,
+		pMonitorHandle,
+		CREATE_SUSPENDED,
+		NULL);  
+	pMonitorHandle->hStopEvent = CreateEvent(0, TRUE, FALSE, 0);
+	pMonitorHandle->nMonitorCount = 0;
+	memset(pMonitorHandle->hChangeEvnets, 0, sizeof(pMonitorHandle->hChangeEvnets));
 
-Function Name: MonFile_Start
-Abstract: 
-ReturnType: PVOID 
-Parameters:
-[in/out] - LPSTR pRoot	--> 
-[in/out] - bool bSubTree	--> 
-[in/out] - int iOption	--> 
-[in/out] - USER_NOTIFY_FUNC pNotifyFunc	--> 
-Remarks:
+	return pMonitorHandle;
+}
 
-*/
-PVOID MonFile_Start(LPSTR pRoot,bool bSubTree,int iOption,USER_NOTIFY_FUNC pNotifyFunc)   
+BOOL CloseMonitor(MONITORHANDLE *pMonitorHandle)
+{
+	if (pMonitorHandle != NULL)
+	{
+		CloseHandle(pMonitorHandle->hThread);
+		CloseHandle(pMonitorHandle->hStopEvent);
+		delete pMonitorHandle;
+
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL StartMonitor(MONITORHANDLE *pMonitorHandle)
+{
+	if (pMonitorHandle != NULL)
+	{
+		::ResumeThread(pMonitorHandle->hThread);
+
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL StopMonitor(MONITORHANDLE *pMonitorHandle)
+{
+	if (pMonitorHandle != NULL)
+	{
+		SetEvent(pMonitorHandle->hStopEvent );   
+		WaitForSingleObject(pMonitorHandle->hStopEvent, -1);  
+
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL SuspendMonitor(MONITORHANDLE *pMonitorHandle)
+{
+	if (pMonitorHandle != NULL)
+	{
+		::SuspendThread(pMonitorHandle->hThread);
+
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL AddMonitor(MONITORHANDLE *pMonitorHandle, LPSTR pRoot, bool bSubTree, int iOption, USER_NOTIFY_FUNC pNotifyFunc)   
 {   
-	stFileMonInfo* pInfo = new stFileMonInfo;   
-	memset(pInfo,0,sizeof(stFileMonInfo));   
+	FILEMONINFO *pInfo = NULL;
+
+	if (pMonitorHandle == NULL && pMonitorHandle->nMonitorCount < 64)
+	{
+		return FALSE;
+	}
+
+	pInfo = &pMonitorHandle->fileMonInfoList[pMonitorHandle->nMonitorCount];
 
 	if(iOption == 0)   
 	{   
@@ -236,21 +248,18 @@ PVOID MonFile_Start(LPSTR pRoot,bool bSubTree,int iOption,USER_NOTIFY_FUNC pNoti
 		FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OVERLAPPED,    
 		NULL);   
 
-	pInfo->pRoot = new char[ strlen(pRoot)+1 ];   
+	pInfo->pRoot = new char[strlen(pRoot) + 1];   
 	lstrcpyA(pInfo->pRoot,pRoot);   
 	pInfo->bSubTree = bSubTree;   
 	pInfo->iOption = iOption;   
 	pInfo->pUserFunc = pNotifyFunc;   
 
-	pInfo->hStopEvent = CreateEvent (0, true, false, 0); 
-	pInfo->hChangeEvent = CreateEvent (0, true, true, 0);   
+	pMonitorHandle->hChangeEvnets[pMonitorHandle->nMonitorCount] = CreateEvent(0, TRUE, TRUE, 0);   
+	pMonitorHandle->nMonitorCount++;
 
-	InitializeCriticalSection( &pInfo->CriticalSection );   
+	InitializeCriticalSection(&pInfo->CriticalSection);   
 
-	HANDLE hThread = CreateThread(NULL,NULL,(LPTHREAD_START_ROUTINE)ThreadMonfileMain,pInfo,NULL,NULL);   
-	CloseHandle( hThread );   
-
-	return (PVOID)pInfo;   
+	return TRUE;   
 }   
 
 

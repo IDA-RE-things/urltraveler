@@ -33,23 +33,31 @@ Revision History:
 //
 //////////////////////////////////////////////////////////////////////////
 
-typedef struct {   
+typedef struct _FileMonInfo{   
 	LPSTR                       pRoot;   
 	int                         iOption;   
 	bool                        bSubTree;   
 	USER_NOTIFY_FUNC            pUserFunc;   
 	HANDLE                      hFile;   
-
-	HANDLE                      hStopEvent;   
-	HANDLE                      hChangeEvent;   
 	FILE_NOTIFY_INFORMATION*    pFileNotifyInfo;   
 	CRITICAL_SECTION            CriticalSection;   
-
 	int                         iErrorCode;   
-}stFileMonInfo;   
+}FILEMONINFO;   
 
+typedef struct MonitorHandle
+{
+	FILEMONINFO  fileMonInfoList[64];
+	HANDLE       hThread;
+	HANDLE       hStopEvent;   
+	HANDLE       hChangeEvnets[64];
+	int          nMonitorCount;
+}MONITORHANDLE;
 
-PVOID MonFile_Start(LPSTR pRoot,bool bSubTree,int iOption,USER_NOTIFY_FUNC pNotifyFunc);
-void MonFile_Stop(PVOID pstFileMonInfo) ;  
+MONITORHANDLE* CreateMonitor();
+BOOL CloseMonitor(MONITORHANDLE *pMonitorHandle);
+BOOL StartMonitor(MONITORHANDLE *pMonitorHandle);
+BOOL StopMonitor(MONITORHANDLE *pMonitorHandle);
+BOOL SuspendMonitor(MONITORHANDLE *pMonitorHandle);
+BOOL AddMonitor(MONITORHANDLE *pMonitorHandle, LPSTR pRoot, bool bSubTree, int iOption, USER_NOTIFY_FUNC pNotifyFunc);
 
 #endif //__FILEMON_H__
