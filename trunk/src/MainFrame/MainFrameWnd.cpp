@@ -319,6 +319,8 @@ void	CMainFrameWnd::OnFavoriteListItemEditFinished(TNotifyUI& msg)
 		else if( nColomn == 2)
 		{
 			String	strUrl = pListUI->GetEditText();
+			strUrl = strUrl.SubStr(5, strUrl.GetLength() - 5);
+
 			if( strUrl.Left(7) != L"http://" && strUrl.Left(8) != L"https://")
 			{
 				strUrl = String(L"http://") + strUrl;

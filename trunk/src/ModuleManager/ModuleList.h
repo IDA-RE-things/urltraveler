@@ -48,6 +48,11 @@ struct ModuleList
 				pXmlElementModule = pXmlElementModule->NextSiblingElement())
 			{
 				std::string strModuleName = pXmlElementModule->Attribute("Name");
+#ifdef _DEBUG
+				strModuleName += "d";
+#endif
+				strModuleName += ".dll";
+
 				ModuleIdList listId;
 
 				listId.clear();

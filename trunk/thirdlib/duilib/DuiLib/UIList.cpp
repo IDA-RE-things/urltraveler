@@ -92,14 +92,21 @@ namespace DuiLib
 			// 此时只选中一个 
 			if( m_vCurSel.size() > 0)
 			{
-				ClearSelectedItem();
+				ClearSelectedItem(nIndex);
 			}
 
 			TRACE(L"Click");
 
-			SelectItem(nIndex);
+			if( IsItemSelected(nIndex) == false)
+				SelectItem(nIndex);
+
 			m_iLastClickSel	=	nIndex;
 			m_iLastSel = m_iLastClickSel;
+	}
+
+	void	CListUI::OnNotifyItemClickUp(TNotifyUI& msg)
+	{
+
 	}
 
 	void	CListUI::OnNotifyItemRightClick(TNotifyUI& msg)
@@ -110,9 +117,12 @@ namespace DuiLib
 			// 此时只选中一个 
 			if( m_vCurSel.size() > 0)
 			{
-				ClearSelectedItem();
+				ClearSelectedItem(nIndex);
 			}
-			SelectItem(nIndex);
+
+			if( IsItemSelected(nIndex) == false)
+				SelectItem(nIndex);
+
 			m_iLastClickSel	=	nIndex;
 			m_iLastSel = m_iLastClickSel;
 	}
@@ -137,6 +147,10 @@ namespace DuiLib
 		else if(msg.sType == L"itemclick")
 		{
 			OnNotifyItemClick(msg);
+		}
+		else if(msg.sType == L"itemclickup")
+		{
+			OnNotifyItemClickUp(msg);
 		}
 		else if(msg.sType == L"itemrightclick")
 		{
@@ -641,11 +655,14 @@ namespace DuiLib
 		return false;
 	}
 
-	void	CListUI::ClearSelectedItem()
+	void	CListUI::ClearSelectedItem(int nIndex)
 	{
 		std::vector<int> vSel = m_vCurSel;
 		for( size_t i=0; i<vSel.size(); i++)
 		{
+			if( nIndex == i)
+				continue;
+
 			UnSelectItem(vSel[i]);
 		}
 	}
@@ -750,6 +767,9 @@ namespace DuiLib
 	bool CListUI::SelectItem(int iIndex)
 	{
 		if( iIndex < 0 ) return false;
+
+		if(IsItemSelected(iIndex) == true)
+			return true;
 
 		HideEditText();
 
@@ -2219,6 +2239,21 @@ namespace DuiLib
 			return;
 		}
 
+		if( event.Type == UIEVENT_BUTTONDOWN )
+		{
+			if( IsEnabled() ) 
+			{
+				TRACE(L"CListElementUI: Btn Down");
+
+				TNotifyUI notify;
+				notify.sType = _T("itemclick");
+				notify.pSender = this;
+				notify.wParam = m_iIndex;
+				m_pManager->SendNotify(notify);
+			}
+			return;
+		}
+
 		if( event.Type == UIEVENT_BUTTONUP )
 		{
 			if( IsEnabled() ) 
@@ -2226,7 +2261,7 @@ namespace DuiLib
 				TRACE(L"CListElementUI: Btn UP");
 
 				TNotifyUI notify;
-				notify.sType = _T("itemclick");
+				notify.sType = _T("itemclickup");
 				notify.pSender = this;
 				notify.wParam = m_iIndex;
 				m_pManager->SendNotify(notify);

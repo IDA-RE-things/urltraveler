@@ -23,6 +23,7 @@
 			ConfigurationType="1"
 			UseOfMFC="0"
 			CharacterSet="1"
+			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -62,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Utilityd.lib vldmtdll.lib"
+				AdditionalDependencies="Utilityd.lib"
 				OutputFile="..\..\bin\EverFavd.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../lib"
@@ -100,7 +101,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
-			WholeProgramOptimization="1"
+			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
