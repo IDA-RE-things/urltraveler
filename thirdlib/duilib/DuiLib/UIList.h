@@ -113,7 +113,9 @@ namespace DuiLib
 		bool SelectItem(int iIndex);
 		bool UnSelectItem(int iIndex);
 		bool SelectContinualItem(int iIndex);
-		void	ClearSelectedItem();
+
+		// 给定索引的nIndex不取消选择
+		void	ClearSelectedItem(int nIndex = -1);
 		void	DeleteSelected();
 
 		CListHeaderUI* GetHeader() const;  
@@ -235,6 +237,7 @@ namespace DuiLib
 	protected:
 		void	OnNotifyReturn(TNotifyUI& msg);
 		void	OnNotifyItemClick(TNotifyUI& msg);
+		void	OnNotifyItemClickUp(TNotifyUI& msg);
 		void	OnNotifyItemRightClick(TNotifyUI& msg);
 		void	OnNotifyItemDelete(TNotifyUI& msg);
 		void	OnNotifyItemSelectAll(TNotifyUI& msg);
