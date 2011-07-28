@@ -139,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="DuiLib_ud.lib Utilityd.lib"
+				AdditionalDependencies="DuiLib_u.lib Utility.lib"
 				OutputFile="..\..\bin\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\thirdlib\duilib\bin\;..\..\lib"
