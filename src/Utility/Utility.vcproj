@@ -122,7 +122,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="..\..\include;tinyxml;..\Utility\HttpClient\include"
-				PreprocessorDefinitions="BUILDING_LIBCURL;HTTP_ONLY;JSON_DLL_BUILD;WIN32;_DEBUG;_WINDOWS;_USRDLL;UTILITY_EXPORTS;HTTPCLIENT_EXPORTS"
+				PreprocessorDefinitions="BUILDING_LIBCURL;HTTP_ONLY;JSON_DLL_BUILD;WIN32;_WINDOWS;_USRDLL;UTILITY_EXPORTS;HTTPCLIENT_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -140,10 +140,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="shlwapi.lib sqlite3070603d.lib libcurl_mdd.lib Ws2_32.lib"
+				AdditionalDependencies="shlwapi.lib sqlite3070603.lib libcurl_md.lib Ws2_32.lib"
 				OutputFile="..\..\bin\Utility.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../../lib"
+				AdditionalLibraryDirectories="../../lib;..\Utility\HttpClient\lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\..\pdb\$(TargetName).pdb"
 				SubSystem="2"

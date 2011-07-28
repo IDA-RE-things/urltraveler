@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Menu.h"
 
 void CMenuWnd::Init(CControlUI* pOwner, CRect rc) 

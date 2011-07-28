@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "TipWnd.h"
 #include "XString.h"
 #include "UIHelper.h"
