@@ -507,7 +507,7 @@ void CLayoutManager::DrawAuxBorder(CDC* pDC,CControlUI* pControl)
 
 	if(pContainer==NULL)
 		return;
-	for(int i=0;i<pContainer->GetCount();i++)
+	for(int i=0;i<pContainer->GetRowCount();i++)
 	{
 		DrawAuxBorder(pDC,pContainer->GetItemAt(i));
 	}
@@ -712,7 +712,7 @@ BOOL CLayoutManager::RemoveUI(CControlUI* pControl)
 	CContainerUI* pContainer=static_cast<CContainerUI*>(pControl->GetInterface(_T("Container")));
 	if(pContainer != NULL)
 	{
-		for(int i=0; i<pContainer->GetCount(); i++)
+		for(int i=0; i<pContainer->GetRowCount(); i++)
 			RemoveUI(pContainer->GetItemAt(i));
 	}
 
@@ -816,7 +816,7 @@ CControlUI* CLayoutManager::CopyControls(CControlUI* pControl)
 	pCopyContainer->SetAutoDestroy(false);
 	pCopyContainer->RemoveAll();
 	pCopyContainer->SetAutoDestroy(true);
-	for(int i=0;i<pContainer->GetCount();i++)
+	for(int i=0;i<pContainer->GetRowCount();i++)
 	{
 		CControlUI* pCopyControl=CopyControls(pContainer->GetItemAt(i));
 		pCopyControl->SetManager(NULL,pCopyContainer);
@@ -1202,7 +1202,7 @@ void CLayoutManager::SaveControlProperty(CControlUI* pControl, TiXmlElement* pNo
 			// 如果同一层中所有元素都是不可见的，则不设置属性
 			bool bVisible = false;
 			CContainerUI* pContainerUI = static_cast<CContainerUI*>(pParent->GetInterface(_T("Container")));
-			for( int it = 0; it < pContainerUI->GetCount(); it++ )
+			for( int it = 0; it < pContainerUI->GetRowCount(); it++ )
 			{
 				CControlUI* pControl = static_cast<CControlUI*>(pContainerUI->GetItemAt(it));
 				bVisible = pControl->IsVisible();
@@ -1703,7 +1703,7 @@ void CLayoutManager::SaveListProperty(CControlUI* pControl, TiXmlElement* pNode)
 	if(pListUI->GetHeader())
 	{
 		CContainerUI* pContainerUI = static_cast<CContainerUI*>(pListUI->GetHeader()->GetInterface(_T("Container")));
-		for( int it = 0; it < pContainerUI->GetCount(); it++ )
+		for( int it = 0; it < pContainerUI->GetRowCount(); it++ )
 		{
 			CControlUI* pControl = static_cast<CControlUI*>(pContainerUI->GetItemAt(it));
 			SaveProperties(pControl, pNode);
@@ -1976,7 +1976,7 @@ void CLayoutManager::SaveProperties(CControlUI* pControl, TiXmlElement* pParentN
 	CContainerUI* pContainer = static_cast<CContainerUI*>(pControl->GetInterface(_T("Container")));
 	if(pContainer == NULL)
 		return;
-	for( int it = 0; it < pContainer->GetCount(); it++ )
+	for( int it = 0; it < pContainer->GetRowCount(); it++ )
 	{
 		CControlUI* pControl = static_cast<CControlUI*>(pContainer->GetItemAt(it));
 		SaveProperties(pControl, pNodeElement->ToElement());

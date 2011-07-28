@@ -119,7 +119,7 @@ BOOL CPropertyTabLayoutUI::OnInitDialog()
 
 	// TODO:  Add extra initialization here
 	CString str;
-	for(int i=0;i<m_pTablayoutUI->GetCount();i++)
+	for(int i=0;i<m_pTablayoutUI->GetRowCount();i++)
 	{
 		CControlUI* pControl=m_pTablayoutUI->GetItemAt(i);
 		bool bVisible=pControl->IsVisible();
