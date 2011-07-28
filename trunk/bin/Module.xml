@@ -1,33 +1,33 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ModuleManager>
-	<Module Name="MainFramed.dll">
+	<Module Name="MainFrame">
 		<IModule Id="2" desc="MODULE_ID_MAINFRAME"/>
 	</Module>
-	<Module Name="Settingd.dll">
+	<Module Name="Setting">
 		<IModule Id="3" desc="MODULE_ID_SETTING"/>
 	</Module>
-	<Module Name="TrayIcond.dll">
+	<Module Name="TrayIcon">
 		<IModule Id="4" desc="MODULE_ID_TRAYICON"/>
 	</Module>
-	<Module Name="DataCenterd.dll">
+	<Module Name="DataCenter">
 		<IModule Id="5" desc="MODULE_ID_DATACENTER"/>
 	</Module>
-	<Module Name="Logind.dll">
+	<Module Name="Login">
 		<IModule Id="6" desc="MODULE_ID_DATACENTER"/>
 	</Module>
-	<Module Name="PlugInManagerd.dll">
+	<Module Name="PlugInManager">
 		<IModule Id="7" desc="MODULE_ID_PLUGIN"/>
 	</Module>
-	<Module Name="Databased.dll">
+	<Module Name="Database">
 		<IModule Id="8" desc="MODULE_ID_DATABASE"/>
 	</Module>
-	<Module Name="Webd.dll">
+	<Module Name="Web">
 		<IModule Id="9" desc="MODULE_ID_WEB"/>
 	</Module>
-	<Module Name="Updated.dll">
+	<Module Name="Update">
 		<IModule Id="10" desc="MODULE_ID_UPDATE"/>
 	</Module>
-	<Module Name="FavMonitord.dll">
+	<Module Name="FavMonitor">
 		<IModule Id="11" desc="MODULE_ID_FAVMONITOR"/>
 	</Module>
 </ModuleManager>
