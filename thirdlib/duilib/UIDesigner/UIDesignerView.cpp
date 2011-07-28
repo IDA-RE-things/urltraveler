@@ -204,7 +204,7 @@ void CUIDesignerView::OnInitialUpdate()
 	CFormUI* pForm=m_LayoutManager.GetForm();
 
 	g_pClassView->InsertUITreeItem(pForm,pDoc->GetTitle());
-	if(pForm->GetCount()>0)
+	if(pForm->GetRowCount()>0)
 	{
 		InitUI(pForm->GetItemAt(0), 1);
 		m_LayoutManager.GetManager()->InitControls(pForm->GetItemAt(0));
@@ -280,7 +280,7 @@ void CUIDesignerView::OnLButtonDown(UINT nFlags, CPoint point)
 			CContainerUI *pContainer = (CContainerUI *)pNewControl->GetInterface(_T("Container"));
 			if (pContainer != NULL)
 			{
-				for (int it = 0; it < pContainer->GetCount(); it++)
+				for (int it = 0; it < pContainer->GetRowCount(); it++)
 				{
 					g_pClassView->InsertUITreeItem(pContainer->GetItemAt(it));
 				}
@@ -560,7 +560,7 @@ void CUIDesignerView::InitUI(CControlUI* pControl, int depth, BOOL bForceName/* 
 	if(pContainer==NULL)
 		return;
 	pContainer->SetDelayedDestroy(false);
-	for (int i=0;i<pContainer->GetCount();i++)
+	for (int i=0;i<pContainer->GetRowCount();i++)
 	{
 		InitUI(pContainer->GetItemAt(i), ++depth);
 	}
@@ -836,7 +836,7 @@ void CUIDesignerView::PasteUI(LPCTSTR xml)
 		CContainerUI* pContainer = static_cast<CContainerUI*>(pParent->GetInterface(_T("Container")));
 		CContainerUI* pRootContainer = static_cast<CContainerUI*>(pRoot->GetInterface(_T("Container")));
 		ExtendedAttributes* pExtended = (ExtendedAttributes*)pContainer->GetTag();
-		for(int i=0; i<pRootContainer->GetCount(); i++)
+		for(int i=0; i<pRootContainer->GetRowCount(); i++)
 		{
 			CControlUI* pControl = pRootContainer->GetItemAt(i);
 			if(pControl->IsFloat())
