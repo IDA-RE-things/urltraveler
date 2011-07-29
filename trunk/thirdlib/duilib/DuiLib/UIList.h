@@ -236,9 +236,6 @@ namespace DuiLib
 
 	protected:
 		void	OnNotifyReturn(TNotifyUI& msg);
-		void	OnNotifyItemClick(TNotifyUI& msg);
-		void	OnNotifyItemClickUp(TNotifyUI& msg);
-		void	OnNotifyItemRightClick(TNotifyUI& msg);
 		void	OnNotifyItemDelete(TNotifyUI& msg);
 		void	OnNotifyItemSelectAll(TNotifyUI& msg);
 

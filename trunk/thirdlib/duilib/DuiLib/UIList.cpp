@@ -58,75 +58,6 @@ namespace DuiLib
 			}
 	}
 
-	void	CListUI::OnNotifyItemClick(TNotifyUI& msg)
-	{
-			int nIndex = msg.wParam;
-
-			// 如果支持多选
-			if( IsItemMultiSelect() == true)
-			{
-				// 如果Ctrl键被按下
-				if( GetKeyState(VK_CONTROL)   &   0x8000)
-				{
-					if( IsItemSelected(nIndex))
-						UnSelectItem(nIndex);
-					else
-						SelectItem(nIndex);
-
-					m_iLastClickSel	=	nIndex;
-					m_iLastSel = m_iLastClickSel;
-					return;
-				}
-
-				// 如果Shift键被按下
-				if( GetKeyState(VK_SHIFT)   &   0x8000)
-				{
-					ClearSelectedItem();
-					SelectContinualItem(nIndex);
-					m_iLastSel = nIndex;
-					return;
-				}
-			}
-
-			// 如果是单选或者如果是多选，但是没有按下Ctrl键
-			// 此时只选中一个 
-			if( m_vCurSel.size() > 0)
-			{
-				ClearSelectedItem(nIndex);
-			}
-
-			TRACE(L"Click");
-
-			if( IsItemSelected(nIndex) == false)
-				SelectItem(nIndex);
-
-			m_iLastClickSel	=	nIndex;
-			m_iLastSel = m_iLastClickSel;
-	}
-
-	void	CListUI::OnNotifyItemClickUp(TNotifyUI& msg)
-	{
-
-	}
-
-	void	CListUI::OnNotifyItemRightClick(TNotifyUI& msg)
-	{
-			int nIndex = msg.wParam;
-
-			// 如果是单选或者如果是多选，但是没有按下Ctrl键
-			// 此时只选中一个 
-			if( m_vCurSel.size() > 0)
-			{
-				ClearSelectedItem(nIndex);
-			}
-
-			if( IsItemSelected(nIndex) == false)
-				SelectItem(nIndex);
-
-			m_iLastClickSel	=	nIndex;
-			m_iLastSel = m_iLastClickSel;
-	}
-
 	void	CListUI::OnNotifyItemDelete(TNotifyUI& msg)
 	{
 			DeleteSelected();
@@ -143,18 +74,6 @@ namespace DuiLib
 		if(msg.sType == L"return")
 		{
 			OnNotifyReturn(msg);
-		}
-		else if(msg.sType == L"itemclick")
-		{
-			OnNotifyItemClick(msg);
-		}
-		else if(msg.sType == L"itemclickup")
-		{
-			OnNotifyItemClickUp(msg);
-		}
-		else if(msg.sType == L"itemrightclick")
-		{
-			OnNotifyItemRightClick(msg);
 		}
 		else if(msg.sType == L"itemdelete")
 		{
@@ -2339,6 +2258,7 @@ namespace DuiLib
 			if( IsEnabled() ) 
 			{
 				event.wParam = m_iIndex;
+				event.pSender = this;
 
 				if( m_pOwner != NULL ) 
 					m_pOwner->DoEvent(event);

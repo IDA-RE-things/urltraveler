@@ -192,40 +192,26 @@ void	CMainFrameWnd::OnFavoriteTreeListItemClick(TNotifyUI& msg)
 {
 	// 点击收藏夹目录的响应代码
 	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
-	if( pFavoriteTree->GetItemIndex(msg.pSender) != -1 )
+	CListLabelElementUI* pTreeListUIElement = (CListLabelElementUI*)pFavoriteTree->GetItemAt(msg.wParam);
+
+	if( pTreeListUIElement != NULL )
 	{
-		if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) 
+		TreeListUI::Node* node = (TreeListUI::Node*)pTreeListUIElement->GetTag();
+
+		// 得到该结点对应的nId
+		std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(node);
+		if( itr != m_mapNodeId.end())
 		{
-			TreeListUI::Node* node = (TreeListUI::Node*)msg.pSender->GetTag();
-
-			POINT pt = { 0 };
-			::GetCursorPos(&pt);
-			::ScreenToClient(m_pm.GetPaintWindow(), &pt);
-			pt.x -= msg.pSender->GetX();
-			pt.y -= msg.pSender->GetY();
-			SIZE sz = pFavoriteTree->GetExpanderSizeX(node);
-			if( pt.x >= sz.cx && pt.y < sz.cy )                     
-				pFavoriteTree->SetChildVisible(node, !node->data()._child_visible);
-
-			// 得到该结点对应的nId
-			std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(node);
-			if( itr != m_mapNodeId.end())
-			{
-				int nId = itr->second;
-				m_nTreeNodeId = nId;
-				m_pCurrentTreeNode	=	itr->first;
-				ShowFavoriteTreeList(nId);
-			}
+			int nId = itr->second;
+			m_nTreeNodeId = nId;
+			m_pCurrentTreeNode	=	itr->first;
+			ShowFavoriteTreeList(nId);
 		}
 	}
 
-	// 点击收藏夹条目的响应代码
-	if (msg.pSender->GetParent()->GetParent()->GetName() == L"favoritefilelist")
+	if (m_pTipWnd)
 	{
-		if (m_pTipWnd)
-		{
-			m_pTipWnd->HideTip();
-		}
+		m_pTipWnd->HideTip();
 	}
 }
 
@@ -401,7 +387,12 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	}
 	else if( msg.sType == _T("itemclick") ) 
 	{
-		OnFavoriteTreeListItemClick(msg);
+ 		if( msg.pSender->GetName() == L"favoritetreelist" ) 
+		{ 
+			OnFavoriteTreeListItemClick(msg);
+			return;
+		}
+
 		return;
 	}
 	else if(msg.sType == L"itemhot")

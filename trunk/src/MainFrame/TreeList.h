@@ -83,6 +83,8 @@ public:
 		_root->data()._level = -1;
 		_root->data()._child_visible = true;
 		_root->data()._pListElement = NULL;
+
+		m_ListInfo.bMultiSelect = false;
 	}
 
 	~TreeListUI() { if(_root) delete _root; }
