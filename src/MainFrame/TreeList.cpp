@@ -51,7 +51,17 @@ void TreeListUI::RemoveAll()
 
 void	TreeListUI::OnEventItemClick(TEventUI& event)
 {
+	TreeListUI::Node* node = (TreeListUI::Node*)event.pSender->GetTag();
 
+	POINT pt = { 0 };
+	::GetCursorPos(&pt);
+	::ScreenToClient(m_pManager->GetPaintWindow(), &pt);
+	pt.x -= event.pSender->GetX();
+	pt.y -= event.pSender->GetY();
+
+	SIZE sz = GetExpanderSizeX(node);
+	if( pt.x >= sz.cx && pt.y < sz.cy )                     
+		SetChildVisible(node, !node->data()._child_visible);
 }
 
 void TreeListUI::DoEvent(TEventUI& event) 
@@ -109,7 +119,16 @@ void TreeListUI::DoEvent(TEventUI& event)
 
 	if( event.Type == UIEVENT_BUTTONDOWN )
 	{
+		CListUI::DoEvent(event);
+
 		OnEventItemClick(event);
+
+		TNotifyUI notify;
+		notify.sType = _T("itemclick");
+		notify.pSender = this;
+		notify.wParam = event.wParam;
+		m_pManager->SendNotify(notify);
+
 		return;
 	}
 
