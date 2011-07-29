@@ -1,6 +1,11 @@
 #include <stdafx.h>
 #include "TreeList.h"
 
+void TreeListUI::Notify(TNotifyUI& msg)
+{
+	TRACE(L"TreeListUI");
+}
+
 bool TreeListUI::Add(CControlUI* pControl)
 {
 	if( !pControl ) return false;
@@ -44,6 +49,11 @@ void TreeListUI::RemoveAll()
 	_root->data()._pListElement = NULL;
 }
 
+void	TreeListUI::OnEventItemClick(TEventUI& event)
+{
+
+}
+
 void TreeListUI::DoEvent(TEventUI& event) 
 {
 	if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
@@ -54,11 +64,13 @@ void TreeListUI::DoEvent(TEventUI& event)
 
 	if( event.Type == UIEVENT_TIMER && event.wParam == SCROLL_TIMERID )
 	{
-		if( m_dwDelayLeft > 0 ) {
+		if( m_dwDelayLeft > 0 ) 
+		{
 			--m_dwDelayLeft;
 			SIZE sz = GetScrollPos();
 			LONG lDeltaY =  (LONG)(CalculateDelay((double)m_dwDelayLeft / m_dwDelayNum) * m_dwDelayDeltaY);
-			if( (lDeltaY > 0 && sz.cy != 0)  || (lDeltaY < 0 && sz.cy != GetScrollRange().cy ) ) {
+			if( (lDeltaY > 0 && sz.cy != 0)  || (lDeltaY < 0 && sz.cy != GetScrollRange().cy ) ) 
+			{
 				sz.cy -= lDeltaY;
 				SetScrollPos(sz);
 				return;
@@ -70,6 +82,7 @@ void TreeListUI::DoEvent(TEventUI& event)
 		m_pManager->KillTimer(this, SCROLL_TIMERID);
 		return;
 	}
+
 	if( event.Type == UIEVENT_SCROLLWHEEL )
 	{
 		LONG lDeltaY = 0;
@@ -85,11 +98,18 @@ void TreeListUI::DoEvent(TEventUI& event)
 				else m_dwDelayDeltaY = lDeltaY - 12;
 				break;
 		}
+
 		if( m_dwDelayDeltaY > 100 ) m_dwDelayDeltaY = 100;
 		else if( m_dwDelayDeltaY < -100 ) m_dwDelayDeltaY = -100;
 		m_dwDelayNum = (DWORD)sqrt((double)abs(m_dwDelayDeltaY)) * 5;
 		m_dwDelayLeft = m_dwDelayNum;
 		m_pManager->SetTimer(this, SCROLL_TIMERID, 50U);
+		return;
+	}
+
+	if( event.Type == UIEVENT_BUTTONDOWN )
+	{
+		OnEventItemClick(event);
 		return;
 	}
 

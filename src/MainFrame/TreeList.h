@@ -87,6 +87,8 @@ public:
 
 	~TreeListUI() { if(_root) delete _root; }
 
+	void Notify(TNotifyUI& msg);
+
 	bool Add(CControlUI* pControl);
 	bool AddAt(CControlUI* pControl, int iIndex);
 	bool Remove(CControlUI* pControl);
@@ -100,6 +102,9 @@ public:
 
 	void SetChildVisible(Node* node, bool visible);
 	SIZE GetExpanderSizeX(Node* node) const  ;
+
+	void	OnEventItemClick(TEventUI& event);
+
 
 private:
 	Node* _root;
