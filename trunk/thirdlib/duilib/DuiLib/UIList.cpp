@@ -500,6 +500,140 @@ namespace DuiLib
 		}
 	}
 
+	void	CListUI::OnEventItemClick(TEventUI& event)
+	{
+			int nIndex = event.wParam;
+
+			// 如果支持多选
+			if( IsItemMultiSelect() == true)
+			{
+				// 如果Ctrl键被按下
+				if( GetKeyState(VK_CONTROL)   &   0x8000)
+				{
+					if( IsItemSelected(nIndex))
+						UnSelectItem(nIndex);
+					else
+						SelectItem(nIndex);
+
+					m_iLastClickSel	=	nIndex;
+					m_iLastSel = m_iLastClickSel;
+					return;
+				}
+
+				// 如果Shift键被按下
+				if( GetKeyState(VK_SHIFT)   &   0x8000)
+				{
+					ClearSelectedItem();
+					SelectContinualItem(nIndex);
+					m_iLastSel = nIndex;
+					return;
+				}
+			}
+
+			// 如果是单选或者如果是多选，但是没有按下Ctrl键
+			// 此时只选中一个 
+			if( m_vCurSel.size() > 0)
+			{
+				ClearSelectedItem(nIndex);
+			}
+
+			TRACE(L"Click");
+
+			if( IsItemSelected(nIndex) == false)
+				SelectItem(nIndex);
+
+			m_iLastClickSel	=	nIndex;
+			m_iLastSel = m_iLastClickSel;
+	}
+
+	void	CListUI::OnEventItemClickUp(TEventUI& event)
+	{
+	}
+
+	void	CListUI::OnEventItemRightClick(TEventUI& event)
+	{
+		int nIndex = event.wParam;
+
+		// 如果是单选或者如果是多选，但是没有按下Ctrl键
+		// 此时只选中一个 
+		if( m_vCurSel.size() > 0)
+		{
+			ClearSelectedItem(nIndex);
+		}
+
+		if( IsItemSelected(nIndex) == false)
+			SelectItem(nIndex);
+
+		m_iLastClickSel	=	nIndex;
+		m_iLastSel = m_iLastClickSel;	
+	}
+
+	void	CListUI::OnEventKeyDown(TEventUI& event)
+	{
+		switch( event.chKey ) 
+		{
+		case VK_UP:
+			KeyUp();
+			return;
+
+		case VK_DOWN:
+			KeyDown();
+			return;
+
+		case VK_PRIOR:
+			ClearSelectedItem();
+			PageUp();
+			return;
+
+		case VK_NEXT:
+			ClearSelectedItem();
+			PageDown();
+			return;
+
+		case VK_HOME:
+			ClearSelectedItem();
+			m_iLastClickSel = FindSelectable(0, true);
+			SelectItem(m_iLastClickSel);
+			return;
+
+		case VK_END:
+			ClearSelectedItem();
+			SelectItem(FindSelectable(GetRowCount() - 1, true));
+			return;
+
+		case VK_RETURN:
+			if( m_iLastClickSel != -1 ) 
+				GetItemAt(m_iLastClickSel)->Activate();
+			return;
+
+		case VK_F2:
+			EditItem(event.ptMouse.x, event.ptMouse.y);
+			return;
+
+		case VK_DELETE:
+			{
+				TNotifyUI notify;
+				notify.sType = _T("itemdelete");
+				notify.pSender = this;
+				m_pManager->SendNotify(notify);
+			}
+			return;
+
+		case 'A':
+		case 'a':
+			{
+				// Ctrl + A
+				if( GetKeyState(VK_CONTROL)   &   0x8000)
+				{
+					TNotifyUI notify;
+					notify.sType = _T("itemselectall");
+					notify.pSender = this;
+					m_pManager->SendNotify(notify);
+				}
+			}
+		}
+	}
+
 	void CListUI::DoEvent(TEventUI& event)
 	{
 		//TRACE(L"DoEvent KeyUP");
@@ -513,105 +647,53 @@ namespace DuiLib
 		if( event.Type == UIEVENT_SETFOCUS ) 
 		{
 			m_bFocused = true;
-			return;
 		}
+
 		if( event.Type == UIEVENT_KILLFOCUS ) 
 		{
 			m_bFocused = false;
-			return;
 		}
 
-		switch( event.Type ) 
+		if( event.Type == UIEVENT_BUTTONDOWN )
 		{
-		case UIEVENT_KEYDOWN:
-			switch( event.chKey ) 
-			{
-			case VK_UP:
-				KeyUp();
-				return;
-
-			case VK_DOWN:
-				KeyDown();
-				return;
-
-			case VK_PRIOR:
-				ClearSelectedItem();
-				PageUp();
-				return;
-
-			case VK_NEXT:
-				ClearSelectedItem();
-				PageDown();
-				return;
-
-			case VK_HOME:
-				ClearSelectedItem();
-				m_iLastClickSel = FindSelectable(0, true);
-				SelectItem(m_iLastClickSel);
-				return;
-
-			case VK_END:
-				ClearSelectedItem();
-				SelectItem(FindSelectable(GetRowCount() - 1, true));
-				return;
-
-			case VK_RETURN:
-				if( m_iLastClickSel != -1 ) 
-					GetItemAt(m_iLastClickSel)->Activate();
-				return;
-
-			case VK_F2:
-				EditItem(event.ptMouse.x, event.ptMouse.y);
-				return;
-
-			case VK_DELETE:
-				{
-					TNotifyUI notify;
-					notify.sType = _T("itemdelete");
-					notify.pSender = this;
-					m_pManager->SendNotify(notify);
-				}
-				return;
-
-			case 'A':
-			case 'a':
-				{
-					// Ctrl + A
-					if( GetKeyState(VK_CONTROL)   &   0x8000)
-					{
-						TNotifyUI notify;
-						notify.sType = _T("itemselectall");
-						notify.pSender = this;
-						m_pManager->SendNotify(notify);
-					}
-				}
-
-				return;
-			}
-			break;
-
-		case UIEVENT_SCROLLWHEEL:
-			{
-				switch( LOWORD(event.wParam) ) 
-				{
-				case SB_LINEUP:
-					if( m_bScrollSelect ) 
-						SelectItem(FindSelectable(m_iLastClickSel - 1, false));
-					else 
-						LineUp();
-					return;
-
-				case SB_LINEDOWN:
-					if( m_bScrollSelect ) 
-						SelectItem(FindSelectable(m_iLastClickSel + 1, true));
-					else 
-						LineDown();
-					return;
-				}
-			}
-
-			break;
+			OnEventItemClick(event);
 		}
+
+		if( event.Type == UIEVENT_BUTTONUP )
+		{
+			OnEventItemClickUp(event);
+		}
+
+		if( event.Type == UIEVENT_RBUTTONDOWN )
+		{
+			OnEventItemRightClick(event);
+		}
+
+		if( event.Type == UIEVENT_KEYDOWN )
+		{
+			OnEventKeyDown(event);
+		}
+
+		if( event.Type == UIEVENT_SCROLLWHEEL )
+		{
+			switch( LOWORD(event.wParam) ) 
+			{
+			case SB_LINEUP:
+				if( m_bScrollSelect ) 
+					SelectItem(FindSelectable(m_iLastClickSel - 1, false));
+				else 
+					LineUp();
+				return;
+
+			case SB_LINEDOWN:
+				if( m_bScrollSelect ) 
+					SelectItem(FindSelectable(m_iLastClickSel + 1, true));
+				else 
+					LineDown();
+				return;
+			}
+		}
+
 		CVerticalLayoutUI::DoEvent(event);
 	}
 
@@ -2239,46 +2321,29 @@ namespace DuiLib
 			return;
 		}
 
-		if( event.Type == UIEVENT_BUTTONDOWN )
+		if( event.Type == UIEVENT_MOUSEMOVE )
 		{
-			if( IsEnabled() ) 
+			if( GetAsyncKeyState(VK_LBUTTON) )
 			{
-				TRACE(L"CListElementUI: Btn Down");
-
-				TNotifyUI notify;
-				notify.sType = _T("itemclick");
-				notify.pSender = this;
-				notify.wParam = m_iIndex;
-				m_pManager->SendNotify(notify);
+				wchar_t szIndex[10];
+				swprintf(szIndex, L"%d", m_iIndex);
+				TRACE(szIndex);
 			}
 			return;
 		}
 
-		if( event.Type == UIEVENT_BUTTONUP )
+		if( event.Type == UIEVENT_BUTTONDOWN 
+			|| event.Type == UIEVENT_BUTTONUP
+			|| event.Type == UIEVENT_RBUTTONDOWN)
 		{
 			if( IsEnabled() ) 
 			{
-				TRACE(L"CListElementUI: Btn UP");
+				event.wParam = m_iIndex;
 
-				TNotifyUI notify;
-				notify.sType = _T("itemclickup");
-				notify.pSender = this;
-				notify.wParam = m_iIndex;
-				m_pManager->SendNotify(notify);
+				if( m_pOwner != NULL ) 
+					m_pOwner->DoEvent(event);
 			}
-			return;
-		}
 
-		if( event.Type == UIEVENT_RBUTTONDOWN )
-		{
-			if( IsEnabled() )
-			{
-				TNotifyUI notify;
-				notify.sType = _T("itemrightclick");
-				notify.pSender = this;
-				notify.wParam = m_iIndex;
-				m_pManager->SendNotify(notify);
-			}
 			return;
 		}
 
@@ -2300,16 +2365,8 @@ namespace DuiLib
 				Invalidate();
 				return;
 			}
-
-			if(event.chKey == VK_UP)
-			{
-				TRACE(L"Item: Key UP");
-			}
-			if(event.chKey == VK_DOWN)
-			{
-				TRACE(L"Item: Key DOWN");
-			}
 		}
+
 		// An important twist: The list-item will send the event not to its immediate
 		// parent but to the "attached" list. A list may actually embed several components
 		// in its path to the item, but key-presses etc. needs to go to the actual list.
@@ -3199,7 +3256,8 @@ namespace DuiLib
 	{
 		if( !IsVisible() ) return;
 
-		if( GetParent() ) {
+		if( GetParent() ) 
+		{
 			CContainerUI* pParentContainer = static_cast<CContainerUI*>(GetParent()->GetInterface(_T("Container")));
 			if( pParentContainer ) {
 				RECT rc = pParentContainer->GetPos();
@@ -3234,11 +3292,13 @@ namespace DuiLib
 
 				if( m_pManager != NULL ) m_pManager->Invalidate(invalidateRc);
 			}
-			else {
+			else 
+			{
 				CContainerUI::Invalidate();
 			}
 		}
-		else {
+		else 
+		{
 			CContainerUI::Invalidate();
 		}
 	}

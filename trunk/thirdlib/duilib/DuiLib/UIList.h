@@ -242,6 +242,11 @@ namespace DuiLib
 		void	OnNotifyItemDelete(TNotifyUI& msg);
 		void	OnNotifyItemSelectAll(TNotifyUI& msg);
 
+		void	OnEventItemClick(TEventUI& event);
+		void	OnEventItemClickUp(TEventUI& event);
+		void	OnEventItemRightClick(TEventUI& event);
+		void	OnEventKeyDown(TEventUI& event);
+
 	protected:
 		int	m_iCurSel;
 		int	m_iLastClickSel;				//	最后一次点击的Item
