@@ -1,9 +1,42 @@
 #include <stdafx.h>
 #include "TreeList.h"
+#include "resource.h"
 
 void TreeListUI::Notify(TNotifyUI& msg)
 {
-	TRACE(L"TreeListUI");
+	if(msg.sType == L"itemdragover")
+	{
+		HCURSOR hCursor   =   LoadCursorW((HINSTANCE)g_hModule,MAKEINTRESOURCE(IDC_DRAGCURSOR));
+		::SetCursor(hCursor);
+
+		int nHotIndex = GetHotItem();
+		CListLabelElementUI* pItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
+		if( pItem == NULL)
+			return;
+
+		TreeListUI::Node* node = (TreeListUI::Node*)pItem->GetTag();
+		SetChildVisible(node, true);
+
+		// 将当前需要拖放的收藏夹作为目标的子收藏夹
+
+	}
+	else if(msg.sType == L"itemdragend")
+	{
+		// 获取到鼠标所在点的位置
+		HCURSOR   hCur   =   ::LoadCursor(NULL,IDC_ARROW); 
+		::SetCursor(hCur);
+	}
+}
+
+void TreeListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
+{
+	CListUI::SetManager(pManager, pParent, bInit);
+
+	if( m_bAddNotifyer == false)
+	{
+		m_pManager->AddNotifier(this);
+		m_bAddNotifyer = true;
+	}
 }
 
 bool TreeListUI::Add(CControlUI* pControl)
@@ -62,6 +95,14 @@ void	TreeListUI::OnEventItemClick(TEventUI& event)
 	SIZE sz = GetExpanderSizeX(node);
 	if( pt.x >= sz.cx && pt.y < sz.cy )                     
 		SetChildVisible(node, !node->data()._child_visible);
+}
+
+void	TreeListUI::OnEventDragOver(TEventUI& event)
+{
+	if( m_bIsDragging == false)
+	{
+		m_bIsDragging = true;
+	}
 }
 
 void TreeListUI::DoEvent(TEventUI& event) 
@@ -131,6 +172,29 @@ void TreeListUI::DoEvent(TEventUI& event)
 
 		return;
 	}
+
+	if( event.Type == UIEVENT_KEYDOWN )
+	{
+		if( event.chKey == VK_RETURN)
+		{
+			int nCurSel = GetCurSel();
+			CListLabelElementUI* pItem =  (CListLabelElementUI*)GetItemAt(nCurSel);
+			if( pItem == NULL)
+				return;
+
+			TreeListUI::Node* node = (TreeListUI::Node*)pItem->GetTag();
+			SetChildVisible(node, !node->data()._child_visible);
+		}
+	}
+
+	if( event.Type == UIEVENT_DRAGOVER)
+	{
+		TNotifyUI notify;
+		notify.sType = _T("itemdragover");
+		notify.pSender = this;
+		m_pManager->SendNotify(notify);
+	}
+
 
 	CListUI::DoEvent(event);
 }

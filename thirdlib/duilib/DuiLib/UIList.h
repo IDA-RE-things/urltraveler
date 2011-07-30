@@ -56,6 +56,7 @@ namespace DuiLib
 	public:
 		virtual TListInfoUI* GetListInfo() = 0;
 		virtual int GetCurSel() const = 0;
+		virtual int* GetCurSel(int& nSelNum) const = 0;
 		virtual bool SelectItem(int iIndex) = 0;
 		virtual void DoEvent(TEventUI& event) = 0;
 	};
@@ -107,7 +108,9 @@ namespace DuiLib
 
 		bool GetScrollSelect();
 		void SetScrollSelect(bool bScrollSelect);
-		int GetCurSel() const;
+		int	GetCurSel() const;
+		int* GetCurSel(int& nSelNum) const;
+		int	GetHotItem() const;
 
 		bool	IsItemSelected(int iIndex);
 		bool SelectItem(int iIndex);
@@ -243,12 +246,14 @@ namespace DuiLib
 		void	OnEventItemClickUp(TEventUI& event);
 		void	OnEventItemRightClick(TEventUI& event);
 		void	OnEventKeyDown(TEventUI& event);
+		void	OnEventDragOver(TEventUI& event);
 
 	protected:
-		int	m_iCurSel;
+
+		int	m_iHotIndex;					//	处于Hot状态的Item。Hot状态的只有一个，与选中状态完全不同
 		int	m_iLastClickSel;				//	最后一次点击的Item
-		int	m_iLastSel;						//	最后一次被选中的Item，而不仅仅是被
-		std::vector<int>	m_vCurSel;	//	当前所有被选中的列表项
+		int	m_iLastSel;					//	最后一次被选中的Item，而不仅仅是被
+		std::vector<int>	m_vCurSel;		//	当前所有被选中的列表项
 
 		bool	m_bScrollSelect;
 		int	m_iExpandedItem;
@@ -263,6 +268,7 @@ namespace DuiLib
 		bool		m_bShowEdit;
 		int		m_nEditRow;
 		int		m_nEditColomn;
+		bool		m_bIsDragging;		//	是否正在拖放
 	};
 
 	/////////////////////////////////////////////////////////////////////////////////////

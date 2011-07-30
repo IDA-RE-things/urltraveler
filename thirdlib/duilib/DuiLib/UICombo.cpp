@@ -241,6 +241,18 @@ namespace DuiLib {
 		return m_iCurSel;
 	}
 
+	int* CComboUI::GetCurSel(int& nSelNum) const
+	{
+		if( m_iCurSel == -1)
+			return NULL;
+
+		nSelNum = 1;
+		int* pInt = new int;
+		*pInt = m_iCurSel;
+		return pInt;
+	}
+
+
 	bool CComboUI::SelectItem(int iIndex)
 	{
 		if( iIndex == m_iCurSel ) return true;

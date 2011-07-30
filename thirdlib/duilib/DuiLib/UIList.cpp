@@ -11,6 +11,8 @@ namespace DuiLib
 
 	CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iExpandedItem(-1)
 	{
+		m_bIsDragging	=	false;
+		m_iHotIndex = -1;
 		m_iLastSel = -1;
 		m_iLastClickSel = -1;
 		m_nEditRow = -1;
@@ -48,24 +50,24 @@ namespace DuiLib
 
 	void	CListUI::OnNotifyReturn(TNotifyUI& msg)
 	{
-			CControlUI *pControl = msg.pSender->GetParent();
-			if (pControl &&
-				_tcscmp(pControl->GetClass(), _T("ListUI")) == 0 &&
-				_tcscmp(msg.pSender->GetName(), m_pEditUI->GetName()) == 0)
-			{
-				CListUI *pListUI = (CListUI *)pControl;
-				pListUI->HideEditText();
-			}
+		CControlUI *pControl = msg.pSender->GetParent();
+		if (pControl &&
+			_tcscmp(pControl->GetClass(), _T("ListUI")) == 0 &&
+			_tcscmp(msg.pSender->GetName(), m_pEditUI->GetName()) == 0)
+		{
+			CListUI *pListUI = (CListUI *)pControl;
+			pListUI->HideEditText();
+		}
 	}
 
 	void	CListUI::OnNotifyItemDelete(TNotifyUI& msg)
 	{
-			DeleteSelected();
+		DeleteSelected();
 	}
 
 	void	CListUI::OnNotifyItemSelectAll(TNotifyUI& msg)
 	{
-			for( int i=0; i<GetRowCount(); i++)
+		for( int i=0; i<GetRowCount(); i++)
 			SelectItem(i);
 	}
 
@@ -82,6 +84,14 @@ namespace DuiLib
 		else if(msg.sType == L"itemselectall")
 		{
 			OnNotifyItemSelectAll(msg);
+		}
+		else if( msg.sType == L"itemhot")
+		{
+			m_iHotIndex = msg.wParam;
+
+			wchar_t szIndex[1024];
+			swprintf(szIndex, L"item hot: %d", m_iHotIndex);
+			TRACE(szIndex);
 		}
 	}
 
@@ -354,7 +364,7 @@ namespace DuiLib
 			}
 		}
 
-		SelectItem(FindSelectable(m_iCurSel, false));
+		SelectItem(FindSelectable(m_iLastClickSel, false));
 		return true;
 	}
 
@@ -378,7 +388,6 @@ namespace DuiLib
 
 	void CListUI::RemoveAll()
 	{
-		m_iCurSel = -1;
 		m_iExpandedItem = -1;
 		CVerticalLayoutUI::RemoveAll();
 	}
@@ -421,52 +430,64 @@ namespace DuiLib
 
 	void	CListUI::OnEventItemClick(TEventUI& event)
 	{
-			int nIndex = event.wParam;
+		int nIndex = event.wParam;
+		if( nIndex == -1)
+			return;
 
-			// 如果支持多选
-			if( IsItemMultiSelect() == true)
+		m_bIsDragging = true;
+
+		// 如果支持多选
+		if( IsItemMultiSelect() == true)
+		{
+			// 如果Ctrl键被按下
+			if( GetKeyState(VK_CONTROL)   &   0x8000)
 			{
-				// 如果Ctrl键被按下
-				if( GetKeyState(VK_CONTROL)   &   0x8000)
-				{
-					if( IsItemSelected(nIndex))
-						UnSelectItem(nIndex);
-					else
-						SelectItem(nIndex);
+				if( IsItemSelected(nIndex))
+					UnSelectItem(nIndex);
+				else
+					SelectItem(nIndex);
 
-					m_iLastClickSel	=	nIndex;
-					m_iLastSel = m_iLastClickSel;
-					return;
-				}
-
-				// 如果Shift键被按下
-				if( GetKeyState(VK_SHIFT)   &   0x8000)
-				{
-					ClearSelectedItem();
-					SelectContinualItem(nIndex);
-					m_iLastSel = nIndex;
-					return;
-				}
+				m_iLastClickSel	=	nIndex;
+				m_iLastSel = m_iLastClickSel;
+				return;
 			}
 
-			// 如果是单选或者如果是多选，但是没有按下Ctrl键
-			// 此时只选中一个 
-			if( m_vCurSel.size() > 0)
+			// 如果Shift键被按下
+			if( GetKeyState(VK_SHIFT)   &   0x8000)
 			{
-				ClearSelectedItem(nIndex);
+				ClearSelectedItem();
+				SelectContinualItem(nIndex);
+				m_iLastSel = nIndex;
+				return;
 			}
+		}
 
-			TRACE(L"Click");
+		// 如果是单选或者如果是多选，但是没有按下Ctrl键
+		// 此时只选中一个 
+		if( m_vCurSel.size() > 0)
+		{
+			ClearSelectedItem(nIndex);
+		}
 
-			if( IsItemSelected(nIndex) == false)
-				SelectItem(nIndex);
+		if( IsItemSelected(nIndex) == false)
+			SelectItem(nIndex);
 
-			m_iLastClickSel	=	nIndex;
-			m_iLastSel = m_iLastClickSel;
+		m_iLastClickSel	=	nIndex;
+		m_iLastSel = m_iLastClickSel;
 	}
 
 	void	CListUI::OnEventItemClickUp(TEventUI& event)
 	{
+		if( m_bIsDragging == true )
+		{
+			TNotifyUI notify;
+			notify.sType = _T("itemdragend");
+			notify.pSender = this;
+			notify.wParam = event.wParam;
+			m_pManager->SendNotify(notify);
+
+			m_bIsDragging = false;
+		}
 	}
 
 	void	CListUI::OnEventItemRightClick(TEventUI& event)
@@ -486,6 +507,15 @@ namespace DuiLib
 		m_iLastClickSel	=	nIndex;
 		m_iLastSel = m_iLastClickSel;	
 	}
+
+	void	CListUI::OnEventDragOver(TEventUI& event)
+	{
+		if( m_bIsDragging == false)
+		{
+			m_bIsDragging = true;
+		}
+	}
+
 
 	void	CListUI::OnEventKeyDown(TEventUI& event)
 	{
@@ -555,7 +585,6 @@ namespace DuiLib
 
 	void CListUI::DoEvent(TEventUI& event)
 	{
-		//TRACE(L"DoEvent KeyUP");
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) 
 		{
 			if( m_pParent != NULL ) m_pParent->DoEvent(event);
@@ -591,6 +620,11 @@ namespace DuiLib
 		if( event.Type == UIEVENT_KEYDOWN )
 		{
 			OnEventKeyDown(event);
+		}
+
+		if( event.Type == UIEVENT_ITEMHOVER)
+		{
+			m_iHotIndex = event.wParam;
 		}
 
 		if( event.Type == UIEVENT_SCROLLWHEEL )
@@ -638,8 +672,32 @@ namespace DuiLib
 
 	int CListUI::GetCurSel() const
 	{
-		return m_iCurSel;
+		if( m_vCurSel.size() <= 0)
+			return -1;
+
+		return m_vCurSel[0];
 	}
+
+	int* CListUI::GetCurSel(int& nSelNum) const
+	{
+		nSelNum = m_vCurSel.size();
+		if( nSelNum == 0)
+			return NULL;
+
+		int* pInt = new int[nSelNum];
+		for(int i=0; i<nSelNum; i++)
+		{
+			pInt[i] = m_vCurSel[i];
+		}
+
+		return pInt;
+	}
+
+	int	CListUI::GetHotItem() const
+	{
+		return m_iHotIndex;
+	}
+
 
 	bool	CListUI::IsItemSelected(int iIndex)
 	{
@@ -1270,8 +1328,6 @@ namespace DuiLib
 
 	void	CListUI::KeyDown()
 	{
-		TRACE(L"CListUI: Key Down");
-
 		if( IsItemMultiSelect() == false 
 			|| (IsItemMultiSelect() == true  && ((GetKeyState(VK_SHIFT)   &   0x8000)) == false))
 		{
@@ -1293,13 +1349,11 @@ namespace DuiLib
 
 	void	CListUI::KeyUp()
 	{
-		TRACE(L"CListUI: Key Up");
-
 		if( IsItemMultiSelect() == false 
 			|| (IsItemMultiSelect() == true  && ((GetKeyState(VK_SHIFT)   &   0x8000)) == false))
 		{
 			ClearSelectedItem();
-			m_iLastClickSel = FindSelectable(m_iLastClickSel - 1, true);
+			m_iLastClickSel = FindSelectable(m_iLastClickSel - 1, false);
 			m_iLastSel = m_iLastClickSel;
 			SelectItem(m_iLastClickSel);
 		}
@@ -1976,7 +2030,8 @@ namespace DuiLib
 					rc.left -= ptLastMouse.x - event.ptMouse.x;
 				}
 
-				if( rc.right - rc.left > GetMinWidth() ) {
+				if( rc.right - rc.left > GetMinWidth() )
+				{
 					m_cxyFixed.cx = rc.right - rc.left;
 					ptLastMouse = event.ptMouse;
 					if( GetParent() ) 
@@ -2042,12 +2097,14 @@ namespace DuiLib
 			if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
 		}
 		else {
-			if( !m_sNormalImage.IsEmpty() ) {
+			if( !m_sNormalImage.IsEmpty() ) 
+			{
 				if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
 			}
 		}
 
-		if( !m_sSepImage.IsEmpty() ) {
+		if( !m_sSepImage.IsEmpty() ) 
+		{
 			RECT rcThumb = GetThumbRect();
 			rcThumb.left -= m_rcItem.left;
 			rcThumb.top -= m_rcItem.top;
@@ -2104,8 +2161,12 @@ namespace DuiLib
 
 	LPVOID CListElementUI::GetInterface(LPCTSTR pstrName)
 	{
-		if( _tcscmp(pstrName, _T("ListItem")) == 0 ) return static_cast<IListItemUI*>(this);
-		if( _tcscmp(pstrName, _T("ListElement")) == 0 ) return static_cast<CListElementUI*>(this);
+		if( _tcscmp(pstrName, _T("ListItem")) == 0 ) 
+			return static_cast<IListItemUI*>(this);
+
+		if( _tcscmp(pstrName, _T("ListElement")) == 0 ) 
+			return static_cast<CListElementUI*>(this);
+
 		return CControlUI::GetInterface(pstrName);
 	}
 
@@ -2125,7 +2186,8 @@ namespace DuiLib
 		if( !IsVisible() && m_bSelected)
 		{
 			m_bSelected = false;
-			if( m_pOwner != NULL ) m_pOwner->SelectItem(-1);
+			if( m_pOwner != NULL ) 
+				m_pOwner->SelectItem(-1);
 		}
 	}
 
@@ -2235,8 +2297,10 @@ namespace DuiLib
 		// 如果当前列表项不允许处理鼠标消息，则将该消息交给上层处理
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) 
 		{
-			if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
-			else CControlUI::DoEvent(event);
+			if( m_pOwner != NULL ) 
+				m_pOwner->DoEvent(event);
+			else 
+				CControlUI::DoEvent(event);
 			return;
 		}
 
@@ -2244,9 +2308,11 @@ namespace DuiLib
 		{
 			if( GetAsyncKeyState(VK_LBUTTON) )
 			{
-				wchar_t szIndex[10];
-				swprintf(szIndex, L"%d", m_iIndex);
-				TRACE(szIndex);
+				event.Type = UIEVENT_DRAGOVER;
+				event.wParam = m_iIndex;
+				event.pSender = this;
+				if( m_pOwner != NULL)
+					m_pOwner->DoEvent(event);
 			}
 			return;
 		}
@@ -2275,16 +2341,6 @@ namespace DuiLib
 				Invalidate();
 			}
 			return;
-		}
-
-		if( event.Type == UIEVENT_KEYDOWN && IsEnabled() )
-		{
-			if( event.chKey == VK_RETURN ) 
-			{
-				Activate();
-				Invalidate();
-				return;
-			}
 		}
 
 		// An important twist: The list-item will send the event not to its immediate
@@ -2381,10 +2437,14 @@ namespace DuiLib
 
 	void CListLabelElementUI::DoEvent(TEventUI& event)
 	{
-		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND )
+		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN 
+			&& event.Type < UIEVENT__MOUSEEND )
 		{
-			if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
-			else CListElementUI::DoEvent(event);
+			if( m_pOwner != NULL ) 
+				m_pOwner->DoEvent(event);
+			else 
+				CListElementUI::DoEvent(event);
+
 			return;
 		}
 
@@ -2393,7 +2453,16 @@ namespace DuiLib
 			if( IsEnabled() ) 
 			{
 				//add hot event
-				m_pManager->SendNotify(this, _T("itemhot"));
+				event.Type = UIEVENT_ITEMHOVER;
+				event.pSender = this;
+				event.wParam = m_iIndex;
+
+				if( m_pOwner != NULL ) 
+					m_pOwner->DoEvent(event);
+				else 
+					CListElementUI::DoEvent(event);
+
+				//m_pManager->SendNotify(this, _T("itemhot"), m_iIndex);
 				m_uButtonState |= UISTATE_HOT;
 				Invalidate();
 			}
@@ -2410,6 +2479,7 @@ namespace DuiLib
 			}
 			return;
 		}
+		
 
 		CListElementUI::DoEvent(event);
 	}
@@ -2737,9 +2807,6 @@ namespace DuiLib
 					if( pCallback ) pstrText = pCallback->GetItemText(this, m_iIndex, i);
 
 					m_pOwner->ShowEditText(pstrText, rcItem, GetIndex(), i);
-
-					TRACE(L"DB Click");
-
 					break;
 				}
 			}
@@ -3259,7 +3326,8 @@ namespace DuiLib
 
 	void CListContainerElementUI::DoEvent(TEventUI& event)
 	{
-		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
+		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN 
+			&& event.Type < UIEVENT__MOUSEEND ) {
 			if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
 			else CContainerUI::DoEvent(event);
 			return;

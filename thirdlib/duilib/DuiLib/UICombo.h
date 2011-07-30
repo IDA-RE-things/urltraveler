@@ -30,6 +30,7 @@ namespace DuiLib {
 		void SetDropBoxSize(SIZE szDropBox);
 
 		int GetCurSel() const;  
+		int* GetCurSel(int& nSelNum) const;
 		bool SelectItem(int iIndex);
 
 		bool SetItemIndex(CControlUI* pControl, int iIndex);
