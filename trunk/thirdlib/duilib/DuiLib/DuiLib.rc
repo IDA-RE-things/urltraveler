@@ -49,38 +49,10 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Menu
-//
-
-IDR_MENU1 MENU 
-BEGIN
-    POPUP "POP_MENU"
-    BEGIN
-        MENUITEM "登录",                          IDM_LOGIN
-        MENUITEM "设置",                          IDM_SETTING
-        MENUITEM "访问网站",                        IDM_VISITWEB
-        MENUITEM SEPARATOR
-        MENUITEM "关于我们",                        IDM_ABOUT
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDI_APPICON16           ICON                    "res\\urltraveler16.ico"
-IDI_APPICON32           ICON                    "res\\urltraveler32.ico"
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Cursor
 //
 
-IDC_DRAGCURSOR          CURSOR                  "res\\MOVE4WAY.CUR"
+IDC_DRAGCURSOR          CURSOR                  "MOVE4WAY.CUR"
 #endif    // 中文(中华人民共和国) resources
 /////////////////////////////////////////////////////////////////////////////
 

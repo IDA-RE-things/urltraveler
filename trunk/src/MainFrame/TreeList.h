@@ -5,6 +5,9 @@
 #include <math.h>
 #include "UIList.h"
 
+extern HMODULE	g_hModule;
+
+
 using namespace DuiLib;
 
 inline double CalculateDelay(double state) {
@@ -85,11 +88,14 @@ public:
 		_root->data()._pListElement = NULL;
 
 		m_ListInfo.bMultiSelect = false;
+		m_bAddNotifyer = false;
+		m_bIsDragging = false;
 	}
 
 	~TreeListUI() { if(_root) delete _root; }
 
 	void Notify(TNotifyUI& msg);
+	virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
 	bool Add(CControlUI* pControl);
 	bool AddAt(CControlUI* pControl, int iIndex);
@@ -106,14 +112,17 @@ public:
 	SIZE GetExpanderSizeX(Node* node) const  ;
 
 	void	OnEventItemClick(TEventUI& event);
+	void	OnEventDragOver(TEventUI& event);
 
-
-private:
+protected:
 	Node* _root;
 
 	LONG m_dwDelayDeltaY;
 	DWORD m_dwDelayNum;
 	DWORD m_dwDelayLeft;
+	bool	m_bAddNotifyer;
+
+	bool	m_bIsDragging;
 };
 
 class CDialogBuilderCallbackEx : public IDialogBuilderCallback
