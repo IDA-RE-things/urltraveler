@@ -28,6 +28,7 @@ using namespace setting;
 
 CMainFrameWnd::CMainFrameWnd()
 {
+	m_pFavoriteTree = NULL;
 	m_nFavoriteNum = 0;
 	m_pFavoriteData	= NULL;
 	m_pTipWnd = new CTipWnd();
@@ -45,6 +46,8 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 { 
 	m_pTipWnd->Init(msg.pSender); 
 
+	m_pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
+
 	// 发送请求至服务器，统计在线人数
 	Web_OpenTravelerService openTravelerService;
 	openTravelerService.srcMId = MODULE_ID_MAINFRAME;
@@ -56,14 +59,12 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 	m_nFavoriteNum = nNum;
 	m_pFavoriteData = pFavoriteData;
 
-	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
-
 	wstring wstrText = L"{x 4}{x 4}";
 	wstrText += L"收藏夹";
 
-	TreeListUI::Node* pRootNode = pFavoriteTree->AddNode(wstrText.c_str());
-	m_mapIdNode[0] = pRootNode;
-	m_mapNodeId[pRootNode] = 0;
+	TreeListUI::Node* pRootNode = m_pFavoriteTree->AddNode(wstrText.c_str());
+	m_pFavoriteTree->m_mapIdNode[0] = pRootNode;
+	m_pFavoriteTree->m_mapNodeId[pRootNode] = 0;
 
 	for( int i=0; i<m_nFavoriteNum; i++)
 	{
@@ -73,8 +74,8 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 		{
 			// 找到当前结点的父节点
 			int nPid = pData->nPid;
-			std::map<int, TreeListUI::Node*>::iterator itr = m_mapIdNode.find(nPid);
-			if( itr != m_mapIdNode.end())
+			std::map<int, TreeListUI::Node*>::iterator itr = m_pFavoriteTree->m_mapIdNode.find(nPid);
+			if( itr != m_pFavoriteTree->m_mapIdNode.end())
 			{
 				TreeListUI::Node* pParentNode = itr->second;
 				if( pParentNode != NULL)
@@ -82,9 +83,9 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 					wstring wstrText = L"{x 4}{x 4}";
 					wstrText += pData->szTitle;
 
-					TreeListUI::Node* pNode  = pFavoriteTree->AddNode(wstrText.c_str(), pParentNode);
-					m_mapIdNode[pData->nId] = pNode;
-					m_mapNodeId[pNode] = pData->nId;
+					TreeListUI::Node* pNode  = m_pFavoriteTree->AddNode(wstrText.c_str(), pParentNode);
+					m_pFavoriteTree->m_mapIdNode[pData->nId] = pNode;
+					m_pFavoriteTree->m_mapNodeId[pNode] = pData->nId;
 				}
 			}
 			else
@@ -98,8 +99,8 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 	pUserList->SetTextCallback(this);     
 
 	// 显示根结点下的所有的收藏夹记录
-	m_nTreeNodeId = 0;
-	m_pCurrentTreeNode	=	pRootNode;
+	m_pFavoriteTree->m_nTreeNodeId = 0;
+	m_pFavoriteTree->m_pCurrentTreeNode	=	pRootNode;
 	ShowFavoriteTreeList(0);
 }
 
@@ -191,20 +192,19 @@ void	CMainFrameWnd::OnBtnClose(TNotifyUI& msg)
 void	CMainFrameWnd::OnFavoriteTreeListItemClick(TNotifyUI& msg)
 {
 	// 点击收藏夹目录的响应代码
-	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
-	CListLabelElementUI* pTreeListUIElement = (CListLabelElementUI*)pFavoriteTree->GetItemAt(msg.wParam);
+	CListLabelElementUI* pTreeListUIElement = (CListLabelElementUI*)m_pFavoriteTree->GetItemAt(msg.wParam);
 
 	if( pTreeListUIElement != NULL )
 	{
 		TreeListUI::Node* node = (TreeListUI::Node*)pTreeListUIElement->GetTag();
 
 		// 得到该结点对应的nId
-		std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(node);
-		if( itr != m_mapNodeId.end())
+		std::map<TreeListUI::Node*, int>::iterator itr = m_pFavoriteTree->m_mapNodeId.find(node);
+		if( itr != m_pFavoriteTree->m_mapNodeId.end())
 		{
 			int nId = itr->second;
-			m_nTreeNodeId = nId;
-			m_pCurrentTreeNode	=	itr->first;
+			m_pFavoriteTree->m_nTreeNodeId = nId;
+			m_pFavoriteTree->m_pCurrentTreeNode	=	itr->first;
 			ShowFavoriteTreeList(nId);
 		}
 	}
@@ -758,20 +758,19 @@ void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 
 void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 {
-	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
-	if( pFavoriteTree == NULL)
+	if( m_pFavoriteTree == NULL)
 	{
 		ASSERT(0);
 		return;
 	}
 
-	CListLabelElementUI* pElement = (CListLabelElementUI*)pFavoriteTree->GetSubItem(nIndex);
+	CListLabelElementUI* pElement = (CListLabelElementUI*)m_pFavoriteTree->GetSubItem(nIndex);
 	if( pElement == NULL)
 		return;
 
 	TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
-	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
-	if( itr == m_mapNodeId.end())
+	std::map<TreeListUI::Node*, int>::iterator itr = m_pFavoriteTree->m_mapNodeId.find(pNode);
+	if( itr == m_pFavoriteTree->m_mapNodeId.end())
 		return;
 
 	int nId = itr->second;
@@ -797,19 +796,19 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 			{
 				int nSubFolderId = getSubFolderService.pIdNum[i];
 
-				std::map<int, TreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
-				if( itr != m_mapIdNode.end())
+				std::map<int, TreeListUI::Node*>::iterator itr  = m_pFavoriteTree->m_mapIdNode.find(nSubFolderId);
+				if( itr != m_pFavoriteTree->m_mapIdNode.end())
 				{
 					TreeListUI::Node* pNode = itr->second;
 					if( pNode)
-						m_mapNodeId.erase(pNode);
+						m_pFavoriteTree->m_mapNodeId.erase(pNode);
 				}
-				m_mapIdNode.erase(nSubFolderId);
+				m_pFavoriteTree->m_mapIdNode.erase(nSubFolderId);
 			}
 
-			pFavoriteTree->RemoveNode(pNode);
-			m_mapNodeId.erase(pNode);
-			m_mapIdNode.erase(nId);
+			m_pFavoriteTree->RemoveNode(pNode);
+			m_pFavoriteTree->m_mapNodeId.erase(pNode);
+			m_pFavoriteTree->m_mapIdNode.erase(nId);
 
 			g_MainFrameModule->GetModuleManager()->PushEvent(
 				MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
@@ -827,20 +826,21 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 		{
 			int nSubFolderId = getSubFolderService.pIdNum[i];
 
-			std::map<int, TreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
-			if( itr != m_mapIdNode.end())
+			std::map<int, TreeListUI::Node*>::iterator itr  = m_pFavoriteTree->m_mapIdNode.find(nSubFolderId);
+			if( itr != m_pFavoriteTree->m_mapIdNode.end())
 			{
 				TreeListUI::Node* pNode = itr->second;
 				if( pNode)
-					m_mapNodeId.erase(pNode);
+					m_pFavoriteTree->m_mapNodeId.erase(pNode);
 			}
 
-			m_mapIdNode.erase(nSubFolderId);
+			m_pFavoriteTree->m_mapIdNode.erase(nSubFolderId);
 		}
 
-		pFavoriteTree->RemoveNode(pNode);
-		m_mapNodeId.erase(pNode);
-		m_mapIdNode.erase(nId);
+		m_pFavoriteTree->RemoveNode(pNode);
+		m_pFavoriteTree->m_mapNodeId.erase(pNode);
+		m_pFavoriteTree->m_mapIdNode.erase(nId);
+		m_pFavoriteTree->DeleteSelected();
 
 		g_MainFrameModule->GetModuleManager()->PushEvent(
 			MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
@@ -856,7 +856,7 @@ void CMainFrameWnd::AddUrl()
 		return;
 
 	FAVORITELINEDATA* pData = new FAVORITELINEDATA();
-	pData->nPid = m_nTreeNodeId;
+	pData->nPid = m_pFavoriteTree->m_nTreeNodeId;
 	m_vFavoriteNodeAtTreeNode.insert(m_vFavoriteNodeAtTreeNode.begin(), pData);
 
 	pUserList->Invalidate();
@@ -893,8 +893,7 @@ void	CMainFrameWnd::CopyUrl(int nIndex)
 
 void	CMainFrameWnd::SelectTreeList(int nId)
 {
-	TreeListUI* pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
-	if( pFavoriteTree == NULL)
+	if( m_pFavoriteTree == NULL)
 	{
 		ASSERT(0);
 		return;
@@ -902,29 +901,29 @@ void	CMainFrameWnd::SelectTreeList(int nId)
 
 	if( nId == 0)
 	{
-		pFavoriteTree->SelectItem(0);
+		m_pFavoriteTree->SelectItem(0);
 		ShowFavoriteTreeList(0);
 		return;
 	}
 
-	std::map<int, TreeListUI::Node*>::iterator itr = m_mapIdNode.find(nId);
-	if( itr == m_mapIdNode.end())
+	std::map<int, TreeListUI::Node*>::iterator itr = m_pFavoriteTree->m_mapIdNode.find(nId);
+	if( itr == m_pFavoriteTree->m_mapIdNode.end())
 		return;
 
 	if( itr->second == NULL)
 		return;
 
-	int nCount = pFavoriteTree->GetRowCount();
+	int nCount = m_pFavoriteTree->GetRowCount();
 	for( int i =0; i<nCount;i++)
 	{
-		CListLabelElementUI* pElement = (CListLabelElementUI*)pFavoriteTree->GetSubItem(i);
+		CListLabelElementUI* pElement = (CListLabelElementUI*)m_pFavoriteTree->GetSubItem(i);
 		if( pElement == NULL)
 			continue;
 
 		TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
 		if( pNode == itr->second)
 		{
-			pFavoriteTree->SelectItem(i);
+			m_pFavoriteTree->SelectItem(i);
 			ShowFavoriteTreeList(nId);
 			break;
 		}

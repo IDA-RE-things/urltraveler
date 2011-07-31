@@ -237,18 +237,15 @@ namespace DuiLib
 		void Notify(TNotifyUI& msg);
 		virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
-	protected:
 		void	OnNotifyReturn(TNotifyUI& msg);
-		void	OnNotifyItemDelete(TNotifyUI& msg);
 		void	OnNotifyItemSelectAll(TNotifyUI& msg);
 
 		void	OnEventItemClick(TEventUI& event);
 		void	OnEventItemClickUp(TEventUI& event);
 		void	OnEventItemRightClick(TEventUI& event);
 		void	OnEventKeyDown(TEventUI& event);
-		void	OnEventDragOver(TEventUI& event);
 
-	protected:
+	public:
 
 		int	m_iHotIndex;					//	处于Hot状态的Item。Hot状态的只有一个，与选中状态完全不同
 		int	m_iLastClickSel;				//	最后一次点击的Item
@@ -268,7 +265,6 @@ namespace DuiLib
 		bool		m_bShowEdit;
 		int		m_nEditRow;
 		int		m_nEditColomn;
-		bool		m_bIsDragging;		//	是否正在拖放
 	};
 
 	/////////////////////////////////////////////////////////////////////////////////////

@@ -19,7 +19,8 @@ namespace datacenter
 		EVENT_VALUE_DATACENTER_DELETE_FAVORITE,		//删除某个收藏的URL
 		EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,	//删除某个收藏夹的所有数据, param0为需要删除的收藏夹id
 		EVENT_VALUE_DATACENTER_TREELIST_SELECT,		//	在树中某个结点被删除后，需要将焦点移动到上一个结点或者父结点中
-		EVENT_VALUE_DATACENTER_SET_AUTOUPDATE,	//	获取自动更新的信息
+		EVENT_VALUE_DATACENTER_SET_AUTOUPDATE,		//	获取自动更新的信息
+
 
 		EVENT_VALUE_DATACENTER_END = EVENT_VALUE_DATACENTER_END ,		//所有的事件结束
 	};
@@ -95,13 +96,13 @@ namespace datacenter
 	// 历史记录中每一个历史记录的数据
 	typedef struct HistoryLineData
 	{
-		wchar_t	    szTitle;			//	描述文本，或者为分类名称，或者为URL的title
+		wchar_t		szTitle;				//	描述文本，或者为分类名称，或者为URL的title
 		int32		nCatId;				//	分类ID
-		int32		nParentCatId;		//	父类的ID，如果nParentCatId=0表示当前ID是目录结点
-		wchar_t	    szUrl[MAX_URL_LEN];				//	收藏的URL
+		int32		nParentCatId;			//	父类的ID，如果nParentCatId=0表示当前ID是目录结点
+		wchar_t		szUrl[MAX_URL_LEN];	//	收藏的URL
 		int32		nAddTimes;			//	增加的时间
-		int32		nLastModifyTime;	//	最近的更改时间
-		int32		nClickTimes;		//	点击次数
+		int32		nLastModifyTime;		//	最近的更改时间
+		int32		nClickTimes;			//	点击次数
 		int32		nOrder;				//	当前结点在当前层次中的顺序
 
 	} HISTORYLINEDATA, *PHISTORYLINEDATA;

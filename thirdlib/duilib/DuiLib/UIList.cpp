@@ -11,7 +11,6 @@ namespace DuiLib
 
 	CListUI::CListUI() : m_pCallback(NULL), m_bScrollSelect(false), m_iExpandedItem(-1)
 	{
-		m_bIsDragging	=	false;
 		m_iHotIndex = -1;
 		m_iLastSel = -1;
 		m_iLastClickSel = -1;
@@ -60,11 +59,6 @@ namespace DuiLib
 		}
 	}
 
-	void	CListUI::OnNotifyItemDelete(TNotifyUI& msg)
-	{
-		DeleteSelected();
-	}
-
 	void	CListUI::OnNotifyItemSelectAll(TNotifyUI& msg)
 	{
 		for( int i=0; i<GetRowCount(); i++)
@@ -77,10 +71,6 @@ namespace DuiLib
 		{
 			OnNotifyReturn(msg);
 		}
-		else if(msg.sType == L"itemdelete")
-		{
-			OnNotifyItemDelete(msg);
-		}
 		else if(msg.sType == L"itemselectall")
 		{
 			OnNotifyItemSelectAll(msg);
@@ -88,10 +78,6 @@ namespace DuiLib
 		else if( msg.sType == L"itemhot")
 		{
 			m_iHotIndex = msg.wParam;
-
-			wchar_t szIndex[1024];
-			swprintf(szIndex, L"item hot: %d", m_iHotIndex);
-			TRACE(szIndex);
 		}
 	}
 
@@ -434,8 +420,6 @@ namespace DuiLib
 		if( nIndex == -1)
 			return;
 
-		m_bIsDragging = true;
-
 		// 如果支持多选
 		if( IsItemMultiSelect() == true)
 		{
@@ -478,16 +462,6 @@ namespace DuiLib
 
 	void	CListUI::OnEventItemClickUp(TEventUI& event)
 	{
-		if( m_bIsDragging == true )
-		{
-			TNotifyUI notify;
-			notify.sType = _T("itemdragend");
-			notify.pSender = this;
-			notify.wParam = event.wParam;
-			m_pManager->SendNotify(notify);
-
-			m_bIsDragging = false;
-		}
 	}
 
 	void	CListUI::OnEventItemRightClick(TEventUI& event)
@@ -507,15 +481,6 @@ namespace DuiLib
 		m_iLastClickSel	=	nIndex;
 		m_iLastSel = m_iLastClickSel;	
 	}
-
-	void	CListUI::OnEventDragOver(TEventUI& event)
-	{
-		if( m_bIsDragging == false)
-		{
-			m_bIsDragging = true;
-		}
-	}
-
 
 	void	CListUI::OnEventKeyDown(TEventUI& event)
 	{
@@ -560,12 +525,7 @@ namespace DuiLib
 			return;
 
 		case VK_DELETE:
-			{
-				TNotifyUI notify;
-				notify.sType = _T("itemdelete");
-				notify.pSender = this;
-				m_pManager->SendNotify(notify);
-			}
+			DeleteSelected();
 			return;
 
 		case 'A':
@@ -698,7 +658,6 @@ namespace DuiLib
 		return m_iHotIndex;
 	}
 
-
 	bool	CListUI::IsItemSelected(int iIndex)
 	{
 		CControlUI* pControl = m_pList->GetItemAt(iIndex);
@@ -719,7 +678,7 @@ namespace DuiLib
 		std::vector<int> vSel = m_vCurSel;
 		for( size_t i=0; i<vSel.size(); i++)
 		{
-			if( nIndex == i)
+			if( nIndex == vSel[i])
 				continue;
 
 			UnSelectItem(vSel[i]);

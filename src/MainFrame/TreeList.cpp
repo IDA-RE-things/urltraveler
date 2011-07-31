@@ -1,31 +1,131 @@
 #include <stdafx.h>
 #include "TreeList.h"
 #include "resource.h"
+#include "DataCenterDefine.h"
+#include "MainFrameModule.h"
+#include "time.h"
+
+using namespace datacenter;
+using namespace mainframe;
 
 void TreeListUI::Notify(TNotifyUI& msg)
 {
-	if(msg.sType == L"itemdragover")
-	{
-		HCURSOR hCursor   =   LoadCursorW((HINSTANCE)g_hModule,MAKEINTRESOURCE(IDC_DRAGCURSOR));
-		::SetCursor(hCursor);
-
-		int nHotIndex = GetHotItem();
-		CListLabelElementUI* pItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
-		if( pItem == NULL)
-			return;
-
-		TreeListUI::Node* node = (TreeListUI::Node*)pItem->GetTag();
-		SetChildVisible(node, true);
-
-		// 将当前需要拖放的收藏夹作为目标的子收藏夹
-
-	}
-	else if(msg.sType == L"itemdragend")
-	{
-		// 获取到鼠标所在点的位置
-		HCURSOR   hCur   =   ::LoadCursor(NULL,IDC_ARROW); 
-		::SetCursor(hCur);
-	}
+/*
+		if(msg.sType == L"itemdragover")
+		{
+			HCURSOR hCursor   =   LoadCursorW((HINSTANCE)g_hModule,MAKEINTRESOURCE(IDC_DRAGCURSOR));
+			::SetCursor(hCursor);
+	
+			int nHotIndex = GetHotItem();
+			CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
+			if( pDstItem == NULL)
+				return;
+	
+			TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
+			if( pDstNode == NULL)
+			{
+				ASSERT(0);
+				return;
+			}
+	
+			SetChildVisible(pDstNode, true);
+		}
+		else if(msg.sType == L"itemdragend")
+		{
+			// 获取到鼠标所在点的位置
+			HCURSOR   hCur   =   ::LoadCursor(NULL,IDC_ARROW); 
+			::SetCursor(hCur);
+	
+			int nHotIndex = GetHotItem();
+			CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
+			if( pDstItem == NULL)
+				return;
+	
+			TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
+			if( pDstNode == NULL)
+			{
+				ASSERT(0);
+				return;
+			}
+	
+			std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
+			if( itr == m_mapNodeId.end())
+			{
+				ASSERT(0);
+				return;
+			}
+	
+			int nDstId = itr->second;
+	
+			// 将当前需要拖放的收藏夹作为目标的子收藏夹
+			int srcIndex = m_iLastClickSel;
+			int dstIndex = nHotIndex;
+	
+			// 被拖动的结点
+			CListLabelElementUI* pSrcItem =  (CListLabelElementUI*)GetItemAt(srcIndex);
+			if( pSrcItem == NULL)
+			{
+				ASSERT(0);
+				return;
+			}
+	
+			TreeListUI::Node* pSrcNode = (TreeListUI::Node*)pSrcItem->GetTag();
+			if( pSrcNode == NULL)
+			{
+				ASSERT(0);
+				return;
+			}
+	
+			itr = m_mapNodeId.find(pSrcNode);
+			if( itr == m_mapNodeId.end())
+			{
+				ASSERT(0);
+				return;
+			}
+			int nSrctId = itr->second;
+	
+			if( nDstId == nSrctId)
+				return;
+	
+			SetChildVisible(pDstNode, true);
+	
+			DataCenter_GetFavoriteService favoriteData;
+			g_MainFrameModule->GetModuleManager()->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
+				(param)&favoriteData); 
+	
+			int nFavoriteNum = favoriteData.nNum;
+			FAVORITELINEDATA* pFavoriteData = favoriteData.pFavoriteData;
+	
+			FAVORITELINEDATA* pSrcLineData = NULL;
+			for( int i=0; i<nFavoriteNum; i++)
+			{
+				if( pFavoriteData[i].nId == nSrctId)
+				{
+					pSrcLineData = &pFavoriteData[i];
+					break;
+				}
+			}
+	
+			if( pSrcLineData != NULL)
+			{
+				pSrcLineData->nPid = nDstId;
+			}
+	
+			// 删除原有结点
+			RemoveNode(pSrcNode);
+	
+			// 在结点中增加一个新结点
+			wstring wstrText = L"{x 4}{x 4}";
+			wstrText += pSrcLineData->szTitle;
+			TreeListUI::Node* pNode  = AddNode(wstrText.c_str(), pDstNode);
+			m_mapIdNode[pSrcLineData->nId] = pNode;
+			m_mapNodeId[pNode] = pSrcLineData->nId;
+			pSrcLineData->nLastModifyTime = time(NULL);
+	
+			m_nTreeNodeId = pSrcLineData->nId;
+			m_pCurrentTreeNode = pNode;
+		}*/
+	
 }
 
 void TreeListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
@@ -161,8 +261,9 @@ void TreeListUI::DoEvent(TEventUI& event)
 	if( event.Type == UIEVENT_BUTTONDOWN )
 	{
 		CListUI::DoEvent(event);
-
 		OnEventItemClick(event);
+
+		m_bIsDragging = true;
 
 		TNotifyUI notify;
 		notify.sType = _T("itemclick");
@@ -170,6 +271,21 @@ void TreeListUI::DoEvent(TEventUI& event)
 		notify.wParam = event.wParam;
 		m_pManager->SendNotify(notify);
 
+		return;
+	}
+
+	if( event.Type == UIEVENT_BUTTONUP )
+	{
+		if( m_bIsDragging == true )
+		{
+			TNotifyUI notify;
+			notify.sType = _T("itemdragend");
+			notify.pSender = this;
+			notify.wParam = event.wParam;
+			m_pManager->SendNotify(notify);
+
+			m_bIsDragging = false;
+		}
 		return;
 	}
 
