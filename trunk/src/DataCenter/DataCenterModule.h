@@ -102,6 +102,8 @@ private:
 	void	GetSubFolderId(std::vector<int>* pvId, int nId);
 
 protected:
+
+
 	
 	//	用以保存所有的收藏夹数据
 	std::vector<FAVORITELINEDATA>	m_vFavoriteLineData;

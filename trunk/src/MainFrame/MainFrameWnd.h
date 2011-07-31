@@ -78,12 +78,8 @@ public:
 	CPaintManagerUI m_pm;
 
 private:
-	std::map<int, TreeListUI::Node*>	m_mapIdNode;	//	id到node的关联关系
-	std::map<TreeListUI::Node*, int>	m_mapNodeId;	//	node到map的映射
 
-	// 当前选中的TreeNode结点
-	int m_nTreeNodeId;
-	TreeListUI::Node*	m_pCurrentTreeNode;
+	TreeListUI* m_pFavoriteTree;
 
 	int m_nFavoriteNum;
 	FAVORITELINEDATA*	m_pFavoriteData;

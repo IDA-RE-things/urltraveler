@@ -4,11 +4,12 @@
 #include <vector>
 #include <math.h>
 #include "UIList.h"
+#include <map>
 
 extern HMODULE	g_hModule;
 
-
 using namespace DuiLib;
+using namespace std;
 
 inline double CalculateDelay(double state) {
 	return pow(state, 2);
@@ -114,6 +115,14 @@ public:
 	void	OnEventItemClick(TEventUI& event);
 	void	OnEventDragOver(TEventUI& event);
 
+public:
+	// 当前选中的TreeNode结点
+	int m_nTreeNodeId;
+	TreeListUI::Node*	m_pCurrentTreeNode;
+
+	std::map<int, TreeListUI::Node*>	m_mapIdNode;	//	id到node的关联关系
+	std::map<TreeListUI::Node*, int>	m_mapNodeId;	//	node到map的映射
+
 protected:
 	Node* _root;
 
@@ -123,6 +132,7 @@ protected:
 	bool	m_bAddNotifyer;
 
 	bool	m_bIsDragging;
+
 };
 
 class CDialogBuilderCallbackEx : public IDialogBuilderCallback
