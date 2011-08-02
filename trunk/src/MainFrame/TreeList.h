@@ -100,9 +100,14 @@ public:
 
 	bool Add(CControlUI* pControl);
 	bool AddAt(CControlUI* pControl, int iIndex);
+
 	bool Remove(CControlUI* pControl);
-	bool RemoveAt(int iIndex);
+
+	// 删除指定索引的Item
+	bool RemoveAt(int nIndex);
 	void RemoveAll()  ;
+
+
 	void DoEvent(TEventUI& event) ;
 
 	Node* GetRoot() { return _root; }
@@ -132,7 +137,6 @@ protected:
 	bool	m_bAddNotifyer;
 
 	bool	m_bIsDragging;
-
 };
 
 class CDialogBuilderCallbackEx : public IDialogBuilderCallback

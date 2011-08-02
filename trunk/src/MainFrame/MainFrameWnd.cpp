@@ -28,10 +28,10 @@ using namespace setting;
 
 CMainFrameWnd::CMainFrameWnd()
 {
-	m_pFavoriteTree = NULL;
 	m_nFavoriteNum = 0;
 	m_pFavoriteData	= NULL;
 	m_pTipWnd = new CTipWnd();
+	m_pFavoriteTree = 0;
 }
 
 CMainFrameWnd::~CMainFrameWnd()
@@ -764,89 +764,7 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 		return;
 	}
 
-	CListLabelElementUI* pElement = (CListLabelElementUI*)m_pFavoriteTree->GetSubItem(nIndex);
-	if( pElement == NULL)
-		return;
-
-	TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
-	std::map<TreeListUI::Node*, int>::iterator itr = m_pFavoriteTree->m_mapNodeId.find(pNode);
-	if( itr == m_pFavoriteTree->m_mapNodeId.end())
-		return;
-
-	int nId = itr->second;
-
-	// 检查当前收藏夹下是否存在子文件夹，如果存在则提醒。
-	// 向数据中心请求检查是否存在子文件夹
-	DataCenter_CheckExistSubFoldService checkService;
-	checkService.nFoldId = nId;
-	g_MainFrameModule->GetModuleManager()->CallService(checkService.serviceId,(param)&checkService);
-
-	// 存在子文件夹，则提醒是否删除
-	if( checkService.bExistSubFolder == TRUE)
-	{
-		int nRet = ::MessageBox(NULL, L"该收藏夹下存在收藏数据，是否确定要一起删除", L"删除提示", MB_OKCANCEL);
-		// 确定删除
-		if( nRet == IDOK)
-		{
-			DataCenter_GetSubFolderIdService getSubFolderService;
-			getSubFolderService.nFoldId = nId;
-			g_MainFrameModule->GetModuleManager()->CallService(getSubFolderService.serviceId, (param)&getSubFolderService);
-
-			for( int i=0; i<getSubFolderService.nIdNum; i++)
-			{
-				int nSubFolderId = getSubFolderService.pIdNum[i];
-
-				std::map<int, TreeListUI::Node*>::iterator itr  = m_pFavoriteTree->m_mapIdNode.find(nSubFolderId);
-				if( itr != m_pFavoriteTree->m_mapIdNode.end())
-				{
-					TreeListUI::Node* pNode = itr->second;
-					if( pNode)
-						m_pFavoriteTree->m_mapNodeId.erase(pNode);
-				}
-				m_pFavoriteTree->m_mapIdNode.erase(nSubFolderId);
-			}
-
-			m_pFavoriteTree->RemoveNode(pNode);
-			m_pFavoriteTree->m_mapNodeId.erase(pNode);
-			m_pFavoriteTree->m_mapIdNode.erase(nId);
-
-			g_MainFrameModule->GetModuleManager()->PushEvent(
-				MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
-				MODULE_ID_DATACENTER,
-				nId));	
-		}
-	}
-	else
-	{
-		DataCenter_GetSubFolderIdService getSubFolderService;
-		getSubFolderService.nFoldId = nId;
-		g_MainFrameModule->GetModuleManager()->CallService(getSubFolderService.serviceId, (param)&getSubFolderService);
-
-		for( int i=0; i<getSubFolderService.nIdNum; i++)
-		{
-			int nSubFolderId = getSubFolderService.pIdNum[i];
-
-			std::map<int, TreeListUI::Node*>::iterator itr  = m_pFavoriteTree->m_mapIdNode.find(nSubFolderId);
-			if( itr != m_pFavoriteTree->m_mapIdNode.end())
-			{
-				TreeListUI::Node* pNode = itr->second;
-				if( pNode)
-					m_pFavoriteTree->m_mapNodeId.erase(pNode);
-			}
-
-			m_pFavoriteTree->m_mapIdNode.erase(nSubFolderId);
-		}
-
-		m_pFavoriteTree->RemoveNode(pNode);
-		m_pFavoriteTree->m_mapNodeId.erase(pNode);
-		m_pFavoriteTree->m_mapIdNode.erase(nId);
-		m_pFavoriteTree->DeleteSelected();
-
-		g_MainFrameModule->GetModuleManager()->PushEvent(
-			MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
-			MODULE_ID_DATACENTER,
-			nId));	
-	}
+	m_pFavoriteTree->RemoveAt(nIndex);
 }
 
 void CMainFrameWnd::AddUrl()
