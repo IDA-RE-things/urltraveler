@@ -4,128 +4,129 @@
 #include "DataCenterDefine.h"
 #include "MainFrameModule.h"
 #include "time.h"
+#include "MainFrameDefine.h"
 
 using namespace datacenter;
 using namespace mainframe;
 
 void TreeListUI::Notify(TNotifyUI& msg)
 {
-/*
-		if(msg.sType == L"itemdragover")
-		{
-			HCURSOR hCursor   =   LoadCursorW((HINSTANCE)g_hModule,MAKEINTRESOURCE(IDC_DRAGCURSOR));
-			::SetCursor(hCursor);
-	
-			int nHotIndex = GetHotItem();
-			CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
-			if( pDstItem == NULL)
-				return;
-	
-			TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
-			if( pDstNode == NULL)
-			{
-				ASSERT(0);
-				return;
-			}
-	
-			SetChildVisible(pDstNode, true);
-		}
-		else if(msg.sType == L"itemdragend")
-		{
-			// 获取到鼠标所在点的位置
-			HCURSOR   hCur   =   ::LoadCursor(NULL,IDC_ARROW); 
-			::SetCursor(hCur);
-	
-			int nHotIndex = GetHotItem();
-			CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
-			if( pDstItem == NULL)
-				return;
-	
-			TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
-			if( pDstNode == NULL)
-			{
-				ASSERT(0);
-				return;
-			}
-	
-			std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
-			if( itr == m_mapNodeId.end())
-			{
-				ASSERT(0);
-				return;
-			}
-	
-			int nDstId = itr->second;
-	
-			// 将当前需要拖放的收藏夹作为目标的子收藏夹
-			int srcIndex = m_iLastClickSel;
-			int dstIndex = nHotIndex;
-	
-			// 被拖动的结点
-			CListLabelElementUI* pSrcItem =  (CListLabelElementUI*)GetItemAt(srcIndex);
-			if( pSrcItem == NULL)
-			{
-				ASSERT(0);
-				return;
-			}
-	
-			TreeListUI::Node* pSrcNode = (TreeListUI::Node*)pSrcItem->GetTag();
-			if( pSrcNode == NULL)
-			{
-				ASSERT(0);
-				return;
-			}
-	
-			itr = m_mapNodeId.find(pSrcNode);
-			if( itr == m_mapNodeId.end())
-			{
-				ASSERT(0);
-				return;
-			}
-			int nSrctId = itr->second;
-	
-			if( nDstId == nSrctId)
-				return;
-	
-			SetChildVisible(pDstNode, true);
-	
-			DataCenter_GetFavoriteService favoriteData;
-			g_MainFrameModule->GetModuleManager()->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
-				(param)&favoriteData); 
-	
-			int nFavoriteNum = favoriteData.nNum;
-			FAVORITELINEDATA* pFavoriteData = favoriteData.pFavoriteData;
-	
-			FAVORITELINEDATA* pSrcLineData = NULL;
-			for( int i=0; i<nFavoriteNum; i++)
-			{
-				if( pFavoriteData[i].nId == nSrctId)
-				{
-					pSrcLineData = &pFavoriteData[i];
-					break;
-				}
-			}
-	
-			if( pSrcLineData != NULL)
-			{
-				pSrcLineData->nPid = nDstId;
-			}
-	
-			// 删除原有结点
-			RemoveNode(pSrcNode);
-	
-			// 在结点中增加一个新结点
-			wstring wstrText = L"{x 4}{x 4}";
-			wstrText += pSrcLineData->szTitle;
-			TreeListUI::Node* pNode  = AddNode(wstrText.c_str(), pDstNode);
-			m_mapIdNode[pSrcLineData->nId] = pNode;
-			m_mapNodeId[pNode] = pSrcLineData->nId;
-			pSrcLineData->nLastModifyTime = time(NULL);
-	
-			m_nTreeNodeId = pSrcLineData->nId;
-			m_pCurrentTreeNode = pNode;
-		}*/
-	
+	/*
+	if(msg.sType == L"itemdragover")
+	{
+	HCURSOR hCursor   =   LoadCursorW((HINSTANCE)g_hModule,MAKEINTRESOURCE(IDC_DRAGCURSOR));
+	::SetCursor(hCursor);
+
+	int nHotIndex = GetHotItem();
+	CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
+	if( pDstItem == NULL)
+	return;
+
+	TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
+	if( pDstNode == NULL)
+	{
+	ASSERT(0);
+	return;
+	}
+
+	SetChildVisible(pDstNode, true);
+	}
+	else if(msg.sType == L"itemdragend")
+	{
+	// 获取到鼠标所在点的位置
+	HCURSOR   hCur   =   ::LoadCursor(NULL,IDC_ARROW); 
+	::SetCursor(hCur);
+
+	int nHotIndex = GetHotItem();
+	CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
+	if( pDstItem == NULL)
+	return;
+
+	TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
+	if( pDstNode == NULL)
+	{
+	ASSERT(0);
+	return;
+	}
+
+	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
+	if( itr == m_mapNodeId.end())
+	{
+	ASSERT(0);
+	return;
+	}
+
+	int nDstId = itr->second;
+
+	// 将当前需要拖放的收藏夹作为目标的子收藏夹
+	int srcIndex = m_iLastClickSel;
+	int dstIndex = nHotIndex;
+
+	// 被拖动的结点
+	CListLabelElementUI* pSrcItem =  (CListLabelElementUI*)GetItemAt(srcIndex);
+	if( pSrcItem == NULL)
+	{
+	ASSERT(0);
+	return;
+	}
+
+	TreeListUI::Node* pSrcNode = (TreeListUI::Node*)pSrcItem->GetTag();
+	if( pSrcNode == NULL)
+	{
+	ASSERT(0);
+	return;
+	}
+
+	itr = m_mapNodeId.find(pSrcNode);
+	if( itr == m_mapNodeId.end())
+	{
+	ASSERT(0);
+	return;
+	}
+	int nSrctId = itr->second;
+
+	if( nDstId == nSrctId)
+	return;
+
+	SetChildVisible(pDstNode, true);
+
+	DataCenter_GetFavoriteService favoriteData;
+	g_MainFrameModule->GetModuleManager()->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
+	(param)&favoriteData); 
+
+	int nFavoriteNum = favoriteData.nNum;
+	FAVORITELINEDATA* pFavoriteData = favoriteData.pFavoriteData;
+
+	FAVORITELINEDATA* pSrcLineData = NULL;
+	for( int i=0; i<nFavoriteNum; i++)
+	{
+	if( pFavoriteData[i].nId == nSrctId)
+	{
+	pSrcLineData = &pFavoriteData[i];
+	break;
+	}
+	}
+
+	if( pSrcLineData != NULL)
+	{
+	pSrcLineData->nPid = nDstId;
+	}
+
+	// 删除原有结点
+	RemoveNode(pSrcNode);
+
+	// 在结点中增加一个新结点
+	wstring wstrText = L"{x 4}{x 4}";
+	wstrText += pSrcLineData->szTitle;
+	TreeListUI::Node* pNode  = AddNode(wstrText.c_str(), pDstNode);
+	m_mapIdNode[pSrcLineData->nId] = pNode;
+	m_mapNodeId[pNode] = pSrcLineData->nId;
+	pSrcLineData->nLastModifyTime = time(NULL);
+
+	m_nTreeNodeId = pSrcLineData->nId;
+	m_pCurrentTreeNode = pNode;
+	}*/
+
 }
 
 void TreeListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
@@ -160,16 +161,98 @@ bool TreeListUI::Remove(CControlUI* pControl)
 	return CListUI::Remove(pControl);
 }
 
-bool TreeListUI::RemoveAt(int iIndex)
+bool TreeListUI::RemoveAt(int nIndex)
 {
-	CControlUI* pControl = m_pList->GetItemAt(iIndex);
+	CControlUI* pControl = m_pList->GetItemAt(nIndex);
 	if( !pControl ) 
 		return false;
 
-	if( _tcscmp(pControl->GetClass(), _T("ListLabelElementUI")) == 0 ) 
+	CListLabelElementUI* pElement = (CListLabelElementUI*)GetSubItem(nIndex);
+	if( pElement == NULL)
 		return false;
 
-	return CListUI::RemoveAt(iIndex);
+	TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
+	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
+	if( itr == m_mapNodeId.end())
+		return false;
+
+	int nId = itr->second;
+
+	// 检查当前收藏夹下是否存在子文件夹，如果存在则提醒。
+	// 向数据中心请求检查是否存在子文件夹
+	DataCenter_CheckExistSubFoldService checkService;
+	checkService.nFoldId = nId;
+	g_MainFrameModule->GetModuleManager()->CallService(checkService.serviceId,(param)&checkService);
+
+	// 存在子文件夹，则提醒是否删除
+	if( checkService.bExistSubFolder == TRUE)
+	{
+		int nRet = ::MessageBox(NULL, L"该收藏夹下存在收藏数据，是否确定要一起删除", L"删除提示", MB_OKCANCEL);
+		// 确定删除
+		if( nRet == IDOK)
+		{
+			DataCenter_GetSubFolderIdService getSubFolderService;
+			getSubFolderService.nFoldId = nId;
+			g_MainFrameModule->GetModuleManager()->CallService(getSubFolderService.serviceId, (param)&getSubFolderService);
+
+			for( int i=0; i<getSubFolderService.nIdNum; i++)
+			{
+				int nSubFolderId = getSubFolderService.pIdNum[i];
+
+				std::map<int, TreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
+				if( itr != m_mapIdNode.end())
+				{
+					TreeListUI::Node* pNode = itr->second;
+					if( pNode)
+						m_mapNodeId.erase(pNode);
+				}
+				m_mapIdNode.erase(nSubFolderId);
+			}
+
+			RemoveNode(pNode);
+			m_mapNodeId.erase(pNode);
+			m_mapIdNode.erase(nId);
+
+			g_MainFrameModule->GetModuleManager()->PushEvent(
+				MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
+				MODULE_ID_DATACENTER,
+				nId));	
+		}
+	}
+	else
+	{
+		DataCenter_GetSubFolderIdService getSubFolderService;
+		getSubFolderService.nFoldId = nId;
+		g_MainFrameModule->GetModuleManager()->CallService(getSubFolderService.serviceId, (param)&getSubFolderService);
+
+		for( int i=0; i<getSubFolderService.nIdNum; i++)
+		{
+			int nSubFolderId = getSubFolderService.pIdNum[i];
+
+			std::map<int, TreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
+			if( itr != m_mapIdNode.end())
+			{
+				TreeListUI::Node* pNode = itr->second;
+				if( pNode)
+					m_mapNodeId.erase(pNode);
+			}
+
+			m_mapIdNode.erase(nSubFolderId);
+		}
+
+		RemoveNode(pNode);
+		m_mapNodeId.erase(pNode);
+		m_mapIdNode.erase(nId);
+
+		g_MainFrameModule->GetModuleManager()->PushEvent(
+			MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
+			MODULE_ID_DATACENTER,
+			nId));	
+	}
+
+	//CListUI::RemoveAt(nIndex);
+	ClearSelectedItem();
+	return true;
 }
 
 void TreeListUI::RemoveAll()
@@ -240,14 +323,14 @@ void TreeListUI::DoEvent(TEventUI& event)
 		if( m_dwDelayNum > 0 ) lDeltaY =  (LONG)(CalculateDelay((double)m_dwDelayLeft / m_dwDelayNum) * m_dwDelayDeltaY);
 		switch( LOWORD(event.wParam) ) 
 		{
-			case SB_LINEUP:
-				if( m_dwDelayDeltaY >= 0 ) m_dwDelayDeltaY = lDeltaY + 8;
-				else m_dwDelayDeltaY = lDeltaY + 12;
-				break;
-			case SB_LINEDOWN:
-				if( m_dwDelayDeltaY <= 0 ) m_dwDelayDeltaY = lDeltaY - 8;
-				else m_dwDelayDeltaY = lDeltaY - 12;
-				break;
+		case SB_LINEUP:
+			if( m_dwDelayDeltaY >= 0 ) m_dwDelayDeltaY = lDeltaY + 8;
+			else m_dwDelayDeltaY = lDeltaY + 12;
+			break;
+		case SB_LINEDOWN:
+			if( m_dwDelayDeltaY <= 0 ) m_dwDelayDeltaY = lDeltaY - 8;
+			else m_dwDelayDeltaY = lDeltaY - 12;
+			break;
 		}
 
 		if( m_dwDelayDeltaY > 100 ) m_dwDelayDeltaY = 100;
@@ -255,6 +338,7 @@ void TreeListUI::DoEvent(TEventUI& event)
 		m_dwDelayNum = (DWORD)sqrt((double)abs(m_dwDelayDeltaY)) * 5;
 		m_dwDelayLeft = m_dwDelayNum;
 		m_pManager->SetTimer(this, SCROLL_TIMERID, 50U);
+
 		return;
 	}
 
@@ -273,21 +357,22 @@ void TreeListUI::DoEvent(TEventUI& event)
 
 		return;
 	}
-
+	/*
 	if( event.Type == UIEVENT_BUTTONUP )
 	{
-		if( m_bIsDragging == true )
-		{
-			TNotifyUI notify;
-			notify.sType = _T("itemdragend");
-			notify.pSender = this;
-			notify.wParam = event.wParam;
-			m_pManager->SendNotify(notify);
+	if( m_bIsDragging == true )
+	{
+	TNotifyUI notify;
+	notify.sType = _T("itemdragend");
+	notify.pSender = this;
+	notify.wParam = event.wParam;
+	m_pManager->SendNotify(notify);
 
-			m_bIsDragging = false;
-		}
-		return;
+	m_bIsDragging = false;
 	}
+	return;
+	}*/
+
 
 	if( event.Type == UIEVENT_KEYDOWN )
 	{
@@ -300,7 +385,24 @@ void TreeListUI::DoEvent(TEventUI& event)
 
 			TreeListUI::Node* node = (TreeListUI::Node*)pItem->GetTag();
 			SetChildVisible(node, !node->data()._child_visible);
+
+			return;
 		}
+		else if( event.chKey == VK_DELETE)
+		{
+			int nCurSel = GetCurSel();
+			if( nCurSel < 0)
+				return;
+
+			// 通知数据中心删除
+			MainFrame_DeleteFavoriteFoldEvent* pEvent = new MainFrame_DeleteFavoriteFoldEvent();
+			pEvent->desMId = MODULE_ID_MAINFRAME;
+			pEvent->nDeleteIndex = nCurSel;
+			g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+
+			return;
+		}
+
 	}
 
 	if( event.Type == UIEVENT_DRAGOVER)
@@ -309,6 +411,8 @@ void TreeListUI::DoEvent(TEventUI& event)
 		notify.sType = _T("itemdragover");
 		notify.pSender = this;
 		m_pManager->SendNotify(notify);
+
+		return;
 	}
 
 
