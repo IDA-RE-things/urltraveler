@@ -40,7 +40,9 @@ LPVOID CContainerUI::GetInterface(LPCTSTR pstrName)
 
 CControlUI* CContainerUI::GetItemAt(int iIndex) const
 {
-	if( iIndex < 0 || iIndex >= m_items.GetSize() ) return NULL;
+	if( iIndex < 0 || iIndex >= m_items.GetSize() ) 
+		return NULL;
+
 	return static_cast<CControlUI*>(m_items[iIndex]);
 }
 

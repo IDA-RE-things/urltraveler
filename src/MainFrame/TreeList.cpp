@@ -250,7 +250,17 @@ bool TreeListUI::RemoveAt(int nIndex)
 			nId));	
 	}
 
-	//CListUI::RemoveAt(nIndex);
+	
+	for(size_t i =0; i< m_vCurSel.size(); i++)
+	{
+		if( m_vCurSel[i] == nIndex)
+		{
+			m_vCurSel.erase(m_vCurSel.begin() + i);
+			break;
+		}
+	}
+
+
 	ClearSelectedItem();
 	return true;
 }
@@ -267,6 +277,9 @@ void TreeListUI::RemoveAll()
 
 void	TreeListUI::OnEventItemClick(TEventUI& event)
 {
+	if( event.pSender == NULL)
+		return;
+
 	TreeListUI::Node* node = (TreeListUI::Node*)event.pSender->GetTag();
 
 	POINT pt = { 0 };
