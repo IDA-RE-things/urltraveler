@@ -415,7 +415,6 @@ void TreeListUI::DoEvent(TEventUI& event)
 
 			return;
 		}
-
 	}
 
 	if( event.Type == UIEVENT_DRAGOVER)
