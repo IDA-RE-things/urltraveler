@@ -758,6 +758,9 @@ void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 
 void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 {
+	if( nIndex == 0)
+		return;
+
 	if( m_pFavoriteTree == NULL)
 	{
 		ASSERT(0);
