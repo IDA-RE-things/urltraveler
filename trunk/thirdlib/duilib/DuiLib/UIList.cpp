@@ -453,8 +453,7 @@ namespace DuiLib
 			ClearSelectedItem(nIndex);
 		}
 
-		if( IsItemSelected(nIndex) == false)
-			SelectItem(nIndex);
+		SelectItem(nIndex);
 
 		m_iLastClickSel	=	nIndex;
 		m_iLastSel = m_iLastClickSel;
@@ -728,7 +727,10 @@ namespace DuiLib
 		m_vCurSel.clear();
 
 		if( pListNextToSelectItem != NULL)
+		{
 			pListNextToSelectItem->Select(true);
+			m_vCurSel.push_back(pListNextToSelectItem->GetIndex());
+		}
 
 		Invalidate();
 	}
