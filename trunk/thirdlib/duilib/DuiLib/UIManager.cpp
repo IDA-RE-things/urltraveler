@@ -860,7 +860,9 @@ namespace DuiLib {
 	    break;
     case WM_KEYDOWN:
 	    {
-		    if( m_pFocus == NULL ) break;
+		    if( m_pFocus == NULL ) 
+				break;
+
 		    TEventUI event = { 0 };
 		    event.Type = UIEVENT_KEYDOWN;
 		    event.chKey = (TCHAR)wParam;

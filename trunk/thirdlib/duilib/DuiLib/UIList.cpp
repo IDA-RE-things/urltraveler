@@ -729,6 +729,7 @@ namespace DuiLib
 		if( pListNextToSelectItem != NULL)
 		{
 			pListNextToSelectItem->Select(true);
+			m_pManager->SetFocus(this);
 			m_vCurSel.push_back(pListNextToSelectItem->GetIndex());
 		}
 
