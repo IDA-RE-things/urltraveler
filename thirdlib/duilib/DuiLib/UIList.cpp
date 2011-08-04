@@ -2273,6 +2273,7 @@ namespace DuiLib
 			return;
 		}
 
+/*
 		if( event.Type == UIEVENT_MOUSEMOVE )
 		{
 			if( GetAsyncKeyState(VK_LBUTTON) )
@@ -2285,6 +2286,7 @@ namespace DuiLib
 			}
 			return;
 		}
+*/
 
 		if( event.Type == UIEVENT_BUTTONDOWN 
 			|| event.Type == UIEVENT_BUTTONUP
