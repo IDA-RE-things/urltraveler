@@ -733,6 +733,9 @@ namespace DuiLib
 			m_vCurSel.push_back(pListNextToSelectItem->GetIndex());
 		}
 
+		m_iLastSel = pListNextToSelectItem->GetIndex();
+		m_iLastClickSel = m_iLastSel;
+
 		Invalidate();
 	}
 
