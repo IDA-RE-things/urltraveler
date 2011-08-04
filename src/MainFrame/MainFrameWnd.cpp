@@ -238,7 +238,7 @@ void	CMainFrameWnd::OnFavoriteListItemHover(TNotifyUI& msg)
 		strIcon = strIcon + wstrDomain;
 		strIcon += L".ico></i>";
 
-		m_pTipWnd->ShowTips(1000, strTips, strIcon.c_str());
+		//m_pTipWnd->ShowTips(1000, strTips, strIcon.c_str());
 	}
 }
 
