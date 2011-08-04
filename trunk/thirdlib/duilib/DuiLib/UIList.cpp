@@ -675,14 +675,18 @@ namespace DuiLib
 
 	void	CListUI::ClearSelectedItem(int nIndex)
 	{
-		std::vector<int> vSel = m_vCurSel;
-		for( size_t i=0; i<vSel.size(); i++)
+		IListItemUI* pListNextToSelectItem = NULL;
+		for(int i=0; i<GetRowCount(); i++)
 		{
-			if( nIndex == vSel[i])
-				continue;
-
-			UnSelectItem(vSel[i]);
+			CControlUI* p = m_pList->GetItemAt(i);
+			pListNextToSelectItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
+			if( pListNextToSelectItem != NULL && pListNextToSelectItem->IsSelected() == true ) 
+			{
+				pListNextToSelectItem->Select(false);
+			}
 		}
+
+		m_vCurSel.clear();
 	}
 
 	void	CListUI::DeleteSelected()

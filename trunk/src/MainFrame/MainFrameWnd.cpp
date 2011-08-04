@@ -844,6 +844,7 @@ void	CMainFrameWnd::SelectTreeList(int nId)
 		TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
 		if( pNode == itr->second)
 		{
+			m_pFavoriteTree->ClearSelectedItem();
 			m_pFavoriteTree->SelectItem(i);
 			ShowFavoriteTreeList(nId);
 			break;
