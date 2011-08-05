@@ -348,7 +348,7 @@ void	TreeListUI::OnListItemDragEnd(DragListUI* pDragList)
 		int dstIndex = nHotIndex;
 		for(int i = 0; i<nSelNum; i++)
 		{
-			CListElementUI* pElement = (CListElementUI*)pDragList->GetItemAt(i);
+			CListElementUI* pElement = (CListElementUI*)pDragList->GetItemAt(pSel[i]);
 			if( pElement == NULL)
 				continue;
 
