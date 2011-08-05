@@ -294,6 +294,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\FavoriteListMenu.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\FavoriteListMenu.h"
 					>
 				</File>
