@@ -278,6 +278,22 @@
 				Name="DuiEx"
 				>
 				<File
+					RelativePath=".\CallbackEx.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CallbackEx.h"
+					>
+				</File>
+				<File
+					RelativePath=".\DragList.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\DragList.h"
+					>
+				</File>
+				<File
 					RelativePath=".\FavoriteListMenu.h"
 					>
 				</File>
