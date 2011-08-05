@@ -193,9 +193,10 @@ void	CMainFrameWnd::OnBtnClose(TNotifyUI& msg)
 
 void	CMainFrameWnd::OnFavoriteTreeListItemClick(TNotifyUI& msg)
 {
-	// 点击收藏夹目录的响应代码
-	CListLabelElementUI* pTreeListUIElement = (CListLabelElementUI*)m_pFavoriteTree->GetItemAt(msg.wParam);
+	int nIndex = msg.wParam;
 
+	// 点击收藏夹目录的响应代码
+	CListLabelElementUI* pTreeListUIElement = (CListLabelElementUI*)m_pFavoriteTree->GetItemAt(nIndex);
 	if( pTreeListUIElement != NULL )
 	{
 		TreeListUI::Node* node = (TreeListUI::Node*)pTreeListUIElement->GetTag();

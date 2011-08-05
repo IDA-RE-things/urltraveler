@@ -17,120 +17,6 @@ LPCTSTR TreeListUI::GetClass() const
 
 void TreeListUI::Notify(TNotifyUI& msg)
 {
-	if(msg.sType == L"itemdragover")
-	{
-		HCURSOR hCursor   =   LoadCursorW((HINSTANCE)g_hModule,MAKEINTRESOURCE(IDC_DRAGCURSOR));
-		::SetCursor(hCursor);
-
-		int nHotIndex = GetHotItem();
-		CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
-		if( pDstItem == NULL)
-			return;
-
-		TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
-		if( pDstNode == NULL)
-		{
-			ASSERT(0);
-			return;
-		}
-
-		SetChildVisible(pDstNode, true);
-	}
-	else if(msg.sType == L"itemdragend")
-	{
-		// 获取到鼠标所在点的位置
-		HCURSOR   hCur   =   ::LoadCursor(NULL,IDC_ARROW); 
-		::SetCursor(hCur);
-
-		int nHotIndex = GetHotItem();
-		CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
-		if( pDstItem == NULL)
-			return;
-
-		TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
-		if( pDstNode == NULL)
-		{
-			ASSERT(0);
-			return;
-		}
-
-		std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
-		if( itr == m_mapNodeId.end())
-		{
-			ASSERT(0);
-			return;
-		}
-
-		int nDstId = itr->second;
-
-		// 将当前需要拖放的收藏夹作为目标的子收藏夹
-		int srcIndex = m_iLastClickSel;
-		int dstIndex = nHotIndex;
-
-		// 被拖动的结点
-		CListLabelElementUI* pSrcItem =  (CListLabelElementUI*)GetItemAt(srcIndex);
-		if( pSrcItem == NULL)
-		{
-			ASSERT(0);
-			return;
-		}
-
-		TreeListUI::Node* pSrcNode = (TreeListUI::Node*)pSrcItem->GetTag();
-		if( pSrcNode == NULL)
-		{
-			ASSERT(0);
-			return;
-		}
-
-		itr = m_mapNodeId.find(pSrcNode);
-		if( itr == m_mapNodeId.end())
-		{
-			ASSERT(0);
-			return;
-		}
-		int nSrctId = itr->second;
-
-		if( nDstId == nSrctId)
-			return;
-
-		SetChildVisible(pDstNode, true);
-
-		DataCenter_GetFavoriteService favoriteData;
-		g_MainFrameModule->GetModuleManager()->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
-			(param)&favoriteData); 
-
-		int nFavoriteNum = favoriteData.nNum;
-		FAVORITELINEDATA* pFavoriteData = favoriteData.pFavoriteData;
-
-		FAVORITELINEDATA* pSrcLineData = NULL;
-		for( int i=0; i<nFavoriteNum; i++)
-		{
-			if( pFavoriteData[i].nId == nSrctId)
-			{
-				pSrcLineData = &pFavoriteData[i];
-				break;
-			}
-		}
-
-		if( pSrcLineData != NULL)
-		{
-			pSrcLineData->nPid = nDstId;
-		}
-
-		// 删除原有结点
-		RemoveNode(pSrcNode);
-
-		// 在结点中增加一个新结点
-		wstring wstrText = L"{x 4}{x 4}";
-		wstrText += pSrcLineData->szTitle;
-		TreeListUI::Node* pNode  = AddNode(wstrText.c_str(), pDstNode);
-		m_mapIdNode[pSrcLineData->nId] = pNode;
-		m_mapNodeId[pNode] = pSrcLineData->nId;
-		pSrcLineData->nLastModifyTime = time(NULL);
-
-		m_nTreeNodeId = pSrcLineData->nId;
-		m_pCurrentTreeNode = pNode;
-	}
 }
 
 void TreeListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
@@ -254,7 +140,6 @@ bool TreeListUI::RemoveAt(int nIndex)
 			nId));	
 	}
 
-
 	for(size_t i =0; i< m_vCurSel.size(); i++)
 	{
 		if( m_vCurSel[i] == nIndex)
@@ -263,7 +148,6 @@ bool TreeListUI::RemoveAt(int nIndex)
 			break;
 		}
 	}
-
 
 	ClearSelectedItem();
 	return true;
@@ -284,7 +168,12 @@ void	TreeListUI::OnEventItemClick(TEventUI& event)
 	if( event.pSender == NULL)
 		return;
 
-	TreeListUI::Node* node = (TreeListUI::Node*)event.pSender->GetTag();
+	TreeListUI::Node* pNode = (TreeListUI::Node*)event.pSender->GetTag();
+	if( pNode == NULL)
+		return;
+
+	if( pNode->get_level() == 0)
+		return;
 
 	POINT pt = { 0 };
 	::GetCursorPos(&pt);
@@ -292,9 +181,9 @@ void	TreeListUI::OnEventItemClick(TEventUI& event)
 	pt.x -= event.pSender->GetX();
 	pt.y -= event.pSender->GetY();
 
-	SIZE sz = GetExpanderSizeX(node);
+	SIZE sz = GetExpanderSizeX(pNode);
 	if( pt.x >= sz.cx && pt.y < sz.cy )                     
-		SetChildVisible(node, !node->data()._child_visible);
+		SetChildVisible(pNode, !pNode->data()._child_visible);
 }
 
 void	TreeListUI::OnEventDragOver(TEventUI& event)
@@ -401,6 +290,26 @@ void	TreeListUI::OnTreeListItemDragEnd()
 	m_pCurrentTreeNode = pNode;
 }
 
+void	TreeListUI::OnTreeListItemDragOver()
+{
+	HCURSOR hCursor   =   LoadCursorW((HINSTANCE)g_hModule,MAKEINTRESOURCE(IDC_DRAGCURSOR));
+	::SetCursor(hCursor);
+
+	int nHotIndex = GetHotItem();
+	CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
+	if( pDstItem == NULL)
+		return;
+
+	TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
+	if( pDstNode == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	SetChildVisible(pDstNode, true);
+}
+
 void	TreeListUI::OnListItemDragEnd(DragListUI* pDragList)
 {
 	int nSelNum = 0;
@@ -467,7 +376,6 @@ void	TreeListUI::OnListItemDragEnd(DragListUI* pDragList)
 			pDragList->Remove(pElement);
 		}
 	}
-
 }
 
 void TreeListUI::DoEvent(TEventUI& event) 
@@ -571,10 +479,7 @@ void TreeListUI::DoEvent(TEventUI& event)
 	{
 		if( GetAsyncKeyState(VK_LBUTTON) )
 		{
-			TNotifyUI notify;
-			notify.sType = _T("itemdragover");
-			notify.pSender = this;
-			m_pManager->SendNotify(notify);
+			OnTreeListItemDragOver();
 		}
 		return;
 	}

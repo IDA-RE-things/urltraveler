@@ -50,6 +50,7 @@ public:
 				delete _children[i]; 
 		}
 		NodeData& data() { return _data; }	
+		int get_level() { return _data._level;}
 		int num_children() const { return _children.size(); }
 		Node* child(int i)	{ return _children[i]; }
 		Node* parent() { return ( _parent);	}
@@ -126,6 +127,7 @@ public:
 	void	OnEventDragOver(TEventUI& event);
 
 	void	OnTreeListItemDragEnd();
+	void	OnTreeListItemDragOver();
 	void	OnListItemDragEnd(DragListUI* pDragList);
 
 public:
