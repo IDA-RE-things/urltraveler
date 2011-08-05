@@ -70,6 +70,11 @@ BOOL SogouPlugIn::IsWorked()
 		bRet = objSqliteDatabase.tableExists("favorTable");
 	}
 
+	if( bRet == FALSE)
+	{
+		ASSERT(0);
+	}
+
 	return bRet;
 }
 
