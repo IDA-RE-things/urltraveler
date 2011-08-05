@@ -377,6 +377,7 @@ void	TreeListUI::OnListItemDragEnd(DragListUI* pDragList)
 		}
 
 		pDragList->ClearSelectedItem();
+		pDragList->Invalidate();
 	}
 }
 

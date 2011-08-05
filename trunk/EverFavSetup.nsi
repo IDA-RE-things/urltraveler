@@ -26,7 +26,7 @@ RequestExecutionLevel admin
 
 /**
 可变,存放待打包源文件的目录
-这里为相对本文件(RainbowSetup.nsi)位置的相对路径
+这里为相对本文件(EverFavSetup.nsi)位置的相对路径
 */
 !define SRC_DIR               ".\bin"            
 
@@ -61,13 +61,13 @@ ShowUnInstDetails hide
 !define UPDATE_WINDOW_TITLE   L"EverFav在线升级"
 !define PRODUCT_WINDOW_TITLE  "EverFav"
 
-!define PRODUCT_INST_KEY      "Software\3+\${PRODUCT_NAME}"
+!define PRODUCT_INST_KEY      "Software\3+Soft\${PRODUCT_NAME}"
 !define PRODUCT_INST_ROOT_KEY "HKLM"
 
-;51挂挂的产品名称
-;!define PRODUCT_51GG_NAME "51GG"
-;51挂挂的注册路径
-;!define PRODUCT_51GG_INST_KEY "Software\51Corp\${PRODUCT_51GG_NAME}"
+;EverFav的产品名称
+;!define PRODUCT_EVERFAV_NAME "EverFav"
+;EverFav的注册路径
+;!define PRODUCT_EVERFAV_INST_KEY "Software\3+Soft\${PRODUCT_EVERFAV_NAME}"
 
 /***********************************************************************************
 下面是界面上各个按钮的Caption的设置
@@ -173,22 +173,22 @@ Page custom OnCustomDirectoryPageCreate OnCustomDirectoryPageLeave
 
 
 /*******************************************全局变量*******************************************************/
-Var IsInstalledAlready        ;是否已经安装了Rainbow
+Var IsInstalledAlready        ;是否已经安装了EverFav
 Var InstalledPath             ;已经安装的路径
 Var InstallToPath             ;将要安装的路径
-Var IsRainbowWebDllInUse      ;rainbowweb.dll是否被(ie)使用
+Var IsEverFavWebDllInUse      ;EverFavweb.dll是否被(ie)使用
 /**彩虹的安装版本类型,
 -2  :表没有安装过彩虹
 -1  :表示原来低版本现安装高版本, 
 ==0 :表示同级版本, 
 > 0 :表示原来高版本现在低版本
 */
-Var RainbowInstallVersionType    
+Var EverFavInstallVersionType    
 Var RdoBtn_MyDocument_Folder          ;个人数据选择文件路径那个RadioButton的Handle
 Var RdoBtn_MyDocument_Folder_State    ;个人数据选择文件路径，本次要安装的
 Var Old_RdoBtn_MyDocument_Folder_State  ;上次版本的个人数据选择文件路径
-Var IsGGInstalledAlready              ;是否已经安装了51GG
-Var GGInstalledPath                   ;51GG安装目录
+Var IsGGInstalledAlready              ;是否已经安装了EverFav
+Var GGInstalledPath                   ;EverFav安装目录
 Var PersonalDataPath                  ;个人数字文件夹的目录
 
 /*********************************************下面是全局宏定义**********************************************/
@@ -717,7 +717,7 @@ done_IsBinaryFileInUse:
 ###############################################################
 
 ###############################################################
-/* 检查Rainbow是否正在运行
+/* 检查EverFav是否正在运行
 @return $9  1 -> 正在运行
         $9  0 -> 不在运行
 */
@@ -1016,32 +1016,32 @@ Section "MainSection" MainSectionId
   File /r /x Microsoft.VC90.ATL /x Microsoft.VC90.CRT /x Microsoft.VC90.MFC /x Microsoft.VC90.MFCLOC "${SRC_DIR}\*.*"
 
   /**
-  File "${SRC_DIR}\RainBowInstallHelper.dll"
+  File "${SRC_DIR}\EverFavInstallHelper.dll"
 
   StrCpy $1 "RBEmotionAdderOCX.ocx"
   ;MessageBox MB_OK "Debug: StrCpy $$1 $$INSTDIR:$1"
-  System::Call "RainBowInstallHelper::InstallHelper(t r1) i .r7"
+  System::Call "EverFavInstallHelper::InstallHelper(t r1) i .r7"
   ${If} $7 == 1   
     quit
   ${EndIf}
 
   StrCpy $1 "MusicX.ocx"
   ;MessageBox MB_OK "Debug: StrCpy $$1 $$INSTDIR:$1"
-  System::Call "RainBowInstallHelper::InstallHelper(t r1) i .r8"
+  System::Call "EverFavInstallHelper::InstallHelper(t r1) i .r8"
   ${If} $8 == 1   
     quit
   ${EndIf}
 
-  StrCpy $1 "rainbowweb2.dll"
+  StrCpy $1 "EverFavweb2.dll"
   ;MessageBox MB_OK "Debug: StrCpy $$1 $$INSTDIR:$1"
-  System::Call "RainBowInstallHelper::InstallHelper(t r1) i .r9"
+  System::Call "EverFavInstallHelper::InstallHelper(t r1) i .r9"
 
   ${If} $9 == 1   
     quit
   ${EndIf}
   
   SetOverwrite on
-  File /r /x msvcr71.dll /x rainbowweb.dll /x photouploader /x RainBowInstallHelper.dll /x RBEmotionAdderOCX.ocx /x MusicX.ocx /x rainbowweb2.dll /x ShiftPersonalData.exe /x Microsoft.vc90.MFCLOC /x Microsoft.vc90.MFC /x Microsoft.vc90.CRT "${SRC_DIR}\*.*"
+  File /r /x msvcr71.dll /x EverFavweb.dll /x photouploader /x EverFavInstallHelper.dll /x RBEmotionAdderOCX.ocx /x MusicX.ocx /x EverFavweb2.dll /x ShiftPersonalData.exe /x Microsoft.vc90.MFCLOC /x Microsoft.vc90.MFC /x Microsoft.vc90.CRT "${SRC_DIR}\*.*"
   SetOverwrite try
   */
   /**
@@ -1054,22 +1054,22 @@ Section "MainSection" MainSectionId
   ${EndIf}
   
   ${If} $9 == 0   
-    File "${SRC_DIR}\rainbowweb2.dll"
+    File "${SRC_DIR}\EverFavweb2.dll"
   ${EndIf}
   */
   /*    注释 2008.09.22 温辉敏
   File "${SRC_DIR}\msvcr71.dll"
-  File "${SRC_DIR}\rainbowweb.dll"
+  File "${SRC_DIR}\EverFavweb.dll"
   */
-  ;File "${SRC_DIR}\rainbowweb.dll"
+  ;File "${SRC_DIR}\EverFavweb.dll"
   /**
-  File "${SRC_DIR}\rainbowweb2.dll"
+  File "${SRC_DIR}\EverFavweb2.dll"
 
-  !insertmacro IsBinaryFileInUse "$INSTDIR\rainbowweb.dll"
+  !insertmacro IsBinaryFileInUse "$INSTDIR\EverFavweb.dll"
   ;IntCmp $9 1 0 +3 +3
   ${If} $9 == 1    
-  File /oname=rainbowweb2.dll "${SRC_DIR}\rainbowweb2.dll"
-    IntOp $IsRainbowWebDllInUse 1 + 0
+  File /oname=EverFavweb2.dll "${SRC_DIR}\EverFavweb2.dll"
+    IntOp $IsEverFavWebDllInUse 1 + 0
   ${EndIf}
   */
   /* 注释 2008.09.22 温辉敏  
@@ -1077,12 +1077,12 @@ Section "MainSection" MainSectionId
   File /r "${SRC_DIR}\PhotoUploader\*.*"
   */
   SetShellVarContext all
-  ;删除下面不带51挂挂的链接,防止有多个链接
+  ;删除下面不带EverFav的链接,防止有多个链接
   /**
   !insertmacro RemoveShortcut 彩虹2009
-  !insertmacro RemoveShortcut 彩虹2009(原51挂挂)
+  !insertmacro RemoveShortcut 彩虹2009(原EverFav)
   !insertmacro RemoveShortcut 彩虹2009(公测版)
-  !insertmacro RemoveShortcut 彩虹(原51挂挂)
+  !insertmacro RemoveShortcut 彩虹(原EverFav)
   !insertmacro RemoveShortcut 彩虹
    */ 
   !insertmacro CreateShortcut EverFav
@@ -1119,7 +1119,7 @@ Section Uninstall
   ; 反注册com组件dll
   SetOutPath $INSTDIR
   /**
-  UnRegDll $INSTDIR\rainbowweb.dll
+  UnRegDll $INSTDIR\EverFavweb.dll
 
   ; 反注册MusicX.ocx控件
   UnRegDll $INSTDIR\MusicX.ocx
@@ -1142,9 +1142,9 @@ Section Uninstall
   Delete "$SMPROGRAMS\EverFav\EverFav主页.url"
 /**
   !insertmacro RemoveShortcut 彩虹2009
-  !insertmacro RemoveShortcut 彩虹2009(原51挂挂)
+  !insertmacro RemoveShortcut 彩虹2009(原EverFav)
   !insertmacro RemoveShortcut 彩虹2009(公测版)
-  !insertmacro RemoveShortcut 彩虹(原51挂挂)
+  !insertmacro RemoveShortcut 彩虹(原EverFav)
 */
   !insertmacro RemoveShortcut EverFav
   /**
@@ -1167,7 +1167,7 @@ Section Uninstall
   Delete  "$INSTDIR\*.exe"
   ;Delete  "$INSTDIR\Features.txt"
   Delete  "$INSTDIR\License.txt"
-  ;Delete  "$INSTDIR\Rainbow.dat"
+  ;Delete  "$INSTDIR\EverFav.dat"
   Delete  "$INSTDIR\*.manifest"
   ;Delete  "$INSTDIR\*.ocx"
   
@@ -1181,7 +1181,7 @@ Section Uninstall
   DeleteRegKey HKCU "${PRODUCT_INST_KEY}"
   DeleteRegKey HKCU "Software\Classes\VirtualStore\MACHINE\SOFTWARE\3+Corp\EverFav"    ; for vista
 
-  ; 删除开机自启动Rainbow
+  ; 删除开机自启动EverFav
   DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "EverFav"
 
   !insertmacro RefreshDesktop   ;刷新桌面后,图标才会消失(vista)  
@@ -1566,7 +1566,7 @@ Function InstallInitCheck
   Call CheckAdminForInstall  
     
 CheckEverFavRunning:
-  ;MessageBox MB_OK "Debug: CheckRainbowRunning"
+  ;MessageBox MB_OK "Debug: CheckEverFavRunning"
 
   /**
   return on $R0: 
@@ -1586,14 +1586,14 @@ CheckEverFavRunning:
     ${EndIf}
   ${EndIf}
   
-;  !insertmacro IsRainbowRunning
-;  IntCmp $9 1 0 done_CheckRainbowRunning done_CheckRainbowRunning
+;  !insertmacro IsEverFavRunning
+;  IntCmp $9 1 0 done_CheckEverFavRunning done_CheckEverFavRunning
 ;  !insertmacro MsgBox "${PRODUCT_NAME_CHINESE} ${PRODUCT_VERSION}正在运行，请先退出，然后重试" "${TITLE}" 0x45
-;  IntCmp $9 4 CheckRainbowRunning 0 0
+;  IntCmp $9 4 CheckEverFavRunning 0 0
 ;  Quit
 
 done_CheckEverFavRunning:
-  ;MessageBox MB_OK "Debug: done_CheckRainbowRunning"
+  ;MessageBox MB_OK "Debug: done_CheckEverFavRunning"
   StrCpy $IsInstalledAlready 0  ;默认为没有安装
   ReadRegStr $InstalledPath ${PRODUCT_INST_ROOT_KEY} "${PRODUCT_INST_KEY}" "Install"
   strcpy $InstallToPath $InstalledPath
@@ -1610,40 +1610,40 @@ done_CheckEverFavRunning:
   
   ;MessageBox MB_OK "Debug: $$R1:$R1"
   IntCmp $R1 20 ver_no ver_no 0   ; 0.20版本之前的不置IsInstalledAlready  
-  StrCpy $IsInstalledAlready 1  ; 已经安装了Rainbow
+  StrCpy $IsInstalledAlready 1  ; 已经安装了EverFav
   ;MessageBox MB_OK "Debug: IsInstalledAlready:$IsInstalledAlready"
   
   ;MessageBox MB_OK "Debug: $R1:$1"
   ; ver compare
   IntCmp $R1 $1 ver_equal ver_newer ver_older
 ver_equal:
-  IntOp $RainbowInstallVersionType 0 + 0
+  IntOp $EverFavInstallVersionType 0 + 0
   MessageBox MB_YESNO|MB_TOPMOST "这台计算机上已经安装了一个相同的版本,您要继续安装吗" /SD IDYES IDYES do_install
   Abort
 
 ver_newer:
-  IntOp $RainbowInstallVersionType 1 + 0
+  IntOp $EverFavInstallVersionType 1 + 0
   MessageBox MB_YESNO|MB_TOPMOST "这台计算机上已经安装了一个较老的版本,您要继续安装吗" /SD IDYES IDYES do_install
   Abort
 
 ver_older:
-  IntOp $RainbowInstallVersionType -1 + 0
+  IntOp $EverFavInstallVersionType -1 + 0
   MessageBox MB_YESNO|MB_TOPMOST "这台计算机上已经安装了一个更高的版本,您要继续安装吗" /SD IDYES IDYES do_install
   Abort
 
 installpath_no:
 ver_no:
-  IntOp $RainbowInstallVersionType -2 + 0
-  ;检测51挂挂是否安装
+  IntOp $EverFavInstallVersionType -2 + 0
+  ;检测EverFav是否安装
   ;MessageBox MB_OK "Debug:ver_no"
-  ReadRegStr $0 ${PRODUCT_INST_ROOT_KEY} "${PRODUCT_51GG_INST_KEY}" "Version"
-  ;MessageBox MB_OK "Debug:51GG Version: $0"
+  ReadRegStr $0 ${PRODUCT_INST_ROOT_KEY} "${PRODUCT_EVERFAV_INST_KEY}" "Version"
+  ;MessageBox MB_OK "Debug:EverFav Version: $0"
   IntCmp $0 0 do_install do_install 0  
-  ; 已经安装了51GG
+  ; 已经安装了EverFav
   StrCpy $IsGGInstalledAlready 1                
   ;MessageBox MB_OK "Debug:IsGGInstalledAlready: $IsGGInstalledAlready"
   ; 读取挂挂安装路径              
-  ReadRegStr $GGInstalledPath ${PRODUCT_INST_ROOT_KEY} "${PRODUCT_51GG_INST_KEY}" "Install"  
+  ReadRegStr $GGInstalledPath ${PRODUCT_INST_ROOT_KEY} "${PRODUCT_EVERFAV_INST_KEY}" "Install"  
   ;MessageBox MB_OK "Debug:GGInstalledPath:$GGInstalledPath"
 
 do_install:
@@ -2516,19 +2516,19 @@ Function OnInstfilesPageShow
   Call PushAllGlobalVariable
 
   ;MessageBox MB_OK "Debug:OnInstfilesPageShow"
-  ;RegDll $INSTDIR\RainBowInstallHelper.dll
-  ;File "$INSTDIR\RainBowInstallHelper.dll"
+  ;RegDll $INSTDIR\EverFavInstallHelper.dll
+  ;File "$INSTDIR\EverFavInstallHelper.dll"
 
-  ;先检测判断相应dll是否被调用(RainBowInstallHelper.dll相关代码)
+  ;先检测判断相应dll是否被调用(EverFavInstallHelper.dll相关代码)
   #############################################################
   ;IntOp $0 0 + $HWNDPARENT
-  ;StrCpy $1 "rainbowweb.dll"
+  ;StrCpy $1 "EverFavweb.dll"
   ;MessageBox MB_OK "Debug: StrCpy $$1 $$INSTDIR:$1"
-;  System::Call "RainBowInstallHelper::InstallHelper(t r1)"
+;  System::Call "EverFavInstallHelper::InstallHelper(t r1)"
 
-;  StrCpy $1 "rainbowweb2.dll"
+;  StrCpy $1 "EverFavweb2.dll"
   ;MessageBox MB_OK "Debug: StrCpy $$1 $$INSTDIR:$1"
-;  System::Call "RainBowInstallHelper::InstallHelper(t r1)"
+;  System::Call "EverFavInstallHelper::InstallHelper(t r1)"
   #############################################################
 
 
@@ -2602,18 +2602,18 @@ Function OnInstfilesPageLeave
   ; 注册com组件dll
   SetOutPath $INSTDIR
   ClearErrors
-  ;IntCmp $IsRainbowWebDllInUse 1 0 +3 +3
+  ;IntCmp $IsEverFavWebDllInUse 1 0 +3 +3
   /**
-  ${If} $IsRainbowWebDllInUse == 1
-    RegDll $INSTDIR\rainbowweb2.dll
+  ${If} $IsEverFavWebDllInUse == 1
+    RegDll $INSTDIR\EverFavweb2.dll
   ${Else}
-    RegDll $INSTDIR\rainbowweb.dll
+    RegDll $INSTDIR\EverFavweb.dll
   ${EndIf}
 
-  ;目前强制注册rainbowweb2.dll
-  RegDll $INSTDIR\rainbowweb2.dll
+  ;目前强制注册EverFavweb2.dll
+  RegDll $INSTDIR\EverFavweb2.dll
   ;IfErrors 0 +2
-  ;MessageBox MB_OK "Debug:COM组件$\"$INSTDIR\rainbowweb.dll$\"注册失败,彩虹某些功能可能不能正常使用"
+  ;MessageBox MB_OK "Debug:COM组件$\"$INSTDIR\EverFavweb.dll$\"注册失败,彩虹某些功能可能不能正常使用"
   RegDll $InstallDirForPhotoUploader\PhotoUploader.ocx
   ;注册MusicX.ocx控件
   RegDll $INSTDIR\MusicX.ocx
@@ -2623,7 +2623,7 @@ Function OnInstfilesPageLeave
   /**
   ;调用dll的函数将以前的自定义表情导入到新的自定义表情中
   ;设置自定义表情导入的源目录,下面变量为:-2表未安装彩虹, >=-1则表安装过彩虹
-  ${If} -2 == $RainbowInstallVersionType
+  ${If} -2 == $EverFavInstallVersionType
     ;未安装过彩虹
     ;检测是否安装过挂挂
     ${If} $IsGGInstalledAlready == 1
@@ -2633,7 +2633,7 @@ Function OnInstfilesPageLeave
       ;没装过彩虹也没有装过挂挂
       Goto done
     ${EndIf}    
-  ${ElseIf} $RainbowInstallVersionType >= -1
+  ${ElseIf} $EverFavInstallVersionType >= -1
     ;安装过彩虹
     StrCpy $0 $InstalledPath 
     ;MessageBox MB_OK "Debug: StrCpy $$0 $$InstalledPath:$0"
@@ -2642,7 +2642,7 @@ Function OnInstfilesPageLeave
   ;设置自定义表情导入的目的目录
   ${If} 1 == $RdoBtn_MyDocument_Folder_State
     SetShellVarContext current
-    StrCpy $1 "$DOCUMENTS\51\Rainbow\"    
+    StrCpy $1 "$DOCUMENTS\3+Soft\EverFavv\"    
     ;MessageBox MB_OK "Debug: 1 == $$RdoBtn_MyDocument_Folder_State:$1"
     SetShellVarContext all
   ${Else}    
@@ -2668,12 +2668,12 @@ Function OnFinishPageShow
   ;将安装窗口置前
   BringToFront
 
-  ; 创建开机启动Rainbow checkbox
+  ; 创建开机启动EverFav checkbox
   /* StrCpy $0 "#32770"
   System::Call "user32::FindWindowEx(i $HWNDPARENT, i 0, t r0, t) i .r3"
   System::Call "user32::GetWindow(i r3, i 2) i .r4"
   StrCpy $0 "BUTTON"
-  StrCpy $1 "开机时自动启动Rainbow"
+  StrCpy $1 "开机时自动启动EverFav"
   System::Call "user32::CreateWindowEx(i 0, t r0, t r1, i 1342177283, i 180, i 165, i 200, i 20, i r4, i 12345, i 0, i 0) i .r5"
   System::Call "user32::CheckDlgButton(i r4, i 12345, i 1)"
   SetCtlColors $5 0x0 0x00ffffff
@@ -2685,7 +2685,7 @@ Function OnFinishPageShow
   System::Call "user32::FindWindowEx(i $HWNDPARENT, i 0, t r0, t) i .r3"
   System::Call "user32::GetWindow(i r3, i 2) i .r4"
   StrCpy $0 "BUTTON"
-  StrCpy $1 "把www.caihong.com/index.php设为主页"
+  StrCpy $1 "把www.everfav.com设为主页"
   System::Call "user32::CreateWindowEx(i 0, t r0, t r1, i 1342177283, i 180, i 225, i 200, i 20, i r4, i 12346, i 0, i 0) i .r5"
   System::Call "user32::CheckDlgButton(i r4, i 12346, i 1)"
   SetCtlColors $5 0x0 0x00ffffff
@@ -2700,25 +2700,25 @@ Function OnFinishPageLeave
 
   ;MessageBox MB_OK "Debug:OnFinishPageLeave"
   ; 开机自启动
-  ; WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Rainbow" "$INSTDIR\caihong.exe"
+  ; WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "EverFav" "$INSTDIR\caihong.exe"
 
-  ; 检查开机启动Rainbow checkbox
+  ; 检查开机启动EverFav checkbox
   /* StrCpy $0 "#32770"
   System::Call "user32::FindWindowEx(i $HWNDPARENT, i 0, t r0, t) i .r3"
   System::Call "user32::IsDlgButtonChecked(i r3, i 12345) i .r4"
-  IntCmp $4 0 done_AutoStartRainbow AutoStartRainbow AutoStartRainbow
+  IntCmp $4 0 done_AutoStartEverFav AutoStartEverFav AutoStartEverFav
   */
-AutoStartRainbow:
-  ;MessageBox MB_OK "Debug:AutoStartRainbow:"
+AutoStartEverFav:
+  ;MessageBox MB_OK "Debug:AutoStartEverFav:"
   /*由于会和彩虹的系统设置对话框中自动启动相冲突，因此禁掉下面的代码
-  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Rainbow" "$INSTDIR\caihong.exe"
+  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "EverFav" "$INSTDIR\caihong.exe"
   */
   /** 删除以前版本设置的注册表中的自动启动键值
   防止开机时启动多个实例
   */
   DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "EverFav"
-done_AutoStartRainbow: 
-  ;MessageBox MB_OK "Debug:done_AutoStartRainbow:"
+done_AutoStartEverFav: 
+  ;MessageBox MB_OK "Debug:done_AutoStartEverFav:"
   ; 检查设置主页 checkbox
   StrCpy $0 "#32770"
   System::Call "user32::FindWindowEx(i $HWNDPARENT, i 0, t r0, t) i .r3"
@@ -2832,8 +2832,8 @@ FunctionEnd
 ; Reserve files
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 
-; 检测文件被某个进程使用的dll(RainBowInstallHelper.dll相关代码)
-; ReserveFile "${SRC_DIR}\RainBowInstallHelper.dll"
+; 检测文件被某个进程使用的dll(EverFavInstallHelper.dll相关代码)
+; ReserveFile "${SRC_DIR}\EverFavInstallHelper.dll"
 ;ReserveFile "${SRC_DIR}\ShiftPersonalData.exe"
 
 ; MUI end ------
@@ -2841,7 +2841,7 @@ FunctionEnd
 /******************************************下面为反安装函数********************************************/
 ;禁止多个反安装实例
 Function un.CheckUninstallMultiRun
-  System::Call 'kernel32::CreateMutex(i 0, i 0, t "RainbowUninstall") i .r1 ?e'
+  System::Call 'kernel32::CreateMutex(i 0, i 0, t "EverFavUninstall") i .r1 ?e'
   Pop $R0
 
   StrCmp $R0 0 +3
@@ -2902,7 +2902,7 @@ Function un.UninstallInitCheck
     ${EndIf}
   ${EndIf}
 
-;  !insertmacro IsRainbowRunning
+;  !insertmacro IsEverFavRunning
 ;  IntCmp $9 1 0 done_CheckIsRunning done_CheckIsRunning
 ;  !insertmacro MsgBox "${PRODUCT_NAME_CHINESE} ${PRODUCT_VERSION}正在运行,请先退出,再重试" "${UNTITLE}" 0x45
 ;  IntCmp $9 4 find_instance 0 0
