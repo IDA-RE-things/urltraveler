@@ -378,6 +378,7 @@ void	CMainFrameWnd::OnFavoriteListItemMoved(TNotifyUI& msg)
 	}
 
 	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
+	pFavList->ClearSelectedItem();
 }
 
 void CMainFrameWnd::Notify(TNotifyUI& msg)
