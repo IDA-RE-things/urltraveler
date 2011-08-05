@@ -89,6 +89,7 @@ public:
 		_root->data()._child_visible = true;
 		_root->data()._pListElement = NULL;
 
+		m_bShowEdit	=	false;
 		m_ListInfo.bMultiSelect = false;
 		m_bAddNotifyer = false;
 		m_bIsDragging = false;

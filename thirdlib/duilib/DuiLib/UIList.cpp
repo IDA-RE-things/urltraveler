@@ -448,12 +448,15 @@ namespace DuiLib
 
 		// 如果是单选或者如果是多选，但是没有按下Ctrl键
 		// 此时只选中一个 
-		if( m_vCurSel.size() > 0)
+		if( IsItemSelected(nIndex) == false)
 		{
-			ClearSelectedItem(nIndex);
-		}
+			if( m_vCurSel.size() > 0)
+			{
+				ClearSelectedItem(nIndex);
+			}
 
-		SelectItem(nIndex);
+			SelectItem(nIndex);
+		}
 
 		m_iLastClickSel	=	nIndex;
 		m_iLastSel = m_iLastClickSel;
@@ -461,6 +464,36 @@ namespace DuiLib
 
 	void	CListUI::OnEventItemClickUp(TEventUI& event)
 	{
+		int nIndex = event.wParam;
+		if( nIndex == -1)
+			return;
+
+
+ 		// 如果支持多选
+		if( IsItemMultiSelect() == true)
+		{
+			// 如果Ctrl键被按下
+			if( GetKeyState(VK_CONTROL)   &   0x8000)
+			{
+				return;
+			}
+
+			// 如果Shift键被按下
+			if( GetKeyState(VK_SHIFT)   &   0x8000)
+			{
+				return;
+			}
+		}
+
+		if( m_bShowEdit == true && m_nEditRow != -1)
+			return;
+
+		if( m_vCurSel.size() > 0)
+		{
+			ClearSelectedItem(nIndex);
+		}
+
+		SelectItem(nIndex);
 	}
 
 	void	CListUI::OnEventItemRightClick(TEventUI& event)
@@ -1364,12 +1397,12 @@ namespace DuiLib
 
 	void CListUI::HideEditText()
 	{
-		if (m_bShowEdit == true)
-		{
-			m_bShowEdit = false;
-		}
-		else
+		if (m_bShowEdit == false)
 			return;
+
+		m_bShowEdit = false;
+		m_nEditRow = -1;
+		m_nEditRow = -1;
 
 		m_pEditUI->SetPos(CRect(0, 0, 0, 0));
 

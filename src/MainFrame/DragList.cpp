@@ -61,17 +61,22 @@ void DragListUI::DoEvent(TEventUI& event)
 	if( event.Type == UIEVENT_BUTTONDOWN )
 	{
 		CListUI::DoEvent(event);
+
 		m_bIsDragging = true;
 		return;
 	}
 	
 	if( event.Type == UIEVENT_BUTTONUP )
 	{
+		CListUI::DoEvent(event);
+
+/*
 		if( m_bIsDragging == true )
 		{
 			OnItemDragEnd();
 			m_bIsDragging = false;
 		}
+*/
 		return;
 	}
 
