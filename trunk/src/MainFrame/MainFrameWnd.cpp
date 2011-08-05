@@ -797,8 +797,9 @@ void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	if( pUserList == NULL)
 		return;
-
 	pUserList->Invalidate();
+
+	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
 }
 
 void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
