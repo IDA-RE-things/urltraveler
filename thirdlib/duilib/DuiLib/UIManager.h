@@ -321,6 +321,11 @@ namespace DuiLib {
 		CControlUI* FindControl(LPCTSTR pstrName);
 		CControlUI* FindControl(CControlUI* pParent, LPCTSTR pstrName);
 
+		void	SetEventSrcControl(CControlUI* pSrcCtrl);
+		CControlUI*	GetEventSrcControl();
+		void	SetEventDstContro(CControlUI* pDstCtrl);
+		CControlUI*	GetEventDstControl();
+
 		static void MessageLoop();
 		static bool TranslateMessage(const LPMSG pMsg);
 
@@ -352,6 +357,10 @@ namespace DuiLib {
 		CControlUI* m_pEventHover;
 		CControlUI* m_pEventClick;
 		CControlUI* m_pEventKey;
+
+		CControlUI*	m_pEventSrc;			//	事件发生的源对象，不一定是m_pEventClick，比如对于ListUI，事件的click可能是ListElement，
+															//	但是m_pEventSrc却是ListUI。
+		CControlUI*	m_pEventDst;			//	事件发生的目标对象
 		//
 		POINT m_ptLastMousePos;
 		SIZE m_szMinWindow;

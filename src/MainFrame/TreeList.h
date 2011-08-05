@@ -6,6 +6,7 @@
 #include "UIList.h"
 #include <map>
 #include "CallbackEx.h"
+#include "DragList.h"
 
 extern HMODULE	g_hModule;
 
@@ -97,6 +98,8 @@ public:
 
 	~TreeListUI() { if(_root) delete _root; }
 
+	LPCTSTR GetClass() const	 ;
+
 	void Notify(TNotifyUI& msg);
 	virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
@@ -121,6 +124,9 @@ public:
 
 	void	OnEventItemClick(TEventUI& event);
 	void	OnEventDragOver(TEventUI& event);
+
+	void	OnTreeListItemDragEnd();
+	void	OnListItemDragEnd(DragListUI* pDragList);
 
 public:
 	// 当前选中的TreeNode结点

@@ -61,6 +61,7 @@ void DragListUI::DoEvent(TEventUI& event)
 	if( event.Type == UIEVENT_BUTTONDOWN )
 	{
 		CListUI::DoEvent(event);
+		m_pManager->SetEventSrcControl(this);
 
 		m_bIsDragging = true;
 		return;
@@ -77,6 +78,7 @@ void DragListUI::DoEvent(TEventUI& event)
 			m_bIsDragging = false;
 		}
 */
+		m_pManager->SetEventSrcControl(NULL);
 		return;
 	}
 
