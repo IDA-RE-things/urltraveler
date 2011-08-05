@@ -1,10 +1,11 @@
-#ifndef __CONTROLEX_H__
-#define __CONTROLEX_H__
+#ifndef __TREELISTUI_H__
+#define __TREELISTUI_H__
 
 #include <vector>
 #include <math.h>
 #include "UIList.h"
 #include <map>
+#include "CallbackEx.h"
 
 extern HMODULE	g_hModule;
 
@@ -139,15 +140,4 @@ protected:
 	bool	m_bIsDragging;
 };
 
-class CDialogBuilderCallbackEx : public IDialogBuilderCallback
-{
-public:
-	CControlUI* CreateControl(LPCTSTR pstrClass) 
-	{
-		if( _tcscmp(pstrClass, _T("TreeList")) == 0 ) return new TreeListUI;
-		return NULL;
-	}
-};
-
-
-#endif __CONTROLEX_H__
+#endif __TREELISTUI_H__

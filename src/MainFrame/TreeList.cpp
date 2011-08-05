@@ -396,7 +396,6 @@ void TreeListUI::DoEvent(TEventUI& event)
 		return;
 	}
 
-
 	if( event.Type == UIEVENT_KEYDOWN )
 	{
 		if( event.chKey == VK_RETURN)
