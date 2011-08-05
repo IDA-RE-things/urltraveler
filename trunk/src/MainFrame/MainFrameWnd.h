@@ -69,6 +69,7 @@ private:
 	void	OnShowMenu(TNotifyUI& msg);
 	void	OnFavoriteListItemEditFinished(TNotifyUI& msg);
 	void	OnFavoriteListItemDelete(TNotifyUI& msg);
+	void	OnFavoriteListItemMoved(TNotifyUI& msg);
 
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);

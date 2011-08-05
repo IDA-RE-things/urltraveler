@@ -20,6 +20,8 @@
 #include "FavoriteListMenu.h"
 #include "TreeListMenu.h"
 
+#include <algorithm>
+
 using namespace datacenter;
 using namespace mainframe;
 using namespace web;
@@ -340,6 +342,29 @@ void	CMainFrameWnd::OnFavoriteListItemDelete(TNotifyUI& msg)
 	}
 }
 
+void	CMainFrameWnd::OnFavoriteListItemMoved(TNotifyUI& msg)
+{
+	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	if( pFavList == NULL)
+		return;
+
+	int nId = msg.wParam;
+
+	for( size_t i=0; i<m_vFavoriteNodeAtTreeNode.size(); i++)
+	{
+		FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)m_vFavoriteNodeAtTreeNode[i];
+		if( pSelNode->nId == nId)
+		{
+			std::vector<FAVORITELINEDATA*>::iterator itr = std::find(m_vFavoriteNodeAtTreeNode.begin(),
+				m_vFavoriteNodeAtTreeNode.end(), pSelNode);
+			if( itr != m_vFavoriteNodeAtTreeNode.end())
+				m_vFavoriteNodeAtTreeNode.erase(itr);
+
+			break;
+		}
+	}
+}
+
 void CMainFrameWnd::Notify(TNotifyUI& msg)
 {
 	if( msg.sType == _T("windowinit") ) 
@@ -385,7 +410,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		OnTabChange(msg);
 		return;
 	}
-	else if( msg.sType == _T("itemclick") ) 
+	else if( msg.sType == _T("treelistitemclick") ) 
 	{
  		if( msg.pSender->GetName() == L"favoritetreelist" ) 
 		{ 
@@ -416,14 +441,19 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		OnShowMenu(msg);
 		return;
 	}
-	else if(msg.sType == L"listeditfinish")
+	else if(msg.sType == L"favlisteditfinish")
 	{
 		OnFavoriteListItemEditFinished(msg);
 		return;
 	}
-	else if(msg.sType == L"listitemdelete")
+	else if(msg.sType == L"favlistitemdelete")
 	{
 		OnFavoriteListItemDelete(msg);
+		return;
+	}
+	else if(msg.sType == L"favlistitemmoved")
+	{
+		OnFavoriteListItemMoved(msg);
 		return;
 	}
 }

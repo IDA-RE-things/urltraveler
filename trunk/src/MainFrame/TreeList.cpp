@@ -5,9 +5,15 @@
 #include "MainFrameModule.h"
 #include "time.h"
 #include "MainFrameDefine.h"
+#include "DragList.h"
 
 using namespace datacenter;
 using namespace mainframe;
+
+LPCTSTR TreeListUI::GetClass() const
+{
+	return _T("TreeListUI");
+}
 
 void TreeListUI::Notify(TNotifyUI& msg)
 {
@@ -299,6 +305,171 @@ void	TreeListUI::OnEventDragOver(TEventUI& event)
 	}
 }
 
+void	TreeListUI::OnTreeListItemDragEnd()
+{
+	// 获取到鼠标所在点的位置
+	HCURSOR   hCur   =   ::LoadCursor(NULL,IDC_ARROW); 
+	::SetCursor(hCur);
+
+	int nHotIndex = GetHotItem();
+	CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
+	if( pDstItem == NULL)
+		return;
+
+	TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
+	if( pDstNode == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
+	if( itr == m_mapNodeId.end())
+	{
+		ASSERT(0);
+		return;
+	}
+
+	int nDstId = itr->second;
+
+	// 将当前需要拖放的收藏夹作为目标的子收藏夹
+	int srcIndex = m_iLastClickSel;
+	int dstIndex = nHotIndex;
+
+	// 被拖动的结点
+	CListLabelElementUI* pSrcItem =  (CListLabelElementUI*)GetItemAt(srcIndex);
+	if( pSrcItem == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	TreeListUI::Node* pSrcNode = (TreeListUI::Node*)pSrcItem->GetTag();
+	if( pSrcNode == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
+
+	itr = m_mapNodeId.find(pSrcNode);
+	if( itr == m_mapNodeId.end())
+	{
+		ASSERT(0);
+		return;
+	}
+	int nSrctId = itr->second;
+
+	if( nDstId == nSrctId)
+		return;
+
+	SetChildVisible(pDstNode, true);
+
+	DataCenter_GetFavoriteService favoriteData;
+	g_MainFrameModule->GetModuleManager()->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
+		(param)&favoriteData); 
+
+	int nFavoriteNum = favoriteData.nNum;
+	FAVORITELINEDATA* pFavoriteData = favoriteData.pFavoriteData;
+
+	FAVORITELINEDATA* pSrcLineData = NULL;
+	for( int i=0; i<nFavoriteNum; i++)
+	{
+		if( pFavoriteData[i].nId == nSrctId)
+		{
+			pSrcLineData = &pFavoriteData[i];
+			break;
+		}
+	}
+
+	if( pSrcLineData != NULL)
+	{
+		pSrcLineData->nPid = nDstId;
+	}
+
+	// 删除原有结点
+	RemoveNode(pSrcNode);
+
+	// 在结点中增加一个新结点
+	wstring wstrText = L"{x 4}{x 4}";
+	wstrText += pSrcLineData->szTitle;
+	TreeListUI::Node* pNode  = AddNode(wstrText.c_str(), pDstNode);
+	m_mapIdNode[pSrcLineData->nId] = pNode;
+	m_mapNodeId[pNode] = pSrcLineData->nId;
+	pSrcLineData->nLastModifyTime = time(NULL);
+
+	m_nTreeNodeId = pSrcLineData->nId;
+	m_pCurrentTreeNode = pNode;
+}
+
+void	TreeListUI::OnListItemDragEnd(DragListUI* pDragList)
+{
+	int nSelNum = 0;
+	int* pSel = pDragList->GetCurSel(nSelNum);
+	if( nSelNum != 0 && pSel != NULL)				
+	{
+		// 得到目标的Item
+		// 获取到鼠标所在点的位置
+		HCURSOR   hCur   =   ::LoadCursor(NULL,IDC_ARROW); 
+		::SetCursor(hCur);
+
+		int nHotIndex = GetHotItem();
+		CListLabelElementUI* pDstItem =  (CListLabelElementUI*)GetItemAt(nHotIndex);
+		if( pDstItem == NULL)
+			return;
+
+		TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
+		if( pDstNode == NULL)
+		{
+			ASSERT(0);
+			return;
+		}
+
+		std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
+		if( itr == m_mapNodeId.end())
+		{
+			ASSERT(0);
+			return;
+		}
+
+		int nDstId = itr->second;
+
+		// 将当前需要拖放的收藏夹作为目标的子收藏夹
+		std::vector<CListElementUI*>	vElement;
+
+		int dstIndex = nHotIndex;
+		for(int i = 0; i<nSelNum; i++)
+		{
+			CListElementUI* pElement = (CListElementUI*)pDragList->GetItemAt(i);
+			if( pElement == NULL)
+				continue;
+
+			FAVORITELINEDATA* pData = (FAVORITELINEDATA*)pElement->GetTag();
+			if( pData == NULL)
+				continue;
+
+			int nId = pData->nId;
+			pData->nPid = nDstId;
+			pData->nLastModifyTime = time(NULL);
+
+			vElement.push_back(pElement);
+
+			TNotifyUI notify;
+			notify.sType = _T("favlistitemmoved");
+			notify.pSender = this;
+			notify.wParam = nId;
+			m_pManager->SendNotify(notify);
+		}	
+
+		for(size_t i=0; i<vElement.size(); i++)
+		{
+			CListElementUI* pElement = vElement[i];
+			// 将nId记录从源List中删除
+			pDragList->Remove(pElement);
+		}
+	}
+
+}
+
 void TreeListUI::DoEvent(TEventUI& event) 
 {
 	if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
@@ -356,12 +527,13 @@ void TreeListUI::DoEvent(TEventUI& event)
 	if( event.Type == UIEVENT_BUTTONDOWN )
 	{
 		CListUI::DoEvent(event);
+		m_pManager->SetEventSrcControl(this);
 		OnEventItemClick(event);
 
 		m_bIsDragging = true;
 
 		TNotifyUI notify;
-		notify.sType = _T("itemclick");
+		notify.sType = _T("treelistitemclick");
 		notify.pSender = this;
 		notify.wParam = event.wParam;
 		m_pManager->SendNotify(notify);
@@ -371,16 +543,27 @@ void TreeListUI::DoEvent(TEventUI& event)
 	
 	if( event.Type == UIEVENT_BUTTONUP )
 	{
-		if( m_bIsDragging == true )
-		{
-			TNotifyUI notify;
-			notify.sType = _T("itemdragend");
-			notify.pSender = this;
-			notify.wParam = event.wParam;
-			m_pManager->SendNotify(notify);
+		CControlUI* pSrcCtrl = m_pManager->GetEventSrcControl();
+		if( pSrcCtrl == NULL)
+			return;
 
-			m_bIsDragging = false;
+		//如果是TreeList
+		if( _tcscmp(pSrcCtrl->GetClass(), _T("TreeListUI")) == 0 ) 
+		{
+			if( m_bIsDragging == true )
+			{
+				OnTreeListItemDragEnd();
+				m_bIsDragging = false;
+			}
 		}
+		// 是从列表中拖放过来的
+		else if( _tcscmp(pSrcCtrl->GetClass(), _T("ListUI")) == 0 ) 
+		{
+			DragListUI* pDragList = (DragListUI*)pSrcCtrl;
+			OnListItemDragEnd(pDragList);
+		}
+
+		m_pManager->SetEventSrcControl(NULL);
 		return;
 	}
 

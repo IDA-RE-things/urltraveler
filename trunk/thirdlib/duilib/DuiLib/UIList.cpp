@@ -741,7 +741,7 @@ namespace DuiLib
 			if( m_pManager != NULL ) 
 			{
 				TNotifyUI notify;
-				notify.sType = _T("listitemdelete");
+				notify.sType = _T("favlistitemdelete");
 				notify.pSender = this;
 				notify.wParam = vSel[i];
 				m_pManager->SendNotify(notify);
@@ -1407,7 +1407,7 @@ namespace DuiLib
 		m_pEditUI->SetPos(CRect(0, 0, 0, 0));
 
 		TNotifyUI notify;
-		notify.sType = _T("listeditfinish");
+		notify.sType = _T("favlisteditfinish");
 		notify.pSender = this;
 #define MAKEDWORD(w1,w2) (((w1)<<16)|(w2))
 
