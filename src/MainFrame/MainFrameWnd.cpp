@@ -48,6 +48,12 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 { 
 	m_pTipWnd->Init(msg.pSender); 
 
+	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	if( pFavList)
+	{						
+		pFavList->SetItemTextStyle(pFavList->GetItemTextStyle() & ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
+	}
+
 	m_pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
 
 	// 发送请求至服务器，统计在线人数
@@ -133,20 +139,7 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 		}
 	}
 
-	CTextUI* pFavoriteNumber = static_cast<CTextUI*>(m_pm.FindControl(_T("FavoriteNum")));
-	pFavoriteNumber->SetShowHtml();
-	if (pFavoriteNumber)
-	{
-		TCHAR szFavoriteNum[MAX_PATH] = {0};
-		_stprintf_s(szFavoriteNum, MAX_PATH - 1, _T("该文件夹下共有 {b}{c #FF0000}%d{/c}{/b} 个收藏"), j);
-		pFavoriteNumber->SetText(szFavoriteNum);
-	}
-
-	if( pUserList)
-	{						
-		pUserList->SetItemTextStyle(pUserList->GetItemTextStyle() & ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
-		pUserList->Invalidate();
-	}
+	SetFavoriteNumText(j);
 }
 
 void	CMainFrameWnd::OnTabChange(TNotifyUI& msg)
@@ -188,6 +181,18 @@ void	CMainFrameWnd::OnBtnClose(TNotifyUI& msg)
 	else
 	{
 		::ShowWindow(GetHWND(), SW_HIDE);
+	}
+}
+
+void	CMainFrameWnd::SetFavoriteNumText(int nNum)
+{
+	CTextUI* pFavoriteNumber = static_cast<CTextUI*>(m_pm.FindControl(_T("FavoriteNum")));
+	pFavoriteNumber->SetShowHtml();
+	if (pFavoriteNumber)
+	{
+		TCHAR szFavoriteNum[MAX_PATH] = {0};
+		_stprintf_s(szFavoriteNum, MAX_PATH - 1, _T("该文件夹下共有 {b}{c #FF0000}%d{/c}{/b} 个收藏"), nNum);
+		pFavoriteNumber->SetText(szFavoriteNum);
 	}
 }
 
@@ -335,11 +340,18 @@ void	CMainFrameWnd::OnFavoriteListItemDelete(TNotifyUI& msg)
 		FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)m_vFavoriteNodeAtTreeNode[nRow];
 		pSelNode->bDelete = true;
 
+		std::vector<FAVORITELINEDATA*>::iterator itr = std::find(m_vFavoriteNodeAtTreeNode.begin(),
+			m_vFavoriteNodeAtTreeNode.end(), pSelNode);
+		if( itr != m_vFavoriteNodeAtTreeNode.end())
+			m_vFavoriteNodeAtTreeNode.erase(itr);
+
 		// 从数据中心中删除该Item
 		MainFrame_DeleteFavoriteEvent* pEvent = new MainFrame_DeleteFavoriteEvent();
 		pEvent->desMId = MODULE_ID_MAINFRAME;
 		pEvent->nDeleteNodeId = pSelNode->nId;
 		g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+
+		SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
 	}
 }
 
@@ -364,6 +376,8 @@ void	CMainFrameWnd::OnFavoriteListItemMoved(TNotifyUI& msg)
 			break;
 		}
 	}
+
+	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
 }
 
 void CMainFrameWnd::Notify(TNotifyUI& msg)

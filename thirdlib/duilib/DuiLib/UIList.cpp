@@ -359,7 +359,8 @@ namespace DuiLib
 		if (!m_pList->RemoveAt(iIndex)) 
 			return false;
 
-		for(int i = iIndex; i < m_pList->GetRowCount(); ++i)
+		int nRowCount = m_pList->GetRowCount();
+		for(int i = iIndex; i < nRowCount; ++i)
 		{
 			CControlUI* p = m_pList->GetItemAt(i);
 			IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
@@ -737,7 +738,6 @@ namespace DuiLib
 		std::vector<int> vSel = m_vCurSel;
 		for( size_t i=0; i<vSel.size(); i++)
 		{
-			RemoveItemAt(vSel[i]-i);
 			if( m_pManager != NULL ) 
 			{
 				TNotifyUI notify;
@@ -746,6 +746,8 @@ namespace DuiLib
 				notify.wParam = vSel[i];
 				m_pManager->SendNotify(notify);
 			}
+
+			RemoveItemAt(vSel[i]-i);
 		}
 
 		for(int i=0; i<GetRowCount(); i++)
