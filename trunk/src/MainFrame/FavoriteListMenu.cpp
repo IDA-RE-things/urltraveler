@@ -17,7 +17,12 @@ void	CFavoriteListMenu::OnDelete()
 		CListUI* pList = static_cast<CListUI*>(m_pOwner);
 		int nSel = pList->GetCurSel();
 		if( nSel < 0 ) return;
-		FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)(pList->GetSubItem(nSel)->GetTag());
+
+		CListElementUI* pElement =		 (CListElementUI*)pList->GetSubItem(nSel);
+		if( pElement == NULL)
+			return;
+
+		FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)(pElement->GetTag());
 		pSelNode->bDelete = true;
 		pList->RemoveAt(nSel);
 
