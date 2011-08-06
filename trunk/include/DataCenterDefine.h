@@ -5,6 +5,7 @@
 #include "SndaBase.h"
 #include "UrlTravelerHeader.h"
 #include <vector>
+#include "time.h"
 
 using namespace std;
 
@@ -16,11 +17,12 @@ namespace datacenter
 	{
 		EVENT_VALUE_DATACENTER_OPEN = EVENT_VALUE_DATACENTER_BEGIN,		//打开主界面
 		EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE,						//收藏夹图标已经就绪
-		EVENT_VALUE_DATACENTER_DELETE_FAVORITE,		//删除某个收藏的URL
-		EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,	//删除某个收藏夹的所有数据, param0为需要删除的收藏夹id
-		EVENT_VALUE_DATACENTER_TREELIST_SELECT,		//	在树中某个结点被删除后，需要将焦点移动到上一个结点或者父结点中
-		EVENT_VALUE_DATACENTER_SET_AUTOUPDATE,		//	获取自动更新的信息
-
+		EVENT_VALUE_DATACENTER_ADD_FAVORITE,				// 增加一个新的收藏记录
+		EVENT_VALUE_DATACENTER_DELETE_FAVORITE,			// 删除某个收藏的URL
+		EVENT_VALUE_DATACENTER_ADD_FAVORITE_FOLD,		// 增加一个收藏夹目录
+		EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,		// 删除某个收藏夹的所有数据, param0为需要删除的收藏夹id
+		EVENT_VALUE_DATACENTER_TREELIST_SELECT,			// 在树中某个结点被删除后，需要将焦点移动到上一个结点或者父结点中
+		EVENT_VALUE_DATACENTER_SET_AUTOUPDATE,			// 获取自动更新的信息
 
 		EVENT_VALUE_DATACENTER_END = EVENT_VALUE_DATACENTER_END ,		//所有的事件结束
 	};
@@ -39,6 +41,7 @@ namespace datacenter
 		SERVICE_VALUE_DATACENTER_CHECK_EXIST_SUBFOLD,		//	检查给定文件夹下是否存在子文件夹
 		SERVICE_VALUE_DATACENTER_GET_SUBFOLD_ID,			//	获取给定文件夹下的所有子文件夹的id
 		SERVICE_VALUE_DATACENTER_GET_AUTOUPDATE,			//	获取自动更新的信息
+		SERVICE_VALUE_DATACENTER_REARRANGE_FAVORITE,		//	对收藏夹数据进行整理
 	};
 
 	//===========================================//
@@ -70,8 +73,8 @@ namespace datacenter
 			nCatId	=	0;
 			nPid	=	0;
 			bFolder	=	false;
-			nAddTimes	=	0;
-			nLastModifyTime	=	0;
+			nAddTimes	=	time(NULL);
+			nLastModifyTime	=	time(NULL);
 			nClickTimes	=	0;
 			nHashId	=	0;
 			nOrder	=	0;
@@ -151,6 +154,20 @@ namespace datacenter
 		HICON	hIcon;
 	};
 
+	struct DataCenter_AddFavoriteEvent	: DataCenterEvent 
+	{
+		DataCenter_AddFavoriteEvent()
+		{
+			eventValue	=	EVENT_VALUE_DATACENTER_ADD_FAVORITE;
+			nParentFavoriteId = 0;
+			ZEROMEM(szUrl);
+		}
+
+		int nParentFavoriteId;				//	当前收藏所在的收藏目录
+		wchar_t	szTitle[MAX_PATH];			//	收藏的标题
+		wchar_t	szUrl[MAX_PATH];			//	收藏的URL
+	};
+
 	struct DataCenter_DeleteFavoriteEvent	: DataCenterEvent 
 	{
 		DataCenter_DeleteFavoriteEvent()
@@ -162,6 +179,19 @@ namespace datacenter
 
 		int nFavoriteId;
 		wchar_t	szUrl[MAX_PATH];
+	};
+
+	struct DataCenter_AddFavoriteFoldEvent	: DataCenterEvent 
+	{
+		DataCenter_AddFavoriteFoldEvent()
+		{
+			eventValue	=	EVENT_VALUE_DATACENTER_ADD_FAVORITE_FOLD;
+			nParentFavoriteId = 0;
+			ZEROMEM(szTitle);
+		}
+
+		int nParentFavoriteId;				//	当前收藏家目录的父收藏家目录
+		wchar_t	szTitle[MAX_PATH];			//	收藏夹的标题
 	};
 
 	//===========================================//
@@ -250,4 +280,19 @@ namespace datacenter
 
 		BOOL	bAutoUpdate;
 	};
+
+	struct DataCenter_ReArrangeFavoriteService : public Service
+	{
+		DataCenter_ReArrangeFavoriteService()
+		{
+			serviceId =  SERVICE_VALUE_DATACENTER_REARRANGE_FAVORITE;
+			
+			nNum = 0;
+			pFavoriteData = NULL;
+		}
+
+		int nNum;										//	
+		FAVORITELINEDATA*		pFavoriteData;			//	收藏夹的数据	
+	};
+
 };

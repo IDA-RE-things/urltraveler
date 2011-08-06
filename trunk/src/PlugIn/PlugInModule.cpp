@@ -338,6 +338,7 @@ void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 
 void PlugInModule::ReArrange(PFAVORITELINEDATA pData, int nLen)
 {
+
 	//最坏时间复杂度O(N^2)
 	for (int i = 0; i < nLen; i++)
 	{
@@ -435,7 +436,8 @@ int PlugInModule::Run()
 	// 进行广度遍历排序
 	sort(pvFavoriteData->begin(), pvFavoriteData->end());
 
-	ReArrange(&(*pvFavoriteData)[0], m_nSumFavorite);
+	DataCenter_ReArrangeFavoriteService service;
+	GetModuleManager()->CallService(service.serviceId, (param)&service);
 	
 	// 将合并后的数据导入到各个浏览器中
 	if (panCount)

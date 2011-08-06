@@ -131,9 +131,6 @@ private:
 	//	保存所有的插件
 	std::vector<IPlugIn*>		m_vPlugIns;	
 
-	//	保存最终的合并后的所有的收藏夹
-	std::vector<FAVORITELINEDATA>	m_vFavoriateLineData;
-
 	IThreadObject*      m_pThreadObj;
 
 	int                 m_nSumFavorite;

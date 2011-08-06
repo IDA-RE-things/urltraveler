@@ -230,6 +230,7 @@ namespace DuiLib
 		void RemoveAllItems();
 		CListElementUI* GetSubItem(int nIndex);
 
+		void	ShowEdit(int nRow, int nColumn);
 		void ShowEditText(LPCTSTR pstrText, CRect rc, int nRow, int nColomn);
 		void HideEditText();
 		bool EditItem(int nX, int nY);
