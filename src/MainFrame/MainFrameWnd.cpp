@@ -338,10 +338,12 @@ void	CMainFrameWnd::OnFavoriteListItemDelete(TNotifyUI& msg)
 		FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)m_vFavoriteNodeAtTreeNode[nRow];
 		pSelNode->bDelete = true;
 
+/*
 		std::vector<FAVORITELINEDATA*>::iterator itr = std::find(m_vFavoriteNodeAtTreeNode.begin(),
 			m_vFavoriteNodeAtTreeNode.end(), pSelNode);
 		if( itr != m_vFavoriteNodeAtTreeNode.end())
 			m_vFavoriteNodeAtTreeNode.erase(itr);
+*/
 
 		// 从数据中心中删除该Item
 		MainFrame_DeleteFavoriteEvent* pEvent = new MainFrame_DeleteFavoriteEvent();
@@ -349,7 +351,7 @@ void	CMainFrameWnd::OnFavoriteListItemDelete(TNotifyUI& msg)
 		pEvent->nDeleteNodeId = pSelNode->nId;
 		g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 
-		SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
+		//SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
 	}
 }
 
