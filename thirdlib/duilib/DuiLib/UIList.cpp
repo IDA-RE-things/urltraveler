@@ -708,14 +708,14 @@ namespace DuiLib
 
 	void	CListUI::ClearSelectedItem(int nIndex)
 	{
-		IListItemUI* pListNextToSelectItem = NULL;
+		CListElementUI* pListNextToSelectItem = NULL;
 		for(int i=0; i<GetRowCount(); i++)
 		{
-			CControlUI* p = m_pList->GetItemAt(i);
-			pListNextToSelectItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
+			pListNextToSelectItem = (CListElementUI*)GetItemAt(i);
 			if( pListNextToSelectItem != NULL && pListNextToSelectItem->IsSelected() == true ) 
 			{
-				pListNextToSelectItem->Select(false);
+				//pListNextToSelectItem->Select(false);
+				UnSelectItem(pListNextToSelectItem);
 			}
 		}
 
@@ -724,11 +724,10 @@ namespace DuiLib
 
 	void	CListUI::DeleteSelected()
 	{
-		IListItemUI* pListNextToSelectItem = NULL;
+		CListElementUI* pListNextToSelectItem = NULL;
 		for( int i=m_iLastClickSel; i<GetRowCount(); i++)
 		{
-			CControlUI* p = m_pList->GetItemAt(i);
-			pListNextToSelectItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
+			pListNextToSelectItem = (CListElementUI*)GetItemAt(i);
 			if( pListNextToSelectItem != NULL && pListNextToSelectItem->IsSelected() == false ) 
 			{
 				break;
@@ -773,9 +772,13 @@ namespace DuiLib
 
 		if( pListNextToSelectItem != NULL)
 		{
+/*
 			pListNextToSelectItem->Select(true);
 			m_pManager->SetFocus(this);
 			m_vCurSel.push_back(pListNextToSelectItem->GetIndex());
+*/
+
+			SelectItem(pListNextToSelectItem);
 		}
 
 		m_iLastSel = pListNextToSelectItem->GetIndex();
@@ -809,6 +812,31 @@ namespace DuiLib
 		}
 		return true;
 	}
+
+	bool CListUI::UnSelectItem(CListElementUI* pElement)
+	{
+		if( pElement == NULL)
+			return false;
+
+		HideEditText();
+
+		if( !pElement->IsEnabled() ) 
+			return false;
+
+		pElement->SetFocus();
+		pElement->Select(false);
+
+		std::vector<int>::iterator itr = std::find(m_vCurSel.begin(), m_vCurSel.end(), pElement->GetIndex());
+		if( itr != m_vCurSel.end())
+			m_vCurSel.erase(itr);
+
+		if( m_pManager != NULL ) 
+		{
+			m_pManager->SendNotify(this, _T("itemunselect"), pElement->GetIndex());
+		}
+		return true;
+	}
+
 
 	bool CListUI::SelectContinualItem(int iIndex)
 	{
@@ -869,6 +897,28 @@ namespace DuiLib
 
 		return true;
 	}
+
+	bool	CListUI::SelectItem(CListElementUI* pElement)
+	{
+		if( pElement == NULL)
+			return false;
+
+		pElement->Select(true);
+		EnsureVisible(pElement->GetIndex());
+		pElement->SetFocus();
+
+		std::vector<int>::iterator  itr = std::find(m_vCurSel.begin(), m_vCurSel.end(), pElement->GetIndex());
+		if( itr == m_vCurSel.end())
+			m_vCurSel.push_back(pElement->GetIndex());
+
+		if( m_pManager != NULL ) 
+		{
+			m_pManager->SendNotify(this, _T("itemselect"), pElement->GetIndex());
+		}
+
+		return true;
+	}
+
 
 	TListInfoUI* CListUI::GetListInfo()
 	{
