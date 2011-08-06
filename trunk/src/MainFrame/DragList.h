@@ -25,11 +25,14 @@ public:
 
 	~DragListUI() { }
 
-	void Notify(TNotifyUI& msg);
 	virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
 	void	OnItemDragOver();
 	void	OnItemDragEnd();
+
+
+	void	OnListItemDragEnd(DragListUI* pDragList);
+
 
 	void DoEvent(TEventUI& event) ;
 

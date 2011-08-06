@@ -1403,8 +1403,6 @@ namespace DuiLib
 			return;
 
 		m_bShowEdit = false;
-		m_nEditRow = -1;
-		m_nEditRow = -1;
 
 		m_pEditUI->SetPos(CRect(0, 0, 0, 0));
 
@@ -1415,6 +1413,9 @@ namespace DuiLib
 
 		notify.wParam = MAKEDWORD((WORD)m_nEditRow, (WORD)m_nEditColomn);
 		m_pManager->SendNotify(notify);
+
+		m_nEditRow = -1;
+		m_nEditColomn = -1;
 	}
 
 	void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc, int nRow, int nColomn)
