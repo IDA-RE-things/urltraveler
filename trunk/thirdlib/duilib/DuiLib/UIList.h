@@ -235,6 +235,7 @@ namespace DuiLib
 		void HideEditText();
 		bool EditItem(int nX, int nY);
 		CStdString GetEditText();
+		LPCTSTR	GetItemText(int nRow, int nColumn);
 
 	public:
 		void Notify(TNotifyUI& msg);

@@ -1559,6 +1559,23 @@ namespace DuiLib
 		return _T("");
 	}
 
+	LPCTSTR	CListUI::GetItemText(int nRow, int nColumn)
+	{
+		if( nRow > m_pList->GetRowCount() - 1)
+			return NULL;
+
+		if( nColumn > GetColumnCount())
+			return NULL;
+
+		CListTextEditElementUI *pItem = (CListTextEditElementUI *)m_pList->GetItemAt(nRow);
+
+		LPCTSTR pstrText = NULL;
+		if( m_pCallback ) 
+			pstrText = m_pCallback->GetItemText(pItem, nRow, nColumn);
+		
+		return pstrText;
+	}
+
 	bool CListUI::EditItem( int nX, int nY )
 	{
 		if (m_pEditUI == NULL)
