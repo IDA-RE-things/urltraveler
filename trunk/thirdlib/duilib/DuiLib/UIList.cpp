@@ -2469,7 +2469,7 @@ namespace DuiLib
 				else 
 					CListElementUI::DoEvent(event);
 
-				//m_pManager->SendNotify(this, _T("itemhot"), m_iIndex);
+				m_pManager->SendNotify(this, _T("itemhot"), m_iIndex);
 				m_uButtonState |= UISTATE_HOT;
 				Invalidate();
 			}
