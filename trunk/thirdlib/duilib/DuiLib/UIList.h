@@ -114,7 +114,9 @@ namespace DuiLib
 
 		bool	IsItemSelected(int iIndex);
 		bool SelectItem(int iIndex);
+		bool	SelectItem(CListElementUI* pElement);
 		bool UnSelectItem(int iIndex);
+		bool UnSelectItem(CListElementUI* pElement);
 		bool SelectContinualItem(int iIndex);
 
 		// 给定索引的nIndex不取消选择
