@@ -81,7 +81,9 @@ public:
 protected:
 
 	void	OnEvent_FavoriteIconArrive(Event* pEvent);		//	网址对应的ICON图标达到
+	void	OnEvent_AddFavorite(Event* pEvent);			//	增加一个收藏记录
 	void	OnEvent_DeleteFavorite(Event* pEvent);			//	删除特定的URL
+	void	OnEvent_AddFavoriteFolder(Event* pEvent);		//	删除指定的收藏夹
 	void	OnEvent_DeleteFavoriteFolder(Event* pEvent);		//	删除指定的收藏夹
 	void	OnEvent_SetAutoUpdate(Event* pEvent);			//	设置自动更新不提示
 
@@ -94,6 +96,7 @@ protected:
 	void	OnService_CheckExistSubFolder(ServiceValue	lServiceValue, param	 lParam);
 	void	OnService_GetSubFolderId(ServiceValue lServiceValue, param lParam);
 	void	OnService_GetAutoUpdate(ServiceValue lServiceValue, param lParam);
+	void	OnService_ReArrangeFavorite(ServiceValue lServiceValue, param lParam);
 
 private:
 
@@ -102,8 +105,6 @@ private:
 	void	GetSubFolderId(std::vector<int>* pvId, int nId);
 
 protected:
-
-
 	
 	//	用以保存所有的收藏夹数据
 	std::vector<FAVORITELINEDATA>	m_vFavoriteLineData;

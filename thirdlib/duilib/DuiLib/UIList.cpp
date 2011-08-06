@@ -55,7 +55,17 @@ namespace DuiLib
 			_tcscmp(msg.pSender->GetName(), m_pEditUI->GetName()) == 0)
 		{
 			CListUI *pListUI = (CListUI *)pControl;
+
+			int nRow = m_nEditRow;
+
 			pListUI->HideEditText();
+
+			// 按下了回车键
+			TNotifyUI notify;
+			notify.sType = _T("itemreturnkeydown");
+			notify.pSender = this;
+			notify.wParam = nRow;
+			m_pManager->SendNotify(notify);
 		}
 	}
 
@@ -1476,6 +1486,29 @@ namespace DuiLib
 
 		m_nEditRow = -1;
 		m_nEditColomn = -1;
+	}
+
+	void	CListUI::ShowEdit( int nRow, int nColumn)
+	{
+		if( nRow > m_pList->GetRowCount() - 1)
+			return;
+
+		if( nColumn > GetColumnCount())
+			return;
+
+		CListTextEditElementUI *pItem = (CListTextEditElementUI *)m_pList->GetItemAt(nRow);
+
+		RECT rcItem = pItem->GetPos();
+		rcItem.left = m_ListInfo.rcColumn[nColumn].left;
+		rcItem.right = m_ListInfo.rcColumn[nColumn].right;
+
+		if (pItem->IsColomnEditable(nColumn) )
+		{
+			LPCTSTR pstrText = NULL;
+			if( m_pCallback ) pstrText = m_pCallback->GetItemText(pItem, nRow, nColumn);
+			ShowEditText(pstrText, rcItem, nRow, nColumn);
+			return;
+		}
 	}
 
 	void CListUI::ShowEditText( LPCTSTR pstrText, CRect rc, int nRow, int nColomn)

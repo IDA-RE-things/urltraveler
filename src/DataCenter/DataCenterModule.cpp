@@ -157,7 +157,9 @@ DataCenterModule::~DataCenterModule()
 
 BEGIN_EVENT_MAP(DataCenterModule)
 	ON_EVENT(EVENT_VALUE_WEB_GET_FAVICON_RESP, OnEvent_FavoriteIconArrive)
+	ON_EVENT(EVENT_VALUE_DATACENTER_ADD_FAVORITE, OnEvent_AddFavorite)
 	ON_EVENT(EVENT_VALUE_DATACENTER_DELETE_FAVORITE, OnEvent_DeleteFavorite)
+	ON_EVENT(EVENT_VALUE_DATACENTER_ADD_FAVORITE_FOLD, OnEvent_AddFavoriteFolder)
 	ON_EVENT(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD, OnEvent_DeleteFavoriteFolder)
 	ON_EVENT(EVENT_VALUE_DATACENTER_SET_AUTOUPDATE, OnEvent_SetAutoUpdate)
 END_EVENT_MAP()
@@ -169,6 +171,7 @@ BEGIN_SERVICE_MAP(DataCenterModule)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_CHECK_EXIST_SUBFOLD, OnService_CheckExistSubFolder)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_SUBFOLD_ID, OnService_GetSubFolderId)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_AUTOUPDATE, OnService_GetAutoUpdate)
+	ON_SERVICE(SERVICE_VALUE_DATACENTER_REARRANGE_FAVORITE,OnService_ReArrangeFavorite)
 END_SERVICE_MAP()
 
 //----------------------------------------------------------------------------------------
@@ -290,6 +293,28 @@ void	DataCenterModule::OnEvent_FavoriteIconArrive(Event* pEvent)
 	}
 }
 
+void	DataCenterModule::OnEvent_AddFavorite(Event* pEvent)
+{
+	DataCenter_AddFavoriteEvent* pAddFavoriteEvent = (DataCenter_AddFavoriteEvent*)pEvent->m_pstExtraInfo;
+	if( pAddFavoriteEvent == NULL)
+		return;
+
+	int nParentId = pAddFavoriteEvent->nParentFavoriteId;
+	wchar_t* pszTitle = pAddFavoriteEvent->szTitle;
+	wchar_t* pszUrl = pAddFavoriteEvent->szUrl;
+
+	FAVORITELINEDATA favoriteData ;
+	favoriteData.nId = m_vFavoriteLineData[m_vFavoriteLineData.size() - 1].nId + 1;
+	favoriteData.nPid = nParentId;
+	STRNCPY(favoriteData.szTitle, pszTitle);
+	STRNCPY(favoriteData.szUrl, pszUrl);
+	m_vFavoriteLineData.push_back(favoriteData);
+
+	// 进行排序
+	DataCenter_ReArrangeFavoriteService service;
+	GetModuleManager()->CallService(service.serviceId, (param)&service);
+}
+
 void	DataCenterModule::OnEvent_DeleteFavorite(Event* pEvent)
 {
 	DataCenter_DeleteFavoriteEvent* pDeleteFavoriteEvent = (DataCenter_DeleteFavoriteEvent*)pEvent->m_pstExtraInfo;
@@ -308,6 +333,12 @@ void	DataCenterModule::OnEvent_DeleteFavorite(Event* pEvent)
 		}
 	}
 }
+
+void	DataCenterModule::OnEvent_AddFavoriteFolder(Event* pEvent)
+{
+
+}
+
 
 void	DataCenterModule::OnEvent_DeleteFavoriteFolder(Event* pEvent)
 {
@@ -362,6 +393,7 @@ void	DataCenterModule::OnEvent_DeleteFavoriteFolder(Event* pEvent)
 		MakeEvent<MODULE_ID_DATACENTER>()(EVENT_VALUE_DATACENTER_TREELIST_SELECT, 
 		MODULE_ID_MAINFRAME, pData->nId));
 }
+
 
 void	DataCenterModule::OnEvent_SetAutoUpdate(Event* pEvent)
 {
@@ -510,6 +542,37 @@ void	DataCenterModule::OnService_GetAutoUpdate(ServiceValue lServiceValue, param
 	ASSERT(pGetAutoUpdateService != NULL);
 
 	pGetAutoUpdateService->bAutoUpdate = m_bAutoUpdate;
+}
+
+void	DataCenterModule::OnService_ReArrangeFavorite(ServiceValue lServiceValue, param lParam)
+{
+	DataCenter_ReArrangeFavoriteService* pReArrangeService = (DataCenter_ReArrangeFavoriteService*)lParam;
+	ASSERT(pReArrangeService != NULL);
+
+	PFAVORITELINEDATA pData = &m_vFavoriteLineData[0];
+	int nLen = m_vFavoriteLineData.size();
+
+	//最坏时间复杂度O(N^2)
+	for (int i = 0; i < nLen; i++)
+	{
+		//如果该结点的nId不是数组下标+1,则需要修正
+		if ((pData[i].nId != i + 1))
+		{
+			//扫描所有以该结点为父结点的结点，并修正这些结点的nPid
+			for (int j = 0; j < nLen; j++)
+			{
+				if (pData[j].nPid == pData[i].nId)
+				{
+					pData[j].nPid = i + 1;
+				}
+			}
+
+			pData[i].nId = i + 1;
+		}
+	}
+
+	pReArrangeService->nNum = nLen;
+	pReArrangeService->pFavoriteData  = &m_vFavoriteLineData[0];
 }
 
 void DataCenterModule::DeleteFavoriteFold( int nId )

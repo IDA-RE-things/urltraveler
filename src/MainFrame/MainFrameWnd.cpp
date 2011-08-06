@@ -384,6 +384,19 @@ void	CMainFrameWnd::OnFavoriteListItemMoved(TNotifyUI& msg)
 	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
 }
 
+void	CMainFrameWnd::OnItemReturnKeyDown(TNotifyUI& msg)
+{
+	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	if( pFavList == NULL)
+		return;
+
+	int nRow = msg.wParam;
+
+	// 检查两行是否都是空，如果都是空，则直接删除
+
+}
+
+
 void CMainFrameWnd::Notify(TNotifyUI& msg)
 {
 	if( msg.sType == _T("windowinit") ) 
@@ -473,6 +486,11 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	else if(msg.sType == L"favlistitemmoved")
 	{
 		OnFavoriteListItemMoved(msg);
+		return;
+	}
+	else if( msg.sType == L"itemreturnkeydown")
+	{
+		OnItemReturnKeyDown(msg);
 		return;
 	}
 }
@@ -828,16 +846,16 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 
 void CMainFrameWnd::AddUrl()
 {
-	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	if( pUserList == NULL)
+	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	if( pFavList == NULL)
 		return;
 
 	FAVORITELINEDATA* pData = new FAVORITELINEDATA();
 	pData->nPid = m_pFavoriteTree->m_nTreeNodeId;
 	m_vFavoriteNodeAtTreeNode.insert(m_vFavoriteNodeAtTreeNode.begin(), pData);
 
-	pUserList->Invalidate();
-	pUserList->SelectItem(0);
+	pFavList->Invalidate();
+	pFavList->ShowEdit(0,1);
 }
 
 void	CMainFrameWnd::OpenUrl(int nIndex)
