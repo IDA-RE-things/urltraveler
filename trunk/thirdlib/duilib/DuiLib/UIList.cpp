@@ -736,6 +736,7 @@ namespace DuiLib
 		}
 
 		std::vector<int> vSel = m_vCurSel;
+		std::vector<CListElementUI*>	vElements;
 		for( size_t i=0; i<vSel.size(); i++)
 		{
 			if( m_pManager != NULL ) 
@@ -747,7 +748,16 @@ namespace DuiLib
 				m_pManager->SendNotify(notify);
 			}
 
-			RemoveItemAt(vSel[i]-i);
+			CListElementUI* pElement = (CListElementUI*)GetItemAt(i);
+			if( pElement == NULL)
+				continue;
+
+			vElements.push_back(pElement);
+		}
+
+		for( size_t i=0; i<vElements.size(); i++)
+		{
+			RemoveItem(vElements[i]);
 		}
 
 		for(int i=0; i<GetRowCount(); i++)
@@ -2469,7 +2479,7 @@ namespace DuiLib
 				else 
 					CListElementUI::DoEvent(event);
 
-				m_pManager->SendNotify(this, _T("itemhot"), m_iIndex);
+				//m_pManager->SendNotify(this, _T("itemhot"), m_iIndex);
 				m_uButtonState |= UISTATE_HOT;
 				Invalidate();
 			}

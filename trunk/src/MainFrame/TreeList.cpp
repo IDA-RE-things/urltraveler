@@ -373,7 +373,7 @@ void	TreeListUI::OnListItemDragEnd(DragListUI* pDragList)
 		{
 			CListElementUI* pElement = vElement[i];
 			// 将nId记录从源List中删除
-			pDragList->Remove(pElement);
+			pDragList->RemoveItem(pElement);
 		}
 
 		pDragList->ClearSelectedItem();
