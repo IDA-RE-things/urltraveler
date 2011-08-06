@@ -296,10 +296,10 @@ void	CMainFrameWnd::OnFavoriteListItemEditFinished(TNotifyUI& msg)
 	{
 		CListUI *pListUI = (CListUI *)pControl;
 
-		int nRow = HIWORD(msg.wParam);
-		int nColomn = LOWORD(msg.wParam);
+		DWORD nRow = HIWORD(msg.wParam);
+		DWORD nColomn = LOWORD(msg.wParam);
 
-		if( nRow > pListUI->GetRowCount() - 1)
+		if( nRow < 0 || nRow > pListUI->GetRowCount() - 1)
 			return;
 
 		FAVORITELINEDATA* pData = m_vFavoriteNodeAtTreeNode[nRow];
@@ -312,10 +312,10 @@ void	CMainFrameWnd::OnFavoriteListItemEditFinished(TNotifyUI& msg)
 		}
 		else if( nColomn == 2)
 		{
-			String	strUrl = pListUI->GetEditText();
-			strUrl = strUrl.SubStr(5, strUrl.GetLength() - 5);
+			String strUrl = pListUI->GetEditText();
+			String strPrefix = strUrl.SubStr(5, strUrl.GetLength() - 5);
 
-			if( strUrl.Left(7) != L"http://" && strUrl.Left(8) != L"https://")
+			if( strPrefix.Left(7) != L"http://" && strPrefix.Left(8) != L"https://")
 			{
 				strUrl = String(L"http://") + strUrl;
 			}
@@ -693,6 +693,12 @@ LRESULT CMainFrameWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			bHandled = FALSE;
 	}
 	if( bHandled ) return lRes;
+
+	if( uMsg == WM_KEYDOWN)
+	{
+		int i=0;
+		i++;
+	}
 	if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
 	return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 }

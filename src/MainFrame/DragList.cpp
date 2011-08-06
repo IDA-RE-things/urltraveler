@@ -9,10 +9,6 @@
 using namespace datacenter;
 using namespace mainframe;
 
-void DragListUI::Notify(TNotifyUI& msg)
-{
-}
-
 void DragListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
 {
 	CListUI::SetManager(pManager, pParent, bInit);
@@ -24,7 +20,7 @@ void DragListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, boo
 	}
 }
 
-void	DragListUI::OnItemDragEnd()
+void	DragListUI::OnListItemDragEnd(DragListUI* pDragList)
 {
 	// 获取到鼠标所在点的位置
 	HCURSOR   hCursor   =   ::LoadCursor(NULL,IDC_ARROW); 
@@ -36,7 +32,38 @@ void	DragListUI::OnItemDragEnd()
 		return;
 
 	// 找到源item
+	int nSelNum = 0;
+	int* pSel = GetCurSel(nSelNum);
+	if( nSelNum == 0 || pSel == NULL)
+		return;
 
+	std::vector<CListElementUI*> vElements;
+	for(int i=0; i<nSelNum; i++)
+	{
+		CListElementUI* pElement = (CListElementUI*)GetItemAt(pSel[i]);
+		vElements.push_back(pElement);
+	}
+
+	for( size_t i=0; i<vElements.size(); i++)
+	{
+		this->AddAt(vElements[i], nHotIndex);
+	}
+}
+
+void	DragListUI::OnItemDragEnd()
+{
+/*
+	CControlUI* pSrcCtrl = m_pManager->GetEventSrcControl();
+	if( pSrcCtrl == NULL)
+		return;
+
+	// 是从列表中拖放过来的
+	if( _tcscmp(pSrcCtrl->GetClass(), _T("ListUI")) == 0 ) 
+	{
+		DragListUI* pDragList = (DragListUI*)pSrcCtrl;
+		OnListItemDragEnd(pDragList);
+	}
+*/
 }
 
 void	DragListUI::OnItemDragOver()
@@ -71,13 +98,11 @@ void DragListUI::DoEvent(TEventUI& event)
 	{
 		CListUI::DoEvent(event);
 
-/*
 		if( m_bIsDragging == true )
 		{
 			OnItemDragEnd();
 			m_bIsDragging = false;
 		}
-*/
 		m_pManager->SetEventSrcControl(NULL);
 		return;
 	}
