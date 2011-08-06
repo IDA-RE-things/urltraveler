@@ -393,7 +393,21 @@ void	CMainFrameWnd::OnItemReturnKeyDown(TNotifyUI& msg)
 	int nRow = msg.wParam;
 
 	// 检查两行是否都是空，如果都是空，则直接删除
+	LPCTSTR	szTitle = pFavList->GetItemText(nRow, 1);
+	LPCTSTR	szUrl = pFavList->GetItemText(nRow, 2);
 
+	String	strTitle = (szTitle == NULL ? L"" : szTitle);
+	String	strUrl   = (szUrl == NULL ? L"" : szUrl);
+	if( strUrl.Left(5) == L"<x 4>")
+		strUrl = strUrl.SubStr(5, strUrl.GetLength() - 5);
+
+	// 空行
+	if( strTitle == L"" && strUrl == L"")
+	{
+		//f
+		m_vFavoriteNodeAtTreeNode.erase(m_vFavoriteNodeAtTreeNode.begin());
+		pFavList->RemoveItemAt(0);
+	}
 }
 
 
