@@ -34,6 +34,8 @@ CMainFrameWnd::CMainFrameWnd()
 	m_pFavoriteData	= NULL;
 	m_pTipWnd = new CTipWnd();
 	m_pFavoriteTree = 0;
+
+	m_nCurrentFavoriteFoldId = 0;
 }
 
 CMainFrameWnd::~CMainFrameWnd()
@@ -114,6 +116,8 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 
 void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 {
+	m_nCurrentFavoriteFoldId = nId;
+
 	m_vFavoriteNodeAtTreeNode.clear();
 
 	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
@@ -404,10 +408,22 @@ void	CMainFrameWnd::OnItemReturnKeyDown(TNotifyUI& msg)
 	// 空行
 	if( strTitle == L"" && strUrl == L"")
 	{
-		//f
 		m_vFavoriteNodeAtTreeNode.erase(m_vFavoriteNodeAtTreeNode.begin());
 		pFavList->RemoveItemAt(0);
+
+		return;
 	}
+
+	//  否则通知数据中心添加一条收藏记录 
+	DataCenter_AddFavoriteEvent* pEvent = new DataCenter_AddFavoriteEvent();
+	pEvent->srcMId = MODULE_ID_MAINFRAME;
+	pEvent->desMId = MODULE_ID_DATACENTER;
+	pEvent->nParentFavoriteId = m_nCurrentFavoriteFoldId;
+	STRNCPY(pEvent->szTitle, szTitle);
+	STRNCPY(pEvent->szUrl, szUrl);
+	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+
+	m_nFavoriteNum++;
 }
 
 
