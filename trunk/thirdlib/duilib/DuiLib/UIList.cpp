@@ -431,6 +431,23 @@ namespace DuiLib
 		if( nIndex == -1)
 			return;
 
+		//  先检查是否有处于编辑状态
+		if( m_bShowEdit == true)
+		{
+			int nRow = m_nEditRow;
+
+			HideEditText();
+
+			// 按下了回车键
+			TNotifyUI notify;
+			notify.sType = _T("itemreturnkeydown");
+			notify.pSender = this;
+			notify.wParam = nRow;
+			m_pManager->SendNotify(notify);
+
+			m_bShowEdit = false;
+		}
+
 		// 如果支持多选
 		if( IsItemMultiSelect() == true)
 		{

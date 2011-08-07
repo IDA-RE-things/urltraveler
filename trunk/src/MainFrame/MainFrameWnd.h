@@ -89,6 +89,8 @@ private:
 
 	CTipWnd*            m_pTipWnd;
 
+	int m_nCurrentFavoriteFoldId;				//	当前显示的收藏夹目录的 ID
+
 	// 保存某个目录结点下的所有的叶子结点
 	std::vector<FAVORITELINEDATA*>		m_vFavoriteNodeAtTreeNode;
 };
