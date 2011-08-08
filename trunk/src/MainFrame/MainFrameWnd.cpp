@@ -396,6 +396,12 @@ void	CMainFrameWnd::OnItemReturnKeyDown(TNotifyUI& msg)
 
 	int nRow = msg.wParam;
 
+	// 如果当前位于第一行
+	if( pFavList->m_nEditColomn == 1)
+	{
+		
+	}
+
 	// 检查两行是否都是空，如果都是空，则直接删除
 	LPCTSTR	szTitle = pFavList->GetItemText(nRow, 1);
 	LPCTSTR	szUrl = pFavList->GetItemText(nRow, 2);

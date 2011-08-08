@@ -270,10 +270,10 @@ void	TreeListUI::OnTreeListItemDragEnd()
 		}
 	}
 
-	if( pSrcLineData != NULL)
-	{
-		pSrcLineData->nPid = nDstId;
-	}
+	if( pSrcLineData == NULL)
+		return;
+
+	pSrcLineData->nPid = nDstId;
 
 	// 删除原有结点
 	RemoveNode(pSrcNode);
