@@ -786,6 +786,42 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="netModule"
+			>
+			<File
+				RelativePath=".\netModule\incCommon.h"
+				>
+			</File>
+			<File
+				RelativePath=".\netModule\SocketLibLockControl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\netModule\socketobject_i.h"
+				>
+			</File>
+			<File
+				RelativePath=".\netModule\SocketObjectDefine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\netModule\TCPClient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\netModule\TCPClient.h"
+				>
+			</File>
+			<File
+				RelativePath=".\netModule\TCPSocketThread.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\netModule\TCPSocketThread.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
