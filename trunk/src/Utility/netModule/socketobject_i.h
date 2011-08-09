@@ -180,6 +180,6 @@ namespace NetModule
 	};
 	
 #define SOCKETOBJECT_SUBFOLDER					_T("Socket\\")
-        ITCPSocketObject* CreateSocketObject();
+        UTILITY_API ITCPSocketObject* CreateSocketObject();
 };
 #endif
