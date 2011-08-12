@@ -172,6 +172,9 @@ BEGIN_SERVICE_MAP(DataCenterModule)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_SUBFOLD_ID, OnService_GetSubFolderId)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_AUTOUPDATE, OnService_GetAutoUpdate)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_REARRANGE_FAVORITE,OnService_ReArrangeFavorite)
+	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_NUM_ATFOLD,OnService_GetFavoriteNumAtFold)
+
+	
 END_SERVICE_MAP()
 
 //----------------------------------------------------------------------------------------
@@ -573,6 +576,19 @@ void	DataCenterModule::OnService_ReArrangeFavorite(ServiceValue lServiceValue, p
 
 	pReArrangeService->nNum = nLen;
 	pReArrangeService->pFavoriteData  = &m_vFavoriteLineData[0];
+}
+
+void	DataCenterModule::OnService_GetFavoriteNumAtFold(ServiceValue lServiceValue, param lParam)
+{
+	DataCenter_GetFavoriteNumAtFoldService* pService = (DataCenter_GetFavoriteNumAtFoldService*)lParam;
+	ASSERT(pService != NULL);
+
+	int nFolderId = pService->nFolderId;
+
+	std::vector<int>	vId;
+	GetSubFolderId(&vId, nFolderId);
+
+	 pService->nNum = vId.size();
 }
 
 void DataCenterModule::DeleteFavoriteFold( int nId )

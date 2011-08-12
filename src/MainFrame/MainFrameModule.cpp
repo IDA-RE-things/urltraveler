@@ -267,9 +267,12 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 	DataCenter_GetFavoriteService favoriteData;
 	m_pModuleManager->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,(param)&favoriteData); 
 
+	int nNum = favoriteData.nNum;
+	PFAVORITELINEDATA	pFavoriteData = favoriteData.pFavoriteData;
+
 	if( favoriteData.nNum > 0)
 	{
-		m_pMainFrame->LoadFavoriteTree(favoriteData.pFavoriteData, favoriteData.nNum);
+		m_pMainFrame->LoadFavoriteTree(pFavoriteData, nNum);
 	}
 }
 

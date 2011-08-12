@@ -37,11 +37,12 @@ namespace datacenter
 	{
 		SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR	=	SERVICE_VALUE_DATACENTER_BEGIN,
 		SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
-		SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON,		//	获取给定Domain对应的URL
+		SERVICE_VALUE_DATACENTER_GET_FAVORITE_ICON,			//	获取给定Domain对应的URL
 		SERVICE_VALUE_DATACENTER_CHECK_EXIST_SUBFOLD,		//	检查给定文件夹下是否存在子文件夹
-		SERVICE_VALUE_DATACENTER_GET_SUBFOLD_ID,			//	获取给定文件夹下的所有子文件夹的id
-		SERVICE_VALUE_DATACENTER_GET_AUTOUPDATE,			//	获取自动更新的信息
+		SERVICE_VALUE_DATACENTER_GET_SUBFOLD_ID,				//	获取给定文件夹下的所有子文件夹的id
+		SERVICE_VALUE_DATACENTER_GET_AUTOUPDATE,				//	获取自动更新的信息
 		SERVICE_VALUE_DATACENTER_REARRANGE_FAVORITE,		//	对收藏夹数据进行整理
+		SERVICE_VALUE_DATACENTER_GET_FAVORITE_NUM_ATFOLD,	//	获取指定收藏夹目录下的所有的收藏夹的数目
 	};
 
 	//===========================================//
@@ -293,6 +294,21 @@ namespace datacenter
 
 		int nNum;										//	
 		FAVORITELINEDATA*		pFavoriteData;			//	收藏夹的数据	
+	};
+
+
+	struct DataCenter_GetFavoriteNumAtFoldService : public Service
+	{
+		DataCenter_GetFavoriteNumAtFoldService()
+		{
+			serviceId =  SERVICE_VALUE_DATACENTER_GET_FAVORITE_NUM_ATFOLD;
+			
+			nFolderId = 0;
+			nNum = 0;
+		}
+
+		int nFolderId;
+		int nNum;										//	
 	};
 
 };
