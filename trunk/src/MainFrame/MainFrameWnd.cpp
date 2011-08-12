@@ -312,7 +312,7 @@ void	CMainFrameWnd::OnFavoriteListItemEditFinished(TNotifyUI& msg)
 
 		if( nColomn == 1)
 		{
-			STRNCPY(pData->szTitle, pListUI->GetEditText());
+			//STRNCPY(pData->szTitle, pListUI->GetEditText());
 		}
 		else if( nColomn == 2)
 		{
@@ -399,7 +399,36 @@ void	CMainFrameWnd::OnItemReturnKeyDown(TNotifyUI& msg)
 	// 如果当前位于第一行
 	if( pFavList->m_nEditColomn == 1)
 	{
-		
+		pFavList->ShowEdit(nRow, 2);
+		return;
+	}
+/*
+	DataCenter_GetFavoriteNumAtFoldService service;
+ 	g_MainFrameModule->CallDirect(service.serviceId, (param)&service);
+	int nNum = service.nNum;
+
+	int nRowNum = pFavList->GetRowCount();
+*/
+
+
+
+	String	strText = pFavList->GetEditText().GetData();
+
+	
+
+	
+	CListElementUI* pElement =		 (CListElementUI*)pFavList->GetSubItem(nRow);
+	if( pElement == NULL)
+		return;
+
+	BOOL	bUpdate = FALSE;
+
+	// 仅仅是对数据进行编辑修改
+	FAVORITELINEDATA* pNode = (FAVORITELINEDATA *)(pElement->GetTag());
+	if( pNode != NULL)
+	{
+		pNode = m_vFavoriteNodeAtTreeNode[nRow];	
+		bUpdate = TRUE;
 	}
 
 	// 检查两行是否都是空，如果都是空，则直接删除
@@ -420,16 +449,23 @@ void	CMainFrameWnd::OnItemReturnKeyDown(TNotifyUI& msg)
 		return;
 	}
 
-	//  否则通知数据中心添加一条收藏记录 
-	DataCenter_AddFavoriteEvent* pEvent = new DataCenter_AddFavoriteEvent();
-	pEvent->srcMId = MODULE_ID_MAINFRAME;
-	pEvent->desMId = MODULE_ID_DATACENTER;
-	pEvent->nParentFavoriteId = m_nCurrentFavoriteFoldId;
-	STRNCPY(pEvent->szTitle, szTitle);
-	STRNCPY(pEvent->szUrl, szUrl);
-	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+	// 仅仅是对数据进行编辑修改
+	if( bUpdate == TRUE)
+	{
+	}
+	else
+	{
+		//  否则通知数据中心添加一条收藏记录 
+		DataCenter_AddFavoriteEvent* pEvent = new DataCenter_AddFavoriteEvent();
+		pEvent->srcMId = MODULE_ID_MAINFRAME;
+		pEvent->desMId = MODULE_ID_DATACENTER;
+		pEvent->nParentFavoriteId = m_nCurrentFavoriteFoldId;
+		STRNCPY(pEvent->szTitle, szTitle);
+		STRNCPY(pEvent->szUrl, szUrl);
+		g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 
-	m_nFavoriteNum++;
+		m_nFavoriteNum++;
+	}
 }
 
 

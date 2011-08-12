@@ -97,6 +97,7 @@ protected:
 	void	OnService_GetSubFolderId(ServiceValue lServiceValue, param lParam);
 	void	OnService_GetAutoUpdate(ServiceValue lServiceValue, param lParam);
 	void	OnService_ReArrangeFavorite(ServiceValue lServiceValue, param lParam);
+	void	OnService_GetFavoriteNumAtFold(ServiceValue lServiceValue, param lParam);
 
 private:
 
