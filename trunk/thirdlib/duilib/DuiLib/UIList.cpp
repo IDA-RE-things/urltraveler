@@ -58,14 +58,19 @@ namespace DuiLib
 
 			int nRow = m_nEditRow;
 
+			int nEditColumn = this->m_nEditColomn;
+
 			pListUI->HideEditText();
 
+/*
 			// 按下了回车键
 			TNotifyUI notify;
 			notify.sType = _T("itemreturnkeydown");
 			notify.pSender = this;
 			notify.wParam = nRow;
+			notify.lParam = nEditColumn;
 			m_pManager->SendNotify(notify);
+*/
 		}
 	}
 
@@ -438,6 +443,7 @@ namespace DuiLib
 
 			HideEditText();
 
+/*
 			// 按下了回车键
 			TNotifyUI notify;
 			notify.sType = _T("itemreturnkeydown");
@@ -445,6 +451,7 @@ namespace DuiLib
 			notify.wParam = nRow;
 			m_pManager->SendNotify(notify);
 
+*/
 			m_bShowEdit = false;
 		}
 
