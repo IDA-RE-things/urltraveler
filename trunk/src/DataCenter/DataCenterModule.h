@@ -6,6 +6,7 @@
 #include "PlugIn.h"
 #include <vector>
 #include <map>
+#include <list>
 
 using namespace std;
 
@@ -98,6 +99,7 @@ protected:
 	void	OnService_GetAutoUpdate(ServiceValue lServiceValue, param lParam);
 	void	OnService_ReArrangeFavorite(ServiceValue lServiceValue, param lParam);
 	void	OnService_GetFavoriteNumAtFold(ServiceValue lServiceValue, param lParam);
+	void	OnService_InitFavoriteData(ServiceValue lServiceValue, param lParam);
 
 private:
 
@@ -108,7 +110,7 @@ private:
 protected:
 	
 	//	用以保存所有的收藏夹数据
-	std::vector<FAVORITELINEDATA>	m_vFavoriteLineData;
+	std::vector<FAVORITELINEDATA*>	m_vFavoriteLineData;
 
 	//	用以保存所有的历史数据
 	std::vector<HISTORYLINEDATA>	m_vHistoryLineData;

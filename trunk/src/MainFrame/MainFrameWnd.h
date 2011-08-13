@@ -48,7 +48,7 @@ public:
 
 	// 更新指定网站的收藏夹图标
 	void	GetAvailableBrowser();
-	void	LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum);
+	void	LoadFavoriteTree(FAVORITELINEDATA**	ppFavoriteData, int nNum);
 	void	UpdateFavoriteIcon(wchar_t*	pszUrl, HICON hIcon);
 	void	DeleteFavorite(int nDeleteNodeId);
 	void	DeleteFavoriteFold(int nIndex);
@@ -85,7 +85,7 @@ private:
 	TreeListUI* m_pFavoriteTree;
 
 	int m_nFavoriteNum;
-	FAVORITELINEDATA*	m_pFavoriteData;
+	PFAVORITELINEDATA*	m_ppFavoriteData;
 
 	CTipWnd*            m_pTipWnd;
 

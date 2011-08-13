@@ -242,7 +242,7 @@ int32 IEPlugIn::GetFavoriteCount()
 //		@param	pData			导出的收藏夹数据数组
 //		@param	nDataNum		导出的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL IEPlugIn::ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum)
+BOOL IEPlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 {
 	LPITEMIDLIST pItemList = NULL;
 
@@ -273,7 +273,7 @@ BOOL IEPlugIn::ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum)
 	hr = pShellFolder->BindToObject(pItemList, NULL, IID_IShellFolder, reinterpret_cast<void **>(&pFavFolder));
 
 	nDataNum = 0;
-	TaverseFavoriteFolder(pFavFolder, 0, pData, nDataNum);
+	TaverseFavoriteFolder(pFavFolder, 0, ppData, nDataNum);
 	
 	m_pMalloc->Free(pItemList);
 	m_pMalloc->Release();
@@ -428,7 +428,8 @@ BOOL IEPlugIn::GetFileTimeInfo(void *pFileData, FILETIMEINFO *pstFileTimeInfo)
 }
 
 
-BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum, BOOL bStat)
+BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, 
+				     PFAVORITELINEDATA* ppData, int32& nDataNum, BOOL bStat)
 {
 	IEnumIDList  *pItems = NULL;        //对象遍历接口
 	LPITEMIDLIST pidlNext = NULL;
@@ -440,7 +441,8 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 	CCRCHash ojbCrcHash;
 
 	if (nPid == 0)
-	{//根节点需要特殊处理,测试时需要，不然会导致利用到导出的时候缺少根节点的情况，导致节点错乱
+	{
+		//根节点需要特殊处理,测试时需要，不然会导致利用到导出的时候缺少根节点的情况，导致节点错乱
 		SHFILEINFO fileInfo;
 		WIN32_FILE_ATTRIBUTE_DATA fileAttrData;
 		FILETIMEINFO stFileTimeInfo = {0};
@@ -491,25 +493,26 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 				}
 	
 				if (!bStat)
-				{//如果只是统计节点数量，则不需要导出数据
-					pData[nDataNum].nId = nDataNum + ID_VALUE_IE9_BEGIN;
-					pData[nDataNum].bFolder = true;
-					pData[nDataNum].bDelete = false;
-					pData[nDataNum].nAddTimes = stFileTimeInfo.tCreateTime;
-					pData[nDataNum].nLastModifyTime = stFileTimeInfo.tLastWriteTime;
-					pData[nDataNum].nPid = nPid;
+				{
+					//如果只是统计节点数量，则不需要导出数据
+					ppData[nDataNum]->nId = nDataNum + ID_VALUE_IE9_BEGIN;
+					ppData[nDataNum]->bFolder = true;
+					ppData[nDataNum]->bDelete = false;
+					ppData[nDataNum]->nAddTimes = stFileTimeInfo.tCreateTime;
+					ppData[nDataNum]->nLastModifyTime = stFileTimeInfo.tLastWriteTime;
+					ppData[nDataNum]->nPid = nPid;
 
-					wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, lpszName);
-					pData[nDataNum].szUrl[0] = 0;
-					ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, 
-						wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t), 
-						(BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
+					wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, lpszName);
+					ppData[nDataNum]->szUrl[0] = 0;
+					ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, 
+						wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t), 
+						(BYTE *)&ppData[nDataNum]->nHashId, sizeof(int32));
 
-					pData[nDataNum].nCatId = 0;
+					ppData[nDataNum]->nCatId = 0;
 				}
 
 				nDataNum++;
-				TaverseFavoriteFolder(pSubFolder, nDataNum - 1 + ID_VALUE_IE9_BEGIN, pData, nDataNum, bStat);
+				TaverseFavoriteFolder(pSubFolder, nDataNum - 1 + ID_VALUE_IE9_BEGIN, ppData, nDataNum, bStat);
 				pSubFolder->Release();
 			}
 			else
@@ -523,21 +526,21 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid, PFAVORIT
 				{
 					if (!bStat)
 					{
-						pData[nDataNum].nId = nDataNum + ID_VALUE_IE9_BEGIN;
-						pData[nDataNum].bFolder = false;
-						pData[nDataNum].bDelete = false;
-						pData[nDataNum].nAddTimes = stFileTimeInfo.tCreateTime;
-						pData[nDataNum].nLastModifyTime = stFileTimeInfo.tLastWriteTime;
-						pData[nDataNum].nPid = nPid;
-						wcscpy_s(pData[nDataNum].szTitle, MAX_PATH -1, lpszName);
-						wcscpy_s(pData[nDataNum].szUrl, 1024 - 1, lpszURL);
-						pData[nDataNum].szUrl[1023] = 0;
+						ppData[nDataNum]->nId = nDataNum + ID_VALUE_IE9_BEGIN;
+						ppData[nDataNum]->bFolder = false;
+						ppData[nDataNum]->bDelete = false;
+						ppData[nDataNum]->nAddTimes = stFileTimeInfo.tCreateTime;
+						ppData[nDataNum]->nLastModifyTime = stFileTimeInfo.tLastWriteTime;
+						ppData[nDataNum]->nPid = nPid;
+						wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, lpszName);
+						wcscpy_s(ppData[nDataNum]->szUrl, 1024 - 1, lpszURL);
+						ppData[nDataNum]->szUrl[1023] = 0;
 
-						ojbCrcHash.GetHash((BYTE *)pData[nDataNum].szTitle, 
-							wcslen(pData[nDataNum].szTitle) * sizeof(wchar_t),
-							(BYTE *)&pData[nDataNum].nHashId, sizeof(int32));
-						pData[nDataNum].nCatId = 0;
-						wcscpy_s(pData[nDataNum].szUrl, 1024 - 1, lpszURL);
+						ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, 
+							wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t),
+							(BYTE *)&ppData[nDataNum]->nHashId, sizeof(int32));
+						ppData[nDataNum]->nCatId = 0;
+						wcscpy_s(ppData[nDataNum]->szUrl, 1024 - 1, lpszURL);
 					}
 					
 					nDataNum++;

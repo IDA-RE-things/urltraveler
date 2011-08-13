@@ -292,7 +292,7 @@ bool compare_hashid(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
 	return a1->nHashId < a2->nHashId;
 }
 
-void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
+void PlugInModule::Merge(PFAVORITELINEDATA* ppData, int32 nLen, int nParentId)
 {
 	int nHash = 0;
 	vector<PFAVORITELINEDATA> vec;
@@ -300,9 +300,9 @@ void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 	//把所有相同父结点的节点放到vec中
 	for (int i = 0; i < nLen; i++)
 	{
-		if (pData[i].nPid == nParentId)
+		if (ppData[i]->nPid == nParentId)
 		{
-			vec.push_back(&pData[i]);
+			vec.push_back(ppData[i]);
 		}
 	}
 
@@ -324,37 +324,14 @@ void PlugInModule::Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId)
 				//重新修正所有父节点为j的节点的nPid, 即合并
 				for (int m = 0; m < nLen; m++)
 				{
-					if (pData[m].nPid == vec[i]->nId)
+					if (ppData[m]->nPid == vec[i]->nId)
 					{
-						pData[m].nPid = vec[i + 1]->nId;
+						ppData[m]->nPid = vec[i + 1]->nId;
 					}
 				}
 
-				Merge(pData, nLen, vec[i + 1]->nId);
+				Merge(ppData, nLen, vec[i + 1]->nId);
 			}
-		}
-	}
-}
-
-void PlugInModule::ReArrange(PFAVORITELINEDATA pData, int nLen)
-{
-
-	//最坏时间复杂度O(N^2)
-	for (int i = 0; i < nLen; i++)
-	{
-		//如果该结点的nId不是数组下标+1,则需要修正
-		if ((pData[i].nId != i + 1))
-		{
-			//扫描所有以该结点为父结点的结点，并修正这些结点的nPid
-			for (int j = 0; j < nLen; j++)
-			{
-				if (pData[j].nPid == pData[i].nId)
-				{
-					pData[j].nPid = i + 1;
-				}
-			}
-
-			pData[i].nId = i + 1;
 		}
 	}
 }
@@ -368,7 +345,7 @@ int PlugInModule::Run()
 {
 	DataCenter_GetFavoriteVectorService favoriteVectorService;
 	m_pModuleManager->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR, (param)&favoriteVectorService);
-	std::vector<FAVORITELINEDATA>*	pvFavoriteData = favoriteVectorService.pvFavoriteData;
+	std::vector<FAVORITELINEDATA*>*	pvFavoriteData = favoriteVectorService.pvFavoriteData;
 
 	CoInitialize(NULL);
 
@@ -402,7 +379,9 @@ int PlugInModule::Run()
 		return 0;
 	}
 
-	pvFavoriteData->resize(m_nSumFavorite);
+	DataCenter_InitFavoriteDataService initService;
+	initService.nNum = m_nSumFavorite;
+	GetModuleManager()->CallService(initService.serviceId, (param)&initService);
 
 	int nCurrentOffset = 0;
 
@@ -423,10 +402,10 @@ int PlugInModule::Run()
 
 	Merge(&(*pvFavoriteData)[0], m_nSumFavorite, 0);
 
-	std::vector<FAVORITELINEDATA>::iterator itr = pvFavoriteData->begin();
+	std::vector<FAVORITELINEDATA*>::iterator itr = pvFavoriteData->begin();
 	for( ; itr !=  pvFavoriteData->end();)
 	{
-		if( (*itr).bDelete == true)
+		if( (*itr)->bDelete == true)
 			itr =  pvFavoriteData->erase(itr);
 		else
 			itr++;

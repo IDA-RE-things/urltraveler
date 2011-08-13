@@ -258,7 +258,7 @@ void	TreeListUI::OnTreeListItemDragEnd()
 		(param)&favoriteData); 
 
 	int nFavoriteNum = favoriteData.nNum;
-	FAVORITELINEDATA* pFavoriteData = favoriteData.pFavoriteData;
+	FAVORITELINEDATA* pFavoriteData = *favoriteData.ppFavoriteData;
 
 	FAVORITELINEDATA* pSrcLineData = NULL;
 	for( int i=0; i<nFavoriteNum; i++)
