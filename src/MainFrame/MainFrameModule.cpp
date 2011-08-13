@@ -268,11 +268,11 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 	m_pModuleManager->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,(param)&favoriteData); 
 
 	int nNum = favoriteData.nNum;
-	PFAVORITELINEDATA	pFavoriteData = favoriteData.pFavoriteData;
+	PFAVORITELINEDATA*	ppFavoriteData = favoriteData.ppFavoriteData;
 
 	if( favoriteData.nNum > 0)
 	{
-		m_pMainFrame->LoadFavoriteTree(pFavoriteData, nNum);
+		m_pMainFrame->LoadFavoriteTree(ppFavoriteData, nNum);
 	}
 }
 

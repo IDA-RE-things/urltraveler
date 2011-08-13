@@ -168,7 +168,7 @@ interface IPlugIn
 	//		@param	pData			导出的收藏夹数据数组
 	//		@param	nDataNum		导出的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum) PURE;
+	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum) PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: ImportFavoriteData

@@ -19,6 +19,7 @@
 
 #include "FavoriteListMenu.h"
 #include "TreeListMenu.h"
+#include "AddFavoriteWnd.h"
 
 #include <algorithm>
 
@@ -31,7 +32,7 @@ using namespace setting;
 CMainFrameWnd::CMainFrameWnd()
 {
 	m_nFavoriteNum = 0;
-	m_pFavoriteData	= NULL;
+	m_ppFavoriteData	= NULL;
 	m_pTipWnd = new CTipWnd();
 	m_pFavoriteTree = 0;
 
@@ -64,13 +65,21 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	g_MainFrameModule->GetModuleManager()->CallService(openTravelerService.serviceId,(param)&openTravelerService);
 }
 
-void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
+void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA**	ppFavoriteData, int nNum)
 {	 
 	m_nFavoriteNum = nNum;
-	m_pFavoriteData = pFavoriteData;
+	m_ppFavoriteData = ppFavoriteData;
 
 	wstring wstrText = L"{x 4}{x 4}";
 	wstrText += L"收藏夹";
+
+	if( m_pFavoriteTree == NULL)
+		m_pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
+
+	if( m_pFavoriteTree == NULL)
+	{
+		ASSERT(0);
+	}
 
 	TreeListUI::Node* pRootNode = m_pFavoriteTree->AddNode(wstrText.c_str());
 	m_pFavoriteTree->m_mapIdNode[0] = pRootNode;
@@ -78,7 +87,7 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA*	pFavoriteData, int nNum)
 
 	for( int i=0; i<m_nFavoriteNum; i++)
 	{
-		FAVORITELINEDATA* pData = &m_pFavoriteData[i];
+		PFAVORITELINEDATA pData = m_ppFavoriteData[i];
 
 		if( pData != NULL && pData->bFolder == true)
 		{
@@ -126,7 +135,7 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 
 	for( int i=0; i<m_nFavoriteNum; i++)
 	{
-		FAVORITELINEDATA* pData = &m_pFavoriteData[i];
+		FAVORITELINEDATA* pData = m_ppFavoriteData[i];
 
 		// 叶子结点
 		if( pData->nPid == nId && pData->bFolder == false && pData->bDelete == false)
@@ -312,7 +321,20 @@ void	CMainFrameWnd::OnFavoriteListItemEditFinished(TNotifyUI& msg)
 
 		if( nColomn == 1)
 		{
-			//STRNCPY(pData->szTitle, pListUI->GetEditText());
+			LPCTSTR	szTitle = pListUI->GetEditText().GetData();
+			String	strTitle = (szTitle == NULL ? L"" : szTitle);
+
+			if( strTitle == L"")
+			{
+				::MessageBox(NULL, L"网址标题不能为空", L" 警告", MB_OK);
+				pListUI->ShowEdit(nRow, 1);
+				return;
+			}
+
+			STRNCPY(pData->szTitle, pListUI->GetEditText());
+			pListUI->Invalidate();
+
+			return;
 		}
 		else if( nColomn == 2)
 		{
@@ -320,6 +342,12 @@ void	CMainFrameWnd::OnFavoriteListItemEditFinished(TNotifyUI& msg)
 			String strPrefix = strUrl.Left(5);
 			if( strPrefix == L"<x 4>")
 				strUrl = strUrl.SubStr(5,strUrl.GetLength()-5);
+			if( strUrl == L"")
+			{
+				::MessageBox(NULL, L"网址不能为空", L" 警告", MB_OK);
+				pListUI->ShowEdit(nRow, 2);
+				return;
+			}
 
 			if( strUrl.Left(7) != L"http://" && strUrl.Left(8) != L"https://")
 			{
@@ -390,53 +418,63 @@ void	CMainFrameWnd::OnFavoriteListItemMoved(TNotifyUI& msg)
 
 void	CMainFrameWnd::OnItemReturnKeyDown(TNotifyUI& msg)
 {
+	return;
+
 	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	if( pFavList == NULL)
 		return;
 
 	int nRow = msg.wParam;
+	int nEditColumn = msg.lParam;
 
-	// 如果当前位于第一行
-	if( pFavList->m_nEditColomn == 1)
-	{
-		pFavList->ShowEdit(nRow, 2);
-		return;
-	}
-/*
-	DataCenter_GetFavoriteNumAtFoldService service;
- 	g_MainFrameModule->CallDirect(service.serviceId, (param)&service);
-	int nNum = service.nNum;
-
-	int nRowNum = pFavList->GetRowCount();
-*/
-
-
-
-	String	strText = pFavList->GetEditText().GetData();
-
-	
-
-	
 	CListElementUI* pElement =		 (CListElementUI*)pFavList->GetSubItem(nRow);
 	if( pElement == NULL)
 		return;
 
-	BOOL	bUpdate = FALSE;
-
 	// 仅仅是对数据进行编辑修改
-	FAVORITELINEDATA* pNode = (FAVORITELINEDATA *)(pElement->GetTag());
-	if( pNode != NULL)
+	FAVORITELINEDATA* pNode = (FAVORITELINEDATA*)m_vFavoriteNodeAtTreeNode[nRow];	
+
+	// 如果当前位于第一行，即修改的是网址标题
+	if( nEditColumn == 1)
 	{
-		pNode = m_vFavoriteNodeAtTreeNode[nRow];	
-		bUpdate = TRUE;
+		LPCTSTR	szTitle = pFavList->GetEditText().GetData();
+		String	strTitle = (szTitle == NULL ? L"" : szTitle);
+
+		if( strTitle == L"")
+		{
+			::MessageBox(NULL, L"网址标题不能为空", L" 警告", MB_OK);
+			pFavList->ShowEdit(nRow, 1);
+			return;
+		}
+
+		STRNCPY(pNode->szTitle, strTitle.GetData());
+		pFavList->Invalidate();
+		return;
 	}
 
+	if( nEditColumn == 2)
+	{
+		LPCTSTR	szUrl = pFavList->GetEditText().GetData();
+		String	strUrl = (szUrl == NULL ? L"" : szUrl);
+
+		if( strUrl == L"")
+		{
+			::MessageBox(NULL, L"网址不能为空", L" 警告", MB_OK);
+			pFavList->ShowEdit(nRow, 2);
+			return;
+		}
+
+		STRNCPY(pNode->szUrl, strUrl.GetData());
+		pFavList->Invalidate();
+		return;
+	}
+
+	/*
 	// 检查两行是否都是空，如果都是空，则直接删除
 	LPCTSTR	szTitle = pFavList->GetItemText(nRow, 1);
-	LPCTSTR	szUrl = pFavList->GetItemText(nRow, 2);
-
 	String	strTitle = (szTitle == NULL ? L"" : szTitle);
-	String	strUrl   = (szUrl == NULL ? L"" : szUrl);
+
+	String	strUrl = pFavList->GetEditText().GetData();
 	if( strUrl.Left(5) == L"<x 4>")
 		strUrl = strUrl.SubStr(5, strUrl.GetLength() - 5);
 
@@ -448,24 +486,22 @@ void	CMainFrameWnd::OnItemReturnKeyDown(TNotifyUI& msg)
 
 		return;
 	}
+	*/
 
-	// 仅仅是对数据进行编辑修改
-	if( bUpdate == TRUE)
-	{
-	}
-	else
-	{
-		//  否则通知数据中心添加一条收藏记录 
-		DataCenter_AddFavoriteEvent* pEvent = new DataCenter_AddFavoriteEvent();
-		pEvent->srcMId = MODULE_ID_MAINFRAME;
-		pEvent->desMId = MODULE_ID_DATACENTER;
-		pEvent->nParentFavoriteId = m_nCurrentFavoriteFoldId;
-		STRNCPY(pEvent->szTitle, szTitle);
-		STRNCPY(pEvent->szUrl, szUrl);
-		g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 
-		m_nFavoriteNum++;
-	}
+
+	//  否则通知数据中心添加一条收藏记录 
+	/*
+	DataCenter_AddFavoriteEvent* pEvent = new DataCenter_AddFavoriteEvent();
+	pEvent->srcMId = MODULE_ID_MAINFRAME;
+	pEvent->desMId = MODULE_ID_DATACENTER;
+	pEvent->nParentFavoriteId = m_nCurrentFavoriteFoldId;
+	STRNCPY(pEvent->szTitle, szTitle);
+	STRNCPY(pEvent->szUrl, szUrl);
+	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+
+	m_nFavoriteNum++;
+	*/
 }
 
 
@@ -918,6 +954,17 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 
 void CMainFrameWnd::AddUrl()
 {
+	
+	CAddFavoriteWnd* pAddFavoriteWnd = new CAddFavoriteWnd();
+	if( pAddFavoriteWnd == NULL ) { Close(); return;  }
+	pAddFavoriteWnd->Create(m_hWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+	pAddFavoriteWnd->CenterWindow();
+	pAddFavoriteWnd->m_nFavoriteId = m_nCurrentFavoriteFoldId;
+	pAddFavoriteWnd->ShowModal();
+
+	return;
+
+
 	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	if( pFavList == NULL)
 		return;

@@ -124,11 +124,11 @@ wchar_t* SogouPlugIn::GetHistoryDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
-BOOL SogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
+BOOL SogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	CCRCHash ojbCrcHash;
 
-	if (pData == NULL || nDataNum == 0)
+	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -143,28 +143,33 @@ BOOL SogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 
 		while(!Query.eof() && i < nDataNum)
 		{
-			 memset(&pData[i], 0, sizeof(FAVORITELINEDATA));
-			 pData[i].nId = Query.getIntField("id", 0) + ID_VALUE_SOGOU_BEGIN;
-		     pData[i].nPid = Query.getIntField("pid", 0);
+			 ppData[i]->nId = Query.getIntField("id", 0) + ID_VALUE_SOGOU_BEGIN;
+			 ppData[i]->nPid = Query.getIntField("pid", 0);
 
-			 if (pData[i].nPid != 0)
+			 if (ppData[i]->nPid != 0)
 			 {
-				 pData[i].nPid += ID_VALUE_SOGOU_BEGIN;
+				 ppData[i]->nPid += ID_VALUE_SOGOU_BEGIN;
 			 }
 
-			 pData[i].bFolder = Query.getIntField("folder", 0);
-			 _tcsncpy_s(pData[i].szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str(), MAX_PATH - 2);
-			 pData[i].szTitle[MAX_PATH - 1] = 0;
-			 _tcsncpy_s(pData[i].szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str(), 1022);
-			 pData[i].szUrl[1023] = 0;
-			 pData[i].nOrder = Query.getIntField("sequenceNO", 0);
+			  ppData[i]->bFolder = Query.getIntField("folder", 0);
+			 _tcsncpy_s( ppData[i]->szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str(), MAX_PATH - 2);
+			  ppData[i]->szTitle[MAX_PATH - 1] = 0;
+			 _tcsncpy_s( ppData[i]->szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str(), 1022);
+			  ppData[i]->szUrl[1023] = 0;
+			  ppData[i]->nOrder = Query.getIntField("sequenceNO", 0);
 
-			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(Query.getStringField("addTime", "2011-05-11 21:00:00")).c_str()), pData[i].nAddTimes);
-			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(StringHelper::Utf8ToUnicode(Query.getStringField("lastmodify", "2011-05-11 21:00:00")).c_str()), pData[i].nLastModifyTime);
-			 ojbCrcHash.GetHash((BYTE *)pData[i].szTitle, wcslen(pData[i].szTitle) * sizeof(wchar_t), (BYTE *)&pData[i].nHashId, sizeof(uint32));
-			 pData[i].nCatId = Query.getIntField("category", 0);
+			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(
+				 StringHelper::Utf8ToUnicode(
+				 Query.getStringField("addTime", "2011-05-11 21:00:00")).c_str()),  ppData[i]->nAddTimes);
 
-			 pData[i].bDelete = false;
+			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(
+				 StringHelper::Utf8ToUnicode(
+				 Query.getStringField("lastmodify", "2011-05-11 21:00:00")).c_str()),  ppData[i]->nLastModifyTime);
+
+			 ojbCrcHash.GetHash((BYTE *) ppData[i]->szTitle, wcslen( ppData[i]->szTitle) * sizeof(wchar_t), (BYTE *)& ppData[i]->nHashId, sizeof(uint32));
+			  ppData[i]->nCatId = Query.getIntField("category", 0);
+
+			  ppData[i]->bDelete = false;
 
 			 Query.nextRow();
 			 i++;

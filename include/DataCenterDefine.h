@@ -43,6 +43,7 @@ namespace datacenter
 		SERVICE_VALUE_DATACENTER_GET_AUTOUPDATE,				//	获取自动更新的信息
 		SERVICE_VALUE_DATACENTER_REARRANGE_FAVORITE,		//	对收藏夹数据进行整理
 		SERVICE_VALUE_DATACENTER_GET_FAVORITE_NUM_ATFOLD,	//	获取指定收藏夹目录下的所有的收藏夹的数目
+		SERVICE_VALUE_DATACENTER_INIT_FAVORITE,			//	初始化收藏夹内存
 	};
 
 	//===========================================//
@@ -206,7 +207,7 @@ namespace datacenter
 			pvFavoriteData = NULL;
 		}
 
-		std::vector<FAVORITELINEDATA>*	pvFavoriteData;
+		std::vector<FAVORITELINEDATA*>*	pvFavoriteData;
 	};
 
 	struct DataCenter_GetFavoriteService : public Service
@@ -215,11 +216,11 @@ namespace datacenter
 		{
 			serviceId = SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA;
 			nNum = 0;
-			pFavoriteData	=	NULL;
+			ppFavoriteData	=	NULL;
 		}
 
 		int nNum;										//	
-		FAVORITELINEDATA*		pFavoriteData;			//	收藏夹的数据	
+		FAVORITELINEDATA**		ppFavoriteData;			//	收藏夹的数据	
 	};
 
 	// 获取给定的URL 域对应的ICON
@@ -289,13 +290,12 @@ namespace datacenter
 			serviceId =  SERVICE_VALUE_DATACENTER_REARRANGE_FAVORITE;
 			
 			nNum = 0;
-			pFavoriteData = NULL;
+			ppFavoriteData = NULL;
 		}
 
 		int nNum;										//	
-		FAVORITELINEDATA*		pFavoriteData;			//	收藏夹的数据	
+		FAVORITELINEDATA**		ppFavoriteData;			//	收藏夹的数据	
 	};
-
 
 	struct DataCenter_GetFavoriteNumAtFoldService : public Service
 	{
@@ -308,7 +308,18 @@ namespace datacenter
 		}
 
 		int nFolderId;
-		int nNum;										//	
+		int nNum;	
+	};
+
+	struct DataCenter_InitFavoriteDataService : public Service
+	{
+		DataCenter_InitFavoriteDataService()
+		{
+			serviceId =  SERVICE_VALUE_DATACENTER_INIT_FAVORITE;
+			nNum = 0;
+		}
+
+		int nNum;	
 	};
 
 };

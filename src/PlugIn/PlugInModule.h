@@ -113,12 +113,7 @@ protected:
 private:
 
 	//	将pFavoriteData进行合并
-	void	Merge(PFAVORITELINEDATA pData, int32 nLen, int nParentId);
-
-	//	按照广度遍历排序
-	void SortByBreadth(PFAVORITELINEDATA pFavoriteLineData, int nNum);
-
-	void ReArrange(PFAVORITELINEDATA pData, int nLen);
+	void	Merge(PFAVORITELINEDATA* ppData, int32 nLen, int nParentId);
 
 private:
 
