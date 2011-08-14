@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
-namespace DuiLib {
+namespace DuiLib
+{
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
@@ -1352,7 +1353,6 @@ Label_ForeImage:
 		if( uMsg == WM_KILLFOCUS ) 
 		{
 			lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
-			//m_pOwner->GetManager()->SendNotify(m_pOwner, _T("return"));
 		}
 		else if( uMsg == OCM_COMMAND )
 		{
@@ -1404,7 +1404,6 @@ Label_ForeImage:
 	{
 		LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 		PostMessage(WM_CLOSE);
-
 
 		return lRes;
 	}
@@ -1552,14 +1551,6 @@ Label_ForeImage:
 			{
 				m_uButtonState &= ~UISTATE_HOT;
 				Invalidate();
-			}
-			return;
-		}
-		if( event.Type == UIEVENT_KEYDOWN )
-		{
-			if( IsEnabled() ) 
-			{
-				m_pParent->DoEvent(event);
 			}
 			return;
 		}
