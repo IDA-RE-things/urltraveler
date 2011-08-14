@@ -341,6 +341,11 @@ void PlugInModule::OnThreadEntry()
 
 }
 
+bool CompareFavoriteData (const FAVORITELINEDATA* i,  const FAVORITELINEDATA* j) 
+{ 
+	return i->nPid < j->nPid;
+}
+
 int PlugInModule::Run()
 {
 	DataCenter_GetFavoriteVectorService favoriteVectorService;
@@ -413,7 +418,7 @@ int PlugInModule::Run()
 	m_nSumFavorite =  pvFavoriteData->size();
 
 	// 进行广度遍历排序
-	sort(pvFavoriteData->begin(), pvFavoriteData->end());
+	sort(pvFavoriteData->begin(), pvFavoriteData->end(), CompareFavoriteData);
 
 	DataCenter_ReArrangeFavoriteService service;
 	GetModuleManager()->CallService(service.serviceId, (param)&service);

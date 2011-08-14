@@ -602,6 +602,38 @@ void	DataCenterModule::OnService_ReArrangeFavorite(ServiceValue lServiceValue, p
 	DataCenter_ReArrangeFavoriteService* pReArrangeService = (DataCenter_ReArrangeFavoriteService*)lParam;
 	ASSERT(pReArrangeService != NULL);
 
+	PFAVORITELINEDATA* ppData = &m_vFavoriteLineData[0];
+	int nLen = m_vFavoriteLineData.size();
+
+	//最坏时间复杂度O(N^2)
+	for (int i = 0; i < nLen; i++)
+	{
+		//如果该结点的nId不是数组下标+1,则需要修正
+		if ((ppData[i]->nId != i + 1))
+		{
+			//扫描所有以该结点为父结点的结点，并修正这些结点的nPid
+			for (int j = 0; j < nLen; j++)
+			{
+				if (ppData[j]->nPid == ppData[i]->nId)
+				{
+					ppData[j]->nPid = i + 1;
+				}
+			}
+
+			ppData[i]->nId = i + 1;
+		}
+	}
+
+	pReArrangeService->nNum = nLen;
+	pReArrangeService->ppFavoriteData  = &m_vFavoriteLineData[0];
+}
+
+/*
+void	DataCenterModule::OnService_ReArrangeFavorite(ServiceValue lServiceValue, param lParam)
+{
+	DataCenter_ReArrangeFavoriteService* pReArrangeService = (DataCenter_ReArrangeFavoriteService*)lParam;
+	ASSERT(pReArrangeService != NULL);
+
 	int nLen = m_vFavoriteLineData.size();
 
 	//最坏时间复杂度O(N^2)
@@ -617,7 +649,7 @@ void	DataCenterModule::OnService_ReArrangeFavorite(ServiceValue lServiceValue, p
 			//扫描所有以该结点为父结点的结点，并修正这些结点的nPid
 			for (int j = 0; j < nLen; j++)
 			{
-				if (pData->nPid == pData->nId)
+				if (m_vFavoriteLineData[j]->nPid == pData->nId)
 				{
 					pData->nPid = i + 1;
 				}
@@ -630,6 +662,7 @@ void	DataCenterModule::OnService_ReArrangeFavorite(ServiceValue lServiceValue, p
 	pReArrangeService->nNum = nLen;
 	pReArrangeService->ppFavoriteData  = &m_vFavoriteLineData[0];
 }
+*/
 
 void	DataCenterModule::OnService_GetFavoriteNumAtFold(ServiceValue lServiceValue, param lParam)
 {
