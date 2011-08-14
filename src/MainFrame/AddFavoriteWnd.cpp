@@ -27,8 +27,8 @@ CAddFavoriteWnd::~CAddFavoriteWnd()
 
 void CAddFavoriteWnd::OnPrepare(TNotifyUI& msg) 
 { 
-	m_pTitleEdit= static_cast<CEditUI*>(m_pm.FindControl(_T("TitleEdit")));
 	m_pUrlEdit = static_cast<CEditUI*>(m_pm.FindControl(_T("UrlEdit")));
+	m_pTitleEdit= static_cast<CEditUI*>(m_pm.FindControl(_T("TitleEdit")));
 
 	if( m_pTitleEdit == NULL || m_pUrlEdit == NULL)
 	{
@@ -54,12 +54,19 @@ void	CAddFavoriteWnd::OnAddUrl()
 		return;
 	}
 
+	String	strUrl = m_pUrlEdit->GetText();
+	if( strUrl.Left(7) != L"http://" && strUrl.Left(8) != L"https://")
+	{
+		strUrl = String(L"http://") + strUrl;
+	}
+
+
 	DataCenter_AddFavoriteEvent* pEvent = new DataCenter_AddFavoriteEvent();
 	pEvent->srcMId = MODULE_ID_MAINFRAME;
 	pEvent->desMId = MODULE_ID_DATACENTER;
 	pEvent->nParentFavoriteId = m_nFavoriteId;
 	STRNCPY(pEvent->szTitle, m_pTitleEdit->GetText());
-	STRNCPY(pEvent->szUrl, m_pUrlEdit->GetText());
+	STRNCPY(pEvent->szUrl, strUrl.GetData());
 	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 
 	m_pTitleEdit->SetText(L"");
