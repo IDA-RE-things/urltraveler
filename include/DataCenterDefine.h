@@ -97,7 +97,7 @@ namespace datacenter
 			return false;
 		}
 
-	} FAVORITELINEDATA, *PFAVORITELINEDATA; 
+	} FAVORITELINEDATA, *PFAVORITELINEDATA, **PPFAVORITELINEDATA;
 
 	// 历史记录中每一个历史记录的数据
 	typedef struct HistoryLineData
