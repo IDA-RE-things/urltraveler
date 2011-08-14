@@ -116,11 +116,11 @@ wchar_t* Maxthon2PlugIn::GetHistoryDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
-BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
+BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	CCRCHash ojbCrcHash;
 
-	if (pData == NULL || nDataNum == 0)
+	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -142,49 +142,50 @@ BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 
 			if (memcmp(pTemp, szParentNode, 16) == 0)
 			{
-				pData[i].nPid = 0;
+				ppData[i]->nPid = 0;
 			}
 			else
 			{
-				ojbCrcHash.GetHash((BYTE *)pTemp, nBlobLen, (BYTE *)&pData[i].nPid, sizeof(uint32));
+				ojbCrcHash.GetHash((BYTE *)pTemp, nBlobLen, (BYTE *)&ppData[i]->nPid, sizeof(uint32));
 			}
 
 			pTemp = Query.getBlobField("id", nBlobLen);
 
-			ojbCrcHash.GetHash((BYTE *)pTemp, nBlobLen, (BYTE *)&pData[i].nId, sizeof(uint32));
+			ojbCrcHash.GetHash((BYTE *)pTemp, nBlobLen, (BYTE *)&ppData[i]->nId, sizeof(uint32));
 
 			pTemp = Query.getBlobField("title", nBlobLen);
 
 			if (nBlobLen != 0)
 			{
-				memcpy(pData[i].szTitle, pTemp, nBlobLen);
+				memcpy(ppData[i]->szTitle, pTemp, nBlobLen);
 
-				ojbCrcHash.GetHash((BYTE *)pData[i].szTitle, wcslen(pData[i].szTitle) * sizeof(wchar_t), (BYTE *)&pData[i].nHashId, sizeof(uint32));
+				ojbCrcHash.GetHash((BYTE *)ppData[i]->szTitle, wcslen(ppData[i]->szTitle) * sizeof(wchar_t), 
+					(BYTE *)&ppData[i]->nHashId, sizeof(uint32));
 			}
 			else
 			{
-				pData[i].szTitle[0] = 0;
+				ppData[i]->szTitle[0] = 0;
 			}
 
 			pTemp = Query.getBlobField("url", nBlobLen);
 
 			if (nBlobLen != 0)
 			{
-				memcpy(pData[i].szUrl, pTemp, nBlobLen);
+				memcpy(ppData[i]->szUrl, pTemp, nBlobLen);
 			}
 			else
 			{
-				pData[i].szUrl[0] = 0;
+				ppData[i]->szUrl[0] = 0;
 			}
 
-			pData[i].bFolder = Query.getIntField("type", 1) == IT_FOLDER ? true : false;
+			ppData[i]->bFolder = Query.getIntField("type", 1) == IT_FOLDER ? true : false;
 
-			pData[i].nAddTimes = Query.getIntField("add_date", 0);
-			pData[i].nClickTimes = Query.getIntField("visit_count", 0);
-			pData[i].nLastModifyTime = Query.getIntField("last_modified", 0);
-			pData[i].bDelete = false;
-			pData[i].nCatId = 0;
-			pData[i].nOrder = Query.getIntField("norder", 0);
+			ppData[i]->nAddTimes = Query.getIntField("add_date", 0);
+			ppData[i]->nClickTimes = Query.getIntField("visit_count", 0);
+			ppData[i]->nLastModifyTime = Query.getIntField("last_modified", 0);
+			ppData[i]->bDelete = false;
+			ppData[i]->nCatId = 0;
+			ppData[i]->nOrder = Query.getIntField("norder", 0);
 
 			Query.nextRow();
 			i++;
@@ -195,18 +196,18 @@ BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 		for (int i = 0; i < nDataNum; i++)
 		{
 			//如果该结点的nId不是数组下标+1,则需要修正
-			if ((pData[i].nId != i + 1 + ID_VALUE_MAXTHON2_BEGIN))
+			if ((ppData[i]->nId != i + 1 + ID_VALUE_MAXTHON2_BEGIN))
 			{
 				//扫描所有以该结点为父结点的结点，并修正这些结点的nPid
 				for (int j = 0; j < nDataNum; j++)
 				{
-					if (pData[j].nPid == pData[i].nId)
+					if (ppData[j]->nPid == ppData[i]->nId)
 					{
-						pData[j].nPid = i + 1 + ID_VALUE_MAXTHON2_BEGIN;
+						ppData[j]->nPid = i + 1 + ID_VALUE_MAXTHON2_BEGIN;
 					}
 				}
 
-				pData[i].nId = i + 1 + ID_VALUE_MAXTHON2_BEGIN;
+				ppData[i]->nId = i + 1 + ID_VALUE_MAXTHON2_BEGIN;
 			}
 		}
 
@@ -216,9 +217,9 @@ BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 	return FALSE;
 }
 
-BOOL Maxthon2PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+BOOL Maxthon2PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataNum )
 {
-	if (pData == NULL || nDataNum == 0)
+	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -241,7 +242,7 @@ BOOL Maxthon2PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 
 		for (int i = 0; i < nDataNum; i++)
 		{
-			if (pData[i].bDelete == true)
+			if (ppData[i]->bDelete == true)
 			{
 				continue;
 			}
@@ -249,16 +250,16 @@ BOOL Maxthon2PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into MyFavNodes"
 				L"(id,parent_id,type,title,url,most_fav,visit_count,norder,add_date,shortcut)"
 				L" values(?,?,%d,?,?,0,0,%d,%d,0)",
-				pData[i].bFolder == true ? IT_FOLDER : IT_URL,
-				pData[i].nOrder,
-				(int32)pData[i].nAddTimes);
+				ppData[i]->bFolder == true ? IT_FOLDER : IT_URL,
+				ppData[i]->nOrder,
+				(int32)ppData[i]->nAddTimes);
 
 			CppSQLite3Statement sqliteStatement = m_SqliteDatabase.compileStatement(StringHelper::UnicodeToANSI(szInsert).c_str());
 
-			std::string strTemp1 = StringHelper::StringToHex(StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&pData[i].nId, sizeof(int32))));
+			std::string strTemp1 = StringHelper::StringToHex(StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&ppData[i]->nId, sizeof(int32))));
 			sqliteStatement.bind(1, (unsigned char *)strTemp1.c_str(), strTemp1.length());
 
-			if (pData[i].nPid == 0)
+			if (ppData[i]->nPid == 0)
 			{
 				unsigned char szParentNode[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -266,12 +267,14 @@ BOOL Maxthon2PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 			}
 			else
 			{
-				strTemp1 = StringHelper::StringToHex(StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&pData[i].nPid, sizeof(int32))).c_str());
+				strTemp1 = StringHelper::StringToHex(StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&ppData[i]->nPid, 
+					sizeof(int32))).c_str());
+
 				sqliteStatement.bind(2, (unsigned char *)strTemp1.c_str(), strTemp1.length());
 			}
 
-			sqliteStatement.bind(3, (unsigned char *)pData[i].szTitle, (wcslen(pData[i].szTitle) + 1) * sizeof(wchar_t));
-			sqliteStatement.bind(4, (unsigned char *)pData[i].szUrl, (wcslen(pData[i].szUrl) + 1) * sizeof(wchar_t));
+			sqliteStatement.bind(3, (unsigned char *)ppData[i]->szTitle, (wcslen(ppData[i]->szTitle) + 1) * sizeof(wchar_t));
+			sqliteStatement.bind(4, (unsigned char *)ppData[i]->szUrl, (wcslen(ppData[i]->szUrl) + 1) * sizeof(wchar_t));
 
 			sqliteStatement.execDML();
 			sqliteStatement.reset();

@@ -56,6 +56,8 @@ public:
 	void	OpenUrl(int nIndex);
 	void	CopyUrl(int nIndex);
 	void	SelectTreeList(int nId);
+	void	AddUrlSuccess(PFAVORITELINEDATA pData);
+	PFAVORITELINEDATA*	GetFavoriteLineData(int& nFavoriteNum);
 
 private:
 
@@ -72,6 +74,7 @@ private:
 	void	OnFavoriteListItemMoved(TNotifyUI& msg);
 	void	OnItemReturnKeyDown(TNotifyUI& msg);
 
+
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);
 	void	ShowFavoriteTreeList(int nId);
@@ -83,13 +86,9 @@ public:
 private:
 
 	TreeListUI* m_pFavoriteTree;
-
-	int m_nFavoriteNum;
-	PFAVORITELINEDATA*	m_ppFavoriteData;
+	int m_nCurrentFavoriteFoldId;				//	当前显示的收藏夹目录的 ID
 
 	CTipWnd*            m_pTipWnd;
-
-	int m_nCurrentFavoriteFoldId;				//	当前显示的收藏夹目录的 ID
 
 	// 保存某个目录结点下的所有的叶子结点
 	std::vector<FAVORITELINEDATA*>		m_vFavoriteNodeAtTreeNode;

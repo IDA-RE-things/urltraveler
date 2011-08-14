@@ -101,13 +101,13 @@ wchar_t* C360SE3PlugIn::GetHistoryDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
-BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
+BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
-	memset(pData,0x0, nDataNum*sizeof(FAVORITELINEDATA));
+	memset(ppData,0x0, nDataNum*sizeof(FAVORITELINEDATA*));
 
 	CCRCHash ojbCrcHash;
 
-	if (pData == NULL || nDataNum == 0)
+	if (ppData == NULL || *ppData  == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -120,26 +120,26 @@ BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum
 
 	while(!Query.eof() && i < nDataNum)
 	{
-		 pData[i].nId = Query.getIntField("id", 0) + ID_VALUE_360_BEGIN;
-	     pData[i].nPid = Query.getIntField("parent_id", 0);
+		 ppData[i]->nId = Query.getIntField("id", 0) + ID_VALUE_360_BEGIN;
+		 ppData[i]->nPid = Query.getIntField("parent_id", 0);
 
-		 if (pData[i].nPid != 0)
+		 if (ppData[i]->nPid != 0)
 		 {
-			 pData[i].nPid += ID_VALUE_360_BEGIN;
+			 ppData[i]->nPid += ID_VALUE_360_BEGIN;
 		 }
 
-		 pData[i].bFolder = Query.getIntField("is_folder", 0);
-		 wcscpy_s(pData[i].szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
-		 pData[i].szTitle[MAX_PATH - 1] = 0;
-		 wcscpy_s(pData[i].szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str());
-		 pData[i].szUrl[1023] = 0;
-		 pData[i].nOrder = Query.getIntField("pos", 0);
-		 pData[i].nAddTimes = Query.getInt64Field("create_time", 0);
-		 pData[i].nLastModifyTime = Query.getInt64Field("last_modify_time",0);
+		 ppData[i]->bFolder = Query.getIntField("is_folder", 0);
+		 wcscpy_s(ppData[i]->szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
+		 ppData[i]->szTitle[MAX_PATH - 1] = 0;
+		 wcscpy_s(ppData[i]->szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str());
+		 ppData[i]->szUrl[1023] = 0;
+		 ppData[i]->nOrder = Query.getIntField("pos", 0);
+		 ppData[i]->nAddTimes = Query.getInt64Field("create_time", 0);
+		 ppData[i]->nLastModifyTime = Query.getInt64Field("last_modify_time",0);
 
-		 ojbCrcHash.GetHash((BYTE *)pData[i].szTitle, wcslen(pData[i].szTitle) * sizeof(wchar_t), (BYTE *)&pData[i].nHashId, sizeof(uint32));
-		 pData[i].nCatId = 0;
-		 pData[i].bDelete = false;
+		 ojbCrcHash.GetHash((BYTE *)ppData[i]->szTitle, wcslen(ppData[i]->szTitle) * sizeof(wchar_t), (BYTE *)&ppData[i]->nHashId, sizeof(uint32));
+		 ppData[i]->nCatId = 0;
+		 ppData[i]->bDelete = false;
 
 		 Query.nextRow();
 		 i++;

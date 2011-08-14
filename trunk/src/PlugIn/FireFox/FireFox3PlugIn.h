@@ -60,7 +60,7 @@ public:
 	//		@param	pData			导出的收藏夹数据数组
 	//		@param	nDataNum		导出的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum);
+	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum);
 
 	//----------------------------------------------------------------------------------------
 	//名称: ImportFavoriteData
@@ -69,7 +69,7 @@ public:
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum);
+	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum);
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetFavoriteCount
@@ -90,7 +90,7 @@ protected:
 
 	// 导出所有父结点为nParentId的结点的收藏数据
 	// nCurrentIndex为导出的收藏数据
-	BOOL ExportFavoriteData(int nParentId, PFAVORITELINEDATA pData, int32& nCurrentIndex);
+	BOOL ExportFavoriteData(int nParentId, PFAVORITELINEDATA* ppData, int32& nCurrentIndex);
 
 	// 数据库相关的函数
 protected:
@@ -99,7 +99,7 @@ protected:
 	void GetSystemFavoriteId(int nParentId, std::vector<int>& vIdData); 
 	void GetSystemFavoriteId(std::vector<int>& vIdData); 
 
-	void InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nDataNum);
+	void InsertIntoDB(int nRootId, PFAVORITELINEDATA* ppData, int32 nDataNum);
 
 private:
 

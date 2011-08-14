@@ -31,12 +31,11 @@ using namespace setting;
 
 CMainFrameWnd::CMainFrameWnd()
 {
-	m_nFavoriteNum = 0;
-	m_ppFavoriteData	= NULL;
-	m_pTipWnd = new CTipWnd();
 	m_pFavoriteTree = 0;
-
 	m_nCurrentFavoriteFoldId = 0;
+	m_vFavoriteNodeAtTreeNode.clear();
+
+	m_pTipWnd = new CTipWnd();
 }
 
 CMainFrameWnd::~CMainFrameWnd()
@@ -65,11 +64,8 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	g_MainFrameModule->GetModuleManager()->CallService(openTravelerService.serviceId,(param)&openTravelerService);
 }
 
-void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA**	ppFavoriteData, int nNum)
+void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum)
 {	 
-	m_nFavoriteNum = nNum;
-	m_ppFavoriteData = ppFavoriteData;
-
 	wstring wstrText = L"{x 4}{x 4}";
 	wstrText += L"收藏夹";
 
@@ -85,9 +81,9 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA**	ppFavoriteData, int nNum
 	m_pFavoriteTree->m_mapIdNode[0] = pRootNode;
 	m_pFavoriteTree->m_mapNodeId[pRootNode] = 0;
 
-	for( int i=0; i<m_nFavoriteNum; i++)
+	for( int i=0; i<nNum; i++)
 	{
-		PFAVORITELINEDATA pData = m_ppFavoriteData[i];
+		PFAVORITELINEDATA pData = ppFavoriteData[i];
 
 		if( pData != NULL && pData->bFolder == true)
 		{
@@ -126,16 +122,18 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA**	ppFavoriteData, int nNum
 void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 {
 	m_nCurrentFavoriteFoldId = nId;
-
 	m_vFavoriteNodeAtTreeNode.clear();
 
 	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	pUserList->RemoveAllItems();
-	int j = 0;
 
-	for( int i=0; i<m_nFavoriteNum; i++)
+	int nFavoriteNum = 0;
+	PFAVORITELINEDATA*	ppFavoriteData = GetFavoriteLineData(nFavoriteNum);
+
+	int j = 0;
+	for( int i=0; i<nFavoriteNum; i++)
 	{
-		FAVORITELINEDATA* pData = m_ppFavoriteData[i];
+		FAVORITELINEDATA* pData = ppFavoriteData[i];
 
 		// 叶子结点
 		if( pData->nPid == nId && pData->bFolder == false && pData->bDelete == false)
@@ -1043,6 +1041,35 @@ void	CMainFrameWnd::SelectTreeList(int nId)
 			break;
 		}
 	}
+}
+
+void	CMainFrameWnd::AddUrlSuccess(PFAVORITELINEDATA pData)
+{
+	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	if(pFavList)
+	{
+		CListTextEditElementUI* pListElement = new CListTextEditElementUI;
+		pListElement->SetTag((UINT_PTR)pData);
+		pFavList->Add(pListElement);
+		pListElement->SetColomnEditable(1, TRUE);
+		pListElement->SetColomnEditable(2, TRUE);
+
+		m_vFavoriteNodeAtTreeNode.insert(m_vFavoriteNodeAtTreeNode.begin(),1,pData);
+
+		GetWebSiteFavIcon(pData->szUrl, 0);
+
+		pFavList->Invalidate();
+	}
+}
+
+PFAVORITELINEDATA*	CMainFrameWnd::GetFavoriteLineData(int& nFavoriteNum)
+{
+	DataCenter_GetFavoriteService favoriteData;
+	g_MainFrameModule->GetModuleManager()->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
+		(param)&favoriteData); 
+
+	nFavoriteNum = favoriteData.nNum;
+	return favoriteData.ppFavoriteData;
 }
 
 void CMainFrameWnd::GetAvailableBrowser()

@@ -280,7 +280,7 @@ void FireFox3PlugIn::GetSystemFavoriteId(std::vector<int>& vIdData)
 
 // 导出所有父结点为nParentId的结点的收藏数据
 // nDataNum为导出的收藏数据
-BOOL FireFox3PlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA pData, int32& nCurrentIndex)
+BOOL FireFox3PlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA* ppData, int32& nCurrentIndex)
 {
 	wstring strSql = L"select * from moz_bookmarks where parent = " ;
 	strSql += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nParentId));
@@ -302,33 +302,33 @@ BOOL FireFox3PlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA pData, 
 
 		if( nParentId == 2 || nParentId == 3 || nParentId == 4 || nParentId == 5)
 		{
-			pData[nCurrentIndex].nPid = 0;
+			ppData[nCurrentIndex]->nPid = 0;
 		}
 		else
 		{
-			pData[nCurrentIndex].nPid = Query.getIntField("parent", 0);
+			ppData[nCurrentIndex]->nPid = Query.getIntField("parent", 0);
 		}
 
-		pData[nCurrentIndex].nId = nId + ID_VALUE_FIREFOX_BEGIN;
-		if (pData[nCurrentIndex].nPid != 0)
+		ppData[nCurrentIndex]->nId = nId + ID_VALUE_FIREFOX_BEGIN;
+		if (ppData[nCurrentIndex]->nPid != 0)
 		{
-			pData[nCurrentIndex].nPid += ID_VALUE_FIREFOX_BEGIN;
+			ppData[nCurrentIndex]->nPid += ID_VALUE_FIREFOX_BEGIN;
 		}
 
-		pData[nCurrentIndex].bFolder = Query.getIntField("type", 1) == 2 ? true : false;
+		ppData[nCurrentIndex]->bFolder = Query.getIntField("type", 1) == 2 ? true : false;
 
-		wcscpy_s(pData[nCurrentIndex].szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
-		pData[nCurrentIndex].szTitle[MAX_PATH - 1] = 0;
+		wcscpy_s(ppData[nCurrentIndex]->szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
+		ppData[nCurrentIndex]->szTitle[MAX_PATH - 1] = 0;
 
-		pData[nCurrentIndex].nOrder = Query.getIntField("position", 0);
-		pData[nCurrentIndex].nAddTimes = Query.getInt64Field("dateAdded", 0);
-		pData[nCurrentIndex].nLastModifyTime = Query.getInt64Field("lastModified",0);
+		ppData[nCurrentIndex]->nOrder = Query.getIntField("position", 0);
+		ppData[nCurrentIndex]->nAddTimes = Query.getInt64Field("dateAdded", 0);
+		ppData[nCurrentIndex]->nLastModifyTime = Query.getInt64Field("lastModified",0);
 
-		ojbCrcHash.GetHash((BYTE *)pData[nCurrentIndex].szTitle, 
-			wcslen(pData[nCurrentIndex].szTitle) * sizeof(wchar_t),
-			(BYTE *)&pData[nCurrentIndex].nHashId, sizeof(uint32));
-		pData[nCurrentIndex].nCatId = 0;
-		pData[nCurrentIndex].bDelete = false;
+		ojbCrcHash.GetHash((BYTE *)ppData[nCurrentIndex]->szTitle, 
+			wcslen(ppData[nCurrentIndex]->szTitle) * sizeof(wchar_t),
+			(BYTE *)&ppData[nCurrentIndex]->nHashId, sizeof(uint32));
+		ppData[nCurrentIndex]->nCatId = 0;
+		ppData[nCurrentIndex]->bDelete = false;
 
 		// 查找对应的URL
 		string strUrlQuerySql = "select place.url from moz_bookmarks as marks,\
@@ -338,13 +338,13 @@ BOOL FireFox3PlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA pData, 
 		CppSQLite3Query urlQuery = m_pSqliteDatabase->execQuery(strUrlQuerySql.c_str());
 		if(!urlQuery.eof())
 		{
-			wcscpy_s(pData[nCurrentIndex].szUrl, 1023, StringHelper::Utf8ToUnicode(urlQuery.getStringField("url", 0)).c_str());
-			pData[nCurrentIndex].szUrl[1023] = 0;
+			wcscpy_s(ppData[nCurrentIndex]->szUrl, 1023, StringHelper::Utf8ToUnicode(urlQuery.getStringField("url", 0)).c_str());
+			ppData[nCurrentIndex]->szUrl[1023] = 0;
 		}
 
 		nCurrentIndex++;
 
-		ExportFavoriteData(nId, pData, nCurrentIndex);
+		ExportFavoriteData(nId, ppData, nCurrentIndex);
 		
 		Query.nextRow();
 	}
@@ -352,11 +352,11 @@ BOOL FireFox3PlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA pData, 
 	return TRUE;
 }
 
-BOOL FireFox3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
+BOOL FireFox3PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
-	memset(pData,0x0, nDataNum*sizeof(FAVORITELINEDATA));
+	memset(ppData,0x0, nDataNum*sizeof(PFAVORITELINEDATA));
 
-	if (pData == NULL || nDataNum == 0)
+	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -369,7 +369,7 @@ BOOL FireFox3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 	while(!Query.eof())
 	{
 		int nId = Query.getIntField("id", 0);
-		ExportFavoriteData(nId,pData,nCurrentIndex);
+		ExportFavoriteData(nId,ppData,nCurrentIndex);
 
 		Query.nextRow();
 	}
@@ -379,9 +379,9 @@ BOOL FireFox3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 	return TRUE;
 }
 
-void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nDataNum)
+void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA* ppData, int32 nDataNum)
 {
-	if (pData == NULL || nDataNum == 0)
+	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
 	{
 		return ;
 	}
@@ -401,21 +401,21 @@ void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nD
 
 	for (int i = 0; i < nDataNum; i++)
 	{
-		if (pData[i].bDelete == true)
+		if (ppData[i]->bDelete == true)
 		{
 			nBeginId--;
 			continue;
 		}
 
-		ReplaceSingleQuoteToDoubleQuote(pData[i].szTitle);
-		ReplaceSingleQuoteToDoubleQuote(pData[i].szUrl);
+		ReplaceSingleQuoteToDoubleQuote(ppData[i]->szTitle);
+		ReplaceSingleQuoteToDoubleQuote(ppData[i]->szUrl);
 
 		int nFk = -1;
-		if( wcscspn(pData[i].szUrl,L"") != 0)
+		if( wcscspn(ppData[i]->szUrl,L"") != 0)
 		{
 			// 检查url是否存在
 			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select * from moz_places where url ='%s'",
-				pData[i].szUrl);
+				ppData[i]->szUrl);
 			CppSQLite3Query urlQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
 
 			// 该URL不存在，则插入一条新的记录
@@ -424,8 +424,8 @@ void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nD
 				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_places "
 					L"(url,title) "
 					L" values('%s','%s')",
-					pData[i].szUrl,
-					pData[i].szTitle);
+					ppData[i]->szUrl,
+					ppData[i]->szTitle);
 				m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
 
 				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select max(id) from moz_places ");
@@ -444,7 +444,7 @@ void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nD
 		time_t nowTime;
 		time(&nowTime);
 
-		if( pData[i].nPid == 0)
+		if( ppData[i]->nPid == 0)
 		{
 			if( nFk != -1)
 			{
@@ -453,9 +453,9 @@ void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nD
 					L"(parent,type,title,position,dateAdded,lastModified,fk) "
 					L" values(%d,%d,'%s',%d,%d,%d,%d)",
 					nRootId,
-					pData[i].bFolder == true ? 2 : 1,
-					pData[i].szTitle,
-					pData[i].nOrder,
+					ppData[i]->bFolder == true ? 2 : 1,
+					ppData[i]->szTitle,
+					ppData[i]->nOrder,
 					(int)nowTime, 
 					(int)nowTime,
 					nFk
@@ -468,9 +468,9 @@ void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nD
 					L" (parent,type,title,position,lastModified,dateAdded) " \
 					L" values(%d,%d,'%s',%d,%d,%d)",
 					nRootId,
-					pData[i].bFolder == true ? 2 : 1,
-					pData[i].szTitle,
-					pData[i].nOrder,
+					ppData[i]->bFolder == true ? 2 : 1,
+					ppData[i]->szTitle,
+					ppData[i]->nOrder,
 					(int)nowTime,
 					(int)nowTime);
 			}
@@ -483,10 +483,10 @@ void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nD
 				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
 					L"(parent,type,title,position,dateAdded,lastModified,fk) "
 					L" values(%d,%d,'%s',%d,%d,%d, %d)",
-					pData[i].nPid + nBeginId,
-					pData[i].bFolder == true ? 2 : 1,
-					pData[i].szTitle,
-					pData[i].nOrder,
+					ppData[i]->nPid + nBeginId,
+					ppData[i]->bFolder == true ? 2 : 1,
+					ppData[i]->szTitle,
+					ppData[i]->nOrder,
 					(int)nowTime, 
 					(int)nowTime,
 					nFk
@@ -497,10 +497,10 @@ void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nD
 				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
 					L"(parent,type,title,position,dateAdded,lastModified) "
 					L" values(%d,%d,'%s',%d,%d,%d)",
-					pData[i].nPid + nBeginId,
-					pData[i].bFolder == true ? 2 : 1,
-					pData[i].szTitle,
-					pData[i].nOrder,
+					ppData[i]->nPid + nBeginId,
+					ppData[i]->bFolder == true ? 2 : 1,
+					ppData[i]->szTitle,
+					ppData[i]->nOrder,
 					(int)nowTime, 
 					(int)nowTime	
 					);
@@ -510,9 +510,9 @@ void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA pData, int32 nD
 	}
 }
 
-BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataNum )
 {
-	if (pData == NULL || nDataNum == 0)
+	if (ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -542,8 +542,8 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum
 	wstrDeleteSql += strId + L")";
 	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(wstrDeleteSql).c_str());
 
-	InsertIntoDB(2, pData, nDataNum);
-	InsertIntoDB(3, pData, nDataNum);
+	InsertIntoDB(2, ppData, nDataNum);
+	InsertIntoDB(3, ppData, nDataNum);
 
 	return TRUE;
 }

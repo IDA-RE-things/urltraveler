@@ -204,6 +204,23 @@ BOOL DataCenterModule::Load(IModuleManager* pManager)
 	return TRUE;
 }
 
+BOOL DataCenterModule::Unload()
+{
+	__super::Unload();
+
+	for(size_t i=0; i<m_vFavoriteLineData.size(); i++)
+	{
+		PFAVORITELINEDATA pData = m_vFavoriteLineData[i];
+		if( pData == NULL)
+			continue;
+
+		delete pData;
+	}
+
+	return TRUE;
+}
+
+
 //----------------------------------------------------------------------------------------
 //名称: GetModuleName
 //描述: 主程序通过该方法获取当前模块的名字，每一个模块都有一个唯一的名字
@@ -302,22 +319,33 @@ void	DataCenterModule::OnEvent_AddFavorite(Event* pEvent)
 	if( pAddFavoriteEvent == NULL)
 		return;
 
-/*
 	int nParentId = pAddFavoriteEvent->nParentFavoriteId;
 	wchar_t* pszTitle = pAddFavoriteEvent->szTitle;
 	wchar_t* pszUrl = pAddFavoriteEvent->szUrl;
 
-	FAVORITELINEDATA favoriteData ;
-	favoriteData.nId = m_vFavoriteLineData[m_vFavoriteLineData.size() - 1].nId + 1;
-	favoriteData.nPid = nParentId;
-	STRNCPY(favoriteData.szTitle, pszTitle);
-	STRNCPY(favoriteData.szUrl, pszUrl);
-	m_vFavoriteLineData.push_back(favoriteData);
+	PFAVORITELINEDATA pFavoriteData = new FAVORITELINEDATA();
+
+	PFAVORITELINEDATA pLastData = m_vFavoriteLineData[m_vFavoriteLineData.size() - 1];
+	if( pLastData == NULL)
+		pFavoriteData->nId = 0;
+	else
+		pFavoriteData->nId = m_vFavoriteLineData[m_vFavoriteLineData.size() - 1]->nId + 1;
+
+	pFavoriteData->nPid = nParentId;
+	STRNCPY(pFavoriteData->szTitle, pszTitle);
+	STRNCPY(pFavoriteData->szUrl, pszUrl);
+	m_vFavoriteLineData.insert(m_vFavoriteLineData.begin(),1,pFavoriteData);
 
 	// 进行排序
 	DataCenter_ReArrangeFavoriteService service;
 	GetModuleManager()->CallService(service.serviceId, (param)&service);
-*/
+
+	// 然后通知增加成功
+	DataCenter_AddFavoriteResultEvent * pRespEvent = new DataCenter_AddFavoriteResultEvent();
+	pRespEvent->srcMId = MODULE_ID_DATACENTER;
+	pRespEvent->desMId = pEvent->srcMId;
+	pRespEvent->pFavoriteData = pFavoriteData;
+	GetModuleManager()->PushEvent(*pRespEvent);
 }
 
 void	DataCenterModule::OnEvent_DeleteFavorite(Event* pEvent)

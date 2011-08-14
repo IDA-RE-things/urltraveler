@@ -66,7 +66,7 @@ public:
 	//		@param	pData			导出的收藏夹数据数组
 	//		@param	nDataNum		导出的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum);
+	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum);
 
 	//----------------------------------------------------------------------------------------
 	//名称: ImportFavoriteData
@@ -75,7 +75,7 @@ public:
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum);
+	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum);
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetFavoriteCount
@@ -86,14 +86,14 @@ public:
 	virtual int32 GetFavoriteCount();
 
 private:
-	BOOL ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum);
-	BOOL ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA pData, int32& nDataNum);
-	BOOL MakeFolderNode(FAVORITELINEDATA stData, Json::Value& folder_obj, uint32& nIndex);
-	BOOL MakeUrlNode(FAVORITELINEDATA stData, Json::Value& url_obj, uint32& nIndex);
+	BOOL ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32& nDataNum);
+	BOOL ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32& nDataNum);
+	BOOL MakeFolderNode(PFAVORITELINEDATA pstData, Json::Value& folder_obj, uint32& nIndex);
+	BOOL MakeUrlNode(PFAVORITELINEDATA pstData, Json::Value& url_obj, uint32& nIndex);
 	BOOL MakeSpecialFolderNode(wchar_t *pszName, uint32& nIndex, Json::Value& folder_obj);
 
 	BOOL EnumNode(Json::Value& folder_obj, int32& nCount);
-	BOOL TraverseNode(PFAVORITELINEDATA pData, int32 nDepth);
+	BOOL TraverseNode(PFAVORITELINEDATA* ppData, int32 nDepth);
 
 	BOOL StringToInt64(std::string strTime, int64& nTime);
 	BOOL Int64ToString(int64 nTime, std::string& strTime);
@@ -107,14 +107,15 @@ private:
 	void UpdateChecksumWithFolderNode(const std::string& id, const std::wstring& title); 
 	void FinalizeChecksum();
 
-	void SortByDepth(PFAVORITELINEDATA pData, int32 nDataNum);
-	void SortNode(PFAVORITELINEDATA pData, int32 nDataNum, PFAVORITELINEDATA& pSortData, int32 nParentId);
+	void SortByDepth(PFAVORITELINEDATA* ppDppDataata, int32 nDataNum);
+	void SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum, PFAVORITELINEDATA*& ppSortData, int32 nParentId);
 
 private:
 	typedef struct NodeInfo
 	{
 		int32 nIndex;
 		Json::Value node_obj;
+
 	} NODEINFO, *PNODEINFO;
 
 	int32 m_nMaxDepth;

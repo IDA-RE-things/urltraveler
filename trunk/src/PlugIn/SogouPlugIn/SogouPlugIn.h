@@ -43,6 +43,7 @@ public:
 	//描述: 获取该插件对应的浏览器的名称和版本
 	//----------------------------------------------------------------------------------------
 	virtual const wchar_t* GetBrowserName() ;
+
 	//----------------------------------------------------------------------------------------
 	//名称: GetInstallPath
 	//描述: 获取插件对应的浏览器的安装目录
@@ -77,7 +78,7 @@ public:
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum);
+	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum);
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetFavoriteCount
