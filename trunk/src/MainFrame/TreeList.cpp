@@ -258,14 +258,14 @@ void	TreeListUI::OnTreeListItemDragEnd()
 		(param)&favoriteData); 
 
 	int nFavoriteNum = favoriteData.nNum;
-	FAVORITELINEDATA* pFavoriteData = *favoriteData.ppFavoriteData;
+	PPFAVORITELINEDATA ppFavoriteData = favoriteData.ppFavoriteData;
 
-	FAVORITELINEDATA* pSrcLineData = NULL;
+	PFAVORITELINEDATA pSrcLineData = NULL;
 	for( int i=0; i<nFavoriteNum; i++)
 	{
-		if( pFavoriteData[i].nId == nSrctId)
+		if( ppFavoriteData[i]->nId == nSrctId)
 		{
-			pSrcLineData = &pFavoriteData[i];
+			pSrcLineData = ppFavoriteData[i];
 			break;
 		}
 	}
