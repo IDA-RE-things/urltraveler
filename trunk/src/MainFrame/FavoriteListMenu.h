@@ -13,10 +13,8 @@ public:
 	}
 
 	void	OnAdd();
-
 	void	OnDelete();
 	void	OnOpen();
-
 	void	OnCopyUrl();
 	void	OnEdit();
 

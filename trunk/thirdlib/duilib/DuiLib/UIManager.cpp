@@ -812,6 +812,7 @@ namespace DuiLib {
 			if( pControl->GetManager() != this ) break;
 			pControl->SetFocus();
 			SetCapture();
+
 			TEventUI event = { 0 };
 			event.Type = UIEVENT_RBUTTONDOWN;
 			event.wParam = wParam;
