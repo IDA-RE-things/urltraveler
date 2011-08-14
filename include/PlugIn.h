@@ -177,7 +177,7 @@ interface IPlugIn
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum) PURE;
+	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum) PURE;
 
 	//----------------------------------------------------------------------------------------
 	//名称: ExportHistoryData
@@ -355,7 +355,7 @@ public:
 	//		@param	pData			导出的收藏夹数据数组
 	//		@param	nDataNum		导出的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum)
+	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	{
 		return FALSE;
 	}
@@ -367,7 +367,7 @@ public:
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
+	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
 	{
 		return FALSE;
 	}

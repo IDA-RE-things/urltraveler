@@ -77,15 +77,15 @@ wchar_t* TTPlugIn::GetHistoryDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
-BOOL TTPlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
+BOOL TTPlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	nDataNum = 0;
 	return TRUE;
 }
 
-BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataNum )
 {
-	if (pData == NULL || nDataNum == 0)
+	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}

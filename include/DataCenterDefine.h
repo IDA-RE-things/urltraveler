@@ -18,6 +18,7 @@ namespace datacenter
 		EVENT_VALUE_DATACENTER_OPEN = EVENT_VALUE_DATACENTER_BEGIN,		//打开主界面
 		EVENT_VALUE_DATACENTER_FAVORITE_ICON_ARRIVE,						//收藏夹图标已经就绪
 		EVENT_VALUE_DATACENTER_ADD_FAVORITE,				// 增加一个新的收藏记录
+		EVENT_VALUE_DATACENTER_ADD_FAVORITE_RESP,		// 增加一个新的收藏记录的响应
 		EVENT_VALUE_DATACENTER_DELETE_FAVORITE,			// 删除某个收藏的URL
 		EVENT_VALUE_DATACENTER_ADD_FAVORITE_FOLD,		// 增加一个收藏夹目录
 		EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,		// 删除某个收藏夹的所有数据, param0为需要删除的收藏夹id
@@ -168,6 +169,19 @@ namespace datacenter
 		int nParentFavoriteId;				//	当前收藏所在的收藏目录
 		wchar_t	szTitle[MAX_PATH];			//	收藏的标题
 		wchar_t	szUrl[MAX_PATH];			//	收藏的URL
+	};
+
+	// 由于DataCenter_AddFavoriteEvent是异步消息，在发送后，发送者没法获得结果，因此
+	// 必须通过ResultEvent通知
+	struct DataCenter_AddFavoriteResultEvent	: DataCenterEvent 
+	{
+		DataCenter_AddFavoriteResultEvent()
+		{
+			eventValue	=	EVENT_VALUE_DATACENTER_ADD_FAVORITE_RESP;
+			pFavoriteData = NULL;
+		}
+
+		FAVORITELINEDATA*	pFavoriteData;
 	};
 
 	struct DataCenter_DeleteFavoriteEvent	: DataCenterEvent 

@@ -7,17 +7,20 @@ class Maxthon2PlugIn : public PlugInImp
 public:
 	Maxthon2PlugIn();
 	~Maxthon2PlugIn();
+
 	//----------------------------------------------------------------------------------------
 	//名称: Load 
 	//描述: 插件的Load方法，主要用于数据等初始化 
 	//返回: 初始化成功返回TRUE，初始化失败返回FALSE。
 	//----------------------------------------------------------------------------------------
 	virtual BOOL Load();
+
 	//----------------------------------------------------------------------------------------
 	//名称: UnLoad 
 	//描述: 插件的UnLoad方法，主要用于数据等反初始化 
 	//返回: 初始化成功返回TRUE，初始化失败返回FALSE。
 	//----------------------------------------------------------------------------------------
+
 	virtual BOOL UnLoad();
 	//----------------------------------------------------------------------------------------
 	//名称: IsWorked
@@ -66,7 +69,7 @@ public:
 	//		@param	pData			导出的收藏夹数据数组
 	//		@param	nDataNum		导出的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA pData, int32& nDataNum);
+	virtual BOOL ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum);
 
 	//----------------------------------------------------------------------------------------
 	//名称: ImportFavoriteData
@@ -75,7 +78,7 @@ public:
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum);
+	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum);
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetFavoriteCount
