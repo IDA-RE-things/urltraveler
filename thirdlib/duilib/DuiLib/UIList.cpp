@@ -1205,7 +1205,12 @@ namespace DuiLib
 	void CListUI::EnsureVisible(int iIndex)
 	{
 		if( m_iLastClickSel < 0 ) return;
-		RECT rcItem = m_pList->GetItemAt(iIndex)->GetPos();
+
+		CListElementUI* pElement = (CListElementUI*)m_pList->GetItemAt(iIndex);
+		if( pElement == NULL)
+			return;
+
+		RECT rcItem = pElement->GetPos();
 		RECT rcList = m_pList->GetPos();
 		RECT rcListInset = m_pList->GetInset();
 
