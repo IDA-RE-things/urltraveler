@@ -62,7 +62,9 @@ void	CAddFavoriteWnd::OnAddUrl()
 	STRNCPY(pEvent->szUrl, m_pUrlEdit->GetText());
 	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 
-	Close();
+	m_pTitleEdit->SetText(L"");
+	m_pUrlEdit->SetText(L"");
+	m_pTitleEdit->SetFocus();
 }
 
 void CAddFavoriteWnd::Notify(TNotifyUI& msg)
@@ -80,6 +82,26 @@ void CAddFavoriteWnd::Notify(TNotifyUI& msg)
 		else if( msg.pSender->GetName() == L"AddBtn" ) 
 		{
 			OnAddUrl();
+		}
+	}
+	else if( msg.sType == _T("return") )
+	{
+		CControlUI* pControl = m_pm.GetFocus();	
+		if( pControl == NULL)
+			return;
+
+		if( pControl->GetName() == L"TitleEdit")
+		{
+			if( m_pUrlEdit)
+				m_pUrlEdit->SetFocus();
+
+			return;
+		}
+
+		if( pControl->GetName() == L"UrlEdit")
+		{
+			OnAddUrl();
+			return;
 		}
 	}
 }
@@ -146,12 +168,14 @@ LRESULT CAddFavoriteWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 LRESULT CAddFavoriteWnd::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	SIZE szRoundCorner = m_pm.GetRoundCorner();
-	if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) ) {
+	if( !::IsIconic(*this) && (szRoundCorner.cx != 0 || szRoundCorner.cy != 0) )
+	{
 		CRect rcWnd;
 		::GetWindowRect(*this, &rcWnd);
 		rcWnd.Offset(-rcWnd.left, -rcWnd.top);
 		rcWnd.right++; rcWnd.bottom++;
-		HRGN hRgn = ::CreateRoundRectRgn(rcWnd.left, rcWnd.top, rcWnd.right, rcWnd.bottom, szRoundCorner.cx, szRoundCorner.cy);
+		HRGN hRgn = ::CreateRoundRectRgn(rcWnd.left, rcWnd.top, rcWnd.right, 
+			rcWnd.bottom, szRoundCorner.cx, szRoundCorner.cy);
 		::SetWindowRgn(*this, hRgn, TRUE);
 		::DeleteObject(hRgn);
 	}
@@ -181,7 +205,8 @@ LRESULT CAddFavoriteWnd::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam
 LRESULT CAddFavoriteWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	// 有时会在收到WM_NCDESTROY后收到wParam为SC_CLOSE的WM_SYSCOMMAND
-	if( wParam == SC_CLOSE ) {
+	if( wParam == SC_CLOSE ) 
+	{
 		PostMessageW(WM_CLOSE,0,0);
 		bHandled = TRUE;
 		return 0;
@@ -213,6 +238,17 @@ LRESULT CAddFavoriteWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	return 0;
 }
 
+LRESULT CAddFavoriteWnd::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if( wParam == VK_ESCAPE ) 
+	{
+		Close();
+	}
+
+	return 0;
+}
+
+
 LRESULT CAddFavoriteWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lRes = 0;
@@ -229,6 +265,7 @@ LRESULT CAddFavoriteWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case WM_GETMINMAXINFO: lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
 		case WM_SYSCOMMAND:    lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
 		case WM_COMMAND:       lRes = OnCommand(uMsg, wParam, lParam, bHandled); break;
+		case WM_KEYDOWN: lRes = OnKeyDown(uMsg, wParam, lParam, bHandled); break;
 		default:
 			bHandled = FALSE;
 	}

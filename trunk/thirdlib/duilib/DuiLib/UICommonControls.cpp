@@ -1486,9 +1486,11 @@ Label_ForeImage:
 		{
 			Invalidate();
 		}
-		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK || event.Type == UIEVENT_RBUTTONDOWN) 
+		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK 
+			|| event.Type == UIEVENT_RBUTTONDOWN) 
 		{
-			if( IsEnabled() ) {
+			if( IsEnabled() )
+			{
 				GetManager()->ReleaseCapture();
 				if( IsFocused() && m_pWindow == NULL )
 				{
@@ -1537,7 +1539,8 @@ Label_ForeImage:
 		}
 		if( event.Type == UIEVENT_MOUSEENTER )
 		{
-			if( IsEnabled() ) {
+			if( IsEnabled() ) 
+			{
 				m_uButtonState |= UISTATE_HOT;
 				Invalidate();
 			}
@@ -1545,9 +1548,18 @@ Label_ForeImage:
 		}
 		if( event.Type == UIEVENT_MOUSELEAVE )
 		{
-			if( IsEnabled() ) {
+			if( IsEnabled() ) 
+			{
 				m_uButtonState &= ~UISTATE_HOT;
 				Invalidate();
+			}
+			return;
+		}
+		if( event.Type == UIEVENT_KEYDOWN )
+		{
+			if( IsEnabled() ) 
+			{
+				m_pParent->DoEvent(event);
 			}
 			return;
 		}

@@ -805,7 +805,8 @@ LRESULT CMainFrameWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lRes = 0;
 	BOOL bHandled = TRUE;
-	switch( uMsg ) {
+	switch( uMsg ) 
+	{
 		case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
 		case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
 		case WM_DESTROY:       lRes = OnDestroy(uMsg, wParam, lParam, bHandled); break;
@@ -952,27 +953,12 @@ void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
 
 void CMainFrameWnd::AddUrl()
 {
-	
 	CAddFavoriteWnd* pAddFavoriteWnd = new CAddFavoriteWnd();
 	if( pAddFavoriteWnd == NULL ) { Close(); return;  }
 	pAddFavoriteWnd->Create(m_hWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
 	pAddFavoriteWnd->CenterWindow();
 	pAddFavoriteWnd->m_nFavoriteId = m_nCurrentFavoriteFoldId;
 	pAddFavoriteWnd->ShowModal();
-
-	return;
-
-
-	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	if( pFavList == NULL)
-		return;
-
-	FAVORITELINEDATA* pData = new FAVORITELINEDATA();
-	pData->nPid = m_pFavoriteTree->m_nTreeNodeId;
-	m_vFavoriteNodeAtTreeNode.insert(m_vFavoriteNodeAtTreeNode.begin(), pData);
-
-	pFavList->Invalidate();
-	pFavList->ShowEdit(0,1);
 }
 
 void	CMainFrameWnd::OpenUrl(int nIndex)
@@ -1060,6 +1046,9 @@ void	CMainFrameWnd::AddUrlSuccess(PFAVORITELINEDATA pData)
 
 		pFavList->Invalidate();
 	}
+
+	int nFavoriteNum = m_vFavoriteNodeAtTreeNode.size();
+	SetFavoriteNumText(nFavoriteNum);
 }
 
 PFAVORITELINEDATA*	CMainFrameWnd::GetFavoriteLineData(int& nFavoriteNum)
