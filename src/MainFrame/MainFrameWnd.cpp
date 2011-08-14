@@ -307,10 +307,11 @@ void	CMainFrameWnd::OnFavoriteListItemEditFinished(TNotifyUI& msg)
 	{
 		CListUI *pListUI = (CListUI *)pControl;
 
-		DWORD nRow = HIWORD(msg.wParam);
-		DWORD nColomn = LOWORD(msg.wParam);
+		SHORT nRow = HIWORD(msg.wParam);
+		SHORT nColomn = LOWORD(msg.wParam);
 
-		if( nRow < 0 || nRow > pListUI->GetRowCount() - 1)
+		int nTotalRow = pListUI->GetRowCount();
+		if( nRow < 0 || nTotalRow == 0 || nRow >nTotalRow - 1)
 			return;
 
 		FAVORITELINEDATA* pData = m_vFavoriteNodeAtTreeNode[nRow];
@@ -823,11 +824,6 @@ LRESULT CMainFrameWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	if( bHandled ) return lRes;
 
-	if( uMsg == WM_KEYDOWN)
-	{
-		int i=0;
-		i++;
-	}
 	if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
 	return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 }

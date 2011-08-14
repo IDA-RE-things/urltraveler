@@ -1859,6 +1859,16 @@ namespace DuiLib
 			return;
 		}
 
+		if( event.Type == UIEVENT_RBUTTONDOWN)
+		{
+			event.wParam = -1;
+			event.dwTimestamp = ::GetTickCount();
+			if( m_pOwner != NULL ) 
+				m_pOwner->DoEvent(event);
+
+			return;
+		}
+
 		if( m_pOwner != NULL ) m_pOwner->DoEvent(event); else CControlUI::DoEvent(event);
 	}
 
