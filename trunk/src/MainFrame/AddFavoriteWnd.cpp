@@ -82,7 +82,11 @@ void CAddFavoriteWnd::Notify(TNotifyUI& msg)
 	}
 	else if( msg.sType == _T("click") )
 	{
-		if( msg.pSender->GetName() == L"CancelBtn" ) 
+		if( msg.pSender->GetName() == L"closebtn" ) 
+		{
+			Close();
+		}
+		else if( msg.pSender->GetName() == L"CancelBtn" ) 
 		{
 			Close();
 		}
@@ -161,7 +165,8 @@ LRESULT CAddFavoriteWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 	RECT rcCaption = m_pm.GetCaptionRect();
 	if( pt.x >= rcClient.left + rcCaption.left && pt.x < rcClient.right - rcCaption.right \
-		&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) {
+		&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) 
+	{
 			CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(pt));
 			if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
 				_tcscmp(pControl->GetClass(), _T("OptionUI")) != 0// &&
