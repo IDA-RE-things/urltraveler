@@ -282,6 +282,12 @@ void	CMainFrameWnd::OnShowMenu(TNotifyUI& msg)
 			pMenu->StoreLanuchPos(msg.ptMouse.x, msg.ptMouse.y);
 			pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 172));
 		}
+
+		// ÏÔÊ¾²Ëµ¥
+		else
+		{
+
+		}
 	}
 	else 	if( msg.pSender->GetName() == _T("favoritetreelist") ) 
 	{

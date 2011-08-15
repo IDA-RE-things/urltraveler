@@ -7,6 +7,7 @@
 #include "TxConfig.h"
 #include "MiscHelper.h"
 #include "StringHelper.h"
+#include <algorithm>
 
 using namespace datacenter;
 using namespace database;
@@ -313,6 +314,11 @@ void	DataCenterModule::OnEvent_FavoriteIconArrive(Event* pEvent)
 	}
 }
 
+bool CompareFavoriteData (const FAVORITELINEDATA* i,  const FAVORITELINEDATA* j) 
+{ 
+	return i->nPid < j->nPid;
+}
+
 void	DataCenterModule::OnEvent_AddFavorite(Event* pEvent)
 {
 	DataCenter_AddFavoriteEvent* pAddFavoriteEvent = (DataCenter_AddFavoriteEvent*)pEvent->m_pstExtraInfo;
@@ -335,6 +341,9 @@ void	DataCenterModule::OnEvent_AddFavorite(Event* pEvent)
 	STRNCPY(pFavoriteData->szTitle, pszTitle);
 	STRNCPY(pFavoriteData->szUrl, pszUrl);
 	m_vFavoriteLineData.insert(m_vFavoriteLineData.begin(),1,pFavoriteData);
+
+	// 进行广度遍历排序
+	std::sort(m_vFavoriteLineData.begin(), m_vFavoriteLineData.end(), CompareFavoriteData);
 
 	// 进行排序
 	DataCenter_ReArrangeFavoriteService service;
