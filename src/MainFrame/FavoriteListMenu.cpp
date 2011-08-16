@@ -8,25 +8,25 @@ void	CFavoriteListMenu::Init(bool bSelectItem)
 {
 	if( bSelectItem == true)
 	{
-		InsertMenu(0,MF_BYCOMMAND, IDM_OPEN, L"打开网站");
+		InsertMenu(0,MF_BYCOMMAND, IDM_FAVLIST_OPEN, L"打开网站");
 		InsertMenu(1,MF_SEPARATOR, 0, L"");
 
-		InsertMenu(2,MF_BYCOMMAND, IDM_ADD, L"增加收藏");
-		InsertMenu(3,MF_BYCOMMAND, IDM_EDIT, L"编辑收藏");
-		InsertMenu(4,MF_BYCOMMAND, IDM_DELETE, L"删除收藏");
-		InsertMenu(5,MF_BYCOMMAND, IDM_RENAME, L"重命名");
-		InsertMenu(6,MF_BYCOMMAND, IDM_COPYURL, L"复制网址URL");
+		InsertMenu(2,MF_BYCOMMAND, IDM_FAVLIST_ADD, L"增加收藏");
+		InsertMenu(3,MF_BYCOMMAND, IDM_FAVLIST_EDIT, L"编辑收藏");
+		InsertMenu(4,MF_BYCOMMAND, IDM_FAVLIST_DELETE, L"删除收藏");
+		InsertMenu(5,MF_BYCOMMAND, IDM_FAVLIST_RENAME, L"重命名");
+		InsertMenu(6,MF_BYCOMMAND, IDM_FAVLIST_COPYURL, L"复制网址URL");
 
 		InsertMenu(7,MF_SEPARATOR, 0, L"");
 
-		InsertMenu(8,MF_BYCOMMAND, IDM_SELECTALL, L"全选");
-		InsertMenu(9,MF_BYCOMMAND, IDM_OPEN, L"打开该网址");
-		InsertMenu(10,MF_BYCOMMAND, IDM_SHARE, L"分享该网址");
+		InsertMenu(8,MF_BYCOMMAND, IDM_FAVLIST_SELECTALL, L"全选");
+		InsertMenu(9,MF_BYCOMMAND, IDM_FAVLIST_OPEN, L"打开该网址");
+		InsertMenu(10,MF_BYCOMMAND, IDM_FAVLIST_SHARE, L"分享该网址");
 	}
 	else
 	{
-		InsertMenu(0,MF_BYCOMMAND, IDM_ADD, L"增加收藏");
-		InsertMenu(1,MF_BYCOMMAND, IDM_SELECTALL, L"全选");
+		InsertMenu(0,MF_BYCOMMAND, IDM_FAVLIST_ADD, L"增加收藏");
+		InsertMenu(1,MF_BYCOMMAND, IDM_FAVLIST_SELECTALL, L"全选");
 	}
 }
 

@@ -674,7 +674,8 @@ LRESULT CMainFrameWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 	RECT rcCaption = m_pm.GetCaptionRect();
 	if( pt.x >= rcClient.left + rcCaption.left && pt.x < rcClient.right - rcCaption.right \
-		&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) {
+		&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom )
+	{
 			CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(pt));
 			if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
 				_tcscmp(pControl->GetClass(), _T("OptionUI")) != 0// &&
@@ -774,6 +775,61 @@ LRESULT CMainFrameWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	return lRes;
 }
 
+void CMainFrameWnd::OnAdd()
+{
+	g_MainFrameModule->GetModuleManager()->PushEvent(
+		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_MAINFRAME_ADD_URL, MODULE_ID_MAINFRAME));
+}
+
+void	CMainFrameWnd::OnDelete()
+{
+	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	int nSel = pList->GetCurSel();
+	if( nSel < 0 ) return;
+
+	CListElementUI* pElement =		 (CListElementUI*)pList->GetSubItem(nSel);
+	if( pElement == NULL)
+	return;
+
+	FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)(pElement->GetTag());
+	pSelNode->bDelete = true;
+	pList->RemoveAt(nSel);
+
+	// 从数据中心中删除该Item
+	MainFrame_DeleteFavoriteEvent* pEvent = new MainFrame_DeleteFavoriteEvent();
+	pEvent->desMId = MODULE_ID_MAINFRAME;
+	pEvent->nDeleteNodeId = pSelNode->nId;
+	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+}
+
+void	CMainFrameWnd::OnOpen()
+{
+	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	int nSel = pList->GetCurSel();
+	if( nSel < 0 ) return;
+
+	// 通知打开URL
+	g_MainFrameModule->GetModuleManager()->PushEvent(
+	MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_MAINFRAME_OPEN_URL, MODULE_ID_MAINFRAME, nSel));
+}
+
+void	CMainFrameWnd::OnCopyUrl()
+{
+	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	int nSel = pList->GetCurSel();
+	if( nSel < 0 ) return;
+
+	// 通知打开URL
+	g_MainFrameModule->GetModuleManager()->PushEvent(
+	MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_MAINFRAME_COPY_URL, MODULE_ID_MAINFRAME, nSel));
+}
+
+void CMainFrameWnd::OnEdit()
+{
+	//CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	//pList->EditItem(m_nX, m_nY);
+}
+
 LRESULT CMainFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	int wmId    = LOWORD(wParam);
@@ -799,6 +855,33 @@ LRESULT CMainFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			pEvent->srcMId = MODULE_ID_MAINFRAME;
 			g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 		}
+		break;
+
+	// 列表菜单项
+	case IDM_FAVLIST_ADD:
+		OnAdd();
+		break;
+
+	case IDM_FAVLIST_DELETE:
+		OnDelete();
+		break;
+
+	case IDM_FAVLIST_COPYURL:
+		OnCopyUrl();
+		break;
+
+	case IDM_FAVLIST_EDIT:
+		OnEdit();
+		break;
+
+	case IDM_FAVLIST_SHARE:
+		break;
+
+	case IDM_FAVLIST_SELECTALL:
+		break;
+
+	case IDM_FAVLIST_OPEN:
+		OnOpen();
 		break;
 
 	default:
