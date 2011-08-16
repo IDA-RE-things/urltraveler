@@ -7,6 +7,12 @@
 
 using namespace  std;
 
+#define ASSERT_POINTER(p, type) \
+	ASSERT(((p) != NULL) && MiscHelper::IsValidAddress((p), sizeof(type), FALSE))
+
+ #define ASSERT_NULL_OR_POINTER(p, type) \
+	ASSERT(((p) == NULL) || MiscHelper::IsValidAddress((p), sizeof(type), FALSE))
+
 class UTILITY_API MiscHelper
 {
 private:
@@ -70,4 +76,6 @@ public:
 	static void SetVersionInConfig(int nVersion);
 
 	static void	 SaveKeyValueConfig(LPCTSTR pszKeyName, LPCSTR pszValue);
+
+	static BOOL	IsValidAddress(const void* p, size_t nBytes,BOOL bReadWrite);
 };

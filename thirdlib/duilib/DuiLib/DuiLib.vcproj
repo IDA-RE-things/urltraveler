@@ -235,6 +235,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Menu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stb_image.c"
 				>
 				<FileConfiguration
@@ -528,6 +532,10 @@
 			>
 			<File
 				RelativePath=".\IconBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Menu.h"
 				>
 			</File>
 			<File
