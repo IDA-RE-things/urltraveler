@@ -74,6 +74,14 @@ private:
 	void	OnFavoriteListItemMoved(TNotifyUI& msg);
 	void	OnItemReturnKeyDown(TNotifyUI& msg);
 
+	//	列表菜单项响应函数
+	void	OnAdd();
+	void	OnDelete();
+	void	OnOpen();
+	void	OnCopyUrl();
+	void	OnEdit();
+
+
 
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);
