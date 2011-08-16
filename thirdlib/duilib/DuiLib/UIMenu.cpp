@@ -1,284 +1,162 @@
-#include "StdAfx.h"
+#include <StdAfx.h>
 #include "UIMenu.h"
 
-
-/////////////////////// CMenuUI ///////////////////////
-using namespace DuiLib;
-
-CMenuUI::CMenuUI(HWND hWnd,CPaintManagerUI* pManager)
+namespace DuiLib
 {
-	_hWnd=hWnd;
-	_pManager=pManager;
-	_hMenu =::CreatePopupMenu();
+	CMenuUI::CMenuUI()
+	{ m_hMenu = NULL; }
 
-	Init();
-}
-void CMenuUI::AppendMenu(UINT uFlags,UINT uIDNewItem,LPCTSTR lpNewItem)
-{
-	::AppendMenu(_hMenu, uFlags, uIDNewItem, lpNewItem);
-}
+	CMenuUI::~CMenuUI()
+	{ DestroyMenu(); }
 
-CMenuUI::~CMenuUI()
-{
-	for ( int i = 0; i < _pmi.GetSize(); i++)
+	BOOL CMenuUI::CreateMenu()
+	{ return Attach(::CreateMenu()); }
+
+	BOOL CMenuUI::CreatePopupMenu()
+	{ return Attach(::CreatePopupMenu()); }
+
+	BOOL CMenuUI::Attach(HMENU hMenu)
 	{
-		delete (LPMENUITEM)_pmi[i];
-	}
-
-}
-
-void CMenuUI::Init() 
-{
-	SetSubModify(_hMenu);
-	DefaultMenuStyle();
-}
-
-
-void CMenuUI::Show(POINT pt,UINT uFlags)
-{
-	if (_hMenu==NULL)
-		::MessageBox(_hWnd,TEXT("菜单句柄不能为空"),TEXT("CMenuUI"),0);
-
-	::TrackPopupMenuEx(_hMenu, uFlags , pt.x, pt.y, _hWnd,NULL);
-}
-
-
-void CMenuUI::DefaultMenuStyle()
-{
-	_MenuStyle.ItemHeight = 23;
-	_MenuStyle.SeparatorHeight = 3;
-	_MenuStyle.ColorText =RGB(0,0,0);// GetSysColor(COLOR_MENUTEXT);
-	_MenuStyle.ColorHighLight =RGB(233,245,255);// GetSysColor(COLOR_HIGHLIGHT);
-	_MenuStyle.ColorBackground =RGB(252,252,249); //RGB(250,240,230);// GetSysColor(COLOR_MENU);
-	_MenuStyle.ColorTextSelected =RGB(0,0,0);// GetSysColor(COLOR_HIGHLIGHTTEXT);
-}
-
-void CMenuUI::SetMenuStyle(MENUSTYLE ms)
-{
-	if ((ms.fMask & MSTYLE_HEIGHT) == MSTYLE_HEIGHT)
-		_MenuStyle.ItemHeight = ms.ColorHighLight;
-	if ((ms.fMask & MSTYLE_SEPARATOR) == MSTYLE_SEPARATOR)
-		_MenuStyle.SeparatorHeight = ms.SeparatorHeight;
-	if ((ms.fMask & MSTYLE_TEXT) == MSTYLE_TEXT)
-		_MenuStyle.ColorText = ms.ColorText;
-	if ((ms.fMask & MSTYLE_HIGHTLIGHT) == MSTYLE_HIGHTLIGHT)
-		_MenuStyle.ColorHighLight = ms.ColorHighLight;
-	if ((ms.fMask & MSTYLE_BACKGROUND) == MSTYLE_BACKGROUND)
-		_MenuStyle.ColorBackground = ms.ColorBackground;
-	if ((ms.fMask & MSTYLE_SELECTED) == MSTYLE_SELECTED)
-		_MenuStyle.ColorTextSelected = ms.ColorTextSelected;
-}
-
-void CMenuUI::SetSubModify(HMENU hMenu)
-{
-	int mic = GetMenuItemCount(hMenu);
-
-	for (int i = 0; i < mic; i++)
-	{
-		LPMENUITEM pmi = new MENUITEM;
-		//_pmi.push_back(pmi);
-		_pmi.Add(pmi);
-
-		pmi->hMenu = hMenu;
-		pmi->uItem = i;
-		pmi->hID   = GetMenuItemID(hMenu, i);
-		HMENU hSubMenu = GetSubMenu(hMenu, i);
-		SetSubModify(hSubMenu);
-
-		UINT state = GetMenuState(hMenu, i, MF_BYPOSITION);
-		if ((state & MF_POPUP) == MF_POPUP)
+		ASSERT(m_hMenu == NULL);        // only attach once, detach on destroy
+		if (hMenu == NULL)
 		{
-			state &= ~MF_POPUP;
-			state &= ~MF_SEPARATOR;
+			return FALSE;
 		}
 
-		ModifyMenu (hMenu, i,
-			state | MF_BYPOSITION | MF_OWNERDRAW,
-			pmi->hID, (LPCTSTR) pmi);
-
-
-	}
-}
-
-void CMenuUI::GetMessage(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-	case WM_MEASUREITEM:
-		OnMeasureItem(wParam, lParam);
-		break;
-
-	case WM_DRAWITEM:
-		OnDrawItem(wParam, lParam);
-		break;
-	}
-}
-
-void CMenuUI::OnMeasureItem(WPARAM wParam, LPARAM lParam)
-{
-	LPMEASUREITEMSTRUCT pmis = (LPMEASUREITEMSTRUCT) lParam;
-	if (pmis->CtlType != ODT_MENU)
-	{
-		return;
+		m_hMenu=hMenu;
+		return TRUE;
 	}
 
-	LPMENUITEM pmi = (LPMENUITEM) pmis->itemData;
-	TCHAR Buffer[MENU_TEXT_LENGTH];
-	GetMenuString(pmi->hMenu, pmi->uItem, Buffer,  MENU_TEXT_LENGTH, MF_BYPOSITION);
-
-	TCHAR * p = NULL;
-	if (NULL != (p = lstrchr(Buffer, '&')))
+	HMENU CMenuUI::Detach()
 	{
-		* p = 0;
-		wsprintf(Buffer, TEXT("%s%s"), Buffer, p + 1);
-	}
-
-	p = NULL;
-	if (NULL != (p = lstrchr(Buffer, '\t')))
-	{
-		* p = 0;
-		TCHAR tmp[20];
-		lstrcpy(tmp, p + 1);
-		wsprintf(Buffer, TEXT("%s  %s"), Buffer, tmp);
-	}
-
-	HDC hdc = GetDC(_hWnd);
-	SIZE strSize;
-	GetTextExtentPoint (hdc, Buffer, lstrlen (Buffer), &strSize);
-	ReleaseDC (_hWnd, hdc);
-
-	pmis->itemWidth  = _MenuStyle.ItemHeight + strSize.cx;
-	if (pmis->itemWidth<120)
-		pmis->itemWidth   =120;
-	pmis->itemHeight = _MenuStyle.ItemHeight;
-
-	UINT state = GetMenuState(pmi->hMenu, pmi->uItem, MF_BYPOSITION);
-	if ((state & MF_SEPARATOR) == MF_SEPARATOR)
-	{
-		if ((state & MF_POPUP) != MF_POPUP)
+		HMENU hMenu;
+		if ((hMenu = m_hMenu) != NULL)
 		{
-			pmis->itemHeight = _MenuStyle.SeparatorHeight;
 		}
+		m_hMenu = NULL;
+		return hMenu;
 	}
-}
 
-void CMenuUI::OnDrawItem(WPARAM wParam, LPARAM lParam)
-{
-	LPDRAWITEMSTRUCT pdis   = (LPDRAWITEMSTRUCT) lParam;
-	if (pdis->CtlType != ODT_MENU)
+	BOOL CMenuUI::DestroyMenu()
 	{
-		return;
+		if (m_hMenu == NULL)
+			return FALSE;
+		return ::DestroyMenu(Detach());
 	}
 
-	LPMENUITEM pmi = (LPMENUITEM) pdis->itemData;
-	HDC        hdc = pdis->hDC;
+	CMenuUI::operator HMENU() const
+	{ ASSERT(this == NULL || m_hMenu == NULL || ::IsMenu(m_hMenu));
+	return this == NULL ? NULL : m_hMenu; }
 
-	SetBkMode(hdc, TRANSPARENT);
+	BOOL CMenuUI::operator==(const CMenuUI& menu) const
+	{ return ((HMENU) menu) == m_hMenu; }
 
-	UINT state = GetMenuState(pmi->hMenu, pmi->uItem, MF_BYPOSITION);
-	if ((state & MF_POPUP) == MF_POPUP)
+	BOOL CMenuUI::operator!=(const CMenuUI& menu) const
+	{ return ((HMENU) menu) != m_hMenu; }
+
+	HMENU CMenuUI::GetSafeHmenu() const
+	{ ASSERT(this == NULL || m_hMenu == NULL || ::IsMenu(m_hMenu));
+	return this == NULL ? NULL : m_hMenu; }
+
+	BOOL CMenuUI::DeleteMenu(UINT nPosition, UINT nFlags)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::DeleteMenu(m_hMenu, nPosition, nFlags); }
+
+	BOOL CMenuUI::AppendMenu(UINT nFlags, UINT_PTR nIDNewItem, LPCTSTR lpszNewItem)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::AppendMenu(m_hMenu, nFlags, nIDNewItem, lpszNewItem); }
+
+	BOOL CMenuUI::AppendMenu(UINT nFlags, UINT_PTR nIDNewItem, const HBITMAP hBmp)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::AppendMenu(m_hMenu, nFlags | MF_BITMAP, nIDNewItem,
+	(LPCTSTR)hBmp); }
+
+	UINT CMenuUI::CheckMenuItem(UINT nIDCheckItem, UINT nCheck)
+	{ ASSERT(::IsMenu(m_hMenu)); return (UINT)::CheckMenuItem(m_hMenu, nIDCheckItem, nCheck); }
+
+	UINT CMenuUI::EnableMenuItem(UINT nIDEnableItem, UINT nEnable)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::EnableMenuItem(m_hMenu, nIDEnableItem, nEnable); }
+
+	BOOL CMenuUI::SetDefaultItem(UINT uItem, BOOL fByPos)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::SetMenuDefaultItem(m_hMenu, uItem, fByPos); }
+
+	UINT CMenuUI::GetDefaultItem(UINT gmdiFlags, BOOL fByPos)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::GetMenuDefaultItem(m_hMenu, fByPos, gmdiFlags); }
+
+	UINT CMenuUI::GetMenuItemCount() const
+	{ ASSERT(::IsMenu(m_hMenu)); return ::GetMenuItemCount(m_hMenu); }
+
+	UINT CMenuUI::GetMenuItemID(int nPos) const
+	{ ASSERT(::IsMenu(m_hMenu)); return ::GetMenuItemID(m_hMenu, nPos); }
+
+	UINT CMenuUI::GetMenuState(UINT nID, UINT nFlags) const
+	{ ASSERT(::IsMenu(m_hMenu)); return ::GetMenuState(m_hMenu, nID, nFlags); }
+
+	int CMenuUI::GetMenuString( UINT nIDItem, LPTSTR lpString, int nMaxCount, UINT nFlags) const
+	{ ASSERT(::IsMenu(m_hMenu)); return ::GetMenuString(m_hMenu, nIDItem, lpString, nMaxCount, nFlags); }
+
+	BOOL CMenuUI::GetMenuItemInfo(UINT uItem, LPMENUITEMINFO lpMenuItemInfo, BOOL fByPos)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::GetMenuItemInfo(m_hMenu, uItem, fByPos, lpMenuItemInfo); }
+
+	BOOL CMenuUI::SetMenuItemInfo(UINT uItem, LPMENUITEMINFO lpMenuItemInfo, BOOL fByPos)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::SetMenuItemInfo(m_hMenu, uItem, fByPos, lpMenuItemInfo); }
+
+	HMENU CMenuUI::GetSubMenu(int nPos) const
+	{ ASSERT(::IsMenu(m_hMenu)); return ::GetSubMenu(m_hMenu, nPos); }
+
+	BOOL CMenuUI::InsertMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem,
+		LPCTSTR lpszNewItem)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::InsertMenu(m_hMenu, nPosition, nFlags, nIDNewItem, lpszNewItem); }
+
+	BOOL CMenuUI::InsertMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem, const HBITMAP hBmp)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::InsertMenu(m_hMenu, nPosition, nFlags | MF_BITMAP, nIDNewItem,
+	(LPCTSTR)hBmp); }
+
+	BOOL CMenuUI::InsertMenuItem(UINT uItem, LPMENUITEMINFO lpMenuItemInfo, BOOL fByPos)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::InsertMenuItem(m_hMenu, uItem, fByPos, lpMenuItemInfo); }
+
+	BOOL CMenuUI::ModifyMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem, LPCTSTR lpszNewItem)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::ModifyMenu(m_hMenu, nPosition, nFlags, nIDNewItem, lpszNewItem); }
+
+	BOOL CMenuUI::ModifyMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem, const HBITMAP hBmp)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::ModifyMenu(m_hMenu, nPosition, nFlags | MF_BITMAP, nIDNewItem,
+	(LPCTSTR)hBmp); }
+
+	BOOL CMenuUI::RemoveMenu(UINT nPosition, UINT nFlags)
+	{ ASSERT(::IsMenu(m_hMenu)); return ::RemoveMenu(m_hMenu, nPosition, nFlags); }
+
+	BOOL CMenuUI::SetMenuItemBitmaps(UINT nPosition, UINT nFlags,
+		const HBITMAP hBmpUnchecked, const HBITMAP hBmpChecked)
+	{ 
+		ASSERT(::IsMenu(m_hMenu)); 
+		return ::SetMenuItemBitmaps(m_hMenu, nPosition, nFlags,
+			(HBITMAP)hBmpUnchecked,	(HBITMAP)hBmpChecked);
+	}
+
+	BOOL CMenuUI::TrackPopupMenu(UINT nFlags, int x, int y,
+		HWND hWnd, LPCRECT lpRect)
 	{
-		state &= ~MF_SEPARATOR;
+		ASSERT(m_hMenu != NULL);
+
+		BOOL bOK = ::TrackPopupMenu(m_hMenu, nFlags, x, y, 0,
+			hWnd, lpRect);
+		return bOK;
 	}
 
-
-	HBRUSH hBrush = CreateSolidBrush(_MenuStyle.ColorBackground);
-	FillRect(hdc, &pdis->rcItem, hBrush);
-	DeleteObject(hBrush);
-
-	BOOL Seleted = FALSE;
-
-	RECT ImageBgRect = pdis->rcItem;	
-	ImageBgRect.right=ImageBgRect.left+_MenuStyle.ItemHeight ;
-	CRenderEngine::DrawGradient(hdc,ImageBgRect,RGB(255,255,255),RGB(233,231,215),false,4);
-
-	//鼠标滑过
-	if ((pdis->itemState & ODS_SELECTED) == ODS_SELECTED)
+	BOOL CMenuUI::TrackPopupMenuEx(UINT fuFlags, int x, int y, HWND hWnd, LPTPMPARAMS lptpm)
 	{
-		Seleted = TRUE;	
-		if ((state & MF_DISABLED) != MF_DISABLED)
-		{
-			CRenderEngine::DrawGradient(hdc,pdis->rcItem,RGB(233,245,255),RGB(255,233,245),true,16);
-		}
+		ASSERT(m_hMenu != NULL);
 
-		CRenderEngine::DrawRect(hdc,pdis->rcItem,1,RGB(203,231,215));
+		BOOL bOK = ::TrackPopupMenuEx(m_hMenu, fuFlags, x, y,
+			hWnd, lptpm);
+		return bOK;
 	}
 
-	RECT txtRect = pdis->rcItem;	
-	txtRect.left=txtRect.left+_MenuStyle.ItemHeight+9 ;
-
-	TCHAR Buffer[MENU_TEXT_LENGTH];
-	GetMenuString(pmi->hMenu, pmi->uItem, Buffer,  MENU_TEXT_LENGTH, MF_BYPOSITION);
-
-	if ((state & MF_CHECKED) == MF_CHECKED)
+	void CMenuUI::DrawItem(LPDRAWITEMSTRUCT /*pdis*/)
 	{
-		BOOL Grayed = FALSE;
-		if ((state & MF_GRAYED) == MF_GRAYED)
-		{
-			Grayed = TRUE;
-		}
-		DrawChecked(hdc, pdis->rcItem, pmi, Seleted, Grayed);
-		state &= ~MF_CHECKED;
+		// default does nothing
 	}
 
-	if ((pmi->hID != -1) && ((state & MF_SEPARATOR) == MF_SEPARATOR))
+	void CMenuUI::MeasureItem(LPMEASUREITEMSTRUCT /*pmis*/)
 	{
-		DrawSeparator(hdc, pdis->rcItem);
-	}	
-	else if ((state & MF_DISABLED) == MF_DISABLED)
-	{	
-		CRenderEngine::DrawText(hdc,_pManager,txtRect,(LPCTSTR)Buffer, RGB(200,197,200),-1, DT_SINGLELINE|DT_VCENTER);
-	}
-	else if ((state & MF_GRAYED) == MF_GRAYED)
-	{
-	}
-	else
-	{
-		CRenderEngine::DrawText(hdc,_pManager,txtRect,(LPCTSTR)Buffer, RGB(0,0,0), -1, DT_SINGLELINE|DT_VCENTER);
-	}
-}
-
-
-void CMenuUI::DrawSeparator(HDC hdc, RECT rect)
-{
-	RECT a=rect;
-	a.right=rect.left+_MenuStyle.ItemHeight;
-
-	RECT line={rect.left+_MenuStyle.ItemHeight+6,(rect.bottom +rect.top) / 2,rect.right,(rect.bottom+rect.top) / 2};
-	CRenderEngine::DrawLine(hdc,line,1,RGB(200,197,200));
-}
-
-
-void CMenuUI::DrawImage(HDC hdc, RECT rect, LPMENUITEM pmi)
-{
-	RECT ImageRect={rect.left+3,rect.top+((rect.bottom-rect.top)-16)/2,rect.left+3+16,rect.top+((rect.bottom-rect.top)-16)/2+16};
-
-	MENUITEMINFO mii;
-	mii.cbSize = sizeof(MENUITEMINFO);
-	mii.fMask  = MIIM_CHECKMARKS;
-	GetMenuItemInfo(pmi->hMenu, pmi->uItem, TRUE, &mii);
-
-	if (mii.hbmpUnchecked == NULL)
-	{
-		//	return;
+		// default does nothing
 	}
 
-	HDC hmemDC = NULL;
-	hmemDC = CreateCompatibleDC(hdc);
-	HBITMAP hOldBitmap = (HBITMAP)SelectObject(hmemDC, mii.hbmpUnchecked);
-	BitBlt(hdc, ImageRect.left, ImageRect.top,
-		ImageRect.right - ImageRect.left,
-		ImageRect.bottom - ImageRect.top, hmemDC, 0, 0, SRCCOPY);
-	DeleteDC(hmemDC);
-}
-
-void CMenuUI::DrawChecked(HDC hdc, RECT rect, LPMENUITEM pmi,
-			  BOOL Seleted, BOOL Grayed)
-{
-	int x,y;
-	x=y=4;
-	rect.right=rect.left+_MenuStyle.ItemHeight;
-	::InflateRect(&rect, -(rect.right-rect.left-x)/2,- (rect.bottom-rect.top-y)/2);
-
-	return;
 }

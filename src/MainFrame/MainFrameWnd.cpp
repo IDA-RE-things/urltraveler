@@ -20,6 +20,7 @@
 #include "FavoriteListMenu.h"
 #include "TreeListMenu.h"
 #include "AddFavoriteWnd.h"
+#include "FavoriteListMenu.h"
 
 #include <algorithm>
 
@@ -273,21 +274,21 @@ void	CMainFrameWnd::OnShowMenu(TNotifyUI& msg)
 {
 	if( msg.pSender->GetName() == _T("favoritefilelist") ) 
 	{
-		CFavoriteListMenu* pMenu = new CFavoriteListMenu(L"list_menu.xml");
-		if( pMenu == NULL ) { return; }
+		CFavoriteListMenu* pMenu = new CFavoriteListMenu();
+		pMenu->CreatePopupMenu();
 		POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
 		::ClientToScreen(*this, &pt);
 		if (((CListUI *)msg.pSender)->GetCurSel() >= 0)
 		{
-			pMenu->StoreLanuchPos(msg.ptMouse.x, msg.ptMouse.y);
-			pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 172));
+			pMenu->Init(true);
 		}
-
-		// ÏÔÊ¾²Ëµ¥
 		else
 		{
-
+			pMenu->Init(false);
 		}
+
+		pMenu->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, pt.x,
+			pt.y,this->GetHWND());
 	}
 	else 	if( msg.pSender->GetName() == _T("favoritetreelist") ) 
 	{
@@ -885,8 +886,6 @@ bool CMainFrameWnd::GetWebSiteFavIcon(wstring strUrl, int nRow)
 	bool bOk = false;
 	bOk = m_pm.AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon) != NULL;
 	m_pTipWnd->AddIcon16(wstrIconName.c_str(), getFavoriteIconService.hIcon);
-
-	CMenu
 
 	return bOk;
 }
