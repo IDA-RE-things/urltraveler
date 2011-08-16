@@ -548,3 +548,10 @@ void	 MiscHelper::SaveKeyValueConfig(LPCTSTR pszKeyName, LPCSTR pszValue)
 
 	txConfig.MakeConfig(StringHelper::UnicodeToANSI(pConfig));
 }
+
+BOOL MiscHelper::IsValidAddress(const void* p, size_t nBytes,BOOL bReadWrite)
+{
+	(bReadWrite);
+	(nBytes);
+	return (p != NULL);
+}
