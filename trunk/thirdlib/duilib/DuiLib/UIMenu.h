@@ -1,108 +1,79 @@
 #pragma once
 
-/////////////////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////
-//                                                      //
-//     CMenuUI 自绘菜单(sdk)                             //
-//     该类全部采用sdk写出的，可以直接使用，而不需改变  //
-// 以前的程序。                                         //
-//                                                      //
-//     使用方法：                                       //
-//     1、CMenuUI * pmex = new CMenuUI(hwnd);             //
-//     2、在WndProc里加入                               //
-//        pmex->GetMessage(message, wParam, lParam);    //
-//     这样就完成了菜单的自绘，一切的工作都又类自动完成 //
-//     当然，对于菜单状态的操作原来怎样，现在还是怎样。 //
-//                                                      //
-//     呵呵~这是我写的第一个开源代码，有很多不成熟的地  //
-// 方请多多指教。我现在只做sdk开发，至于mfc能否使用该类 //
-// 就请各位自己试试了哈~                                //
-//                                                      //
-//                             冯浩 fhao840911@126.com  //
-//                                  2007.7.18 成都      //
-//                                                      //
-//////////////////////////////////////////////////////////
-#pragma  once
+#include "UIlib.h"
+
+namespace DuiLib{
+
+	class UILIB_API CMenuUI
+	{
+	public:
+
+		// Constructors
+		CMenuUI();
+
+		BOOL CreateMenu();
+		BOOL CreatePopupMenu();
+		BOOL LoadMenuIndirect(const void* lpMenuTemplate);
+		BOOL DestroyMenu();
+
+		// Attributes
+		HMENU m_hMenu;          // must be first data member
+		HMENU GetSafeHmenu() const;
+		operator HMENU() const;
+
+		BOOL Attach(HMENU hMenu);
+		HMENU Detach();
+
+		// CMenuUI Operations
+		BOOL DeleteMenu(UINT nPosition, UINT nFlags);
+		BOOL TrackPopupMenu(UINT nFlags, int x, int y,
+			HWND hWnd, LPCRECT lpRect = 0);
+		BOOL TrackPopupMenuEx(UINT fuFlags, int x, int y, HWND hWnd, LPTPMPARAMS lptpm);
 
 
-#include "StdAfx.h"
-#include <windows.h>
-#include <vector>
-#include "UILib.h"
+		BOOL operator==(const CMenuUI& menu) const;
+		BOOL operator!=(const CMenuUI& menu) const;
 
-using namespace std;
+		// CMenuItem Operations
+		BOOL AppendMenu(UINT nFlags, UINT_PTR nIDNewItem = 0,
+			LPCTSTR lpszNewItem = NULL);
+		BOOL AppendMenu(UINT nFlags, UINT_PTR nIDNewItem, const HBITMAP hBmp);
 
-#if defined(UNICODE)
-#define lstrchr wcschr
-#else
-#define lstrchr strchr
-#endif
+		UINT CheckMenuItem(UINT nIDCheckItem, UINT nCheck);
+		UINT EnableMenuItem(UINT nIDEnableItem, UINT nEnable);
+		UINT GetMenuItemCount() const;
+		UINT GetMenuItemID(int nPos) const;
+		UINT GetMenuState(UINT nID, UINT nFlags) const;
+		int GetMenuString(UINT nIDItem, LPTSTR lpString, int nMaxCount,
+			UINT nFlags) const;
+		BOOL GetMenuItemInfo(UINT uItem, LPMENUITEMINFO lpMenuItemInfo,
+			BOOL fByPos = FALSE);
+		BOOL SetMenuItemInfo(UINT uItem, LPMENUITEMINFO lpMenuItemInfo,
+			BOOL fByPos = FALSE);
+		HMENU GetSubMenu(int nPos) const;
+		BOOL InsertMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem = 0,
+			LPCTSTR lpszNewItem = NULL);
+		BOOL InsertMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem, const HBITMAP hBmp);
 
-#define MENU_TEXT_LENGTH    100
-#define MENU_TEXT_GRAYED1   0xffffff
-#define MENU_TEXT_GRAYED2   0x7f7f7f
+		BOOL InsertMenuItem(UINT uItem, LPMENUITEMINFO lpMenuItemInfo,
+			BOOL fByPos = FALSE);
+		BOOL ModifyMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem = 0,
+			LPCTSTR lpszNewItem = NULL);
+		BOOL ModifyMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem,
+			const HBITMAP hBmp);
+		BOOL RemoveMenu(UINT nPosition, UINT nFlags);
+		BOOL SetMenuItemBitmaps(UINT nPosition, UINT nFlags,
+			const HBITMAP hBmpUnchecked, const HBITMAP hBmpChecked);
+		BOOL SetDefaultItem(UINT uItem, BOOL fByPos = FALSE);
+		UINT GetDefaultItem(UINT gmdiFlags, BOOL fByPos = FALSE);
 
-#define MSTYLE_HEIGHT       0X0001
-#define MSTYLE_SEPARATOR    MSTYLE_HEIGHT << 1
-#define MSTYLE_TEXT         MSTYLE_SEPARATOR << 1
-#define MSTYLE_HIGHTLIGHT   MSTYLE_TEXT << 1
-#define MSTYLE_BACKGROUND   MSTYLE_HIGHTLIGHT << 1
-#define MSTYLE_SELECTED     MSTYLE_BACKGROUND << 1
+		// Overridables (must override draw and measure for owner-draw menu items)
+		virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+		virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 
-typedef struct tagMenuStyle
-{
-	UINT     fMask;
-	UINT     ItemHeight;
-	UINT     SeparatorHeight;
-	COLORREF ColorText;
-	COLORREF ColorHighLight;
-	COLORREF ColorBackground;
-	COLORREF ColorTextSelected;
-
-}MENUSTYLE, * LPMENUSTYLE;
-
-typedef struct tagMenuItem
-{
-	HMENU hMenu;
-	UINT  uItem;
-	UINT  hID;
-
-}MENUITEM, * LPMENUITEM;
-
-namespace DuiLib {
-
-class UILIB_API CMenuUI
-{
-public:
-	CMenuUI(HWND,CPaintManagerUI* pManager);
-
-	void AppendMenu(UINT uFlags,UINT uIDNewItem,LPCTSTR lpNewItem);
-	virtual void Init() ;
-
-	~CMenuUI();
-	void GetMessage(UINT, WPARAM, LPARAM);
-	void OnMeasureItem(WPARAM, LPARAM);
-	void OnDrawItem(WPARAM, LPARAM);
-
-	void SetMenuStyle(MENUSTYLE);
-	void Show(POINT pt,UINT uFlags=TPM_LEFTALIGN);
-
-protected:
-	void SetSubModify(HMENU);
-	void DefaultMenuStyle();
-
-	void DrawChecked(HDC, RECT, LPMENUITEM, BOOL, BOOL);//绘制菜单Checked状态
-	void DrawSeparator(HDC, RECT);//绘制菜单Separator状态
-	void DrawImage(HDC, RECT, LPMENUITEM);
-
-
-	HWND               _hWnd;
-	HMENU              _hMenu;
-	MENUSTYLE          _MenuStyle;
-
-	CStdPtrArray		_pmi;
-	CPaintManagerUI* _pManager;
-};
+		// Implementation
+	public:
+		virtual ~CMenuUI();
+	};
 
 }

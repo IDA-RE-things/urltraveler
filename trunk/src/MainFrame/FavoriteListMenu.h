@@ -2,15 +2,25 @@
 
 #include "Menu.h"
 #include "MainFrameDefine.h"
+#include "UIMenu.h"
 
 using namespace mainframe;
+using namespace DuiLib;
 
-class CFavoriteListMenu : public CMenuWnd
+#define	IDM_ADD			10000
+#define	IDM_DELETE		10001
+#define	IDM_OPEN		10002
+#define	IDM_COPYURL		10003
+#define	IDM_EDIT			10004
+#define	IDM_RENAME		10005
+#define	IDM_SHARE		10006
+#define	IDM_SELECTALL		10007
+
+class CFavoriteListMenu : public CMenuUI
 {
 public:
-	CFavoriteListMenu(wchar_t*	 pSkinXml) : CMenuWnd(pSkinXml)
-	{
-	}
+
+	void	Init(bool bSelectItem);
 
 	void	OnAdd();
 	void	OnDelete();
@@ -19,10 +29,4 @@ public:
 	void	OnEdit();
 
 	void	Notify(TNotifyUI& msg);
-
-	void	StoreLanuchPos(int nX, int nY);
-
-	//点击菜单时候的x 和 y两个坐标
-	int m_nX;
-	int m_nY;
 };

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "IconBox.h"
+#include "UIIconBox.h"
 
 namespace DuiLib {
 

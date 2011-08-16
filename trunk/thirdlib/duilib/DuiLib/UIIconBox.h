@@ -14,15 +14,18 @@ namespace DuiLib {
 	public:
 		CIconBoxUI();
 		~CIconBoxUI();
+
 	public:
 		LPVOID GetInterface(LPCTSTR pstrName);
 		LPCTSTR GetClass() const;
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 		void DoEvent(TEventUI& event);
+
 		/*iocn box相关属性*/
 		bool AddIcon(HICON hIcon, LPCTSTR lpszTip, BOOL bRepaint);
 		bool DelIcon(HICON hIcon);
 		int  GetIconCount();
+
 		/*设置icon大小*/
 		void SetIconSize(SIZE stIconSize);
 		SIZE GetIconSize();
@@ -54,8 +57,10 @@ namespace DuiLib {
 		void SetButton2PushedImage(LPCTSTR pStrImage);
 		LPCTSTR GetButton2DisabledImage();
 		void SetButton2DisabledImage(LPCTSTR pStrImage);
+
 	private:
 		CStdPtrArray m_arrIcons;
+
 		/*左边按钮的状态*/
 		bool m_bShowButton1;
 		RECT m_rcButton1;
@@ -64,6 +69,7 @@ namespace DuiLib {
 		CStdString m_sButton1HotImage;
 		CStdString m_sButton1PushedImage;
 		CStdString m_sButton1DisabledImage;
+
 		/*右边按钮的状态*/
 		bool m_bShowButton2;
 		RECT m_rcButton2;
