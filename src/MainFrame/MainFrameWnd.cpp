@@ -148,9 +148,10 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 
 			CListTextEditElementUI* pListElement = new CListTextEditElementUI;
 			pListElement->SetTag((UINT_PTR)pData);
-			m_pDragList->Add(pListElement);
 			pListElement->SetColomnEditable(1, TRUE);
 			pListElement->SetColomnEditable(2, TRUE);
+			m_pDragList->Add(pListElement);
+
 			m_vFavoriteNodeAtTreeNode.push_back(pData);
 			j++;
 		}
@@ -1062,9 +1063,9 @@ void	CMainFrameWnd::AddUrlSuccess(PFAVORITELINEDATA pData)
 	{
 		CListTextEditElementUI* pListElement = new CListTextEditElementUI;
 		pListElement->SetTag((UINT_PTR)pData);
-		m_pDragList->Add(pListElement);
 		pListElement->SetColomnEditable(1, TRUE);
 		pListElement->SetColomnEditable(2, TRUE);
+		m_pDragList->Add(pListElement);
 
 		m_vFavoriteNodeAtTreeNode.insert(m_vFavoriteNodeAtTreeNode.begin(),1,pData);
 
