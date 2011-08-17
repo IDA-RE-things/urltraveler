@@ -57,6 +57,7 @@ public:
 	void	CopyUrl(int nIndex);
 	void	SelectTreeList(int nId);
 	void	AddUrlSuccess(PFAVORITELINEDATA pData);
+	void	AddFavoriteFoldSuccess(int nParentId, PFAVORITELINEDATA pData);
 	PFAVORITELINEDATA*	GetFavoriteLineData(int& nFavoriteNum);
 
 private:

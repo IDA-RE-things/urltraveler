@@ -21,6 +21,7 @@
 #include "TreeListMenu.h"
 #include "AddFavoriteWnd.h"
 #include "FavoriteListMenu.h"
+#include "AddFavoriteFoldNameWnd.h"
 
 #include <algorithm>
 
@@ -33,6 +34,7 @@ using namespace setting;
 CMainFrameWnd::CMainFrameWnd()
 {
 	m_pFavoriteTree = 0;
+	m_pDragList = 0;
 	m_nCurrentFavoriteFoldId = 0;
 	m_vFavoriteNodeAtTreeNode.clear();
 
@@ -79,10 +81,18 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 
 	if( m_pFavoriteTree == NULL)
 		m_pFavoriteTree = static_cast<CTreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
-
 	if( m_pFavoriteTree == NULL)
 	{
 		ASSERT(0);
+		return;
+	}
+
+	if( m_pDragList == NULL)
+		m_pDragList = static_cast<CDragListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	if( m_pDragList == NULL)
+	{
+		ASSERT(0);
+		return;
 	}
 
 	CTreeListUI::Node* pRootNode = m_pFavoriteTree->AddNode(wstrText.c_str());
@@ -148,9 +158,9 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 
 			CListTextEditElementUI* pListElement = new CListTextEditElementUI;
 			pListElement->SetTag((UINT_PTR)pData);
+			m_pDragList->Add(pListElement);
 			pListElement->SetColomnEditable(1, TRUE);
 			pListElement->SetColomnEditable(2, TRUE);
-			m_pDragList->Add(pListElement);
 
 			m_vFavoriteNodeAtTreeNode.push_back(pData);
 			j++;
@@ -745,8 +755,20 @@ void CMainFrameWnd::OnTreeListNew()
 	if( nCurSel == -1)
 		return;
 
-	// 找到对应的结点
-	m_pFavoriteTree->Add(nCurSel, L"<x 4><x 4>helloworld");
+	CListElementUI* pElement =		 (CListElementUI*)m_pDragList->GetSubItem(nCurSel);
+	if( pElement == NULL)
+		return;
+
+	FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)(pElement->GetTag());
+	if( pSelNode == NULL)
+		return;
+
+	CAddFavoriteFoldNameWnd* pWnd = new CAddFavoriteFoldNameWnd();
+	if( pWnd == NULL ) { Close(); return;  }
+	pWnd->m_nParentId = pSelNode->nId;
+	pWnd->Create(m_hWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+	pWnd->CenterWindow();
+	pWnd->ShowModal();
 }
 
 void CMainFrameWnd::OnTreeListDelete()
@@ -1076,6 +1098,19 @@ void	CMainFrameWnd::AddUrlSuccess(PFAVORITELINEDATA pData)
 
 	int nFavoriteNum = m_vFavoriteNodeAtTreeNode.size();
 	SetFavoriteNumText(nFavoriteNum);
+}
+
+void	CMainFrameWnd::AddFavoriteFoldSuccess(int nParentId, PFAVORITELINEDATA pData)
+{
+	if( m_pFavoriteTree)
+	{
+		String strFavFoldName =  L"<x 4><x 4>";
+		strFavFoldName += pData->szTitle;
+
+		int nIndex =  m_pFavoriteTree->GetIndexFromId(nParentId);
+		if( nIndex != -1)
+			m_pFavoriteTree->Add(nIndex, strFavFoldName.GetData());
+	}
 }
 
 PFAVORITELINEDATA*	CMainFrameWnd::GetFavoriteLineData(int& nFavoriteNum)

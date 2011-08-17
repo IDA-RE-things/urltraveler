@@ -53,6 +53,7 @@ BEGIN_EVENT_MAP(MainFrameModule)
 	ON_EVENT(EVENT_VALUE_MAINFRAME_COPY_URL, OnEvent_CopyUrl)
 	ON_EVENT(EVENT_VALUE_DATACENTER_TREELIST_SELECT, OnEvent_SelectTreeListItem)
 	ON_EVENT(EVENT_VALUE_DATACENTER_ADD_FAVORITE_RESP, OnEvent_AddFavoriteRespItem)
+	ON_EVENT(EVENT_VALUE_DATACENTER_ADD_FAVORITE_FOLD_RESP,OnEvent_AddFovoriteFoldRespItem)
 END_EVENT_MAP()
 
 
@@ -238,6 +239,17 @@ void	MainFrameModule::OnEvent_AddFavoriteRespItem(Event* pEvent)
 	m_pMainFrame->AddUrlSuccess(pAddFavoriteEvent->pFavoriteData);
 }
 
+void	MainFrameModule::OnEvent_AddFovoriteFoldRespItem(Event* pEvent)
+{
+	if( pEvent == NULL || pEvent->eventValue != EVENT_VALUE_DATACENTER_ADD_FAVORITE_FOLD_RESP)
+		return;
+
+	DataCenter_AddFavoriteFoldResultEvent* pAddFavoriteEvent = (DataCenter_AddFavoriteFoldResultEvent*)pEvent->m_pstExtraInfo;
+	if( pAddFavoriteEvent == NULL)
+		return;
+
+	m_pMainFrame->AddFavoriteFoldSuccess(pAddFavoriteEvent->nParentFavoriteId,pAddFavoriteEvent->pFavoriteData);
+}
 
 void MainFrameModule::OnMessage_Show(Message* pMessage)
 {

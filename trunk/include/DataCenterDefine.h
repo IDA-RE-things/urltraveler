@@ -21,6 +21,7 @@ namespace datacenter
 		EVENT_VALUE_DATACENTER_ADD_FAVORITE_RESP,		// 增加一个新的收藏记录的响应
 		EVENT_VALUE_DATACENTER_DELETE_FAVORITE,			// 删除某个收藏的URL
 		EVENT_VALUE_DATACENTER_ADD_FAVORITE_FOLD,		// 增加一个收藏夹目录
+		EVENT_VALUE_DATACENTER_ADD_FAVORITE_FOLD_RESP,		// 增加一个收藏夹目录
 		EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,		// 删除某个收藏夹的所有数据, param0为需要删除的收藏夹id
 		EVENT_VALUE_DATACENTER_TREELIST_SELECT,			// 在树中某个结点被删除后，需要将焦点移动到上一个结点或者父结点中
 		EVENT_VALUE_DATACENTER_SET_AUTOUPDATE,			// 获取自动更新的信息
@@ -210,6 +211,20 @@ namespace datacenter
 		wchar_t	szTitle[MAX_PATH];			//	收藏夹的标题
 	};
 
+	// 由于DataCenter_AddFavoriteFoldEvent是异步消息，在发送后，发送者没法获得结果，因此
+	// 必须通过ResultEvent通知
+	struct DataCenter_AddFavoriteFoldResultEvent	: DataCenterEvent 
+	{
+		DataCenter_AddFavoriteFoldResultEvent()
+		{
+			eventValue	=	EVENT_VALUE_DATACENTER_ADD_FAVORITE_FOLD_RESP;
+			pFavoriteData = NULL;
+			nParentFavoriteId = 0;
+		}
+
+		int nParentFavoriteId;
+		FAVORITELINEDATA*	pFavoriteData;
+	};
 	//===========================================//
 	//                   DataCenter中所使用到的Service结构			              //
 	//===========================================//

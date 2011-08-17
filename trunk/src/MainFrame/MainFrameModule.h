@@ -82,6 +82,7 @@ protected:
 	void	OnEvent_DeleteFavoriteFold(Event* pEvent);	//	删除收藏夹
 	void	OnEvent_SelectTreeListItem(Event* pEvent);	//	选中树结点中的某一个
 	void	OnEvent_AddFavoriteRespItem(Event* pEvent);	//	增加收藏夹响应
+	void	OnEvent_AddFovoriteFoldRespItem(Event* pEvent);
 
 	// Message处理函数
 protected:

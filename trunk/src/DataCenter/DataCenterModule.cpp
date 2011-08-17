@@ -381,7 +381,40 @@ void	DataCenterModule::OnEvent_DeleteFavorite(Event* pEvent)
 
 void	DataCenterModule::OnEvent_AddFavoriteFolder(Event* pEvent)
 {
+	DataCenter_AddFavoriteFoldEvent* pAddFavoriteFoldEvent = (DataCenter_AddFavoriteFoldEvent*)pEvent->m_pstExtraInfo;
+	if( pAddFavoriteFoldEvent == NULL)
+		return;
 
+	int nParentId = pAddFavoriteFoldEvent->nParentFavoriteId;
+	wchar_t* pszTitle = pAddFavoriteFoldEvent->szTitle;
+
+	PFAVORITELINEDATA pFavoriteData = new FAVORITELINEDATA();
+	pFavoriteData->bFolder = true;
+
+	PFAVORITELINEDATA pLastData = m_vFavoriteLineData[m_vFavoriteLineData.size() - 1];
+	if( pLastData == NULL)
+		pFavoriteData->nId = 0;
+	else
+		pFavoriteData->nId = m_vFavoriteLineData[m_vFavoriteLineData.size() - 1]->nId + 1;
+
+	pFavoriteData->nPid = nParentId;
+	STRNCPY(pFavoriteData->szTitle, pszTitle);
+	m_vFavoriteLineData.insert(m_vFavoriteLineData.begin(),1,pFavoriteData);
+
+	// 进行广度遍历排序
+	std::sort(m_vFavoriteLineData.begin(), m_vFavoriteLineData.end(), CompareFavoriteData);
+
+	// 进行排序
+	DataCenter_ReArrangeFavoriteService service;
+	GetModuleManager()->CallService(service.serviceId, (param)&service);
+
+	// 然后通知增加成功
+	DataCenter_AddFavoriteFoldResultEvent * pRespEvent = new DataCenter_AddFavoriteFoldResultEvent();
+	pRespEvent->srcMId = MODULE_ID_DATACENTER;
+	pRespEvent->desMId = pEvent->srcMId;
+	pRespEvent->nParentFavoriteId =	nParentId;
+	pRespEvent->pFavoriteData = pFavoriteData;
+	GetModuleManager()->PushEvent(*pRespEvent);	
 }
 
 void	DataCenterModule::OnEvent_DeleteFavoriteFolder(Event* pEvent)
