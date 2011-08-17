@@ -104,6 +104,9 @@ public:
 	void Notify(TNotifyUI& msg);
 	virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
+	int GetIndexFromId(int nId);
+	int GetIdFromIndex(int nIndex);
+
 	bool Add(CControlUI* pControl);
 	// 为第nIndex个结点增加一个子结点，内容为pszTitle
 	bool	Add(int nIndex, LPCTSTR pszTitle);
@@ -112,8 +115,6 @@ public:
 	bool Remove(CControlUI* pControl);
 	bool RemoveAt(int nIndex);
 	void RemoveAll()  ;
-
-
 
 	Node* GetRoot() { return _root; }
 	Node* AddNode(LPCTSTR text, Node* parent = NULL);

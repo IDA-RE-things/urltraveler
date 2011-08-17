@@ -278,6 +278,14 @@
 				Name="DuiEx"
 				>
 				<File
+					RelativePath=".\AddFavoriteFoldNameWnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\AddFavoriteFoldNameWnd.h"
+					>
+				</File>
+				<File
 					RelativePath=".\AddFavoriteWnd.cpp"
 					>
 				</File>

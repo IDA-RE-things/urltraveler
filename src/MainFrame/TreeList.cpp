@@ -30,6 +30,47 @@ void CTreeListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bo
 	}
 }
 
+int CTreeListUI::GetIndexFromId(int nId)
+{
+	// 根据nId找到对应的Node
+	std::map<int, CTreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nId);
+	if( itr != m_mapIdNode.end())
+	{
+		CTreeListUI::Node* pNode = itr->second;
+		if( pNode)
+		{
+			CListLabelElementUI* pElement = pNode->data()._pListElement;
+			if( pElement == NULL)
+				return -1;
+
+			return pElement->GetIndex();
+		}
+
+		return -1;
+	}
+
+	return -1;
+}
+
+int CTreeListUI::GetIdFromIndex(int nIndex)
+{
+	CListLabelElementUI* pElement = (CListLabelElementUI*)GetSubItem(nIndex);
+	if( pElement == NULL)
+		return -1;
+
+	CTreeListUI::Node* pNode  = (CTreeListUI::Node*)pElement->GetTag();
+	if( pNode == NULL)
+		return -1;
+
+	std::map<CTreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
+	if( itr == m_mapNodeId.end())
+		return -1;
+
+	// 得到了该结点的ID
+	int nParentId = itr->second;
+	return nParentId;
+}
+
 bool CTreeListUI::Add(CControlUI* pControl)
 {
 	if( !pControl ) return false;
