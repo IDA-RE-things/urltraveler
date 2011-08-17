@@ -61,16 +61,6 @@ namespace DuiLib
 			int nEditColumn = this->m_nEditColomn;
 
 			pListUI->HideEditText();
-
-/*
-			// 按下了回车键
-			TNotifyUI notify;
-			notify.sType = _T("itemreturnkeydown");
-			notify.pSender = this;
-			notify.wParam = nRow;
-			notify.lParam = nEditColumn;
-			m_pManager->SendNotify(notify);
-*/
 		}
 	}
 
@@ -442,16 +432,6 @@ namespace DuiLib
 			int nRow = m_nEditRow;
 
 			HideEditText();
-
-/*
-			// 按下了回车键
-			TNotifyUI notify;
-			notify.sType = _T("itemreturnkeydown");
-			notify.pSender = this;
-			notify.wParam = nRow;
-			m_pManager->SendNotify(notify);
-
-*/
 			m_bShowEdit = false;
 		}
 
@@ -535,18 +515,27 @@ namespace DuiLib
 	{
 		int nIndex = event.wParam;
 
-		// 如果是单选或者如果是多选，但是没有按下Ctrl键
-		// 此时只选中一个 
-		if( m_vCurSel.size() > 0)
+		// 如果支持多选，并且当前已经选择了多个，并且点击的item在多选的item上
+		if( IsItemSelected(nIndex) == true)
 		{
-			ClearSelectedItem(nIndex);
+		}
+		else
+		{
+ 			// 如果是单选或者如果是多选，但是没有按下Ctrl键
+			// 此时只选中一个 
+			if( m_vCurSel.size() > 0)
+			{
+				ClearSelectedItem(nIndex);
+			}
+
+			if( IsItemSelected(nIndex) == false)
+				SelectItem(nIndex);
+
+			m_iLastClickSel	=	nIndex;
+			m_iLastSel = m_iLastClickSel;	
 		}
 
-		if( IsItemSelected(nIndex) == false)
-			SelectItem(nIndex);
 
-		m_iLastClickSel	=	nIndex;
-		m_iLastSel = m_iLastClickSel;	
 	}
 
 	void	CListUI::OnEventKeyDown(TEventUI& event)

@@ -278,14 +278,10 @@ void	CMainFrameWnd::OnShowMenu(TNotifyUI& msg)
 		pMenu->CreatePopupMenu();
 		POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
 		::ClientToScreen(*this, &pt);
-		if (((CListUI *)msg.pSender)->GetCurSel() >= 0)
-		{
-			pMenu->Init(true);
-		}
-		else
-		{
-			pMenu->Init(false);
-		}
+
+		int nSelNum = 0;
+		int* pSelIndex =	  ((CListUI *)msg.pSender)->GetCurSel(nSelNum);
+		pMenu->Init(nSelNum);
 
 		pMenu->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, pt.x,
 			pt.y,this->GetHWND());
@@ -380,20 +376,11 @@ void	CMainFrameWnd::OnFavoriteListItemDelete(TNotifyUI& msg)
 		FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)m_vFavoriteNodeAtTreeNode[nRow];
 		pSelNode->bDelete = true;
 
-/*
-		std::vector<FAVORITELINEDATA*>::iterator itr = std::find(m_vFavoriteNodeAtTreeNode.begin(),
-			m_vFavoriteNodeAtTreeNode.end(), pSelNode);
-		if( itr != m_vFavoriteNodeAtTreeNode.end())
-			m_vFavoriteNodeAtTreeNode.erase(itr);
-*/
-
 		// 从数据中心中删除该Item
 		MainFrame_DeleteFavoriteEvent* pEvent = new MainFrame_DeleteFavoriteEvent();
 		pEvent->desMId = MODULE_ID_MAINFRAME;
 		pEvent->nDeleteNodeId = pSelNode->nId;
 		g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
-
-		//SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
 	}
 }
 
@@ -421,95 +408,6 @@ void	CMainFrameWnd::OnFavoriteListItemMoved(TNotifyUI& msg)
 
 	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
 }
-
-void	CMainFrameWnd::OnItemReturnKeyDown(TNotifyUI& msg)
-{
-	return;
-
-	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	if( pFavList == NULL)
-		return;
-
-	int nRow = msg.wParam;
-	int nEditColumn = msg.lParam;
-
-	CListElementUI* pElement =		 (CListElementUI*)pFavList->GetSubItem(nRow);
-	if( pElement == NULL)
-		return;
-
-	// 仅仅是对数据进行编辑修改
-	FAVORITELINEDATA* pNode = (FAVORITELINEDATA*)m_vFavoriteNodeAtTreeNode[nRow];	
-
-	// 如果当前位于第一行，即修改的是网址标题
-	if( nEditColumn == 1)
-	{
-		LPCTSTR	szTitle = pFavList->GetEditText().GetData();
-		String	strTitle = (szTitle == NULL ? L"" : szTitle);
-
-		if( strTitle == L"")
-		{
-			::MessageBox(NULL, L"网址标题不能为空", L" 警告", MB_OK);
-			pFavList->ShowEdit(nRow, 1);
-			return;
-		}
-
-		STRNCPY(pNode->szTitle, strTitle.GetData());
-		pFavList->Invalidate();
-		return;
-	}
-
-	if( nEditColumn == 2)
-	{
-		LPCTSTR	szUrl = pFavList->GetEditText().GetData();
-		String	strUrl = (szUrl == NULL ? L"" : szUrl);
-
-		if( strUrl == L"")
-		{
-			::MessageBox(NULL, L"网址不能为空", L" 警告", MB_OK);
-			pFavList->ShowEdit(nRow, 2);
-			return;
-		}
-
-		STRNCPY(pNode->szUrl, strUrl.GetData());
-		pFavList->Invalidate();
-		return;
-	}
-
-	/*
-	// 检查两行是否都是空，如果都是空，则直接删除
-	LPCTSTR	szTitle = pFavList->GetItemText(nRow, 1);
-	String	strTitle = (szTitle == NULL ? L"" : szTitle);
-
-	String	strUrl = pFavList->GetEditText().GetData();
-	if( strUrl.Left(5) == L"<x 4>")
-		strUrl = strUrl.SubStr(5, strUrl.GetLength() - 5);
-
-	// 空行
-	if( strTitle == L"" && strUrl == L"")
-	{
-		m_vFavoriteNodeAtTreeNode.erase(m_vFavoriteNodeAtTreeNode.begin());
-		pFavList->RemoveItemAt(0);
-
-		return;
-	}
-	*/
-
-
-
-	//  否则通知数据中心添加一条收藏记录 
-	/*
-	DataCenter_AddFavoriteEvent* pEvent = new DataCenter_AddFavoriteEvent();
-	pEvent->srcMId = MODULE_ID_MAINFRAME;
-	pEvent->desMId = MODULE_ID_DATACENTER;
-	pEvent->nParentFavoriteId = m_nCurrentFavoriteFoldId;
-	STRNCPY(pEvent->szTitle, szTitle);
-	STRNCPY(pEvent->szUrl, szUrl);
-	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
-
-	m_nFavoriteNum++;
-	*/
-}
-
 
 void CMainFrameWnd::Notify(TNotifyUI& msg)
 {
@@ -600,11 +498,6 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	else if(msg.sType == L"favlistitemmoved")
 	{
 		OnFavoriteListItemMoved(msg);
-		return;
-	}
-	else if( msg.sType == L"itemreturnkeydown")
-	{
-		OnItemReturnKeyDown(msg);
 		return;
 	}
 }
