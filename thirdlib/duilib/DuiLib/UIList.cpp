@@ -424,7 +424,12 @@ namespace DuiLib
 	{
 		int nIndex = event.wParam;
 		if( nIndex == -1)
+		{
+			ClearSelectedItem();
+			m_iLastClickSel	=	-1;
+			m_iLastSel = -1;
 			return;
+		}
 
 		//  先检查是否有处于编辑状态
 		if( m_bShowEdit == true)
@@ -1856,6 +1861,12 @@ namespace DuiLib
 				m_pOwner->DoEvent(event);
 
 			return;
+		}
+
+		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_BUTTONUP)
+		{
+			event.wParam = -1;
+			event.dwTimestamp = ::GetTickCount();
 		}
 
 		if( m_pOwner != NULL ) m_pOwner->DoEvent(event); else CControlUI::DoEvent(event);

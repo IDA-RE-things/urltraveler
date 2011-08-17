@@ -14,7 +14,6 @@ void	CFavoriteListMenu::Init(int nSelNum)
 		AppendMenu(MF_BYCOMMAND, IDM_FAVLIST_ADD, L"增加收藏");
 		AppendMenu(MF_BYCOMMAND, IDM_FAVLIST_EDIT, L"编辑收藏");
 		AppendMenu(MF_BYCOMMAND, IDM_FAVLIST_DELETE, L"删除收藏");
-		AppendMenu(MF_BYCOMMAND, IDM_FAVLIST_RENAME, L"重命名");
 		AppendMenu(MF_BYCOMMAND, IDM_FAVLIST_COPYURL, L"复制网址URL");
 
 		AppendMenu(MF_SEPARATOR, 0, L"");
