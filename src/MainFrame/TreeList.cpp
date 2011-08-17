@@ -37,6 +37,26 @@ bool CTreeListUI::Add(CControlUI* pControl)
 	return CListUI::Add(pControl);
 }
 
+bool	CTreeListUI::Add(int nIndex, LPCTSTR pszTitle)
+{
+	if( pszTitle == NULL)
+		return false;
+
+	CListLabelElementUI* pElement = (CListLabelElementUI*)GetSubItem(nIndex);
+	if( pElement == NULL)
+		return false;
+
+	CTreeListUI::Node* pNode  = (CTreeListUI::Node*)pElement->GetTag();
+	std::map<CTreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
+	if( itr == m_mapNodeId.end())
+		return false;
+
+	// 得到了该结点的ID
+	int nParentId = itr->second;
+
+	CTreeListUI::Node* pChildNode  = AddNode(pszTitle, pNode);
+}
+
 bool CTreeListUI::AddAt(CControlUI* pControl, int iIndex)
 {
 	if( !pControl ) return false;

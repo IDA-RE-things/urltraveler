@@ -745,7 +745,7 @@ void CMainFrameWnd::OnTreeListNew()
 		return;
 
 	// 找到对应的结点
-
+	m_pFavoriteTree->Add(nCurSel, L"<x 4><x 4>helloworld");
 }
 
 void CMainFrameWnd::OnTreeListDelete()
