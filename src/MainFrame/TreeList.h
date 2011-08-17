@@ -106,10 +106,12 @@ public:
 
 	int GetIndexFromId(int nId);
 	int GetIdFromIndex(int nIndex);
+	int GetIdFromNode(CTreeListUI::Node* pNode);
+	CTreeListUI::Node* GetNodeFromId(int nId);
 
 	bool Add(CControlUI* pControl);
 	// 为第nIndex个结点增加一个子结点，内容为pszTitle
-	bool	Add(int nIndex, LPCTSTR pszTitle);
+	bool	Add(int nIndex, int nId,LPCTSTR pszTitle);
 	bool AddAt(CControlUI* pControl, int iIndex);
 
 	bool Remove(CControlUI* pControl);
