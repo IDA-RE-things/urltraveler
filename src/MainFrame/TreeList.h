@@ -17,7 +17,7 @@ inline double CalculateDelay(double state) {
 	return pow(state, 2);
 }
 
-class TreeListUI : public CListUI
+class CTreeListUI : public CListUI
 {
 public:
 	enum { SCROLL_TIMERID = 10 };
@@ -82,7 +82,7 @@ public:
 		}
 	};	
 
-	TreeListUI() : _root(NULL), m_dwDelayDeltaY(0), m_dwDelayNum(0), m_dwDelayLeft(0)
+	CTreeListUI() : _root(NULL), m_dwDelayDeltaY(0), m_dwDelayNum(0), m_dwDelayLeft(0)
 	{
 		SetItemShowHtml(true);
 
@@ -97,7 +97,7 @@ public:
 		m_bIsDragging = false;
 	}
 
-	~TreeListUI() { if(_root) delete _root; }
+	~CTreeListUI() { if(_root) delete _root; }
 
 	LPCTSTR GetClass() const	 ;
 
@@ -128,15 +128,15 @@ public:
 
 	void	OnTreeListItemDragEnd();
 	void	OnTreeListItemDragOver();
-	void	OnListItemDragEnd(DragListUI* pDragList);
+	void	OnListItemDragEnd(CDragListUI* pDragList);
 
 public:
 	// 当前选中的TreeNode结点
 	int m_nTreeNodeId;
-	TreeListUI::Node*	m_pCurrentTreeNode;
+	CTreeListUI::Node*	m_pCurrentTreeNode;
 
-	std::map<int, TreeListUI::Node*>	m_mapIdNode;	//	id到node的关联关系
-	std::map<TreeListUI::Node*, int>	m_mapNodeId;	//	node到map的映射
+	std::map<int, CTreeListUI::Node*>	m_mapIdNode;	//	id到node的关联关系
+	std::map<CTreeListUI::Node*, int>	m_mapNodeId;	//	node到map的映射
 
 protected:
 	Node* _root;

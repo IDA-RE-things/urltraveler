@@ -51,13 +51,20 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 { 
 	m_pTipWnd->Init(msg.pSender); 
 
-	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	if( pFavList)
-	{						
-		pFavList->SetItemTextStyle(pFavList->GetItemTextStyle() & ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
+	m_pDragList = static_cast<CDragListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	if( m_pDragList == NULL)
+	{			
+		ASSERT(0);
+		return;
 	}
+	m_pDragList->SetItemTextStyle(m_pDragList->GetItemTextStyle() & ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
 
-	m_pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
+	m_pFavoriteTree = static_cast<CTreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
+	if( m_pFavoriteTree == NULL)
+	{
+		ASSERT(0);
+		return;
+	}
 
 	// 发送请求至服务器，统计在线人数
 	Web_OpenTravelerService openTravelerService;
@@ -71,14 +78,14 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 	wstrText += L"收藏夹";
 
 	if( m_pFavoriteTree == NULL)
-		m_pFavoriteTree = static_cast<TreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
+		m_pFavoriteTree = static_cast<CTreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
 
 	if( m_pFavoriteTree == NULL)
 	{
 		ASSERT(0);
 	}
 
-	TreeListUI::Node* pRootNode = m_pFavoriteTree->AddNode(wstrText.c_str());
+	CTreeListUI::Node* pRootNode = m_pFavoriteTree->AddNode(wstrText.c_str());
 	m_pFavoriteTree->m_mapIdNode[0] = pRootNode;
 	m_pFavoriteTree->m_mapNodeId[pRootNode] = 0;
 
@@ -90,16 +97,16 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 		{
 			// 找到当前结点的父节点
 			int nPid = pData->nPid;
-			std::map<int, TreeListUI::Node*>::iterator itr = m_pFavoriteTree->m_mapIdNode.find(nPid);
+			std::map<int, CTreeListUI::Node*>::iterator itr = m_pFavoriteTree->m_mapIdNode.find(nPid);
 			if( itr != m_pFavoriteTree->m_mapIdNode.end())
 			{
-				TreeListUI::Node* pParentNode = itr->second;
+				CTreeListUI::Node* pParentNode = itr->second;
 				if( pParentNode != NULL)
 				{
 					wstring wstrText = L"{x 4}{x 4}";
 					wstrText += pData->szTitle;
 
-					TreeListUI::Node* pNode  = m_pFavoriteTree->AddNode(wstrText.c_str(), pParentNode);
+					CTreeListUI::Node* pNode  = m_pFavoriteTree->AddNode(wstrText.c_str(), pParentNode);
 					m_pFavoriteTree->m_mapIdNode[pData->nId] = pNode;
 					m_pFavoriteTree->m_mapNodeId[pNode] = pData->nId;
 				}
@@ -111,8 +118,7 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 		}
 	}
 
-	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	pUserList->SetTextCallback(this);     
+	m_pDragList->SetTextCallback(this);     
 
 	// 显示根结点下的所有的收藏夹记录
 	m_pFavoriteTree->m_nTreeNodeId = 0;
@@ -125,8 +131,7 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 	m_nCurrentFavoriteFoldId = nId;
 	m_vFavoriteNodeAtTreeNode.clear();
 
-	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	pUserList->RemoveAllItems();
+	m_pDragList->RemoveAllItems();
 
 	int nFavoriteNum = 0;
 	PFAVORITELINEDATA*	ppFavoriteData = GetFavoriteLineData(nFavoriteNum);
@@ -143,7 +148,7 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 
 			CListTextEditElementUI* pListElement = new CListTextEditElementUI;
 			pListElement->SetTag((UINT_PTR)pData);
-			pUserList->Add(pListElement);
+			m_pDragList->Add(pListElement);
 			pListElement->SetColomnEditable(1, TRUE);
 			pListElement->SetColomnEditable(2, TRUE);
 			m_vFavoriteNodeAtTreeNode.push_back(pData);
@@ -216,10 +221,10 @@ void	CMainFrameWnd::OnFavoriteTreeListItemClick(TNotifyUI& msg)
 	CListLabelElementUI* pTreeListUIElement = (CListLabelElementUI*)m_pFavoriteTree->GetItemAt(nIndex);
 	if( pTreeListUIElement != NULL )
 	{
-		TreeListUI::Node* node = (TreeListUI::Node*)pTreeListUIElement->GetTag();
+		CTreeListUI::Node* node = (CTreeListUI::Node*)pTreeListUIElement->GetTag();
 
 		// 得到该结点对应的nId
-		std::map<TreeListUI::Node*, int>::iterator itr = m_pFavoriteTree->m_mapNodeId.find(node);
+		std::map<CTreeListUI::Node*, int>::iterator itr = m_pFavoriteTree->m_mapNodeId.find(node);
 		if( itr != m_pFavoriteTree->m_mapNodeId.end())
 		{
 			int nId = itr->second;
@@ -296,7 +301,7 @@ void	CMainFrameWnd::OnShowMenu(TNotifyUI& msg)
 		POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
 		::ClientToScreen(*this, &pt);
 
-		TreeListUI* pTree = (TreeListUI*)msg.pSender;
+		CTreeListUI* pTree = (CTreeListUI*)msg.pSender;
 		int nSelIndex = pTree->GetCurSel();
 		if( nSelIndex == -1)
 			pMenu->Init(false, nSelIndex);
@@ -391,8 +396,7 @@ void	CMainFrameWnd::OnFavoriteListItemDelete(TNotifyUI& msg)
 
 void	CMainFrameWnd::OnFavoriteListItemMoved(TNotifyUI& msg)
 {
-	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	if( pFavList == NULL)
+	if( m_pDragList == NULL)
 		return;
 
 	int nId = msg.wParam;
@@ -649,10 +653,9 @@ LRESULT CMainFrameWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 			}
 
 			// 调整list的宽度
-			CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-			if( pUserList)
+			if( m_pDragList)
 			{
-				CListHeaderUI* pHeader = pUserList->GetHeader();
+				CListHeaderUI* pHeader = m_pDragList->GetHeader();
 				RECT rc0 = pHeader->GetItemAt(0)->GetPos();
 				rc0.right += 200;
 				pHeader->GetItemAt(0)->SetPos(rc0);
@@ -660,7 +663,7 @@ LRESULT CMainFrameWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 				RECT rc1 = pHeader->GetItemAt(1)->GetPos();
 				rc1.right -= 200;
 				pHeader->GetItemAt(1)->SetPos(rc1);
-				pUserList->Invalidate();
+				m_pDragList->Invalidate();
 			}
 		}
 		else {
@@ -681,17 +684,16 @@ void CMainFrameWnd::OnFavListAdd()
 
 void	CMainFrameWnd::OnFavListDelete()
 {
-	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	int nSel = pList->GetCurSel();
+	int nSel = m_pDragList->GetCurSel();
 	if( nSel < 0 ) return;
 
-	CListElementUI* pElement =		 (CListElementUI*)pList->GetSubItem(nSel);
+	CListElementUI* pElement =		 (CListElementUI*)m_pDragList->GetSubItem(nSel);
 	if( pElement == NULL)
 	return;
 
 	FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)(pElement->GetTag());
 	pSelNode->bDelete = true;
-	pList->RemoveAt(nSel);
+	m_pDragList->RemoveAt(nSel);
 
 	// 从数据中心中删除该Item
 	MainFrame_DeleteFavoriteEvent* pEvent = new MainFrame_DeleteFavoriteEvent();
@@ -702,8 +704,7 @@ void	CMainFrameWnd::OnFavListDelete()
 
 void	CMainFrameWnd::OnFavListOpen()
 {
-	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	int nSel = pList->GetCurSel();
+	int nSel = m_pDragList->GetCurSel();
 	if( nSel < 0 ) return;
 
 	// 通知打开URL
@@ -713,8 +714,7 @@ void	CMainFrameWnd::OnFavListOpen()
 
 void	CMainFrameWnd::OnFavListCopyUrl()
 {
-	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	int nSel = pList->GetCurSel();
+	int nSel = m_pDragList->GetCurSel();
 	if( nSel < 0 ) return;
 
 	// 通知打开URL
@@ -724,24 +724,27 @@ void	CMainFrameWnd::OnFavListCopyUrl()
 
 void CMainFrameWnd::OnFavListEdit()
 {
-	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	
-	int nSelRow = pList->GetCurSel();
+	int nSelRow = m_pDragList->GetCurSel();
 	if( nSelRow != -1)
 	{
-		pList->ShowEdit(nSelRow, 1);
+		m_pDragList->ShowEdit(nSelRow, 1);
 	}
 }
 
 void	CMainFrameWnd::OnFavListSelectAll()
 {
-	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	for( int i=0; i<pList->GetRowCount(); i++)
-		pList->SelectItem(i);
+	for( int i=0; i<m_pDragList->GetRowCount(); i++)
+		m_pDragList->SelectItem(i);
 }
 
 void CMainFrameWnd::OnTreeListNew()
 {
+	// 找到当前选中的item
+	int nCurSel = m_pFavoriteTree->GetCurSel();
+	if( nCurSel == -1)
+		return;
+
+	// 找到对应的结点
 
 }
 
@@ -934,11 +937,10 @@ void CMainFrameWnd::UpdateFavoriteIcon( wchar_t* pszUrl, HICON hIcon )
 		m_pTipWnd->AddIcon16(wstrIconName.c_str(), hIcon);
 	}
 
-	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	if( pUserList == NULL)
+	if( m_pDragList == NULL)
 		return;
 
-	pUserList->Invalidate();
+	m_pDragList->Invalidate();
 }
 
 void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
@@ -955,10 +957,9 @@ void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 		}
 	}
 
-	CListUI* pUserList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	if( pUserList == NULL)
+	if( m_pDragList == NULL)
 		return;
-	pUserList->Invalidate();
+	m_pDragList->Invalidate();
 
 	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
 }
@@ -1030,7 +1031,7 @@ void	CMainFrameWnd::SelectTreeList(int nId)
 		return;
 	}
 
-	std::map<int, TreeListUI::Node*>::iterator itr = m_pFavoriteTree->m_mapIdNode.find(nId);
+	std::map<int, CTreeListUI::Node*>::iterator itr = m_pFavoriteTree->m_mapIdNode.find(nId);
 	if( itr == m_pFavoriteTree->m_mapIdNode.end())
 		return;
 
@@ -1044,7 +1045,7 @@ void	CMainFrameWnd::SelectTreeList(int nId)
 		if( pElement == NULL)
 			continue;
 
-		TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
+		CTreeListUI::Node* pNode  = (CTreeListUI::Node*)pElement->GetTag();
 		if( pNode == itr->second)
 		{
 			m_pFavoriteTree->ClearSelectedItem();
@@ -1057,12 +1058,11 @@ void	CMainFrameWnd::SelectTreeList(int nId)
 
 void	CMainFrameWnd::AddUrlSuccess(PFAVORITELINEDATA pData)
 {
-	CListUI* pFavList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	if(pFavList)
+	if(m_pDragList)
 	{
 		CListTextEditElementUI* pListElement = new CListTextEditElementUI;
 		pListElement->SetTag((UINT_PTR)pData);
-		pFavList->Add(pListElement);
+		m_pDragList->Add(pListElement);
 		pListElement->SetColomnEditable(1, TRUE);
 		pListElement->SetColomnEditable(2, TRUE);
 
@@ -1070,7 +1070,7 @@ void	CMainFrameWnd::AddUrlSuccess(PFAVORITELINEDATA pData)
 
 		GetWebSiteFavIcon(pData->szUrl, 0);
 
-		pFavList->Invalidate();
+		m_pDragList->Invalidate();
 	}
 
 	int nFavoriteNum = m_vFavoriteNodeAtTreeNode.size();

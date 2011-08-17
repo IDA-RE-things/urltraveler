@@ -13,7 +13,4 @@ class CTreeListMenu : public CMenuUI
 {
 public:
 	void	Init(bool bSelectItem, int nSelIndex);
-
-	void OnNew();
-	void OnDelete();
 };
