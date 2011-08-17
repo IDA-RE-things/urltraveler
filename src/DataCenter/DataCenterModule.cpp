@@ -399,7 +399,7 @@ void	DataCenterModule::OnEvent_AddFavoriteFolder(Event* pEvent)
 
 	pFavoriteData->nPid = nParentId;
 	STRNCPY(pFavoriteData->szTitle, pszTitle);
-	m_vFavoriteLineData.insert(m_vFavoriteLineData.begin(),1,pFavoriteData);
+	m_vFavoriteLineData.push_back(pFavoriteData);
 
 	// 进行广度遍历排序
 	std::sort(m_vFavoriteLineData.begin(), m_vFavoriteLineData.end(), CompareFavoriteData);
