@@ -7,6 +7,7 @@
 using namespace mainframe;
 using namespace DuiLib;
 
+// 列表菜单项
 #define	IDM_FAVLIST_ADD			10000
 #define	IDM_FAVLIST_DELETE		10001
 #define	IDM_FAVLIST_OPEN		10002

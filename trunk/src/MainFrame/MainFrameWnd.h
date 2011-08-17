@@ -74,12 +74,16 @@ private:
 	void	OnFavoriteListItemMoved(TNotifyUI& msg);
 
 	//	列表菜单项响应函数
-	void	OnAdd();
-	void	OnDelete();
-	void	OnOpen();
-	void	OnCopyUrl();
-	void	OnEdit();
-	void	OnSelectAll();
+	void	OnFavListAdd();
+	void	OnFavListDelete();
+	void	OnFavListOpen();
+	void	OnFavListCopyUrl();
+	void	OnFavListEdit();
+	void	OnFavListSelectAll();
+
+	// 树列表响应函数
+	void OnTreeListNew();
+	void OnTreeListDelete();
 
 
 protected:
