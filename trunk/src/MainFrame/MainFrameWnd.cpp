@@ -719,8 +719,20 @@ void	CMainFrameWnd::OnCopyUrl()
 
 void CMainFrameWnd::OnEdit()
 {
-	//CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	//pList->EditItem(m_nX, m_nY);
+	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	
+	int nSelRow = pList->GetCurSel();
+	if( nSelRow != -1)
+	{
+		pList->ShowEdit(nSelRow, 1);
+	}
+}
+
+void	CMainFrameWnd::OnSelectAll()
+{
+	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
+	for( int i=0; i<pList->GetRowCount(); i++)
+		pList->SelectItem(i);
 }
 
 LRESULT CMainFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -771,6 +783,7 @@ LRESULT CMainFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		break;
 
 	case IDM_FAVLIST_SELECTALL:
+		OnSelectAll();
 		break;
 
 	case IDM_FAVLIST_OPEN:

@@ -79,7 +79,7 @@ private:
 	void	OnOpen();
 	void	OnCopyUrl();
 	void	OnEdit();
-
+	void	OnSelectAll();
 
 
 protected:
