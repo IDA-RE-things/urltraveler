@@ -71,6 +71,30 @@ int CTreeListUI::GetIdFromIndex(int nIndex)
 	return nParentId;
 }
 
+int CTreeListUI::GetIdFromNode(CTreeListUI::Node* pNode)
+{
+	if( pNode == NULL)
+		return -1;
+
+	std::map<CTreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
+	if( itr == m_mapNodeId.end())
+		return -1;
+
+	return itr->second;
+}
+ 
+CTreeListUI::Node* CTreeListUI::GetNodeFromId(int nId)
+{
+	std::map<int, CTreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nId);
+	if( itr != m_mapIdNode.end())
+	{
+		CTreeListUI::Node* pNode = itr->second;
+		return pNode;
+	}
+
+	return NULL;
+}
+
 bool CTreeListUI::Add(CControlUI* pControl)
 {
 	if( !pControl ) return false;
@@ -78,7 +102,7 @@ bool CTreeListUI::Add(CControlUI* pControl)
 	return CListUI::Add(pControl);
 }
 
-bool	CTreeListUI::Add(int nIndex, LPCTSTR pszTitle)
+bool	CTreeListUI::Add(int nIndex, int nId,LPCTSTR pszTitle)
 {
 	if( pszTitle == NULL)
 		return false;
@@ -94,8 +118,9 @@ bool	CTreeListUI::Add(int nIndex, LPCTSTR pszTitle)
 
 	// 得到了该结点的ID
 	int nParentId = itr->second;
-
 	CTreeListUI::Node* pChildNode  = AddNode(pszTitle, pNode);
+	m_mapIdNode[nId] = pChildNode;
+	m_mapNodeId[pChildNode] = nId;
 }
 
 bool CTreeListUI::AddAt(CControlUI* pControl, int iIndex)

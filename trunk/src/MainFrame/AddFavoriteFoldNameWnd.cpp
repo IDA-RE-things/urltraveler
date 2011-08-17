@@ -45,6 +45,8 @@ void	CAddFavoriteFoldNameWnd::OnAddFavoriteFoldName()
 	pEvent->nParentFavoriteId = m_nParentId;
 	STRNCPY(pEvent->szTitle, m_pNameEdit->GetText());
 	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+
+	Close();
 }
 
 void CAddFavoriteFoldNameWnd::Notify(TNotifyUI& msg)

@@ -755,17 +755,21 @@ void CMainFrameWnd::OnTreeListNew()
 	if( nCurSel == -1)
 		return;
 
-	CListElementUI* pElement =		 (CListElementUI*)m_pDragList->GetSubItem(nCurSel);
+	CListLabelElementUI* pElement =		 (CListLabelElementUI*)m_pFavoriteTree->GetItemAt(nCurSel);
 	if( pElement == NULL)
 		return;
 
-	FAVORITELINEDATA *pSelNode = (FAVORITELINEDATA *)(pElement->GetTag());
-	if( pSelNode == NULL)
+	CTreeListUI::Node* pNode  = (CTreeListUI::Node*)pElement->GetTag();
+	if( pNode == NULL)
+		return;
+
+	int nParentId = m_pFavoriteTree->GetIdFromNode(pNode);
+	if( nParentId == -1)
 		return;
 
 	CAddFavoriteFoldNameWnd* pWnd = new CAddFavoriteFoldNameWnd();
 	if( pWnd == NULL ) { Close(); return;  }
-	pWnd->m_nParentId = pSelNode->nId;
+	pWnd->m_nParentId = nParentId;
 	pWnd->Create(m_hWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
 	pWnd->CenterWindow();
 	pWnd->ShowModal();
@@ -1109,7 +1113,7 @@ void	CMainFrameWnd::AddFavoriteFoldSuccess(int nParentId, PFAVORITELINEDATA pDat
 
 		int nIndex =  m_pFavoriteTree->GetIndexFromId(nParentId);
 		if( nIndex != -1)
-			m_pFavoriteTree->Add(nIndex, strFavFoldName.GetData());
+			m_pFavoriteTree->Add(nIndex, pData->nId,strFavFoldName.GetData());
 	}
 }
 
