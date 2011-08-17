@@ -20,7 +20,7 @@ class CFavoriteListMenu : public CMenuUI
 {
 public:
 
-	void	Init(bool bSelectItem);
+	void	Init(int nSelNum);
 
 	void	OnAdd();
 	void	OnDelete();
