@@ -5,8 +5,30 @@
 
 using namespace mainframe;
 
+void	CTreeListMenu::Init(bool bSelectItem, int nSelIndex)
+{
+	if( bSelectItem == true)
+	{
+		if( nSelIndex == 0)
+		{
+			AppendMenu(MF_BYCOMMAND, IDM_TREELIST_ADD, L"新建收藏夹");
+		}
+		else
+		{
+			AppendMenu(MF_BYCOMMAND, IDM_TREELIST_ADD, L"新建收藏夹");
+			AppendMenu(MF_BYCOMMAND, IDM_TREELIST_DELETE, L"删除收藏夹");
+			AppendMenu(MF_BYCOMMAND, IDM_TREELIST_RENAME, L"重命名");
+		}
+	}
+	else
+	{
+		//AppendMenu(MF_BYCOMMAND, IDM_TREELIST_ADD, L"新建收藏夹");
+	}
+}
+
 void CTreeListMenu::OnNew()
 {
+/*
 	if( m_pOwner ) 
 	{
 		TreeListUI* pTree = static_cast<TreeListUI*>(m_pOwner);
@@ -15,10 +37,12 @@ void CTreeListMenu::OnNew()
 
 		}
 	}	
+*/
 }
 
 void CTreeListMenu::OnDelete()
 {
+/*
 	if( m_pOwner ) 
 	{
 		TreeListUI* pTree = static_cast<TreeListUI*>(m_pOwner);
@@ -35,21 +59,5 @@ void CTreeListMenu::OnDelete()
 			g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 		}
 	}	
-}
-
-void CTreeListMenu::Notify(TNotifyUI& msg)
-{
-	if( msg.sType == _T("itemselect") ) {
-		Close();
-	}
-	else if( msg.sType == _T("itemclick") ) {
-		if( msg.pSender->GetName() == _T("menu_New") ) 
-		{
-			OnNew();
-		}
-		else if( msg.pSender->GetName() == _T("menu_Delete") ) 
-		{
-			OnDelete();
-		}
-	}
+*/
 }

@@ -276,6 +276,8 @@ void	CMainFrameWnd::OnShowMenu(TNotifyUI& msg)
 	{
 		CFavoriteListMenu* pMenu = new CFavoriteListMenu();
 		pMenu->CreatePopupMenu();
+		if( pMenu == NULL ) { return; }
+
 		POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
 		::ClientToScreen(*this, &pt);
 
@@ -288,18 +290,21 @@ void	CMainFrameWnd::OnShowMenu(TNotifyUI& msg)
 	}
 	else 	if( msg.pSender->GetName() == _T("favoritetreelist") ) 
 	{
-		CTreeListMenu* pMenu = new CTreeListMenu(L"tree_menu.xml");
+		CTreeListMenu* pMenu = new CTreeListMenu();
+		pMenu->CreatePopupMenu();
 		if( pMenu == NULL ) { return; }
 		POINT pt = {msg.ptMouse.x, msg.ptMouse.y};
 		::ClientToScreen(*this, &pt);
-		pMenu->Init(msg.pSender, CRect(pt.x, pt.y, pt.x + 140, pt.y + 125));
 
 		TreeListUI* pTree = (TreeListUI*)msg.pSender;
 		int nSelIndex = pTree->GetCurSel();
-		if( nSelIndex == 0)
-		{
-			pMenu->Enable(L"menu_Delete", false);
-		}
+		if( nSelIndex == -1)
+			pMenu->Init(false, nSelIndex);
+		else
+			pMenu->Init(true, nSelIndex);
+
+		pMenu->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, pt.x,
+			pt.y,this->GetHWND());
 	}
 }
 
@@ -668,13 +673,13 @@ LRESULT CMainFrameWnd::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	return lRes;
 }
 
-void CMainFrameWnd::OnAdd()
+void CMainFrameWnd::OnFavListAdd()
 {
 	g_MainFrameModule->GetModuleManager()->PushEvent(
 		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_MAINFRAME_ADD_URL, MODULE_ID_MAINFRAME));
 }
 
-void	CMainFrameWnd::OnDelete()
+void	CMainFrameWnd::OnFavListDelete()
 {
 	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	int nSel = pList->GetCurSel();
@@ -695,7 +700,7 @@ void	CMainFrameWnd::OnDelete()
 	g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 }
 
-void	CMainFrameWnd::OnOpen()
+void	CMainFrameWnd::OnFavListOpen()
 {
 	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	int nSel = pList->GetCurSel();
@@ -706,7 +711,7 @@ void	CMainFrameWnd::OnOpen()
 	MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_MAINFRAME_OPEN_URL, MODULE_ID_MAINFRAME, nSel));
 }
 
-void	CMainFrameWnd::OnCopyUrl()
+void	CMainFrameWnd::OnFavListCopyUrl()
 {
 	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	int nSel = pList->GetCurSel();
@@ -717,7 +722,7 @@ void	CMainFrameWnd::OnCopyUrl()
 	MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_MAINFRAME_COPY_URL, MODULE_ID_MAINFRAME, nSel));
 }
 
-void CMainFrameWnd::OnEdit()
+void CMainFrameWnd::OnFavListEdit()
 {
 	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	
@@ -728,11 +733,32 @@ void CMainFrameWnd::OnEdit()
 	}
 }
 
-void	CMainFrameWnd::OnSelectAll()
+void	CMainFrameWnd::OnFavListSelectAll()
 {
 	CListUI* pList = static_cast<CListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	for( int i=0; i<pList->GetRowCount(); i++)
 		pList->SelectItem(i);
+}
+
+void CMainFrameWnd::OnTreeListNew()
+{
+
+}
+
+void CMainFrameWnd::OnTreeListDelete()
+{
+	if( m_pFavoriteTree)
+	{
+		int nIndex = m_pFavoriteTree->GetCurSel();
+		if( nIndex < 0)
+			return;
+
+		// 通知数据中心删除
+		MainFrame_DeleteFavoriteFoldEvent* pEvent = new MainFrame_DeleteFavoriteFoldEvent();
+		pEvent->desMId = MODULE_ID_MAINFRAME;
+		pEvent->nDeleteIndex = nIndex;
+		g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+	}
 }
 
 LRESULT CMainFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -764,30 +790,38 @@ LRESULT CMainFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	// 列表菜单项
 	case IDM_FAVLIST_ADD:
-		OnAdd();
+		OnFavListAdd();
 		break;
 
 	case IDM_FAVLIST_DELETE:
-		OnDelete();
+		OnFavListDelete();
 		break;
 
 	case IDM_FAVLIST_COPYURL:
-		OnCopyUrl();
+		OnFavListCopyUrl();
 		break;
 
 	case IDM_FAVLIST_EDIT:
-		OnEdit();
+		OnFavListEdit();
 		break;
 
 	case IDM_FAVLIST_SHARE:
 		break;
 
 	case IDM_FAVLIST_SELECTALL:
-		OnSelectAll();
+		OnFavListSelectAll();
 		break;
 
 	case IDM_FAVLIST_OPEN:
-		OnOpen();
+		OnFavListOpen();
+		break;
+
+	case IDM_TREELIST_ADD:
+		OnTreeListNew();
+		break;
+
+	case IDM_TREELIST_DELETE:
+		OnTreeListDelete();
 		break;
 
 	default:
