@@ -9,7 +9,7 @@
 using namespace datacenter;
 using namespace mainframe;
 
-void DragListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
+void CDragListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
 {
 	CListUI::SetManager(pManager, pParent, bInit);
 
@@ -20,7 +20,7 @@ void DragListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, boo
 	}
 }
 
-void	DragListUI::OnListItemDragEnd(DragListUI* pDragList)
+void	CDragListUI::OnListItemDragEnd(CDragListUI* pDragList)
 {
 	// 获取到鼠标所在点的位置
 	HCURSOR   hCursor   =   ::LoadCursor(NULL,IDC_ARROW); 
@@ -50,7 +50,7 @@ void	DragListUI::OnListItemDragEnd(DragListUI* pDragList)
 	}
 }
 
-void	DragListUI::OnItemDragEnd()
+void	CDragListUI::OnItemDragEnd()
 {
 /*
 	CControlUI* pSrcCtrl = m_pManager->GetEventSrcControl();
@@ -60,13 +60,13 @@ void	DragListUI::OnItemDragEnd()
 	// 是从列表中拖放过来的
 	if( _tcscmp(pSrcCtrl->GetClass(), _T("ListUI")) == 0 ) 
 	{
-		DragListUI* pDragList = (DragListUI*)pSrcCtrl;
+		CDragListUI* pDragList = (CDragListUI*)pSrcCtrl;
 		OnListItemDragEnd(pDragList);
 	}
 */
 }
 
-void	DragListUI::OnItemDragOver()
+void	CDragListUI::OnItemDragOver()
 {
 	HCURSOR hCursor   =   LoadCursorW((HINSTANCE)g_hModule,MAKEINTRESOURCE(IDC_DRAGCURSOR));
 	::SetCursor(hCursor);
@@ -77,7 +77,7 @@ void	DragListUI::OnItemDragOver()
 		return;
 }
 
-void DragListUI::DoEvent(TEventUI& event) 
+void CDragListUI::DoEvent(TEventUI& event) 
 {
 	if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
 		if( m_pParent != NULL ) m_pParent->DoEvent(event);

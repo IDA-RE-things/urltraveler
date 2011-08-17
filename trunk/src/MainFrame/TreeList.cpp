@@ -10,16 +10,16 @@
 using namespace datacenter;
 using namespace mainframe;
 
-LPCTSTR TreeListUI::GetClass() const
+LPCTSTR CTreeListUI::GetClass() const
 {
-	return _T("TreeListUI");
+	return _T("CTreeListUI");
 }
 
-void TreeListUI::Notify(TNotifyUI& msg)
+void CTreeListUI::Notify(TNotifyUI& msg)
 {
 }
 
-void TreeListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
+void CTreeListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
 {
 	CListUI::SetManager(pManager, pParent, bInit);
 
@@ -30,28 +30,28 @@ void TreeListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, boo
 	}
 }
 
-bool TreeListUI::Add(CControlUI* pControl)
+bool CTreeListUI::Add(CControlUI* pControl)
 {
 	if( !pControl ) return false;
 	if( _tcscmp(pControl->GetClass(), _T("ListLabelElementUI")) == 0 ) return false;
 	return CListUI::Add(pControl);
 }
 
-bool TreeListUI::AddAt(CControlUI* pControl, int iIndex)
+bool CTreeListUI::AddAt(CControlUI* pControl, int iIndex)
 {
 	if( !pControl ) return false;
 	if( _tcscmp(pControl->GetClass(), _T("ListLabelElementUI")) == 0 ) return false;
 	return CListUI::AddAt(pControl, iIndex);
 }
 
-bool TreeListUI::Remove(CControlUI* pControl)
+bool CTreeListUI::Remove(CControlUI* pControl)
 {
 	if( !pControl ) return false;
 	if( _tcscmp(pControl->GetClass(), _T("ListLabelElementUI")) == 0 ) return false;
 	return CListUI::Remove(pControl);
 }
 
-bool TreeListUI::RemoveAt(int nIndex)
+bool CTreeListUI::RemoveAt(int nIndex)
 {
 	CControlUI* pControl = m_pList->GetItemAt(nIndex);
 	if( !pControl ) 
@@ -61,8 +61,8 @@ bool TreeListUI::RemoveAt(int nIndex)
 	if( pElement == NULL)
 		return false;
 
-	TreeListUI::Node* pNode  = (TreeListUI::Node*)pElement->GetTag();
-	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
+	CTreeListUI::Node* pNode  = (CTreeListUI::Node*)pElement->GetTag();
+	std::map<CTreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
 	if( itr == m_mapNodeId.end())
 		return false;
 
@@ -89,10 +89,10 @@ bool TreeListUI::RemoveAt(int nIndex)
 			{
 				int nSubFolderId = getSubFolderService.pIdNum[i];
 
-				std::map<int, TreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
+				std::map<int, CTreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
 				if( itr != m_mapIdNode.end())
 				{
-					TreeListUI::Node* pNode = itr->second;
+					CTreeListUI::Node* pNode = itr->second;
 					if( pNode)
 						m_mapNodeId.erase(pNode);
 				}
@@ -119,10 +119,10 @@ bool TreeListUI::RemoveAt(int nIndex)
 		{
 			int nSubFolderId = getSubFolderService.pIdNum[i];
 
-			std::map<int, TreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
+			std::map<int, CTreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
 			if( itr != m_mapIdNode.end())
 			{
-				TreeListUI::Node* pNode = itr->second;
+				CTreeListUI::Node* pNode = itr->second;
 				if( pNode)
 					m_mapNodeId.erase(pNode);
 			}
@@ -153,22 +153,22 @@ bool TreeListUI::RemoveAt(int nIndex)
 	return true;
 }
 
-void TreeListUI::RemoveAll()
+void CTreeListUI::RemoveAll()
 {
 	CListUI::RemoveAll();
 	delete _root;
-	_root = new TreeListUI::Node;
+	_root = new CTreeListUI::Node;
 	_root->data()._level = -1;
 	_root->data()._child_visible = true;
 	_root->data()._pListElement = NULL;
 }
 
-void	TreeListUI::OnEventItemClick(TEventUI& event)
+void	CTreeListUI::OnEventItemClick(TEventUI& event)
 {
 	if( event.pSender == NULL)
 		return;
 
-	TreeListUI::Node* pNode = (TreeListUI::Node*)event.pSender->GetTag();
+	CTreeListUI::Node* pNode = (CTreeListUI::Node*)event.pSender->GetTag();
 	if( pNode == NULL)
 		return;
 
@@ -186,7 +186,7 @@ void	TreeListUI::OnEventItemClick(TEventUI& event)
 		SetChildVisible(pNode, !pNode->data()._child_visible);
 }
 
-void	TreeListUI::OnEventDragOver(TEventUI& event)
+void	CTreeListUI::OnEventDragOver(TEventUI& event)
 {
 	if( m_bIsDragging == false)
 	{
@@ -194,7 +194,7 @@ void	TreeListUI::OnEventDragOver(TEventUI& event)
 	}
 }
 
-void	TreeListUI::OnTreeListItemDragEnd()
+void	CTreeListUI::OnTreeListItemDragEnd()
 {
 	// 获取到鼠标所在点的位置
 	HCURSOR   hCur   =   ::LoadCursor(NULL,IDC_ARROW); 
@@ -205,14 +205,14 @@ void	TreeListUI::OnTreeListItemDragEnd()
 	if( pDstItem == NULL)
 		return;
 
-	TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
+	CTreeListUI::Node* pDstNode = (CTreeListUI::Node*)pDstItem->GetTag();
 	if( pDstNode == NULL)
 	{
 		ASSERT(0);
 		return;
 	}
 
-	std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
+	std::map<CTreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
 	if( itr == m_mapNodeId.end())
 	{
 		ASSERT(0);
@@ -232,7 +232,7 @@ void	TreeListUI::OnTreeListItemDragEnd()
 		return;
 	}
 
-	TreeListUI::Node* pSrcNode = (TreeListUI::Node*)pSrcItem->GetTag();
+	CTreeListUI::Node* pSrcNode = (CTreeListUI::Node*)pSrcItem->GetTag();
 	if( pSrcNode == NULL)
 	{
 		ASSERT(0);
@@ -280,7 +280,7 @@ void	TreeListUI::OnTreeListItemDragEnd()
 	// 在结点中增加一个新结点
 	wstring wstrText = L"{x 4}{x 4}";
 	wstrText += pSrcLineData->szTitle;
-	TreeListUI::Node* pNode  = AddNode(wstrText.c_str(), pDstNode);
+	CTreeListUI::Node* pNode  = AddNode(wstrText.c_str(), pDstNode);
 	m_mapIdNode[pSrcLineData->nId] = pNode;
 	m_mapNodeId[pNode] = pSrcLineData->nId;
 	pSrcLineData->nLastModifyTime = time(NULL);
@@ -289,7 +289,7 @@ void	TreeListUI::OnTreeListItemDragEnd()
 	m_pCurrentTreeNode = pNode;
 }
 
-void	TreeListUI::OnTreeListItemDragOver()
+void	CTreeListUI::OnTreeListItemDragOver()
 {
 	HCURSOR hCursor   =   LoadCursorW((HINSTANCE)g_hModule,MAKEINTRESOURCE(IDC_DRAGCURSOR));
 	::SetCursor(hCursor);
@@ -299,7 +299,7 @@ void	TreeListUI::OnTreeListItemDragOver()
 	if( pDstItem == NULL)
 		return;
 
-	TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
+	CTreeListUI::Node* pDstNode = (CTreeListUI::Node*)pDstItem->GetTag();
 	if( pDstNode == NULL)
 	{
 		ASSERT(0);
@@ -309,7 +309,7 @@ void	TreeListUI::OnTreeListItemDragOver()
 	SetChildVisible(pDstNode, true);
 }
 
-void	TreeListUI::OnListItemDragEnd(DragListUI* pDragList)
+void	CTreeListUI::OnListItemDragEnd(CDragListUI* pDragList)
 {
 	int nSelNum = 0;
 	int* pSel = pDragList->GetCurSel(nSelNum);
@@ -325,14 +325,14 @@ void	TreeListUI::OnListItemDragEnd(DragListUI* pDragList)
 		if( pDstItem == NULL)
 			return;
 
-		TreeListUI::Node* pDstNode = (TreeListUI::Node*)pDstItem->GetTag();
+		CTreeListUI::Node* pDstNode = (CTreeListUI::Node*)pDstItem->GetTag();
 		if( pDstNode == NULL)
 		{
 			ASSERT(0);
 			return;
 		}
 
-		std::map<TreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
+		std::map<CTreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
 		if( itr == m_mapNodeId.end())
 		{
 			ASSERT(0);
@@ -380,7 +380,7 @@ void	TreeListUI::OnListItemDragEnd(DragListUI* pDragList)
 	}
 }
 
-void TreeListUI::DoEvent(TEventUI& event) 
+void CTreeListUI::DoEvent(TEventUI& event) 
 {
 	if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
 		if( m_pParent != NULL ) m_pParent->DoEvent(event);
@@ -458,7 +458,7 @@ void TreeListUI::DoEvent(TEventUI& event)
 			return;
 
 		//如果是TreeList
-		if( _tcscmp(pSrcCtrl->GetClass(), _T("TreeListUI")) == 0 ) 
+		if( _tcscmp(pSrcCtrl->GetClass(), _T("CTreeListUI")) == 0 ) 
 		{
 			if( m_bIsDragging == true )
 			{
@@ -469,7 +469,7 @@ void TreeListUI::DoEvent(TEventUI& event)
 		// 是从列表中拖放过来的
 		else if( _tcscmp(pSrcCtrl->GetClass(), _T("ListUI")) == 0 ) 
 		{
-			DragListUI* pDragList = (DragListUI*)pSrcCtrl;
+			CDragListUI* pDragList = (CDragListUI*)pSrcCtrl;
 			OnListItemDragEnd(pDragList);
 		}
 
@@ -495,7 +495,7 @@ void TreeListUI::DoEvent(TEventUI& event)
 			if( pItem == NULL)
 				return;
 
-			TreeListUI::Node* node = (TreeListUI::Node*)pItem->GetTag();
+			CTreeListUI::Node* node = (CTreeListUI::Node*)pItem->GetTag();
 			SetChildVisible(node, !node->data()._child_visible);
 
 			return;
@@ -520,12 +520,12 @@ void TreeListUI::DoEvent(TEventUI& event)
 	CListUI::DoEvent(event);
 }
 
-TreeListUI::Node* TreeListUI::AddNode(LPCTSTR text, TreeListUI::Node* parent)
+CTreeListUI::Node* CTreeListUI::AddNode(LPCTSTR text, CTreeListUI::Node* parent)
 {
 	if( !parent ) parent = _root;
 
 	CListLabelElementUI* pListElement = new CListLabelElementUI;
-	TreeListUI::Node* node = new TreeListUI::Node;
+	CTreeListUI::Node* node = new CTreeListUI::Node;
 	node->data()._level = parent->data()._level + 1;
 	if( node->data()._level == 0 ) node->data()._child_visible = true;
 	else node->data()._child_visible = false;
@@ -563,7 +563,7 @@ TreeListUI::Node* TreeListUI::AddNode(LPCTSTR text, TreeListUI::Node* parent)
 	int index = 0;
 	if( parent->has_children() )
 	{
-		TreeListUI::Node* prev = parent->get_last_child();
+		CTreeListUI::Node* prev = parent->get_last_child();
 		index = prev->data()._pListElement->GetIndex() + 1;
 	}
 	else 
@@ -581,7 +581,7 @@ TreeListUI::Node* TreeListUI::AddNode(LPCTSTR text, TreeListUI::Node* parent)
 	return node;
 }
 
-void TreeListUI::RemoveNode(TreeListUI::Node* node)
+void CTreeListUI::RemoveNode(CTreeListUI::Node* node)
 {
 	if( !node || node == _root ) return;
 
@@ -589,7 +589,7 @@ void TreeListUI::RemoveNode(TreeListUI::Node* node)
 	int nChildNum = node->num_children();
 	for( int i = nChildNum - 1; i >= 0; --i )
 	{
-		TreeListUI::Node* child = node->child(i);
+		CTreeListUI::Node* child = node->child(i);
 		RemoveNode(child);
 	}
 
@@ -598,7 +598,7 @@ void TreeListUI::RemoveNode(TreeListUI::Node* node)
 	delete node;
 }
 
-void TreeListUI::SetChildVisible(TreeListUI::Node* node, bool visible)
+void CTreeListUI::SetChildVisible(CTreeListUI::Node* node, bool visible)
 {
 	if( !node || node == _root ) return;
 
@@ -621,8 +621,8 @@ void TreeListUI::SetChildVisible(TreeListUI::Node* node, bool visible)
 	if( !node->data()._pListElement->IsVisible() ) return;
 	if( !node->has_children() ) return;
 
-	TreeListUI::Node* begin = node->child(0);
-	TreeListUI::Node* end = node->get_last_child();
+	CTreeListUI::Node* begin = node->child(0);
+	CTreeListUI::Node* end = node->get_last_child();
 	for( int i = begin->data()._pListElement->GetIndex(); i <= end->data()._pListElement->GetIndex(); ++i )
 	{
 		CControlUI* control = m_pList->GetItemAt(i);
@@ -634,7 +634,7 @@ void TreeListUI::SetChildVisible(TreeListUI::Node* node, bool visible)
 			}
 			else
 			{
-				TreeListUI::Node* local_parent = ((TreeListUI::Node*)control->GetTag())->parent();
+				CTreeListUI::Node* local_parent = ((CTreeListUI::Node*)control->GetTag())->parent();
 				if( local_parent->data()._child_visible && local_parent->data()._pListElement->IsVisible() )
 				{
 					control->SetVisible(true);
@@ -644,7 +644,7 @@ void TreeListUI::SetChildVisible(TreeListUI::Node* node, bool visible)
 	}
 }
 
-SIZE TreeListUI::GetExpanderSizeX(TreeListUI::Node* node) const
+SIZE CTreeListUI::GetExpanderSizeX(CTreeListUI::Node* node) const
 {
 	if( !node || node == _root ) return CSize();
 	if( node->data()._level >= 3 ) return CSize();

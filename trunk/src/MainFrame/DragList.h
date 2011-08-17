@@ -11,19 +11,19 @@ extern HMODULE	g_hModule;
 using namespace DuiLib;
 using namespace std;
 
-class DragListUI : public CListUI
+class CDragListUI : public CListUI
 {
 public:
 	enum { SCROLL_TIMERID = 10 };
 
-	DragListUI() 
+	CDragListUI() 
 	{
 		m_ListInfo.bMultiSelect = true;
 		m_bAddNotifyer = false;
 		m_bIsDragging = false;
 	}
 
-	~DragListUI() { }
+	~CDragListUI() { }
 
 	virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
@@ -31,7 +31,7 @@ public:
 	void	OnItemDragEnd();
 
 
-	void	OnListItemDragEnd(DragListUI* pDragList);
+	void	OnListItemDragEnd(CDragListUI* pDragList);
 
 
 	void DoEvent(TEventUI& event) ;
