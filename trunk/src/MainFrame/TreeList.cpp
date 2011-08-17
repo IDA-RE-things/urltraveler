@@ -229,7 +229,6 @@ void	TreeListUI::OnTreeListItemDragEnd()
 	CListLabelElementUI* pSrcItem =  (CListLabelElementUI*)GetItemAt(srcIndex);
 	if( pSrcItem == NULL)
 	{
-		ASSERT(0);
 		return;
 	}
 
