@@ -98,8 +98,9 @@ public:
 
 private:
 
-	CTreeListUI* m_pFavoriteTree;
+	CTreeListUI*	m_pFavoriteTree;
 	CDragListUI*	m_pDragList;
+	CListUI*	m_pLoadingList;
 
 	int m_nCurrentFavoriteFoldId;				//	当前显示的收藏夹目录的 ID
 

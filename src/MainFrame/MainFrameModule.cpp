@@ -301,7 +301,7 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 		m_pMainFrame->LoadFavoriteTree(ppFavoriteData, nNum);
 	}
 
-	m_pMainFrame->ShowBrowserLayout();
+	//m_pMainFrame->ShowBrowserLayout();
 }
 
 
