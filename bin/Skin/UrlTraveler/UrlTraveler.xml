@@ -33,7 +33,7 @@
                 <VerticalLayout name="VerticalLayoutUI8" bkcolor="#FFFFFFFF" bordercolor="#00B5BFB4">
                     <HorizontalLayout name="HorizontalLayoutUI1" pos="0,0,0,104" height="104" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#00B4BFB5">
                         <HorizontalLayout name="HorizontalLayoutUI10">
-                            <Text name="favtip" text="{p}所有浏览器的收藏夹已经自动整理合并在下面的列表中，通过一键同步，你可以把这些浏览器列表同步到收藏夹中{y 20}{/p}" float="true" pos="7,54,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                            <Text name="favtip" text="{p}所有浏览器的收藏夹已经自动整理合并，通过一键同步，你可以将它们同步到所有浏览器的收藏夹中{y 20}{/p}" float="true" pos="7,54,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
 							<Text name="BrowserNum" text="{f 3}{b}您安装的{f 4}{c #F27D30}8{/c}{/f}种浏览器：{/b}{/f}" float="true" pos="10,10,170,42" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
 							<IconBox name="BrowserBox" iconsize="32, 32" iconboldersize="1" iconboldercolor="#ACACB4" distanceoficon="5" button1normalimage="left_normal.png" button2normalimage="right_normal.png" button1hotimage="left_hover.png" button2hotimage="right_hover.png" button1pushedimage="left_down.png" button2pushedimage="right_down.png" float="true" pos="155,5,460,47"/>    
                         </HorizontalLayout>
@@ -74,12 +74,12 @@
                         <Label name="LabelUI3" float="true" pos="5,2,53,50" bkimage="icon_01.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
                         <Text name="TextUI4" text="{b}同步频率：{c #F27D30}高{/c}{/b}" float="true" pos="56,10,199,23" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         <Text name="TextUI5" text="{b}您隔{x 4}{c #F27D30}2{/c}{x 4}小时同步一次{/b}" float="true" pos="55,33,199,46" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                        <Text name="TextUI6" text="{c #5a7737}上次同步漫游：{/c}2011-11-05 22:19:23" float="true" pos="5,64,199,79" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                        <Text name="TextUI7" text="{c #5a7737}上次同步漫游：{/c}2011-11-05 22:19:23" float="true" pos="4,89,198,102" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI6" text="{c #5a7737}上次同步时间：{/c}2011-11-05 22:19:23" float="true" pos="5,64,199,79" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI7" text="{c #5a7737}上次漫游时间：{/c}2011-11-05 22:19:23" float="true" pos="4,89,198,102" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                     </VerticalLayout>
                     <VerticalLayout name="VerticalLayoutUI11" pos="0,0,0,100" height="100" padding="-1,-1,0,0" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8">
                         <Label name="LabelUI1" float="true" pos="8,6,24,22" bkimage="icon_03.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
-                        <Text name="TextUI8" text="将漫游精灵最小化窗口，他会自动帮你同步。{y 15}你在任何一个收藏夹中进行收藏，他都会立即同步到其余收藏夹{y 15}，并漫游到网络{y 15}" float="true" pos="5,31,197,96" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                        <Text name="TextUI8" text="将EverFav最小化窗口，它会自动帮你同步至网络。{y 15}你在任何一个浏览器中收藏网址，EverFav都会将其同步到所有浏览器{y 15}，并漫游至网络{y 15}" float="true" pos="5,31,197,96" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         <Text name="TextUI9" text="{b}小提示：{/b}" float="true" pos="32,6,104,25" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                     </VerticalLayout>
                     <VerticalLayout name="VerticalLayoutUI12" pos="0,0,0,95" height="95" padding="-1,-1,0,0" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8">
