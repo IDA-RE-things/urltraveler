@@ -70,7 +70,9 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 		ASSERT(0);
 		return;
 	}
-	m_pDragList->SetItemTextStyle(m_pDragList->GetItemTextStyle() & ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
+	m_pDragList->SetTextCallback(this);
+	m_pDragList->SetItemTextStyle(m_pDragList->GetItemTextStyle()
+		& ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
 
 	m_pFavoriteTree = static_cast<CTreeListUI*>(m_pm.FindControl(_T("favoritetreelist")));
 	if( m_pFavoriteTree == NULL)
@@ -79,6 +81,16 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 		return;
 	}
 
+	m_pLoadingList = static_cast<CListUI*>(m_pm.FindControl(_T("FavoriteLoadingList")));
+	if( m_pLoadingList == NULL)
+	{			
+		ASSERT(0);
+		return;
+	}
+	m_pLoadingList->SetTextCallback(this);
+	m_pLoadingList->SetItemTextStyle(m_pLoadingList->GetItemTextStyle() 
+		& ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
+	
 	// 发送请求至服务器，统计在线人数
 	Web_OpenTravelerService openTravelerService;
 	openTravelerService.srcMId = MODULE_ID_MAINFRAME;
@@ -92,6 +104,20 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	if( pProcessLayout)
 		pProcessLayout->SetVisible(true);
 
+
+	CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
+	if( pFavoriteDataLayout)
+		pFavoriteDataLayout->SetVisible(false);
+
+	CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
+	if( pFavoriteLoadingLayout)
+		pFavoriteLoadingLayout->SetVisible(true);
+
+	for(int i =0; i<3;i++)
+	{
+		CListLabelElementUI* pListElement = new CListLabelElementUI;
+		m_pLoadingList->Add(pListElement);
+	}
 }
 
 void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum)
@@ -114,6 +140,7 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 		ASSERT(0);
 		return;
 	}
+	m_pDragList->SetTextCallback(this);     
 
 	CTreeListUI::Node* pRootNode = m_pFavoriteTree->AddNode(wstrText.c_str());
 	m_pFavoriteTree->m_mapIdNode[0] = pRootNode;
@@ -148,7 +175,6 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 		}
 	}
 
-	m_pDragList->SetTextCallback(this);     
 
 	// 显示根结点下的所有的收藏夹记录
 	m_pFavoriteTree->m_nTreeNodeId = 0;
@@ -940,6 +966,17 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 				return _wcsdup(strUrl.c_str());
 			}
 		}
+	}
+	else if(pControl->GetParent()->GetParent()->GetName() == _T("FavoriteLoadingList"))
+	{
+		if( iSubItem == 0 )
+		{
+			return L"搜狗浏览器";
+		}
+		if( iSubItem == 1 )
+		{
+			return L"73条记录";
+		}	
 	}
 
 	return _T("");
