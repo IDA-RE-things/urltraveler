@@ -49,6 +49,17 @@ CMainFrameWnd::~CMainFrameWnd()
 	}
 }
 
+void	CMainFrameWnd::ShowBrowserLayout()
+{
+	CHorizontalLayoutUI*  pSearchLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"BrowserLayout"));
+	if( pSearchLayout)
+		pSearchLayout->SetVisible(true);
+
+	CHorizontalLayoutUI*  pProcessLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"ProcessLayout"));
+	if( pProcessLayout)
+		pProcessLayout->SetVisible(false);
+}
+
 void CMainFrameWnd::OnPrepare(TNotifyUI& msg) 
 { 
 	m_pTipWnd->Init(msg.pSender); 
@@ -72,6 +83,15 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	Web_OpenTravelerService openTravelerService;
 	openTravelerService.srcMId = MODULE_ID_MAINFRAME;
 	g_MainFrameModule->GetModuleManager()->CallService(openTravelerService.serviceId,(param)&openTravelerService);
+
+	CHorizontalLayoutUI*  pSearchLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"BrowserLayout"));
+	if( pSearchLayout)
+		pSearchLayout->SetVisible(false);
+
+	CHorizontalLayoutUI*  pProcessLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"ProcessLayout"));
+	if( pProcessLayout)
+		pProcessLayout->SetVisible(true);
+
 }
 
 void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum)

@@ -59,6 +59,7 @@ public:
 	void	AddUrlSuccess(PFAVORITELINEDATA pData);
 	void	AddFavoriteFoldSuccess(int nParentId, PFAVORITELINEDATA pData);
 	PFAVORITELINEDATA*	GetFavoriteLineData(int& nFavoriteNum);
+	void	ShowBrowserLayout();
 
 private:
 
