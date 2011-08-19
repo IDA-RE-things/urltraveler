@@ -252,6 +252,10 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 	m_pModuleManager->PushEvent(
 		MakeEvent<MODULE_ID_PLUGIN>()(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED,
 		MODULE_ID_PLUGIN));
+
+	PlugIn_InExportEndMessage* pMessage = new PlugIn_InExportEndMessage();
+	STRNCPY(pMessage->szProcessText, L"正在加载所有的浏览器插件");
+	GetModuleManager()->PushMessage(*pMessage);
 }
 
 void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
@@ -275,6 +279,10 @@ void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 	m_pModuleManager->PushMessage(
 		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED));
 
+	PlugIn_InExportEndMessage* pMessage = new PlugIn_InExportEndMessage();
+	STRNCPY(pMessage->szProcessText, L"正在检查插件是否能正常工作");
+	GetModuleManager()->PushMessage(*pMessage);
+
 	m_pThreadObj->CreateThread(static_cast<IThreadEvent *>(this));
 }
 
@@ -294,6 +302,10 @@ bool compare_hashid(FAVORITELINEDATA*& a1,FAVORITELINEDATA*& a2)
 
 void PlugInModule::Merge(PFAVORITELINEDATA* ppData, int32 nLen, int nParentId)
 {
+	PlugIn_InExportEndMessage* pMessage = new PlugIn_InExportEndMessage();
+	STRNCPY(pMessage->szProcessText, L"正在对收藏夹数据进行合并");
+	GetModuleManager()->PushMessage(*pMessage);
+
 	int nHash = 0;
 	vector<PFAVORITELINEDATA> vec;
 
@@ -348,6 +360,10 @@ bool CompareFavoriteData (const FAVORITELINEDATA* i,  const FAVORITELINEDATA* j)
 
 int PlugInModule::Run()
 {
+	PlugIn_InExportEndMessage* pMessage = new PlugIn_InExportEndMessage();
+	STRNCPY(pMessage->szProcessText, L"正在导出所有浏览器的收藏夹数据");
+	GetModuleManager()->PushMessage(*pMessage);
+
 	DataCenter_GetFavoriteVectorService favoriteVectorService;
 	m_pModuleManager->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR, (param)&favoriteVectorService);
 	std::vector<FAVORITELINEDATA*>*	pvFavoriteData = favoriteVectorService.pvFavoriteData;

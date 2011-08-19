@@ -29,6 +29,7 @@ namespace plugin
 		MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED,						//	通知给定的浏览器的数据已经导出完毕
 		MESSAGE_VALUE_PLUGIN_IMPORT_BEGIN,							//	通知浏览器开始导入
 		MESSAGE_VALUE_PLUGIN_IMPORT_FINISHED,						//	通知给定的浏览器的数据已经导入完毕
+		MESSAGE_VALUE_PLUGIN_EXINPORT_PROCESS,					//	通知上层当前的进度
 	};
 
 	// PlugIn能够处理的直接调用
@@ -69,8 +70,18 @@ namespace plugin
 		int nFavoriteNum;
 	};
 
+ 	struct PlugIn_InExportEndMessage : MessageExtraInfo
+	{
+		PlugIn_InExportEndMessage()
+		{
+			messageValue = MESSAGE_VALUE_PLUGIN_EXINPORT_PROCESS;
+			srcMId = MODULE_ID_PLUGIN; 
 
+			ZeroMemory(szProcessText, sizeof(wchar_t)*MAX_PATH);
+		}
 
+		wchar_t	szProcessText[MAX_PATH];
+	};
 
 	//=================================================================//
 	//                   PlugIn中所使用到的event结构	   		 	  //
