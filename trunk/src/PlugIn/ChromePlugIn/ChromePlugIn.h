@@ -91,8 +91,8 @@ public:
 	virtual int32 GetFavoriteCount();
 
 private:
-	BOOL ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32& nDataNum);
-	BOOL ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA*  ppData, int32& nDataNum);
+	BOOL ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA* ppData, int nDataNum, int32& nRealDataNum);
+	BOOL ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA*  ppData, int32 nDataNum, int32& nRealDataNum);
 	BOOL MakeFolderNode(PFAVORITELINEDATA pstData, Json::Value& folder_obj, uint32& nIndex);
 	BOOL MakeUrlNode(PFAVORITELINEDATA pstData, Json::Value& url_obj, uint32& nIndex);
 	BOOL MakeSpecialFolderNode(wchar_t *pszName, uint32& nIndex, Json::Value& folder_obj);
