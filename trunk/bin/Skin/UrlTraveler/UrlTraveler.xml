@@ -41,14 +41,17 @@
                             <Button name="ButtonUI5" float="true" pos="11,29,155,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button.png" />
                         </HorizontalLayout>
                     </HorizontalLayout>
+
+					<!-- 此处为正在加载的时候显示的内容-->
                     <HorizontalLayout name="ProcessLayout" pos="0,0,0,104" height="104" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#00B4BFB5">
                         <HorizontalLayout name="HorizontalLayoutUI10">
-                            <Text name="favtip" text="{p}所有浏览器的收藏夹已经自动整理合并，通过一键同步，你可以将它们同步到所有浏览器的收藏夹中{y 20}{/p}" float="true" pos="7,54,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                            <Text name="favtip" text="{p}此处是一个正在旋转的图标{y 20}{/p}" float="true" pos="7,54,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         </HorizontalLayout>
                         <HorizontalLayout name="SearchBtn" pos="460,0,630,103" width="170" height="103">
                             <Button name="ButtonUI5" float="true" pos="11,29,155,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button.png" />
                         </HorizontalLayout>
                     </HorizontalLayout>
+
                     <HorizontalLayout name="HorizontalLayoutUI3" pos="0,0,0,30" height="30" padding="0,-1,0,0" bkcolor="#FFFFFFFF" bkcolor2="#00EBE9E8" bordercolor="#00B4BFB5">
                         <HorizontalLayout name="HorizontalLayoutUI5" />
                         <HorizontalLayout name="HorizontalLayoutUI9" pos="305,0,580,0" width="275">
