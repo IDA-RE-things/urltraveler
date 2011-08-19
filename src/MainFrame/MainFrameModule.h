@@ -92,6 +92,8 @@ protected:
 	void	OnMessage_PreExit(Message* pMessage);	// 程序退出的广播消息，主界面处理该消息，为退出做准备	
 	void	OnMessage_FavoriteLoaded(Message* pMessage);		//	收藏夹已经合并结束
 	void	OnMessage_PlugInLoaded(Message* pMessage);
+	void	OnMessage_PlugInBeginExport(Message* pMessage);
+	void	OnMessage_PlugInEndExport(Message* pMessage);
 
 protected:
 

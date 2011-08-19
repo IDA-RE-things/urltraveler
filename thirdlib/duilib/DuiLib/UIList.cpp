@@ -257,7 +257,7 @@ namespace DuiLib
 
 		if( pControl->GetInterface(_T("Edit")) != NULL ) 
 		{
-			if (m_pEditUI != pControl)
+			if (m_pEditUI != pControl && m_pEditUI != NULL)
 			{
 				CVerticalLayoutUI::Remove(m_pEditUI);
 				m_pEditUI = static_cast<CEditUI*>(pControl);
@@ -1497,7 +1497,8 @@ namespace DuiLib
 
 		m_bShowEdit = false;
 
-		m_pEditUI->SetPos(CRect(0, 0, 0, 0));
+		if( m_pEditUI)
+			m_pEditUI->SetPos(CRect(0, 0, 0, 0));
 
 		TNotifyUI notify;
 		notify.sType = _T("favlisteditfinish");
@@ -1555,10 +1556,15 @@ namespace DuiLib
 				rc.right -= nScrollBarWidth;
 			}
 		}
-		m_pEditUI->SetPos(rc);
-		m_pEditUI->SetText(pstrText);
-		m_pEditUI->SetFocus();
-		m_pEditUI->SetSel();
+
+		if( m_pEditUI)
+		{
+			m_pEditUI->SetPos(rc);
+			m_pEditUI->SetText(pstrText);
+			m_pEditUI->SetFocus();
+			m_pEditUI->SetSel();
+		}
+
 	}
 
 	void CListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )

@@ -58,6 +58,52 @@ void	CMainFrameWnd::ShowBrowserLayout()
 	CHorizontalLayoutUI*  pProcessLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"ProcessLayout"));
 	if( pProcessLayout)
 		pProcessLayout->SetVisible(false);
+
+	CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
+	if( pFavoriteDataLayout)
+		pFavoriteDataLayout->SetVisible(true);
+
+	CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
+	if( pFavoriteLoadingLayout)
+		pFavoriteLoadingLayout->SetVisible(false);
+
+}
+
+void	CMainFrameWnd::NotifyExportBegin(IPlugIn* pPlugIn)
+{
+	CListTextElementUI* pListElement = new CListTextElementUI;
+	pListElement->SetFixedHeight(40);
+	m_pLoadingList->Add(pListElement);
+
+	String	strIconName = String(pPlugIn->GetBrowserName()) + String(L".ico");
+	m_pm.AddIcon32(strIconName, pPlugIn->GetBrowserIcon());
+	strIconName = String(L"<x 4><i ") + strIconName;
+	strIconName += String(L">");
+
+	String	strBrowserName = L"<x 4><x 4>";
+	strBrowserName +=	 pPlugIn->GetBrowserName();
+	strBrowserName +=	 L"<x 4>正在导入收藏夹数据...";
+
+	pListElement->SetText(0,strIconName.GetData());
+	pListElement->SetText(1,strBrowserName.GetData());
+}
+
+void	CMainFrameWnd::NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum)
+{
+	CListTextElementUI* pListElement = (CListTextElementUI*)m_pLoadingList->GetItemAt(m_pLoadingList->GetRowCount() - 1);
+	if( pListElement)
+	{
+		String	strBrowserName = L"<x 4><x 4>";
+		strBrowserName +=	 pPlugIn->GetBrowserName();
+		strBrowserName +=	 L"<x 4>导出成功";
+
+		String	strFavoriteNum = L"<x 4><x 4>总共 ";
+		strFavoriteNum += String::ValueOf(nFavoriteNum);
+		strFavoriteNum += L" 记录";
+
+		pListElement->SetText(1,strBrowserName.GetData());
+		pListElement->SetText(2,strFavoriteNum.GetData());
+	}
 }
 
 void CMainFrameWnd::OnPrepare(TNotifyUI& msg) 
@@ -87,7 +133,7 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 		ASSERT(0);
 		return;
 	}
-	m_pLoadingList->SetTextCallback(this);
+	//m_pLoadingList->SetTextCallback(this);
 	m_pLoadingList->SetItemTextStyle(m_pLoadingList->GetItemTextStyle() 
 		& ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
 	
@@ -112,12 +158,6 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
 	if( pFavoriteLoadingLayout)
 		pFavoriteLoadingLayout->SetVisible(true);
-
-	for(int i =0; i<3;i++)
-	{
-		CListLabelElementUI* pListElement = new CListLabelElementUI;
-		m_pLoadingList->Add(pListElement);
-	}
 }
 
 void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum)
@@ -966,17 +1006,6 @@ LPCTSTR CMainFrameWnd::GetItemText(CControlUI* pControl, int iIndex, int iSubIte
 				return _wcsdup(strUrl.c_str());
 			}
 		}
-	}
-	else if(pControl->GetParent()->GetParent()->GetName() == _T("FavoriteLoadingList"))
-	{
-		if( iSubItem == 0 )
-		{
-			return L"搜狗浏览器";
-		}
-		if( iSubItem == 1 )
-		{
-			return L"73条记录";
-		}	
 	}
 
 	return _T("");

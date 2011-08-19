@@ -60,6 +60,8 @@ public:
 	void	AddFavoriteFoldSuccess(int nParentId, PFAVORITELINEDATA pData);
 	PFAVORITELINEDATA*	GetFavoriteLineData(int& nFavoriteNum);
 	void	ShowBrowserLayout();
+	void	NotifyExportBegin(IPlugIn* pPlugIn);
+	void	NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum);
 
 private:
 

@@ -401,8 +401,18 @@ int PlugInModule::Run()
 		if( nFavoriteCount == 0)
 			continue;
 
+		// 通知开始进行收藏夹数据导出
+		PlugIn_ExportBeginMessage* pExportBeginMessage = new PlugIn_ExportBeginMessage();
+		pExportBeginMessage->pPlugIn = pPlugIn;
+		GetModuleManager()->PushMessage(*pExportBeginMessage);
+
 		pPlugIn->ExportFavoriteData(&(*pvFavoriteData)[nCurrentOffset], panCount[i]);
 		nCurrentOffset += panCount[i];
+
+		PlugIn_ExportEndMessage* pExportEndMessage = new PlugIn_ExportEndMessage();
+		pExportEndMessage->pPlugIn = pPlugIn;
+		pExportEndMessage->nFavoriteNum = panCount[i];
+		GetModuleManager()->PushMessage(*pExportEndMessage);
 	}
 
 	Merge(&(*pvFavoriteData)[0], m_nSumFavorite, 0);
