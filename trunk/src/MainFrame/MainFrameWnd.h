@@ -103,6 +103,9 @@ public:
 
 private:
 
+	int m_nProcessLayoutWidth;
+	int m_nProcessLayoutHeight;
+
 	CTreeListUI*	m_pFavoriteTree;
 	CDragListUI*	m_pDragList;
 	CListUI*	m_pLoadingList;

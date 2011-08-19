@@ -39,6 +39,9 @@ CMainFrameWnd::CMainFrameWnd()
 	m_nCurrentFavoriteFoldId = 0;
 	m_vFavoriteNodeAtTreeNode.clear();
 
+	m_nProcessLayoutWidth = 0;
+	m_nProcessLayoutHeight = 0;
+
 	m_pTipWnd = new CTipWnd();
 }
 
@@ -52,25 +55,7 @@ CMainFrameWnd::~CMainFrameWnd()
 
 void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 {
-	if( bShow == FALSE)
-	{
-		CHorizontalLayoutUI*  pSearchLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"BrowserLayout"));
-		if( pSearchLayout)
-			pSearchLayout->SetVisible(true);
-
-		CHorizontalLayoutUI*  pProcessLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"ProcessLayout"));
-		if( pProcessLayout)
-			pProcessLayout->SetVisible(false);
-
-		CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
-		if( pFavoriteDataLayout)
-			pFavoriteDataLayout->SetVisible(true);
-
-		CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
-		if( pFavoriteLoadingLayout)
-			pFavoriteLoadingLayout->SetVisible(false);
-	}
-	else
+	if( bShow == TRUE)
 	{
 		CHorizontalLayoutUI*  pSearchLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"BrowserLayout"));
 		if( pSearchLayout)
@@ -82,11 +67,37 @@ void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 
 		CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
 		if( pFavoriteDataLayout)
-			pFavoriteDataLayout->SetVisible(true);
+		{
+			m_nProcessLayoutWidth = pFavoriteDataLayout->GetWidth();
+			m_nProcessLayoutHeight = pFavoriteDataLayout->GetHeight();
+			pFavoriteDataLayout->SetFixedHeight(0);
+			pFavoriteDataLayout->SetFixedWidth(0);
+		}
 
 		CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
 		if( pFavoriteLoadingLayout)
 			pFavoriteLoadingLayout->SetVisible(true);
+	}
+	else
+	{
+		CHorizontalLayoutUI*  pSearchLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"BrowserLayout"));
+		if( pSearchLayout)
+			pSearchLayout->SetVisible(true);
+
+		CHorizontalLayoutUI*  pProcessLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"ProcessLayout"));
+		if( pProcessLayout)
+			pProcessLayout->SetVisible(false);
+
+		CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
+		if( pFavoriteDataLayout)
+		{
+			pFavoriteDataLayout->SetFixedHeight(m_nProcessLayoutHeight);
+			pFavoriteDataLayout->SetFixedWidth(m_nProcessLayoutWidth);
+		}
+
+		CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
+		if( pFavoriteLoadingLayout)
+			pFavoriteLoadingLayout->SetVisible(false);
 	}
 }
 
