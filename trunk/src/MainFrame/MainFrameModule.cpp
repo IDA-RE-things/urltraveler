@@ -63,6 +63,8 @@ BEGIN_MESSAGE_MAP(MainFrameModule)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_PRE_APP_EXIT, OnMessage_PreExit)
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED, OnMessage_FavoriteLoaded)
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED, OnMessage_PlugInLoaded)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_BEGIN, OnMessage_PlugInBeginExport)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED, OnMessage_PlugInEndExport)
 END_MESSAGE_MAP()
 
 BEGIN_SERVICE_MAP(MainFrameModule)
@@ -301,7 +303,7 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 		m_pMainFrame->LoadFavoriteTree(ppFavoriteData, nNum);
 	}
 
-	//m_pMainFrame->ShowBrowserLayout();
+	m_pMainFrame->ShowBrowserLayout();
 }
 
 
@@ -309,6 +311,24 @@ void MainFrameModule::OnMessage_PlugInLoaded( Message* pMessage )
 {
 	// Í¨ÖªMainFrame¶ÁÈ¡	
 	m_pMainFrame->GetAvailableBrowser();
+}
+
+void	MainFrameModule::OnMessage_PlugInBeginExport(Message* pMessage)
+{
+	PlugIn_ExportBeginMessage* pExportBeginMessage = (PlugIn_ExportBeginMessage*)pMessage->m_pstExtraInfo;
+	if( pExportBeginMessage == NULL)
+		return;
+
+	m_pMainFrame->NotifyExportBegin(pExportBeginMessage->pPlugIn);
+}
+
+void	MainFrameModule::OnMessage_PlugInEndExport(Message* pMessage)
+{
+	PlugIn_ExportEndMessage* pExportEndMessage = (PlugIn_ExportEndMessage*)pMessage->m_pstExtraInfo;
+	if( pExportEndMessage == NULL)
+		return;
+
+	m_pMainFrame->NotifyExportEnd(pExportEndMessage->pPlugIn, pExportEndMessage->nFavoriteNum);
 }
 
 int32 MainFrameModule::OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam)

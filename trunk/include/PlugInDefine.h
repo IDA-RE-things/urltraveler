@@ -25,6 +25,10 @@ namespace plugin
 	{
 		MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED	=	MESSAGE_VALUE_PLUGIN_BEGIN,	//	广播通知收藏夹合并数据已经完成
 		MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED,					//	通知所有的插件已经加载完毕
+		MESSAGE_VALUE_PLUGIN_EXPORT_BEGIN,								//	通知浏览器开始导出
+		MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED,						//	通知给定的浏览器的数据已经导出完毕
+		MESSAGE_VALUE_PLUGIN_IMPORT_BEGIN,							//	通知浏览器开始导入
+		MESSAGE_VALUE_PLUGIN_IMPORT_FINISHED,						//	通知给定的浏览器的数据已经导入完毕
 	};
 
 	// PlugIn能够处理的直接调用
@@ -32,6 +36,41 @@ namespace plugin
 	{
 		SERVICE_VALUE_PLUGIN_GET_AVAILABLE_PLUGIN	=	SERVICE_VALUE_PLUGIN_BEGIN,			//	获取可用的插件
 	};
+
+
+	//=================================================================//
+	//                   PlugIn中所使用到的Message结构	   		 						//
+	//=================================================================//
+	struct PlugIn_ExportBeginMessage : MessageExtraInfo
+	{
+		PlugIn_ExportBeginMessage()
+		{
+			messageValue = MESSAGE_VALUE_PLUGIN_EXPORT_BEGIN;
+			srcMId = MODULE_ID_PLUGIN; 
+
+			pPlugIn = 0;
+		}
+
+		IPlugIn*	pPlugIn;
+	};
+
+	struct PlugIn_ExportEndMessage : MessageExtraInfo
+	{
+		PlugIn_ExportEndMessage()
+		{
+			messageValue = MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED;
+			srcMId = MODULE_ID_PLUGIN; 
+
+			pPlugIn = 0;
+			nFavoriteNum = 0;
+		}
+
+		IPlugIn*	pPlugIn;
+		int nFavoriteNum;
+	};
+
+
+
 
 	//=================================================================//
 	//                   PlugIn中所使用到的event结构	   		 	  //
