@@ -25,7 +25,7 @@ FavMonitorModule::FavMonitorModule()
 
 FavMonitorModule::~FavMonitorModule()
 {
-
+	CloseMonitor(m_monitorHandle);
 }
 
 BEGIN_EVENT_MAP(FavMonitorModule)

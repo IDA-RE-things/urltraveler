@@ -125,7 +125,17 @@ BOOL CloseMonitor(MONITORHANDLE *pMonitorHandle)
 	if (pMonitorHandle != NULL)
 	{
 		CloseHandle(pMonitorHandle->hThread);
+
 		CloseHandle(pMonitorHandle->hChangeEvnets[0]);
+
+		for (int i = 1; i < pMonitorHandle->nMonitorCount; i++)
+		{
+			CloseHandle(pMonitorHandle->hChangeEvnets[i]);
+			pMonitorHandle->hChangeEvnets[i] = NULL;
+
+			delete pMonitorHandle->fileMonInfoList[i].pRoot;
+		}
+
 		delete pMonitorHandle;
 
 		return TRUE;
