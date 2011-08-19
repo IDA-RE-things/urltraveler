@@ -3,6 +3,7 @@
 #include "SndaBase.h"
 #include "Module.h"
 #include "ModuleImpl.h"
+#include "Filemon.h"
 
 extern "C" 
 {
@@ -87,10 +88,14 @@ protected:
 
 private:
 	int32 OnService_AddMonitor(ServiceValue lServiceValue, param	lParam);
-	int32 OnService_RemoveMonitor(ServiceValue lServiceValue, param	lParam);
+	int32 OnService_StartMonitor(ServiceValue lServiceValue, param	lParam);
+	int32 OnService_StopMonitor(ServiceValue lServiceValue, param	lParam);
+	int32 OnService_SuspendMonitor(ServiceValue lServiceValue, param	lParam);
 
 protected:
 	static void WINAPI NotifyRotuine(LPSTR pPath,int iActionType); 
+private:
+	MONITORHANDLE *m_monitorHandle;
 };
 
 class FavMonitorModuleFactory : public ModuleFactoryImpl<FavMonitorModule>{};

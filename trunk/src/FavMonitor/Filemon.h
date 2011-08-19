@@ -29,10 +29,9 @@ typedef struct _FileMonInfo{
 
 typedef struct MonitorHandle
 {
-	FILEMONINFO  fileMonInfoList[64];
+	FILEMONINFO  fileMonInfoList[65];
 	HANDLE       hThread;
-	HANDLE       hStopEvent;   
-	HANDLE       hChangeEvnets[64];
+	HANDLE       hChangeEvnets[65];//第0个event非常特殊，是退出线程事件
 	int          nMonitorCount;
 }MONITORHANDLE;
 

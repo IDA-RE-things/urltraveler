@@ -78,24 +78,20 @@ void MonitorRotuine(MONITORHANDLE* pMonitorHandle)
 				}
 			}
 
-			//把退出事件放在最后一个位置
-			pMonitorHandle->hChangeEvnets[pMonitorHandle->nMonitorCount] = pMonitorHandle->hStopEvent;
-
-			int iEventIndex = WaitForMultipleObjects (pMonitorHandle->nMonitorCount + 1, 
+			int iEventIndex = WaitForMultipleObjects (pMonitorHandle->nMonitorCount, 
 				(const HANDLE*)&pMonitorHandle->hChangeEvnets,
 				0,
 				-1); 
 
-			// 文件变化事件
+			if (iEventIndex == 0)
+			{
+				break;
+			}
 
+			// 文件变化事件
 			if (iEventIndex < pMonitorHandle->nMonitorCount)
 			{
 				NotifyChange(&pMonitorHandle->fileMonInfoList[iEventIndex]);
-			}
-
-			if( iEventIndex == pMonitorHandle->nMonitorCount )   
-			{   
-				break;   
 			}
 		}   
 		__except(EXCEPTION_EXECUTE_HANDLER)   
@@ -103,32 +99,8 @@ void MonitorRotuine(MONITORHANDLE* pMonitorHandle)
 		}   
 	}while(true); 
 
-	SetEvent(pMonitorHandle->hStopEvent);   
+	SetEvent(pMonitorHandle->hChangeEvnets[0]);   
 } 
-/*
-void MonFile_Stop(PVOID pstFileMonInfo)   
-{   
-	FILEMONINFO* pInfo = (FILEMONINFO*) pstFileMonInfo;   
-	if(pInfo == NULL)   
-		return;   
-	SetEvent ( pInfo->hStopEvent );   
-	WaitForSingleObject ( pInfo->hStopEvent, -1 );   
-	CloseHandle ( pInfo->hStopEvent );   
-	CloseHandle ( pInfo->hChangeEvent );   
-	DeleteCriticalSection( &pInfo->CriticalSection ); 
-
-	if (pInfo->pRoot != NULL)
-	{
-		delete pInfo->pRoot;
-		pInfo->pRoot = NULL;
-	}
-
-	if (pInfo != NULL)
-	{
-		delete pInfo;
-		pInfo = NULL;
-	}
-} */  
 
 MONITORHANDLE* CreateMonitor()
 {
@@ -140,9 +112,10 @@ MONITORHANDLE* CreateMonitor()
 		pMonitorHandle,
 		CREATE_SUSPENDED,
 		NULL);  
-	pMonitorHandle->hStopEvent = CreateEvent(0, TRUE, FALSE, 0);
-	pMonitorHandle->nMonitorCount = 0;
 	memset(pMonitorHandle->hChangeEvnets, 0, sizeof(pMonitorHandle->hChangeEvnets));
+
+	pMonitorHandle->nMonitorCount = 1;
+	pMonitorHandle->hChangeEvnets[0] = CreateEvent(0, TRUE, FALSE, 0);
 
 	return pMonitorHandle;
 }
@@ -152,7 +125,7 @@ BOOL CloseMonitor(MONITORHANDLE *pMonitorHandle)
 	if (pMonitorHandle != NULL)
 	{
 		CloseHandle(pMonitorHandle->hThread);
-		CloseHandle(pMonitorHandle->hStopEvent);
+		CloseHandle(pMonitorHandle->hChangeEvnets[0]);
 		delete pMonitorHandle;
 
 		return TRUE;
@@ -177,8 +150,8 @@ BOOL StopMonitor(MONITORHANDLE *pMonitorHandle)
 {
 	if (pMonitorHandle != NULL)
 	{
-		SetEvent(pMonitorHandle->hStopEvent );   
-		WaitForSingleObject(pMonitorHandle->hStopEvent, -1);  
+		SetEvent(pMonitorHandle->hChangeEvnets[0] );   
+		WaitForSingleObject(pMonitorHandle->hChangeEvnets[0], -1);  
 
 		return TRUE;
 	}
