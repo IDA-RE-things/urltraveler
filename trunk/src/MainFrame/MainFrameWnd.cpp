@@ -50,23 +50,44 @@ CMainFrameWnd::~CMainFrameWnd()
 	}
 }
 
-void	CMainFrameWnd::ShowBrowserLayout()
+void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 {
-	CHorizontalLayoutUI*  pSearchLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"BrowserLayout"));
-	if( pSearchLayout)
-		pSearchLayout->SetVisible(true);
+	if( bShow == FALSE)
+	{
+		CHorizontalLayoutUI*  pSearchLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"BrowserLayout"));
+		if( pSearchLayout)
+			pSearchLayout->SetVisible(true);
 
-	CHorizontalLayoutUI*  pProcessLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"ProcessLayout"));
-	if( pProcessLayout)
-		pProcessLayout->SetVisible(false);
+		CHorizontalLayoutUI*  pProcessLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"ProcessLayout"));
+		if( pProcessLayout)
+			pProcessLayout->SetVisible(false);
 
-	CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
-	if( pFavoriteDataLayout)
-		pFavoriteDataLayout->SetVisible(true);
+		CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
+		if( pFavoriteDataLayout)
+			pFavoriteDataLayout->SetVisible(true);
 
-	CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
-	if( pFavoriteLoadingLayout)
-		pFavoriteLoadingLayout->SetVisible(false);
+		CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
+		if( pFavoriteLoadingLayout)
+			pFavoriteLoadingLayout->SetVisible(false);
+	}
+	else
+	{
+		CHorizontalLayoutUI*  pSearchLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"BrowserLayout"));
+		if( pSearchLayout)
+			pSearchLayout->SetVisible(false);
+
+		CHorizontalLayoutUI*  pProcessLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"ProcessLayout"));
+		if( pProcessLayout)
+			pProcessLayout->SetVisible(true);
+
+		CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
+		if( pFavoriteDataLayout)
+			pFavoriteDataLayout->SetVisible(true);
+
+		CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
+		if( pFavoriteLoadingLayout)
+			pFavoriteLoadingLayout->SetVisible(true);
+	}
 }
 
 void	CMainFrameWnd::NotifyExportBegin(IPlugIn* pPlugIn)
@@ -132,7 +153,6 @@ void	CMainFrameWnd::NotifyInExportProcess(wchar_t* 	szProcess)
 	pText->SetText(szProcess);
 }
 
-
 void CMainFrameWnd::OnPrepare(TNotifyUI& msg) 
 { 
 	m_pTipWnd->Init(msg.pSender); 
@@ -167,22 +187,7 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	openTravelerService.srcMId = MODULE_ID_MAINFRAME;
 	g_MainFrameModule->GetModuleManager()->CallService(openTravelerService.serviceId,(param)&openTravelerService);
 
-	CHorizontalLayoutUI*  pSearchLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"BrowserLayout"));
-	if( pSearchLayout)
-		pSearchLayout->SetVisible(false);
-
-	CHorizontalLayoutUI*  pProcessLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"ProcessLayout"));
-	if( pProcessLayout)
-		pProcessLayout->SetVisible(true);
-
-
-	CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
-	if( pFavoriteDataLayout)
-		pFavoriteDataLayout->SetVisible(false);
-
-	CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
-	if( pFavoriteLoadingLayout)
-		pFavoriteLoadingLayout->SetVisible(true);
+	ShowProcessLayout(TRUE);
 }
 
 void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum)

@@ -59,7 +59,9 @@ public:
 	void	AddUrlSuccess(PFAVORITELINEDATA pData);
 	void	AddFavoriteFoldSuccess(int nParentId, PFAVORITELINEDATA pData);
 	PFAVORITELINEDATA*	GetFavoriteLineData(int& nFavoriteNum);
-	void	ShowBrowserLayout();
+
+	// 显示导出进度布局
+	void	ShowProcessLayout(BOOL bShow=TRUE);
 	void	NotifyExportBegin(IPlugIn* pPlugIn);
 	void	NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
 	void	NotifyInExportProcess(wchar_t* 	szProcess);

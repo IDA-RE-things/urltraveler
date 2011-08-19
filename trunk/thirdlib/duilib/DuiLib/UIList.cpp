@@ -257,7 +257,7 @@ namespace DuiLib
 
 		if( pControl->GetInterface(_T("Edit")) != NULL ) 
 		{
-			if (m_pEditUI != pControl && m_pEditUI != NULL)
+			if (m_pEditUI != pControl)
 			{
 				CVerticalLayoutUI::Remove(m_pEditUI);
 				m_pEditUI = static_cast<CEditUI*>(pControl);
