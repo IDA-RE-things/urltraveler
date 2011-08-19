@@ -4,7 +4,7 @@
     <Font name="宋体" size="12" bold="true" italic="false" />
     <Font name="宋体" size="12" bold="false" italic="false" default="true" />
     <Font name="宋体" size="14" bold="true" italic="false" />
-    <Font name="宋体" size="22" bold="true" italic="true" />
+    <Font name="宋体" size="14" bold="true" italic="false" />
     <Font name="SimSun" size="12" bold="true" italic="false" />
     <VerticalLayout borderround="10,10" name="VerticalLayoutUI1" bkcolor="#FFB9E6F9" bordercolor="#0054676D">
         <HorizontalLayout name="VerticalLayoutUI2" pos="0,0,0,110" height="110">
@@ -44,11 +44,10 @@
 
 					<!-- 此处为正在加载的时候显示的内容-->
                     <HorizontalLayout name="ProcessLayout" pos="0,0,0,104" height="104" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#00B4BFB5">
-                        <HorizontalLayout name="HorizontalLayoutUI10">
-                            <Text name="favtip" text="{p}此处是一个正在旋转的图标{y 20}{/p}" float="true" pos="7,54,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                        </HorizontalLayout>
-                        <HorizontalLayout name="SearchBtn" pos="460,0,630,103" width="170" height="103">
-                            <Button name="ButtonUI5" float="true" pos="11,29,155,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button.png" />
+                        <HorizontalLayout name="HorizontalLayoutUI10" pos="0,0,140,104" width="140" height="104" />
+                        <HorizontalLayout name="HintText" pos="140,0,628,103" width="488" height="103">
+                            <Text name="favtip" text="{p}{f 微软雅黑 18}正在导入收藏夹数据，请稍候......{/f}{y 20}{/p}" float="true" pos="46,26,439,66" textpadding="2,0,2,0" textcolor="#00FF0000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                            <Text name="ProcessHintText" text="" float="true" pos="46,59,439,79" textpadding="2,0,2,0" textcolor="#00808080" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         </HorizontalLayout>
                     </HorizontalLayout>
 
