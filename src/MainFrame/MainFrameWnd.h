@@ -62,6 +62,7 @@ public:
 	void	ShowBrowserLayout();
 	void	NotifyExportBegin(IPlugIn* pPlugIn);
 	void	NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum);
+	void	NotifyInExportProcess(wchar_t* 	szProcess);
 
 private:
 

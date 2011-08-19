@@ -66,7 +66,6 @@ void	CMainFrameWnd::ShowBrowserLayout()
 	CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
 	if( pFavoriteLoadingLayout)
 		pFavoriteLoadingLayout->SetVisible(false);
-
 }
 
 void	CMainFrameWnd::NotifyExportBegin(IPlugIn* pPlugIn)
@@ -105,6 +104,16 @@ void	CMainFrameWnd::NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum)
 		pListElement->SetText(2,strFavoriteNum.GetData());
 	}
 }
+
+void	CMainFrameWnd::NotifyInExportProcess(wchar_t* 	szProcess)
+{
+	CTextUI* pText = static_cast<CTextUI*>(m_pm.FindControl(L"ProcessHintText"));
+	if( pText == NULL || szProcess == NULL)
+		return;
+
+	pText->SetText(szProcess);
+}
+
 
 void CMainFrameWnd::OnPrepare(TNotifyUI& msg) 
 { 

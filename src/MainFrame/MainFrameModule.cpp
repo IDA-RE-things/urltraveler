@@ -65,6 +65,7 @@ BEGIN_MESSAGE_MAP(MainFrameModule)
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED, OnMessage_PlugInLoaded)
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_BEGIN, OnMessage_PlugInBeginExport)
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED, OnMessage_PlugInEndExport)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXINPORT_PROCESS, OnMessage_PlugInInExportProcess)
 END_MESSAGE_MAP()
 
 BEGIN_SERVICE_MAP(MainFrameModule)
@@ -303,7 +304,7 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 		m_pMainFrame->LoadFavoriteTree(ppFavoriteData, nNum);
 	}
 
-	m_pMainFrame->ShowBrowserLayout();
+	//m_pMainFrame->ShowBrowserLayout();
 }
 
 
@@ -329,6 +330,15 @@ void	MainFrameModule::OnMessage_PlugInEndExport(Message* pMessage)
 		return;
 
 	m_pMainFrame->NotifyExportEnd(pExportEndMessage->pPlugIn, pExportEndMessage->nFavoriteNum);
+}
+
+void	MainFrameModule::OnMessage_PlugInInExportProcess(Message* pMessage)
+{
+	PlugIn_InExportEndMessage* pInExportProcessMessage = (PlugIn_InExportEndMessage*)pMessage->m_pstExtraInfo;
+	if( pInExportProcessMessage == NULL)
+		return;
+
+	m_pMainFrame->NotifyInExportProcess(pInExportProcessMessage->szProcessText);
 }
 
 int32 MainFrameModule::OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam)
