@@ -133,7 +133,7 @@ BOOL CloseMonitor(MONITORHANDLE *pMonitorHandle)
 			CloseHandle(pMonitorHandle->hChangeEvnets[i]);
 			pMonitorHandle->hChangeEvnets[i] = NULL;
 
-			delete pMonitorHandle->fileMonInfoList[i].pRoot;
+			delete []pMonitorHandle->fileMonInfoList[i].pRoot;
 		}
 
 		delete pMonitorHandle;
