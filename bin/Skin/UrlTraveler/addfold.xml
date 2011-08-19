@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="292,165" sizebox="0,0,800,30" caption="0,0,0,30">
+    <Font name="宋体" size="13" bold="true" italic="false" />
+    <Font name="宋体" size="12" bold="true" italic="false" />
+    <Font name="宋体" size="12" bold="false" italic="false" default="true" />
+    <Font name="宋体" size="14" bold="true" italic="false" />
+    <Font name="宋体" size="22" bold="true" italic="true" />
+    <Font name="SimSun" size="12" bold="true" italic="false" />
+    <VerticalLayout name="VerticalLayoutUI1" pos="0,0,292,155" width="292" height="155" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,0,0">
+        <HorizontalLayout name="HorizontalLayoutUI1" pos="1,0,291,26" width="290" height="26" inset="2,2,2,0">
+            <Label name="LabelUI1" pos="3,3,25,25" width="22" height="22" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+            <Label name="LabelUI4" text="{b}请输入需要增加的收藏夹名称{/b}" float="true" pos="34,4,209,20" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" />
+            <Button name="closebtn" float="true" pos="244,1,289,18" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+        </HorizontalLayout>
+        <Container name="ContainerUI1" pos="1,22,291,118" width="290" height="96" bkcolor="#FFFFFFFF">
+            <Edit name="EditFav" float="true" pos="49,38,236,65" bkcolor="#FFFFFFFF" bordercolor="#FF4EA0D1" textpadding="4,3,4,3" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA"/>
+        </Container>
+        <VerticalLayout name="VerticalLayoutUI2" pos="1,132,291,135" width="290" height="3" bkimage="blue_line.png" />
+        <Button name="AddBtn" text="增加" float="true" pos="113,132,178,155" bkcolor="#00808080" bordercolor="#00808080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+    </VerticalLayout>
+</Window>
