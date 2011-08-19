@@ -312,6 +312,9 @@ void PlugInModule::Merge(PFAVORITELINEDATA* ppData, int32 nLen, int nParentId)
 	//把所有相同父结点的节点放到vec中
 	for (int i = 0; i < nLen; i++)
 	{
+		if( ppData[i] == NULL)
+			continue;
+
 		if (ppData[i]->nPid == nParentId)
 		{
 			vec.push_back(ppData[i]);
@@ -336,6 +339,9 @@ void PlugInModule::Merge(PFAVORITELINEDATA* ppData, int32 nLen, int nParentId)
 				//重新修正所有父节点为j的节点的nPid, 即合并
 				for (int m = 0; m < nLen; m++)
 				{
+					if( ppData[m] == NULL)
+						continue;
+
 					if (ppData[m]->nPid == vec[i]->nId)
 					{
 						ppData[m]->nPid = vec[i + 1]->nId;
@@ -422,7 +428,18 @@ int PlugInModule::Run()
 		pExportBeginMessage->pPlugIn = pPlugIn;
 		GetModuleManager()->PushMessage(*pExportBeginMessage);
 
-		pPlugIn->ExportFavoriteData(&(*pvFavoriteData)[nCurrentOffset], panCount[i]);
+		BOOL bRet = pPlugIn->ExportFavoriteData(&(*pvFavoriteData)[nCurrentOffset], panCount[i]);
+		if( bRet == FALSE)
+		{
+			PlugIn_ExportEndMessage* pExportEndMessage = new PlugIn_ExportEndMessage();
+			pExportEndMessage->bSuccess = FALSE;
+			pExportEndMessage->pPlugIn = pPlugIn;
+			pExportEndMessage->nFavoriteNum = panCount[i];
+			GetModuleManager()->PushMessage(*pExportEndMessage);
+
+			continue;
+		}
+
 		nCurrentOffset += panCount[i];
 
 		PlugIn_ExportEndMessage* pExportEndMessage = new PlugIn_ExportEndMessage();
@@ -436,6 +453,9 @@ int PlugInModule::Run()
 	std::vector<FAVORITELINEDATA*>::iterator itr = pvFavoriteData->begin();
 	for( ; itr !=  pvFavoriteData->end();)
 	{
+		if(*itr == NULL)
+			continue;
+
 		if( (*itr)->bDelete == true)
 			itr =  pvFavoriteData->erase(itr);
 		else

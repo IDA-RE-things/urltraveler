@@ -193,7 +193,7 @@ BOOL CChromePlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 //----------------------------------------------------------------------------------------
 BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
 {
-	if (ppData == NULL || *ppData == NULL || (nDataNum == 0))
+	if (ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -312,7 +312,7 @@ void CChromePlugIn::SortByDepth(PFAVORITELINEDATA* ppData, int32 nDataNum)
 
 	PFAVORITELINEDATA* ppSortLineDataPos = ppSortLineData;
 
-	// 逐一找到合适的数据，并插入到pSortLineData中去
+	// 逐一找到合适的数据，并插入到ppSortLineData中去
 	SortNode(ppData, nDataNum, ppSortLineDataPos, 0);
 
 	// 排序后的数据拷贝

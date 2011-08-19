@@ -9,6 +9,7 @@
 #include <algorithm>
 #include "CRCHash.h"
 #include "XString.h"
+#include "FileHelper.h"
 
 #pragma comment(lib, "shlwapi.lib")
 
@@ -26,7 +27,7 @@ C360SE3PlugIn::~C360SE3PlugIn()
 
 BOOL C360SE3PlugIn::Load()
 {
-	return TRUE;
+	return FALSE;
 }
 
 BOOL C360SE3PlugIn::UnLoad()
@@ -88,9 +89,24 @@ wchar_t* C360SE3PlugIn::GetFavoriteDataPath()
 	strPath = strPath.SubStr(0, nIndex);
 	strPath += L"\\data\\360sefav.db";
 
-	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
-	m_strFavoritePath = strPath.GetData();
-	return _wcsdup(strPath.GetData());
+	if( FileHelper::IsFileExist(strPath.GetData()) == TRUE)
+	{
+		//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
+		m_strFavoritePath = strPath.GetData();
+		return _wcsdup(strPath.GetData());
+	}
+
+	// 找到Application目录
+	strPath = PathHelper::GetAppDataDir().c_str();
+	strPath += L"\\360se\\data\\360sefav.db";
+	if( FileHelper::IsFileExist(strPath.GetData()) == TRUE)
+	{
+		//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
+		m_strFavoritePath = strPath.GetData();
+		return _wcsdup(strPath.GetData());
+	}
+
+	return NULL;
 }
 
 wchar_t* C360SE3PlugIn::GetHistoryDataPath()
@@ -103,11 +119,9 @@ wchar_t* C360SE3PlugIn::GetHistoryDataPath()
 
 BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
-	memset(ppData,0x0, nDataNum*sizeof(FAVORITELINEDATA*));
-
 	CCRCHash ojbCrcHash;
 
-	if (ppData == NULL || *ppData  == NULL || nDataNum == 0)
+	if (ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}

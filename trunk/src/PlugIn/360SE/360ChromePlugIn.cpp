@@ -49,16 +49,29 @@ BOOL C360ChromePlugIn::UnLoad()
 	return TRUE;
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetPlugInVersion
+//描述: 获取当前插件的版本号
+//返回: 插件的版本号，通常为一整数。
+//----------------------------------------------------------------------------------------
 int32 C360ChromePlugIn::GetPlugInVersion()
 {
 	return 1;
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetBrowserName
+//描述: 获取该插件对应的浏览器的名称和版本
+//----------------------------------------------------------------------------------------
 const wchar_t* C360ChromePlugIn::GetBrowserName()
 {
 	return L"360Chrome";
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetInstallPath
+//描述: 获取插件对应的浏览器的安装目录
+//----------------------------------------------------------------------------------------
 wchar_t* C360ChromePlugIn::GetInstallPath()
 {
 	wchar_t szPath[MAX_PATH] = {0};
@@ -79,6 +92,10 @@ wchar_t* C360ChromePlugIn::GetInstallPath()
 	return NULL;
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetFavoriteDataPath
+//描述: 获取浏览器收藏夹对应的文件或者文件夹的路径
+//----------------------------------------------------------------------------------------
 wchar_t* C360ChromePlugIn::GetFavoriteDataPath()
 {
 	std::wstring strPath = PathHelper::GetLocalAppDataDir() + L"\\360Chrome\\Chrome\\User Data\\Default\\Bookmarks";
@@ -87,6 +104,10 @@ wchar_t* C360ChromePlugIn::GetFavoriteDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetHistoryDataPath
+//描述: 获取浏览器收藏夹的历史数据对应的文件或者文件夹
+//----------------------------------------------------------------------------------------
 wchar_t* C360ChromePlugIn::GetHistoryDataPath()
 {
 	std::wstring strPath = PathHelper::GetLocalAppDataDir() + L"\\360Chrome\\Chrome\\User Data\\Default\\History";
@@ -115,8 +136,8 @@ int32 C360ChromePlugIn::GetFavoriteCount()
 	Json::Reader reader;
 	if (reader.parse(infile, chrome_bookmarks))
 	{
-		EnumNode(chrome_bookmarks["roots"]["bookmark_bar"]["children"], nFavoriteCount);
-		EnumNode(chrome_bookmarks["roots"]["other"]["children"], nFavoriteCount);
+ 		EnumNode(chrome_bookmarks["roots"]["bookmark_bar"]["children"], nFavoriteCount);
+ 		EnumNode(chrome_bookmarks["roots"]["other"]["children"], nFavoriteCount);
 		EnumNode(chrome_bookmarks["roots"]["synced"]["children"], nFavoriteCount);
 	}
 
@@ -148,11 +169,11 @@ BOOL C360ChromePlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 	{
 		if (!chrome_bookmarks.empty())
 		{
-			nDataNum = 0;
+			int nRealDataNum = 0;
 			Json::Value roots = chrome_bookmarks["roots"];
-			ExportFolder(roots["bookmark_bar"], 0, ppData, nDataNum);
-			ExportFolder(roots["other"], 0, ppData, nDataNum);
-			ExportFolder(roots["synced"], 0, ppData, nDataNum);
+			ExportFolder(roots["bookmark_bar"], 0, ppData, nDataNum, nRealDataNum);
+			ExportFolder(roots["other"], 0, ppData, nDataNum, nRealDataNum);
+			ExportFolder(roots["synced"], 0, ppData, nDataNum, nRealDataNum);
 		}
 
 		bRetCode = TRUE;
@@ -172,7 +193,7 @@ BOOL C360ChromePlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 //----------------------------------------------------------------------------------------
 BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
 {
-	if ((ppData == NULL || *ppData == NULL) || (nDataNum == 0))
+	if (ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -228,7 +249,7 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nData
 		{
 			m_mapPidInfo.insert(MAP_PID_INFO::value_type(ppData[i]->nId, nDepth));
 		}
-
+		
 		m_mapDepthInfo.insert(MAP_DEPTH_INFO::value_type(nDepth, i));
 	}
 
@@ -267,7 +288,7 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nData
 
 	MakeSpecialFolderNode(L"Other bookmarks", m_nIndex, other);
 	MakeSpecialFolderNode(L"Synced bookmarks", m_nIndex, synced);
-
+	
 	FinalizeChecksum();
 
 	root["checksum"] = m_strCheckSum;
@@ -324,19 +345,23 @@ void C360ChromePlugIn::SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum,
 	}
 }
 
-
-BOOL C360ChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32& nDataNum)
+BOOL C360ChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid,
+								 PFAVORITELINEDATA* ppData, int nDataNum,int32& nRealDataNum)
 {
 	if (folder_obj.empty() || (folder_obj["type"].asString() != std::string("folder")))
 	{
 		return FALSE;
 	}
 
-	if (!wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"Bookmarks bar") 
-		|| !wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"书签栏")
-		|| !wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"Other bookmarks")
-		|| !wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"其他书签")
-		|| !wcscmp(StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str(), L"Synced bookmarks"))
+	string strName = folder_obj["name"].asString();
+	wstring wstrName = StringHelper::Utf8ToUnicode(strName) ;
+
+	if (wstrName == L"Bookmarks bar" 
+		|| wstrName == L"书签栏"
+		|| wstrName == L"Other bookmarks"
+		|| wstrName == L"其他书签"
+		|| wstrName == L"Synced bookmarks"
+		|| wstrName == L"已同步书签")
 	{
 		Json::Value children_nodes = folder_obj["children"];
 		int32 nNodeCount = children_nodes.size();
@@ -345,48 +370,52 @@ BOOL C360ChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORI
 			Json::Value new_val = children_nodes[i];
 			if (new_val["type"].asString() == std::string("url"))
 			{
-				ExportUrl(new_val, nPid, ppData, nDataNum);
+				ExportUrl(new_val, nPid, ppData, nDataNum, nRealDataNum);
 			}
 			else if(new_val["type"].asString() == std::string("folder"))
 			{
-				ExportFolder(new_val, nPid, ppData, nDataNum);
+				ExportFolder(new_val, nPid, ppData, nDataNum, nRealDataNum);
 			}
 		}
 	}
 	else
 	{
-		ppData[nDataNum]->nId = nDataNum + ID_VALUE_CHROME_BEGIN;
-		ppData[nDataNum]->bFolder = true;
-		ppData[nDataNum]->bDelete = false;
+		// 当前的索引超出范围
+		if( nRealDataNum == nDataNum)
+			return TRUE;
 
-		StringToInt64(folder_obj["date_added"].asString(), ppData[nDataNum]->nAddTimes);
-		StringToInt64(folder_obj["date_added"].asString(), ppData[nDataNum]->nLastModifyTime);
+		ppData[nRealDataNum]->nId = nRealDataNum + ID_VALUE_CHROME_BEGIN;
+		ppData[nRealDataNum]->bFolder = true;
+		ppData[nRealDataNum]->bDelete = false;
 
-		ppData[nDataNum]->nPid = nPid;
+		StringToInt64(folder_obj["date_added"].asString(), ppData[nRealDataNum]->nAddTimes);
+		StringToInt64(folder_obj["date_added"].asString(), ppData[nRealDataNum]->nLastModifyTime);
 
-		wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str());
-		ppData[nDataNum]->szUrl[0] = 0;
-		ppData[nDataNum]->nCatId = 0;
+		ppData[nRealDataNum]->nPid = nPid;
+
+		wcscpy_s(ppData[nRealDataNum]->szTitle, MAX_PATH -1, StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str());
+		ppData[nRealDataNum]->szUrl[0] = 0;
+		ppData[nRealDataNum]->nCatId = 0;
 
 		CCRCHash ojbCrcHash;
-		ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t),  \
-			(BYTE *)&ppData[nDataNum]->nHashId, sizeof(int32));
+		ojbCrcHash.GetHash((BYTE *)ppData[nRealDataNum]->szTitle, wcslen(ppData[nRealDataNum]->szTitle) * sizeof(wchar_t),  \
+			(BYTE *)&ppData[nRealDataNum]->nHashId, sizeof(int32));
 
-		nDataNum++;
+		nRealDataNum++;
 
 		Json::Value children_nodes = folder_obj["children"];
 		int32 nNodeCount = children_nodes.size();
-		int32 nCurrPid = nDataNum;
+		int32 nCurrPid = nRealDataNum;
 		for (int32 i = 0; i < nNodeCount; ++i)
 		{
 			Json::Value new_val = children_nodes[i];
 			if (new_val["type"].asString() == std::string("url"))
 			{
-				ExportUrl(new_val, nCurrPid -1 + ID_VALUE_CHROME_BEGIN, ppData, nDataNum);
+				ExportUrl(new_val, nCurrPid -1 + ID_VALUE_CHROME_BEGIN, ppData, nDataNum,nRealDataNum);
 			}
 			else if(new_val["type"].asString() == std::string("folder"))
 			{
-				ExportFolder(new_val, nCurrPid -1 + ID_VALUE_CHROME_BEGIN, ppData, nDataNum);
+				ExportFolder(new_val, nCurrPid -1 + ID_VALUE_CHROME_BEGIN, ppData, nDataNum, nRealDataNum);
 			}
 		}
 	}
@@ -394,32 +423,35 @@ BOOL C360ChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORI
 	return TRUE;
 }
 
-BOOL C360ChromePlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32& nDataNum)
+BOOL C360ChromePlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32 nDataNum, int32& nRealDataNum)
 {
 	if (url_obj.empty() || url_obj["type"].asString() != std::string("url"))
 	{
 		return FALSE;
 	}
 
-	ppData[nDataNum]->nId = nDataNum + ID_VALUE_CHROME_BEGIN;
-	ppData[nDataNum]->bFolder = false;
-	ppData[nDataNum]->bDelete = false;
-	StringToInt64(url_obj["date_added"].asString(), ppData[nDataNum]->nAddTimes);
-	ppData[nDataNum]->nLastModifyTime =  0;
-	ppData[nDataNum]->nPid = nPid;
-	ppData[nDataNum]->nCatId = 0;
+	if( nDataNum == nRealDataNum)
+		return FALSE;
 
-	wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, StringHelper::Utf8ToUnicode(url_obj["name"].asString()).c_str());
-	wcscpy_s(ppData[nDataNum]->szUrl, 1024 - 1, StringHelper::Utf8ToUnicode(url_obj["url"].asString()).c_str());
-	ppData[nDataNum]->szUrl[1023] = 0;
+	ppData[nRealDataNum]->nId = nRealDataNum + ID_VALUE_CHROME_BEGIN;
+	ppData[nRealDataNum]->bFolder = false;
+	ppData[nRealDataNum]->bDelete = false;
+	StringToInt64(url_obj["date_added"].asString(), ppData[nRealDataNum]->nAddTimes);
+	ppData[nRealDataNum]->nLastModifyTime =  0;
+	ppData[nRealDataNum]->nPid = nPid;
+	ppData[nRealDataNum]->nCatId = 0;
+
+	wcscpy_s(ppData[nRealDataNum]->szTitle, MAX_PATH -1, StringHelper::Utf8ToUnicode(url_obj["name"].asString()).c_str());
+	wcscpy_s(ppData[nRealDataNum]->szUrl, 1024 - 1, StringHelper::Utf8ToUnicode(url_obj["url"].asString()).c_str());
+	ppData[nRealDataNum]->szUrl[1023] = 0;
 
 	CCRCHash ojbCrcHash;
-	ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t),  \
-		(BYTE *)&ppData[nDataNum]->nHashId, sizeof(int32));
+	ojbCrcHash.GetHash((BYTE *)ppData[nRealDataNum]->szTitle, wcslen(ppData[nRealDataNum]->szTitle) * sizeof(wchar_t),  \
+		(BYTE *)&ppData[nRealDataNum]->nHashId, sizeof(int32));
 
-	nDataNum++;
+	nRealDataNum++;
 
-	return TRUE;
+    return TRUE;
 }
 
 
