@@ -25,7 +25,10 @@ FavMonitorModule::FavMonitorModule()
 
 FavMonitorModule::~FavMonitorModule()
 {
-	CloseMonitor(m_monitorHandle);
+	if (m_monitorHandle != NULL)
+	{
+		CloseMonitor(m_monitorHandle);
+	}
 }
 
 BEGIN_EVENT_MAP(FavMonitorModule)
