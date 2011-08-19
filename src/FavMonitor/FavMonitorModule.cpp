@@ -20,7 +20,7 @@ EXPORT_RELEASEMODULEFACTORY(FavMonitorModule)
 
 FavMonitorModule::FavMonitorModule()
 {
-
+	m_monitorHandle = NULL;
 }
 
 FavMonitorModule::~FavMonitorModule()
@@ -33,12 +33,17 @@ BEGIN_EVENT_MAP(FavMonitorModule)
 	ON_EVENT(EVENT_VALUE_FAVMONITOR_STOP_MONITOR, OnEvent_StopMonitor)
 END_EVENT_MAP()
 
+
+
+
 BEGIN_MESSAGE_MAP(FavMonitorModule)
 END_MESSAGE_MAP()
 
 BEGIN_SERVICE_MAP(FavMonitorModule)
 	ON_SERVICE(SERVICE_VALUE_FAVMONITOR_ADD_MONITOR, OnService_AddMonitor)
-	ON_SERVICE(SERVICE_VALUE_FAVMONITOR_REMOVE_MONITOR, OnService_RemoveMonitor)
+	ON_SERVICE(SERVICE_VALUE_FAVMONITOR_START_MONITOR, OnService_StartMonitor)
+	ON_SERVICE(SERVICE_VALUE_FAVMONITOR_STOP_MONITOR, OnService_StopMonitor)
+	ON_SERVICE(SERVICE_VALUE_FAVMONITOR_SUSPEND_MONITOR, OnService_SuspendMonitor)
 END_SERVICE_MAP();
 
 //----------------------------------------------------------------------------------------
@@ -147,22 +152,53 @@ int32 FavMonitorModule::OnService_AddMonitor( ServiceValue lServiceValue, param 
 {
 	FavMonitor_AddMonitorService *pAddMonitorService = (FavMonitor_AddMonitorService *)lParam;
 
-	//pAddMonitorService->hMonitorHandle = MonFile_Start((LPSTR)StringHelper::UnicodeToANSI(pAddMonitorService->szFile).c_str(),
-		//false,
-		//0,
-		//FavMonitorModule::NotifyRotuine);
+	if (m_monitorHandle == NULL)
+	{
+		m_monitorHandle = CreateMonitor();
+	}
+
+	AddMonitor(m_monitorHandle,
+		(LPSTR)StringHelper::UnicodeToANSI(pAddMonitorService->szFile).c_str(),
+		false, 
+		0, 
+		FavMonitorModule::NotifyRotuine);
 
 	return 0;
 }
 
-int32 FavMonitorModule::OnService_RemoveMonitor( ServiceValue lServiceValue, param lParam )
+int32 FavMonitorModule::OnService_StartMonitor( ServiceValue lServiceValue, param lParam )
 {
-	FavMonitor_RemoveMonitorService *pRemoveMonitorService = (FavMonitor_RemoveMonitorService *)lParam;
-
-	if (pRemoveMonitorService->hMonitorHandle != NULL)
+	if (m_monitorHandle == NULL)
 	{
-		//MonFile_Stop(pRemoveMonitorService->hMonitorHandle);
+		return -1;
 	}
+
+	StartMonitor(m_monitorHandle);
+
+	return 0;
+}
+
+
+int32 FavMonitorModule::OnService_StopMonitor( ServiceValue lServiceValue, param lParam )
+{
+	if (m_monitorHandle == NULL)
+	{
+		return -1;
+	}
+
+	StopMonitor(m_monitorHandle);
+
+	return 0;
+}
+
+int32 FavMonitorModule::OnService_SuspendMonitor( ServiceValue lServiceValue, param lParam )
+{
+	if (m_monitorHandle == NULL)
+	{
+		return -1;
+	}
+
+	SuspendMonitor(m_monitorHandle);
 
 	return 0;
 }

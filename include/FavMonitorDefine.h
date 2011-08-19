@@ -29,8 +29,9 @@ namespace favmonitor
 	enum E_FavMonitorServiceValue
 	{
 		SERVICE_VALUE_FAVMONITOR_ADD_MONITOR = SERVICE_VALUE_FAVMONITOR_BEGIN,	
-		SERVICE_VALUE_FAVMONITOR_REMOVE_MONITOR,
-
+		SERVICE_VALUE_FAVMONITOR_START_MONITOR,
+		SERVICE_VALUE_FAVMONITOR_STOP_MONITOR,
+		SERVICE_VALUE_FAVMONITOR_SUSPEND_MONITOR,
 		SERVICE_VALUE_FAVMONITOR_END = SERVICE_VALUE_FAVMONITOR_END,		//所有的事件结束
 	};
 
@@ -49,9 +50,6 @@ namespace favmonitor
 		int iActionType;
 	};
 
-
-	typedef PVOID MONITORHANDLE;
-
 	struct FavMonitor_AddMonitorService	: Service 
 	{
 		FavMonitor_AddMonitorService()
@@ -60,16 +58,5 @@ namespace favmonitor
 		}
 
 		wchar_t	szFile[MAX_PATH];
-		MONITORHANDLE hMonitorHandle; //返回监控句柄
-	};
-
-	struct FavMonitor_RemoveMonitorService	: Service 
-	{
-		FavMonitor_RemoveMonitorService()
-		{
-			serviceId	=	SERVICE_VALUE_FAVMONITOR_REMOVE_MONITOR;
-		}
-
-		MONITORHANDLE hMonitorHandle;
 	};
 };
