@@ -27,7 +27,7 @@ C360SE3PlugIn::~C360SE3PlugIn()
 
 BOOL C360SE3PlugIn::Load()
 {
-	return FALSE;
+	return TRUE;
 }
 
 BOOL C360SE3PlugIn::UnLoad()
