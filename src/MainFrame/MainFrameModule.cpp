@@ -304,7 +304,7 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 		m_pMainFrame->LoadFavoriteTree(ppFavoriteData, nNum);
 	}
 
-	//m_pMainFrame->ShowBrowserLayout();
+	m_pMainFrame->ShowBrowserLayout();
 }
 
 
@@ -329,7 +329,8 @@ void	MainFrameModule::OnMessage_PlugInEndExport(Message* pMessage)
 	if( pExportEndMessage == NULL)
 		return;
 
-	m_pMainFrame->NotifyExportEnd(pExportEndMessage->pPlugIn, pExportEndMessage->nFavoriteNum);
+	m_pMainFrame->NotifyExportEnd(pExportEndMessage->pPlugIn, 
+		pExportEndMessage->nFavoriteNum, pExportEndMessage->bSuccess);
 }
 
 void	MainFrameModule::OnMessage_PlugInInExportProcess(Message* pMessage)

@@ -41,6 +41,7 @@ public:
 	//描述: 获取该插件对应的浏览器的名称和版本
 	//----------------------------------------------------------------------------------------
 	virtual const wchar_t* GetBrowserName() ;
+
 	//----------------------------------------------------------------------------------------
 	//名称: GetInstallPath
 	//描述: 获取插件对应的浏览器的安装目录
@@ -86,14 +87,14 @@ public:
 	virtual int32 GetFavoriteCount();
 
 private:
-	BOOL ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32& nDataNum);
-	BOOL ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32& nDataNum);
+	BOOL ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA* ppData, int nDataNum, int32& nRealDataNum);
+	BOOL ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA*  ppData, int32 nDataNum, int32& nRealDataNum);
 	BOOL MakeFolderNode(PFAVORITELINEDATA pstData, Json::Value& folder_obj, uint32& nIndex);
 	BOOL MakeUrlNode(PFAVORITELINEDATA pstData, Json::Value& url_obj, uint32& nIndex);
 	BOOL MakeSpecialFolderNode(wchar_t *pszName, uint32& nIndex, Json::Value& folder_obj);
 
 	BOOL EnumNode(Json::Value& folder_obj, int32& nCount);
-	BOOL TraverseNode(PFAVORITELINEDATA* ppData, int32 nDepth);
+	BOOL TraverseNode(PFAVORITELINEDATA*  ppData, int32 nDepth);
 
 	BOOL StringToInt64(std::string strTime, int64& nTime);
 	BOOL Int64ToString(int64 nTime, std::string& strTime);
@@ -107,7 +108,7 @@ private:
 	void UpdateChecksumWithFolderNode(const std::string& id, const std::wstring& title); 
 	void FinalizeChecksum();
 
-	void SortByDepth(PFAVORITELINEDATA* ppDppDataata, int32 nDataNum);
+	void SortByDepth(PFAVORITELINEDATA*  ppData, int32 nDataNum);
 	void SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum, PFAVORITELINEDATA*& ppSortData, int32 nParentId);
 
 private:

@@ -87,21 +87,34 @@ void	CMainFrameWnd::NotifyExportBegin(IPlugIn* pPlugIn)
 	pListElement->SetText(1,strBrowserName.GetData());
 }
 
-void	CMainFrameWnd::NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum)
+void	CMainFrameWnd::NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum,  BOOL bSuccess)
 {
 	CListTextElementUI* pListElement = (CListTextElementUI*)m_pLoadingList->GetItemAt(m_pLoadingList->GetRowCount() - 1);
 	if( pListElement)
 	{
-		String	strBrowserName = L"<x 4><x 4>";
-		strBrowserName +=	 pPlugIn->GetBrowserName();
-		strBrowserName +=	 L"<x 4>导出成功";
+		if( bSuccess == TRUE)
+		{
+			String	strBrowserName = L"<x 4><x 4>";
+			strBrowserName +=	 pPlugIn->GetBrowserName();
+			strBrowserName +=	 L"<x 4>导出成功";
 
-		String	strFavoriteNum = L"<x 4><x 4>总共 ";
-		strFavoriteNum += String::ValueOf(nFavoriteNum);
-		strFavoriteNum += L" 记录";
+			String	strFavoriteNum = L"<x 4><x 4>总共 ";
+			strFavoriteNum += String::ValueOf(nFavoriteNum);
+			strFavoriteNum += L" 记录";
 
-		pListElement->SetText(1,strBrowserName.GetData());
-		pListElement->SetText(2,strFavoriteNum.GetData());
+			pListElement->SetText(1,strBrowserName.GetData());
+			pListElement->SetText(2,strFavoriteNum.GetData());
+		}
+		else
+		{
+			String	strBrowserName = L"<x 4><x 4>";
+			strBrowserName +=	 pPlugIn->GetBrowserName();
+			strBrowserName +=	 L"<x 4>导出失败";
+
+			String	strFavoriteNum = L"<x 4><x 4>总共 0 条记录";
+			pListElement->SetText(1,strBrowserName.GetData());
+			pListElement->SetText(2,strFavoriteNum.GetData());
+		}
 	}
 }
 

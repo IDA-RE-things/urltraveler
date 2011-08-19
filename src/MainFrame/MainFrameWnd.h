@@ -61,7 +61,7 @@ public:
 	PFAVORITELINEDATA*	GetFavoriteLineData(int& nFavoriteNum);
 	void	ShowBrowserLayout();
 	void	NotifyExportBegin(IPlugIn* pPlugIn);
-	void	NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum);
+	void	NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
 	void	NotifyInExportProcess(wchar_t* 	szProcess);
 
 private:

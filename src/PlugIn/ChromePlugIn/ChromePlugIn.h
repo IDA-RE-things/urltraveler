@@ -120,6 +120,7 @@ private:
 	{
 		int32 nIndex;
 		Json::Value node_obj;
+
 	} NODEINFO, *PNODEINFO;
 
 	int32 m_nMaxDepth;

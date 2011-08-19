@@ -64,10 +64,12 @@ namespace plugin
 
 			pPlugIn = 0;
 			nFavoriteNum = 0;
+			bSuccess = TRUE;
 		}
 
 		IPlugIn*	pPlugIn;
 		int nFavoriteNum;
+		BOOL	bSuccess;
 	};
 
  	struct PlugIn_InExportEndMessage : MessageExtraInfo
