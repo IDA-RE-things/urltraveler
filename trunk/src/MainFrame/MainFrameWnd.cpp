@@ -35,6 +35,7 @@ CMainFrameWnd::CMainFrameWnd()
 {
 	m_pFavoriteTree = 0;
 	m_pDragList = 0;
+	m_pLoadingList = 0;
 	m_nCurrentFavoriteFoldId = 0;
 	m_vFavoriteNodeAtTreeNode.clear();
 
@@ -72,7 +73,8 @@ void	CMainFrameWnd::NotifyExportBegin(IPlugIn* pPlugIn)
 {
 	CListTextElementUI* pListElement = new CListTextElementUI;
 	pListElement->SetFixedHeight(40);
-	m_pLoadingList->Add(pListElement);
+	if( m_pLoadingList)
+		m_pLoadingList->Add(pListElement);
 
 	String	strIconName = String(pPlugIn->GetBrowserName()) + String(L".ico");
 	m_pm.AddIcon32(strIconName, pPlugIn->GetBrowserIcon());
@@ -89,6 +91,9 @@ void	CMainFrameWnd::NotifyExportBegin(IPlugIn* pPlugIn)
 
 void	CMainFrameWnd::NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum,  BOOL bSuccess)
 {
+	if( m_pLoadingList == NULL)
+		return;
+
 	CListTextElementUI* pListElement = (CListTextElementUI*)m_pLoadingList->GetItemAt(m_pLoadingList->GetRowCount() - 1);
 	if( pListElement)
 	{
@@ -135,7 +140,6 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	m_pDragList = static_cast<CDragListUI*>(m_pm.FindControl(_T("favoritefilelist")));
 	if( m_pDragList == NULL)
 	{			
-		ASSERT(0);
 		return;
 	}
 	m_pDragList->SetTextCallback(this);
@@ -152,7 +156,6 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	m_pLoadingList = static_cast<CListUI*>(m_pm.FindControl(_T("FavoriteLoadingList")));
 	if( m_pLoadingList == NULL)
 	{			
-		ASSERT(0);
 		return;
 	}
 	//m_pLoadingList->SetTextCallback(this);
@@ -184,7 +187,7 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 
 void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum)
 {	 
-	wstring wstrText = L"{x 4}{x 4}";
+	wstring wstrText = L"{x 4}";
 	wstrText += L"收藏夹";
 
 	if( m_pFavoriteTree == NULL)
@@ -197,12 +200,10 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 
 	if( m_pDragList == NULL)
 		m_pDragList = static_cast<CDragListUI*>(m_pm.FindControl(_T("favoritefilelist")));
-	if( m_pDragList == NULL)
+	if( m_pDragList != NULL)
 	{
-		ASSERT(0);
-		return;
+		m_pDragList->SetTextCallback(this);     
 	}
-	m_pDragList->SetTextCallback(this);     
 
 	CTreeListUI::Node* pRootNode = m_pFavoriteTree->AddNode(wstrText.c_str());
 	m_pFavoriteTree->m_mapIdNode[0] = pRootNode;
@@ -222,21 +223,17 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 				CTreeListUI::Node* pParentNode = itr->second;
 				if( pParentNode != NULL)
 				{
-					wstring wstrText = L"{x 4}{x 4}";
+					wstring wstrText = L"{x 4}";
 					wstrText += pData->szTitle;
 
 					CTreeListUI::Node* pNode  = m_pFavoriteTree->AddNode(wstrText.c_str(), pParentNode);
 					m_pFavoriteTree->m_mapIdNode[pData->nId] = pNode;
 					m_pFavoriteTree->m_mapNodeId[pNode] = pData->nId;
+					m_pFavoriteTree->Invalidate();
 				}
-			}
-			else
-			{
-				int i = 0;
 			}
 		}
 	}
-
 
 	// 显示根结点下的所有的收藏夹记录
 	m_pFavoriteTree->m_nTreeNodeId = 0;
@@ -246,6 +243,9 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 
 void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 {
+	if( m_pDragList == NULL)
+		return;
+
 	m_nCurrentFavoriteFoldId = nId;
 	m_vFavoriteNodeAtTreeNode.clear();
 

@@ -364,7 +364,7 @@ void	CTreeListUI::OnTreeListItemDragEnd()
 	RemoveNode(pSrcNode);
 
 	// 在结点中增加一个新结点
-	wstring wstrText = L"{x 4}{x 4}";
+	wstring wstrText = L"{x 4}";
 	wstrText += pSrcLineData->szTitle;
 	CTreeListUI::Node* pNode  = AddNode(wstrText.c_str(), pDstNode);
 	m_mapIdNode[pSrcLineData->nId] = pNode;
@@ -622,9 +622,18 @@ CTreeListUI::Node* CTreeListUI::AddNode(LPCTSTR text, CTreeListUI::Node* parent)
 	{
 		pListElement->SetVisible(false);
 	}
+	else
+	{
+		pListElement->SetVisible(true);
+	}
+
 	if( parent != _root && !parent->data()._pListElement->IsVisible() )
 	{
 		pListElement->SetVisible(false);
+	}
+	else
+	{
+		pListElement->SetVisible(true);
 	}
 
 	CStdString html_text;
