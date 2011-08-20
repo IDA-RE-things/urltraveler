@@ -326,6 +326,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\TestTreeWnd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\TestTreeWnd.h"
+					>
+				</File>
+				<File
 					RelativePath=".\TipWnd.cpp"
 					>
 				</File>

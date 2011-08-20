@@ -25,6 +25,8 @@
 
 #include <algorithm>
 
+#include "TestTreeWnd.h"
+
 using namespace datacenter;
 using namespace mainframe;
 using namespace web;
@@ -69,16 +71,16 @@ void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 		if( pFavoriteLoadingLayout)
 		{
 			pFavoriteLoadingLayout->SetVisible(true);
-			m_nProcessLayoutWidth = pFavoriteLoadingLayout->GetWidth();
-			m_nProcessLayoutHeight = pFavoriteLoadingLayout->GetHeight();
+			//m_nProcessLayoutWidth = pFavoriteLoadingLayout->GetWidth();
+			//m_nProcessLayoutHeight = pFavoriteLoadingLayout->GetHeight();
 		}
 
 		CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
 		if( pFavoriteDataLayout)
 		{
-			pFavoriteDataLayout->SetFixedHeight(0);
-			pFavoriteDataLayout->SetFixedWidth(0);
-			//pFavoriteDataLayout->SetVisible(false);
+			//pFavoriteDataLayout->SetFixedHeight(0);
+			//pFavoriteDataLayout->SetFixedWidth(0);
+			pFavoriteDataLayout->SetVisible(false);
 		}
 
 	}
@@ -937,6 +939,12 @@ LRESULT CMainFrameWnd::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 		break;
 
 	case IDM_ABOUT:
+		{
+			CTestTreeWnd* pTestWnd = new CTestTreeWnd();
+			pTestWnd->Create(m_hWnd, _T(""), UI_WNDSTYLE_DIALOG, UI_WNDSTYLE_EX_DIALOG, 0, 0, 0, 0, NULL);
+			pTestWnd->CenterWindow();
+			pTestWnd->ShowModal();
+		}
 		break;
 
 	case IDM_SETTING:

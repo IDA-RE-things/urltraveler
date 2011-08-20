@@ -294,14 +294,12 @@ void	CTreeListUI::OnTreeListItemDragEnd()
 	CTreeListUI::Node* pDstNode = (CTreeListUI::Node*)pDstItem->GetTag();
 	if( pDstNode == NULL)
 	{
-		ASSERT(0);
 		return;
 	}
 
 	std::map<CTreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pDstNode);
 	if( itr == m_mapNodeId.end())
 	{
-		ASSERT(0);
 		return;
 	}
 
