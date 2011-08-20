@@ -31,7 +31,7 @@ namespace DuiLib {
 
 		int GetCurSel() const;  
 		int* GetCurSel(int& nSelNum) const;
-		bool SelectItem(int iIndex);
+		bool SelectItem(int iIndex, bool bTakeFocus = false);
 
 		bool SetItemIndex(CControlUI* pControl, int iIndex);
 		bool Add(CControlUI* pControl);
@@ -64,8 +64,10 @@ namespace DuiLib {
 		void SetItemTextColor(DWORD dwTextColor);
 		DWORD GetItemBkColor() const;
 		void SetItemBkColor(DWORD dwBkColor);
-		LPCTSTR GetItemImage() const;
-		void SetItemImage(LPCTSTR pStrImage);
+		LPCTSTR GetItemBkImage() const;
+		void SetItemBkImage(LPCTSTR pStrImage);
+		bool IsAlternateBk() const;
+		void SetAlternateBk(bool bAlternateBk);
 		DWORD GetSelectedItemTextColor() const;
 		void SetSelectedItemTextColor(DWORD dwTextColor);
 		DWORD GetSelectedItemBkColor() const;

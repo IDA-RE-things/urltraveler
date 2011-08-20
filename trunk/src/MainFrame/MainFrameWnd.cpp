@@ -65,18 +65,22 @@ void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 		if( pProcessLayout)
 			pProcessLayout->SetVisible(true);
 
+		CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
+		if( pFavoriteLoadingLayout)
+		{
+			pFavoriteLoadingLayout->SetVisible(true);
+			m_nProcessLayoutWidth = pFavoriteLoadingLayout->GetWidth();
+			m_nProcessLayoutHeight = pFavoriteLoadingLayout->GetHeight();
+		}
+
 		CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
 		if( pFavoriteDataLayout)
 		{
-			m_nProcessLayoutWidth = pFavoriteDataLayout->GetWidth();
-			m_nProcessLayoutHeight = pFavoriteDataLayout->GetHeight();
 			pFavoriteDataLayout->SetFixedHeight(0);
 			pFavoriteDataLayout->SetFixedWidth(0);
+			//pFavoriteDataLayout->SetVisible(false);
 		}
 
-		CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));
-		if( pFavoriteLoadingLayout)
-			pFavoriteLoadingLayout->SetVisible(true);
 	}
 	else
 	{
@@ -91,8 +95,9 @@ void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 		CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
 		if( pFavoriteDataLayout)
 		{
-			pFavoriteDataLayout->SetFixedHeight(m_nProcessLayoutHeight);
-			pFavoriteDataLayout->SetFixedWidth(m_nProcessLayoutWidth);
+			//pFavoriteDataLayout->SetFixedHeight(m_nProcessLayoutHeight);
+			//pFavoriteDataLayout->SetFixedWidth(m_nProcessLayoutWidth);
+			pFavoriteDataLayout->SetVisible(true);
 		}
 
 		CHorizontalLayoutUI*  pFavoriteLoadingLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteLoadingLayout"));

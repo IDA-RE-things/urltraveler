@@ -16,7 +16,6 @@ typedef struct
 	long comp_size;            // sizes of item, compressed and uncompressed. These
 	long unc_size;             // may be -1 if not yet known (e.g. being streamed in)
 } ZIPENTRY;
-
 typedef struct
 { 
 	int index;                 // index of this file within the zip
@@ -26,7 +25,6 @@ typedef struct
 	long comp_size;            // sizes of item, compressed and uncompressed. These
 	long unc_size;             // may be -1 if not yet known (e.g. being streamed in)
 } ZIPENTRYW;
-
 #define OpenZip OpenZipU
 #define CloseZip(hz) CloseZipU(hz)
 extern HZIP OpenZipU(void *z,unsigned int len,DWORD flags);
@@ -405,7 +403,10 @@ namespace DuiLib {
 		}
 		else {
 			sFile += CPaintManagerUI::GetResourceZip();
-			HZIP hz = OpenZip((void*)sFile.GetData(), 0, 2);
+			HZIP hz = NULL;
+			if( CPaintManagerUI::IsCachedResourceZip() ) hz = (HZIP)CPaintManagerUI::GetResourceZipHandle();
+			else hz = OpenZip((void*)sFile.GetData(), 0, 2);
+			if( hz == NULL ) return _Failed(_T("Error opening zip file"));
 			ZIPENTRY ze; 
 			int i; 
 			if( FindZipItem(hz, pstrFilename, true, &i, &ze) != 0 ) return _Failed(_T("Could not find ziped file"));
@@ -416,10 +417,10 @@ namespace DuiLib {
 			int res = UnzipItem(hz, i, pByte, dwSize, 3);
 			if( res != 0x00000000 && res != 0x00000600) {
 				delete[] pByte;
-				CloseZip(hz);
+				if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
 				return _Failed(_T("Could not unzip file"));
 			}
-			CloseZip(hz);
+			if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
 			bool ret = LoadFromMem(pByte, dwSize, encoding);
 			delete[] pByte;
 
@@ -588,7 +589,8 @@ namespace DuiLib {
 			if( !_ParseData(pstrText, pstrDest, _T('\"')) ) return false;
 			if( *pstrText == _T('\0') ) return _Failed(_T("Error while parsing attribute string"), pstrText);
 			*pstrDest = _T('\0');
-			*pstrText++ = _T('\0');
+			if( pstrText != pstrDest ) *pstrText = _T(' ');
+			pstrText++;
 			_SkipWhitespace(pstrText);
 		}
 		return true;

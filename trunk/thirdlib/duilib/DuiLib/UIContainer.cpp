@@ -40,9 +40,7 @@ LPVOID CContainerUI::GetInterface(LPCTSTR pstrName)
 
 CControlUI* CContainerUI::GetItemAt(int iIndex) const
 {
-	if( iIndex < 0 || iIndex >= m_items.GetSize() ) 
-		return NULL;
-
+	if( iIndex < 0 || iIndex >= m_items.GetSize() ) return NULL;
 	return static_cast<CControlUI*>(m_items[iIndex]);
 }
 
@@ -61,7 +59,7 @@ bool CContainerUI::SetItemIndex(CControlUI* pControl, int iIndex)
 {
 	for( int it = 0; it < m_items.GetSize(); it++ ) {
 		if( static_cast<CControlUI*>(m_items[it]) == pControl ) {
-			Invalidate();            
+			NeedUpdate();            
 			m_items.Remove(it);
 			return m_items.InsertAt(iIndex, pControl);
 		}
@@ -116,7 +114,7 @@ bool CContainerUI::RemoveAt(int iIndex)
 {
 	CControlUI* pControl = GetItemAt(iIndex);
 	if (pControl != NULL) {
-		return Remove(pControl);
+		return CContainerUI::Remove(pControl);
 	}
 
 	return false;
@@ -187,21 +185,19 @@ void CContainerUI::SetMouseChildEnabled(bool bEnable)
 void CContainerUI::SetVisible(bool bVisible)
 {
 	if( m_bVisible == bVisible ) return;
-
-	for( int it = 0; it < m_items.GetSize(); it++ ) {
-		static_cast<CControlUI*>(m_items[it])->SetInternVisible(bVisible);
-	}
-
 	CControlUI::SetVisible(bVisible);
+	for( int it = 0; it < m_items.GetSize(); it++ ) {
+		static_cast<CControlUI*>(m_items[it])->SetInternVisible(IsVisible());
+	}
 }
 
 void CContainerUI::SetInternVisible(bool bVisible)
 {
-	for( int it = 0; it < m_items.GetSize(); it++ ) {
-		static_cast<CControlUI*>(m_items[it])->SetInternVisible(bVisible);
-	}
-
 	CControlUI::SetInternVisible(bVisible);
+	if( m_items.IsEmpty() ) return;
+	for( int it = 0; it < m_items.GetSize(); it++ ) {
+		static_cast<CControlUI*>(m_items[it])->SetInternVisible(IsVisible());
+	}
 }
 
 void CContainerUI::SetMouseEnabled(bool bEnabled)
@@ -506,29 +502,21 @@ int CContainerUI::FindSelectable(int iIndex, bool bForward /*= true*/) const
 {
 	// NOTE: This is actually a helper-function for the list/combo/ect controls
 	//       that allow them to find the next enabled/available selectable item
-	if( GetRowCount() == 0 ) 
-		return -1;
-
+	if( GetRowCount() == 0 ) return -1;
 	iIndex = CLAMP(iIndex, 0, GetRowCount() - 1);
-	if( bForward ) 
-	{
-		for( int i = iIndex; i < GetRowCount(); i++ ) 
-		{
+	if( bForward ) {
+		for( int i = iIndex; i < GetRowCount(); i++ ) {
 			if( GetItemAt(i)->GetInterface(_T("ListItem")) != NULL 
 				&& GetItemAt(i)->IsVisible()
-				&& GetItemAt(i)->IsEnabled() ) 
-				return i;
+				&& GetItemAt(i)->IsEnabled() ) return i;
 		}
 		return -1;
 	}
-	else 
-	{
-		for( int i = iIndex; i >= 0; --i ) 
-		{
+	else {
+		for( int i = iIndex; i >= 0; --i ) {
 			if( GetItemAt(i)->GetInterface(_T("ListItem")) != NULL 
 				&& GetItemAt(i)->IsVisible()
-				&& GetItemAt(i)->IsEnabled() ) 
-				return i;
+				&& GetItemAt(i)->IsEnabled() ) return i;
 		}
 		return FindSelectable(0, true);
 	}
@@ -570,8 +558,16 @@ void CContainerUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	else if( _tcscmp(pstrName, _T("vscrollbar")) == 0 ) {
 		EnableScrollBar(_tcscmp(pstrValue, _T("true")) == 0, GetHorizontalScrollBar() != NULL);
 	}
+	else if( _tcscmp(pstrName, _T("vscrollbarstyle")) == 0 ) {
+		EnableScrollBar(true, GetHorizontalScrollBar() != NULL);
+		if( GetVerticalScrollBar() ) GetVerticalScrollBar()->ApplyAttributeList(pstrValue);
+	}
 	else if( _tcscmp(pstrName, _T("hscrollbar")) == 0 ) {
 		EnableScrollBar(GetVerticalScrollBar() != NULL, _tcscmp(pstrValue, _T("true")) == 0);
+	}
+	else if( _tcscmp(pstrName, _T("hscrollbarstyle")) == 0 ) {
+		EnableScrollBar(GetVerticalScrollBar() != NULL, true);
+		if( GetHorizontalScrollBar() ) GetHorizontalScrollBar()->ApplyAttributeList(pstrValue);
 	}
 	else if( _tcscmp(pstrName, _T("childpadding")) == 0 ) SetChildPadding(_ttoi(pstrValue));
 	else CControlUI::SetAttribute(pstrName, pstrValue);
@@ -643,7 +639,7 @@ CControlUI* CContainerUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT u
 		}
 	}
 
-	if( pResult == NULL ) pResult = CControlUI::FindControl(Proc, pData, uFlags);
+	if( pResult == NULL && (uFlags & UIFIND_ME_FIRST) == 0 ) pResult = CControlUI::FindControl(Proc, pData, uFlags);
 	return pResult;
 }
 
@@ -1348,8 +1344,9 @@ RECT CHorizontalLayoutUI::GetThumbRect(bool bUseNew) const
 //
 //
 
-CTileLayoutUI::CTileLayoutUI() : m_nColumns(2)
+CTileLayoutUI::CTileLayoutUI() : m_nColumns(1)
 {
+	m_szItem.cx = m_szItem.cy = 0;
 }
 
 LPCTSTR CTileLayoutUI::GetClass() const
@@ -1361,6 +1358,19 @@ LPVOID CTileLayoutUI::GetInterface(LPCTSTR pstrName)
 {
 	if( _tcscmp(pstrName, _T("TileLayout")) == 0 ) return static_cast<CTileLayoutUI*>(this);
 	return CContainerUI::GetInterface(pstrName);
+}
+
+SIZE CTileLayoutUI::GetItemSize() const
+{
+	return m_szItem;
+}
+
+void CTileLayoutUI::SetItemSize(SIZE szItem)
+{
+	if( m_szItem.cx != szItem.cx || m_szItem.cy != szItem.cy ) {
+		m_szItem = szItem;
+		NeedUpdate();
+	}
 }
 
 int CTileLayoutUI::GetColumns() const
@@ -1377,7 +1387,14 @@ void CTileLayoutUI::SetColumns(int nCols)
 
 void CTileLayoutUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 {
-	if( _tcscmp(pstrName, _T("columns")) == 0 ) SetColumns(_ttoi(pstrValue));
+	if( _tcscmp(pstrName, _T("itemsize")) == 0 ) {
+		SIZE szItem = { 0 };
+		LPTSTR pstr = NULL;
+		szItem.cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+		szItem.cy = _tcstol(pstr + 1, &pstr, 10);   ASSERT(pstr);     
+		SetItemSize(szItem);
+	}
+	else if( _tcscmp(pstrName, _T("columns")) == 0 ) SetColumns(_ttoi(pstrValue));
 	else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
@@ -1401,6 +1418,9 @@ void CTileLayoutUI::SetPos(RECT rc)
 	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
 
 	// Position the elements
+	if( m_szItem.cx > 0 ) m_nColumns = (rc.right - rc.left) / m_szItem.cx;
+	if( m_nColumns == 0 ) m_nColumns = 1;
+
 	int cyNeeded = 0;
 	int cxWidth = (rc.right - rc.left) / m_nColumns;
 	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) 
@@ -1783,6 +1803,7 @@ bool CTabLayoutUI::SelectItem(int iIndex)
 	if( iIndex < 0 || iIndex >= m_items.GetSize() ) return false;
 	if( iIndex == m_iCurSel ) return true;
 
+	int iOldSel = m_iCurSel;
 	m_iCurSel = iIndex;
 	for( int it = 0; it < m_items.GetSize(); it++ )
 	{
@@ -1794,7 +1815,10 @@ bool CTabLayoutUI::SelectItem(int iIndex)
 	}
 	NeedParentUpdate();
 
-	if( m_pManager != NULL ) m_pManager->SetNextTabControl();
+	if( m_pManager != NULL ) {
+		m_pManager->SetNextTabControl();
+		m_pManager->SendNotify(this, _T("tabselect"), m_iCurSel, iOldSel);
+	}
 	return true;
 }
 

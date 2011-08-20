@@ -105,6 +105,8 @@ namespace DuiLib {
 		int nX;
 		int nY;
 		bool alphaChannel;
+		CStdString sResType;
+		DWORD dwMask;
 	} TImageInfo;
 
 	// Structure for notifications from the system
@@ -182,6 +184,8 @@ namespace DuiLib {
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
+	typedef CControlUI* (*LPCREATECONTROL)(LPCTSTR pstrType);
+
 
 	class UILIB_API CPaintManagerUI
 	{
@@ -223,11 +227,19 @@ namespace DuiLib {
 		static HINSTANCE GetResourceDll();
 		static const CStdString& GetResourcePath();
 		static const CStdString& GetResourceZip();
+		static bool IsCachedResourceZip();
+		static HANDLE GetResourceZipHandle();
 		static void SetInstance(HINSTANCE hInst);
 		static void SetCurrentPath(LPCTSTR pStrPath);
 		static void SetResourceDll(HINSTANCE hInst);
 		static void SetResourcePath(LPCTSTR pStrPath);
-		static void SetResourceZip(LPCTSTR pStrZip);
+		static void SetResourceZip(LPVOID pVoid, unsigned int len);
+		static void SetResourceZip(LPCTSTR pstrZip, bool bCachedResourceZip = false);
+		static void GetHSL(short* H, short* S, short* L);
+		static void SetHSL(bool bUseHSL, short H, short S, short L); // H:0~360, S:0~200, L:0~200 
+		static void ReloadSkin();
+		static bool LoadPlugin(LPCTSTR pstrModuleName);
+		static CStdPtrArray* GetPlugins();
 
 		bool UseParentResource(CPaintManagerUI* pm);
 		CPaintManagerUI* GetParentResource() const;
@@ -262,11 +274,12 @@ namespace DuiLib {
 		const TImageInfo* GetImage(LPCTSTR bitmap);
 		const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
 		const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
-		const TImageInfo* AddImage(LPCTSTR szBitmapName, HBITMAP hBitmap, int nWidth, int nHeight);
+		const TImageInfo* AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha);
 		const TImageInfo* AddIcon16(LPCTSTR szIconName, HICON hIcon);
 		const TImageInfo* AddIcon32(LPCTSTR szIconName, HICON hIcon);
 		bool RemoveImage(LPCTSTR bitmap);
 		void RemoveAllImages();
+		void ReloadAllImages();
 
 		void AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR pStrControlAttrList);
 		LPCTSTR GetDefaultAttributeList(LPCTSTR pStrControlName) const;
@@ -291,6 +304,7 @@ namespace DuiLib {
 
 		bool SetTimer(CControlUI* pControl, UINT nTimerID, UINT uElapse);
 		bool KillTimer(CControlUI* pControl, UINT nTimerID);
+		void KillTimer(CControlUI* pControl);
 		void RemoveAllTimers();
 
 		void SetCapture();
@@ -299,8 +313,8 @@ namespace DuiLib {
 
 		bool AddNotifier(INotifyUI* pControl);
 		bool RemoveNotifier(INotifyUI* pControl);   
-		void SendNotify(TNotifyUI& Msg);
-		void SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam = 0, LPARAM lParam = 0);
+		void SendNotify(TNotifyUI& Msg, bool bAsync = false);
+		void SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
 
 		bool AddPreMessageFilter(IMessageFilterUI* pFilter);
 		bool RemovePreMessageFilter(IMessageFilterUI* pFilter);
@@ -317,17 +331,22 @@ namespace DuiLib {
 
 		CControlUI* GetRoot() const;
 		CControlUI* FindControl(POINT pt) const;
-		CControlUI* FindControl(CControlUI* pParent, POINT pt) const;
-		CControlUI* FindControl(LPCTSTR pstrName);
-		CControlUI* FindControl(CControlUI* pParent, LPCTSTR pstrName);
+		CControlUI* FindControl(LPCTSTR pstrName) const;
+		CControlUI* FindSubControlByPoint(CControlUI* pParent, POINT pt) const;
+		CControlUI* FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const;
+		CControlUI* FindSubControlByClass(CControlUI* pParent, LPCTSTR pstrClass, int iIndex = 0);
+		CStdPtrArray* FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass);
+		CStdPtrArray* GetSubControlsByClass();
+
 
 		void	SetEventSrcControl(CControlUI* pSrcCtrl);
 		CControlUI*	GetEventSrcControl();
-		void	SetEventDstContro(CControlUI* pDstCtrl);
+		void	SetEventDstControl(CControlUI* pDstCtrl);
 		CControlUI*	GetEventDstControl();
 
 		static void MessageLoop();
 		static bool TranslateMessage(const LPMSG pMsg);
+		static void Term();
 
 		bool MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
 		bool PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
@@ -340,6 +359,8 @@ namespace DuiLib {
 		static CControlUI* CALLBACK __FindControlFromShortcut(CControlUI* pThis, LPVOID pData);
 		static CControlUI* CALLBACK __FindControlFromUpdate(CControlUI* pThis, LPVOID pData);
 		static CControlUI* CALLBACK __FindControlFromName(CControlUI* pThis, LPVOID pData);
+		static CControlUI* CALLBACK __FindControlFromClass(CControlUI* pThis, LPVOID pData);
+		static CControlUI* CALLBACK __FindControlsFromClass(CControlUI* pThis, LPVOID pData);
 
 	private:
 		HWND m_hWndPaint;
@@ -384,15 +405,17 @@ namespace DuiLib {
 		CStdPtrArray m_aMessageFilters;
 		CStdPtrArray m_aPostPaintControls;
 		CStdPtrArray m_aDelayedCleanup;
+		CStdPtrArray m_aAsyncNotify;
+		CStdPtrArray m_aFoundControls;
 		CStdStringPtrMap m_mNameHash;
 		CStdStringPtrMap m_mOptionGroup;
 		//
 		CPaintManagerUI* m_pParentResourcePM;
-		DWORD m_dwDefalutDisabledColor;
-		DWORD m_dwDefalutFontColor;
-		DWORD m_dwDefalutLinkFontColor;
-		DWORD m_dwDefalutLinkHoverFontColor;
-		DWORD m_dwDefalutSelectedBkColor;
+		DWORD m_dwDefaultDisabledColor;
+		DWORD m_dwDefaultFontColor;
+		DWORD m_dwDefaultLinkFontColor;
+		DWORD m_dwDefaultLinkHoverFontColor;
+		DWORD m_dwDefaultSelectedBkColor;
 		TFontInfo m_DefaultFontInfo;
 		CStdPtrArray m_aCustomFonts;
 
@@ -403,7 +426,13 @@ namespace DuiLib {
 		static HINSTANCE m_hResourceInstance;
 		static CStdString m_pStrResourcePath;
 		static CStdString m_pStrResourceZip;
+		static bool m_bCachedResourceZip;
+		static HANDLE m_hResourceZip;
+		static short m_H;
+		static short m_S;
+		static short m_L;
 		static CStdPtrArray m_aPreMessages;
+		static CStdPtrArray m_aPlugins;
 	};
 
 } // namespace DuiLib

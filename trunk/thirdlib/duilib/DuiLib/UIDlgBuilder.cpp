@@ -2,7 +2,13 @@
 
 namespace DuiLib {
 
-	CControlUI* CDialogBuilder::Create(STRINGorID xml, STRINGorID type, IDialogBuilderCallback* pCallback, CPaintManagerUI* pManager)
+	CDialogBuilder::CDialogBuilder() : m_pCallback(NULL), m_pstrtype(NULL)
+	{
+
+	}
+
+	CControlUI* CDialogBuilder::Create(STRINGorID xml, LPCTSTR type, IDialogBuilderCallback* pCallback, 
+		CPaintManagerUI* pManager, CControlUI* pParent)
 	{
 		if( HIWORD(xml.m_lpstr) != NULL ) {
 			if( *(xml.m_lpstr) == _T('<') ) {
@@ -13,7 +19,7 @@ namespace DuiLib {
 			}
 		}
 		else {
-			HRSRC hResource = ::FindResource(CPaintManagerUI::GetResourceDll(), xml.m_lpstr, type.m_lpstr);
+			HRSRC hResource = ::FindResource(CPaintManagerUI::GetResourceDll(), xml.m_lpstr, type);
 			if( hResource == NULL ) return NULL;
 			HGLOBAL hGlobal = ::LoadResource(CPaintManagerUI::GetResourceDll(), hResource);
 			if( hGlobal == NULL ) {
@@ -24,103 +30,104 @@ namespace DuiLib {
 			m_pCallback = pCallback;
 			if( !m_xml.LoadFromMem((BYTE*)::LockResource(hGlobal), ::SizeofResource(CPaintManagerUI::GetResourceDll(), hResource) )) return NULL;
 			::FreeResource(hResource);
+			m_pstrtype = type;
 		}
 
 		return Create(pCallback, pManager);
 	}
 
-	CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintManagerUI* pManager)
+	CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintManagerUI* pManager, CControlUI* pParent)
 	{
 		m_pCallback = pCallback;
 		CMarkupNode root = m_xml.GetRoot();
 		if( !root.IsValid() ) return NULL;
 
 		if( pManager ) {
-			LPCTSTR pstrClass = root.GetName();
-			if( _tcscmp(pstrClass, _T("Window")) == 0 ) {
-				int nAttributes = 0;
-				LPCTSTR pstrName = NULL;
-				LPCTSTR pstrValue = NULL;
-				LPTSTR pstr = NULL;
-
-				for( CMarkupNode node = root.GetChild() ; node.IsValid(); node = node.GetSibling() ) {
-					pstrClass = node.GetName();
-					if( _tcscmp(pstrClass, _T("Image")) == 0 ) {
-						nAttributes = node.GetAttributeCount();
-						LPCTSTR pImageName = NULL;
-						LPCTSTR pImageResType = NULL;
-						DWORD mask = 0;
-						for( int i = 0; i < nAttributes; i++ ) {
-							pstrName = node.GetAttributeName(i);
-							pstrValue = node.GetAttributeValue(i);
-							if( _tcscmp(pstrName, _T("name")) == 0 ) {
-								pImageName = pstrValue;
-							}
-							else if( _tcscmp(pstrName, _T("restype")) == 0 ) {
-								pImageResType = pstrValue;
-							}
-							else if( _tcscmp(pstrName, _T("mask")) == 0 ) {
-								if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
-								mask = _tcstoul(pstrValue, &pstr, 16);
-							}
+			LPCTSTR pstrClass = NULL;
+			int nAttributes = 0;
+			LPCTSTR pstrName = NULL;
+			LPCTSTR pstrValue = NULL;
+			LPTSTR pstr = NULL;
+			for( CMarkupNode node = root.GetChild() ; node.IsValid(); node = node.GetSibling() ) {
+				pstrClass = node.GetName();
+				if( _tcscmp(pstrClass, _T("Image")) == 0 ) {
+					nAttributes = node.GetAttributeCount();
+					LPCTSTR pImageName = NULL;
+					LPCTSTR pImageResType = NULL;
+					DWORD mask = 0;
+					for( int i = 0; i < nAttributes; i++ ) {
+						pstrName = node.GetAttributeName(i);
+						pstrValue = node.GetAttributeValue(i);
+						if( _tcscmp(pstrName, _T("name")) == 0 ) {
+							pImageName = pstrValue;
 						}
-						if( pImageName ) pManager->AddImage(pImageName, pImageResType, mask);
-					}
-					else if( _tcscmp(pstrClass, _T("Font")) == 0 ) {
-						nAttributes = node.GetAttributeCount();
-						LPCTSTR pFontName = NULL;
-						int size = 12;
-						bool bold = false;
-						bool underline = false;
-						bool italic = false;
-						bool defaultfont = false;
-						for( int i = 0; i < nAttributes; i++ ) {
-							pstrName = node.GetAttributeName(i);
-							pstrValue = node.GetAttributeValue(i);
-							if( _tcscmp(pstrName, _T("name")) == 0 ) {
-								pFontName = pstrValue;
-							}
-							else if( _tcscmp(pstrName, _T("size")) == 0 ) {
-								size = _tcstol(pstrValue, &pstr, 10);
-							}
-							else if( _tcscmp(pstrName, _T("bold")) == 0 ) {
-								bold = (_tcscmp(pstrValue, _T("true")) == 0);
-							}
-							else if( _tcscmp(pstrName, _T("underline")) == 0 ) {
-								underline = (_tcscmp(pstrValue, _T("true")) == 0);
-							}
-							else if( _tcscmp(pstrName, _T("italic")) == 0 ) {
-								italic = (_tcscmp(pstrValue, _T("true")) == 0);
-							}
-							else if( _tcscmp(pstrName, _T("default")) == 0 ) {
-								defaultfont = (_tcscmp(pstrValue, _T("true")) == 0);
-							}
+						else if( _tcscmp(pstrName, _T("restype")) == 0 ) {
+							pImageResType = pstrValue;
 						}
-						if( pFontName ) {
-							pManager->AddFont(pFontName, size, bold, underline, italic);
-							if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
+						else if( _tcscmp(pstrName, _T("mask")) == 0 ) {
+							if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+							mask = _tcstoul(pstrValue, &pstr, 16);
 						}
 					}
-					else if( _tcscmp(pstrClass, _T("Default")) == 0 ) {
-						nAttributes = node.GetAttributeCount();
-						LPCTSTR pControlName = NULL;
-						LPCTSTR pControlValue = NULL;
-						for( int i = 0; i < nAttributes; i++ ) {
-							pstrName = node.GetAttributeName(i);
-							pstrValue = node.GetAttributeValue(i);
-							if( _tcscmp(pstrName, _T("name")) == 0 ) {
-								pControlName = pstrValue;
-							}
-							else if( _tcscmp(pstrName, _T("value")) == 0 ) {
-								pControlValue = pstrValue;
-							}
+					if( pImageName ) pManager->AddImage(pImageName, pImageResType, mask);
+				}
+				else if( _tcscmp(pstrClass, _T("Font")) == 0 ) {
+					nAttributes = node.GetAttributeCount();
+					LPCTSTR pFontName = NULL;
+					int size = 12;
+					bool bold = false;
+					bool underline = false;
+					bool italic = false;
+					bool defaultfont = false;
+					for( int i = 0; i < nAttributes; i++ ) {
+						pstrName = node.GetAttributeName(i);
+						pstrValue = node.GetAttributeValue(i);
+						if( _tcscmp(pstrName, _T("name")) == 0 ) {
+							pFontName = pstrValue;
 						}
-						if( pControlName ) {
-							pManager->AddDefaultAttributeList(pControlName, pControlValue);
+						else if( _tcscmp(pstrName, _T("size")) == 0 ) {
+							size = _tcstol(pstrValue, &pstr, 10);
 						}
+						else if( _tcscmp(pstrName, _T("bold")) == 0 ) {
+							bold = (_tcscmp(pstrValue, _T("true")) == 0);
+						}
+						else if( _tcscmp(pstrName, _T("underline")) == 0 ) {
+							underline = (_tcscmp(pstrValue, _T("true")) == 0);
+						}
+						else if( _tcscmp(pstrName, _T("italic")) == 0 ) {
+							italic = (_tcscmp(pstrValue, _T("true")) == 0);
+						}
+						else if( _tcscmp(pstrName, _T("default")) == 0 ) {
+							defaultfont = (_tcscmp(pstrValue, _T("true")) == 0);
+						}
+					}
+					if( pFontName ) {
+						pManager->AddFont(pFontName, size, bold, underline, italic);
+						if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic);
 					}
 				}
+				else if( _tcscmp(pstrClass, _T("Default")) == 0 ) {
+					nAttributes = node.GetAttributeCount();
+					LPCTSTR pControlName = NULL;
+					LPCTSTR pControlValue = NULL;
+					for( int i = 0; i < nAttributes; i++ ) {
+						pstrName = node.GetAttributeName(i);
+						pstrValue = node.GetAttributeValue(i);
+						if( _tcscmp(pstrName, _T("name")) == 0 ) {
+							pControlName = pstrValue;
+						}
+						else if( _tcscmp(pstrName, _T("value")) == 0 ) {
+							pControlValue = pstrValue;
+						}
+					}
+					if( pControlName ) {
+						pManager->AddDefaultAttributeList(pControlName, pControlValue);
+					}
+				}
+			}
 
+			pstrClass = root.GetName();
+			if( _tcscmp(pstrClass, _T("Window")) == 0 ) {
 				if( pManager->GetPaintWindow() ) {
 					int nAttributes = root.GetAttributeCount();
 					for( int i = 0; i < nAttributes; i++ ) {
@@ -214,6 +221,11 @@ namespace DuiLib {
 		return _Parse(&root, NULL, pManager);
 	}
 
+	CMarkup* CDialogBuilder::GetMarkup()
+	{
+		return &m_xml;
+	}
+
 	void CDialogBuilder::GetLastErrorMessage(LPTSTR pstrMessage, SIZE_T cchMax) const
 	{
 		return m_xml.GetLastErrorMessage(pstrMessage, cchMax);
@@ -234,66 +246,99 @@ namespace DuiLib {
 			if( _tcscmp(pstrClass, _T("Image")) == 0 || _tcscmp(pstrClass, _T("Font")) == 0 \
 				|| _tcscmp(pstrClass, _T("Default")) == 0 ) continue;
 
-			SIZE_T cchLen = _tcslen(pstrClass);
 			CControlUI* pControl = NULL;
-			switch( cchLen ) {
-	case 4:
-		if( _tcscmp(pstrClass, _T("Edit")) == 0 )                   pControl = new CEditUI;
-		else if( _tcscmp(pstrClass, _T("List")) == 0 )              pControl = new CListUI;
-		else if( _tcscmp(pstrClass, _T("Text")) == 0 )              pControl = new CTextUI;
-		break;
-	case 5:
-		if( _tcscmp(pstrClass, _T("Combo")) == 0 )                  pControl = new CComboUI;
-		else if( _tcscmp(pstrClass, _T("Label")) == 0 )             pControl = new CLabelUI;
-		break;
-	case 6:
-		if( _tcscmp(pstrClass, _T("Button")) == 0 )                 pControl = new CButtonUI;
-		else if( _tcscmp(pstrClass, _T("Option")) == 0 )            pControl = new COptionUI;
-		else if( _tcscmp(pstrClass, _T("Slider")) == 0 )            pControl = new CSliderUI;
-		break;
-	case 7:
-		if( _tcscmp(pstrClass, _T("Control")) == 0 )                pControl = new CControlUI;
-		else if( _tcscmp(pstrClass, _T("ActiveX")) == 0 )           pControl = new CActiveXUI;
-		else if(_tcscmp(pstrClass, _T("IconBox")) == 0)             pControl = new CIconBoxUI;
-		break;
-	case 8:
-		if( _tcscmp(pstrClass, _T("Progress")) == 0 )               pControl = new CProgressUI;
-		else if(  _tcscmp(pstrClass, _T("RichEdit")) == 0 )         pControl = new CRichEditUI;
-		break;
-	case 9:
-		if( _tcscmp(pstrClass, _T("Container")) == 0 )              pControl = new CContainerUI;
-		else if( _tcscmp(pstrClass, _T("TabLayout")) == 0 )         pControl = new CTabLayoutUI;
-		else if( _tcscmp(pstrClass, _T("ScrollBar")) == 0 )         pControl = new CScrollBarUI; 
-		break;
-	case 10:
-		if( _tcscmp(pstrClass, _T("ListHeader")) == 0 )             pControl = new CListHeaderUI;
-		else if( _tcscmp(pstrClass, _T("TileLayout")) == 0 )        pControl = new CTileLayoutUI;
-		break;
-	case 12:
-		if( _tcscmp(pstrClass, _T("DialogLayout")) == 0 )           pControl = new CDialogLayoutUI;
-		break;
-	case 14:
-		if( _tcscmp(pstrClass, _T("VerticalLayout")) == 0 )         pControl = new CVerticalLayoutUI;
-		else if( _tcscmp(pstrClass, _T("ListHeaderItem")) == 0 )    pControl = new CListHeaderItemUI;
-		break;
-	case 15:
-		if( _tcscmp(pstrClass, _T("ListTextElement")) == 0 )        pControl = new CListTextElementUI;
-		break;
-	case 16:
-		if( _tcscmp(pstrClass, _T("HorizontalLayout")) == 0 )       pControl = new CHorizontalLayoutUI;
-		else if( _tcscmp(pstrClass, _T("ListLabelElement")) == 0 )  pControl = new CListLabelElementUI;
-		break;
-	case 17:
-		if( _tcscmp(pstrClass, _T("ListExpandElement")) == 0 )      pControl = new CListExpandElementUI;
-		break;
-	case 20:
-		if( _tcscmp(pstrClass, _T("ListContainerElement")) == 0 )   pControl = new CListContainerElementUI;
-		break;
+			if( _tcscmp(pstrClass, _T("Include")) == 0 ) {
+				if( !node.HasAttributes() ) continue;
+				int count = 1;
+				LPTSTR pstr = NULL;
+				TCHAR szValue[500] = { 0 };
+				SIZE_T cchLen = lengthof(szValue) - 1;
+				if ( node.GetAttributeValue(_T("count"), szValue, cchLen) )
+					count = _tcstol(szValue, &pstr, 10);
+				cchLen = lengthof(szValue) - 1;
+				if ( !node.GetAttributeValue(_T("source"), szValue, cchLen) ) continue;
+				for ( int i = 0; i < count; i++ ) {
+					CDialogBuilder builder;
+					if( m_pstrtype != NULL ) { // 使用资源dll，从资源中读取
+						WORD id = (WORD)_tcstol(szValue, &pstr, 10); 
+						pControl = builder.Create((UINT)id, m_pstrtype, m_pCallback, pManager, pParent);
+					}
+					else {
+						pControl = builder.Create((LPCTSTR)szValue, (UINT)0, m_pCallback, pManager, pParent);
+					}
+				}
+				continue;
 			}
-			// User-supplied control factory
-			if( pControl == NULL && m_pCallback != NULL ) {
-				pControl = m_pCallback->CreateControl(pstrClass);
+			else {
+				SIZE_T cchLen = _tcslen(pstrClass);
+				switch( cchLen ) {
+	    case 4:
+		    if( _tcscmp(pstrClass, _T("Edit")) == 0 )                   pControl = new CEditUI;
+		    else if( _tcscmp(pstrClass, _T("List")) == 0 )              pControl = new CListUI;
+		    else if( _tcscmp(pstrClass, _T("Text")) == 0 )              pControl = new CTextUI;
+		    break;
+	    case 5:
+		    if( _tcscmp(pstrClass, _T("Combo")) == 0 )                  pControl = new CComboUI;
+		    else if( _tcscmp(pstrClass, _T("Label")) == 0 )             pControl = new CLabelUI;
+		    break;
+	    case 6:
+		    if( _tcscmp(pstrClass, _T("Button")) == 0 )                 pControl = new CButtonUI;
+		    else if( _tcscmp(pstrClass, _T("Option")) == 0 )            pControl = new COptionUI;
+		    else if( _tcscmp(pstrClass, _T("Slider")) == 0 )            pControl = new CSliderUI;
+		    break;
+	    case 7:
+		    if( _tcscmp(pstrClass, _T("Control")) == 0 )                pControl = new CControlUI;
+		    else if(_tcscmp(pstrClass, _T("IconBox")) == 0)             pControl = new CIconBoxUI;
+		    else if( _tcscmp(pstrClass, _T("ActiveX")) == 0 )           pControl = new CActiveXUI;
+		    break;
+	    case 8:
+		    if( _tcscmp(pstrClass, _T("Progress")) == 0 )               pControl = new CProgressUI;
+		    else if(  _tcscmp(pstrClass, _T("RichEdit")) == 0 )         pControl = new CRichEditUI;
+		    break;
+	    case 9:
+		    if( _tcscmp(pstrClass, _T("Container")) == 0 )              pControl = new CContainerUI;
+		    else if( _tcscmp(pstrClass, _T("TabLayout")) == 0 )         pControl = new CTabLayoutUI;
+		    else if( _tcscmp(pstrClass, _T("ScrollBar")) == 0 )         pControl = new CScrollBarUI; 
+		    break;
+	    case 10:
+		    if( _tcscmp(pstrClass, _T("ListHeader")) == 0 )             pControl = new CListHeaderUI;
+		    else if( _tcscmp(pstrClass, _T("TileLayout")) == 0 )        pControl = new CTileLayoutUI;
+		    break;
+	    case 12:
+		    if( _tcscmp(pstrClass, _T("DialogLayout")) == 0 )           pControl = new CDialogLayoutUI;
+		    break;
+	    case 14:
+		    if( _tcscmp(pstrClass, _T("VerticalLayout")) == 0 )         pControl = new CVerticalLayoutUI;
+		    else if( _tcscmp(pstrClass, _T("ListHeaderItem")) == 0 )    pControl = new CListHeaderItemUI;
+		    break;
+	    case 15:
+		    if( _tcscmp(pstrClass, _T("ListTextElement")) == 0 )        pControl = new CListTextElementUI;
+		    break;
+	    case 16:
+		    if( _tcscmp(pstrClass, _T("HorizontalLayout")) == 0 )       pControl = new CHorizontalLayoutUI;
+		    else if( _tcscmp(pstrClass, _T("ListLabelElement")) == 0 )  pControl = new CListLabelElementUI;
+		    break;
+	    case 20:
+		    if( _tcscmp(pstrClass, _T("ListContainerElement")) == 0 )   pControl = new CListContainerElementUI;
+		    break;
+				}
+				// User-supplied control factory
+				if( pControl == NULL ) {
+					CStdPtrArray* pPlugins = CPaintManagerUI::GetPlugins();
+					LPCREATECONTROL lpCreateControl = NULL;
+					for( int i = 0; i < pPlugins->GetSize(); ++i ) {
+						lpCreateControl = (LPCREATECONTROL)pPlugins->GetAt(i);
+						if( lpCreateControl != NULL ) {
+							pControl = lpCreateControl(pstrClass);
+							if( pControl != NULL ) break;
+						}
+					}
+				}
+				if( pControl == NULL && m_pCallback != NULL ) {
+					pControl = m_pCallback->CreateControl(pstrClass);
+				}
 			}
+
 			ASSERT(pControl);
 			if( pControl == NULL ) continue;
 

@@ -2,8 +2,7 @@
 #define __UIRICHEDIT_H__
 
 #pragma once
-
-#include "OleIdl.h"
+#include "oleIdl.h"
 
 namespace DuiLib {
 

@@ -1,6 +1,13 @@
 #include "StdAfx.h"
 #include <zmouse.h>
 
+DECLARE_HANDLE(HZIP);	// An HZIP identifies a zip file that has been opened
+typedef DWORD ZRESULT;
+#define OpenZip OpenZipU
+#define CloseZip(hz) CloseZipU(hz)
+extern HZIP OpenZipU(void *z,unsigned int len,DWORD flags);
+extern ZRESULT CloseZipU(HZIP hz);
+
 namespace DuiLib {
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -24,14 +31,12 @@ namespace DuiLib {
 		CControlUI* pLast;
 		bool bForward;
 		bool bNextIsIt;
-
 	} FINDTABINFO;
 
 	typedef struct tagFINDSHORTCUT
 	{
 		TCHAR ch;
 		bool bPickNext;
-
 	} FINDSHORTCUT;
 
 	typedef struct tagTIMERINFO
@@ -41,7 +46,6 @@ namespace DuiLib {
 		HWND hWnd;
 		UINT uWinTimer;
 		bool bKilled;
-
 	} TIMERINFO;
 
 
@@ -52,7 +56,13 @@ namespace DuiLib {
 	HINSTANCE CPaintManagerUI::m_hResourceInstance = NULL;
 	CStdString CPaintManagerUI::m_pStrResourcePath;
 	CStdString CPaintManagerUI::m_pStrResourceZip;
+	bool CPaintManagerUI::m_bCachedResourceZip = false;
+	HANDLE CPaintManagerUI::m_hResourceZip = NULL;
+	short CPaintManagerUI::m_H = 180;
+	short CPaintManagerUI::m_S = 100;
+	short CPaintManagerUI::m_L = 100;
 	CStdPtrArray CPaintManagerUI::m_aPreMessages;
+	CStdPtrArray CPaintManagerUI::m_aPlugins;
 
 
 	CPaintManagerUI::CPaintManagerUI() :
@@ -81,11 +91,11 @@ namespace DuiLib {
 		m_bAlphaBackground(false),
 		m_pParentResourcePM(NULL)
 	{
-		m_dwDefalutDisabledColor = 0xFFA7A6AA;
-		m_dwDefalutFontColor = 0xFF000000;
-		m_dwDefalutLinkFontColor = 0xFF0000FF;
-		m_dwDefalutLinkHoverFontColor = 0xFFD3215F;
-		m_dwDefalutSelectedBkColor = 0xFFBAE4FF;
+		m_dwDefaultDisabledColor = 0xFFA7A6AA;
+		m_dwDefaultFontColor = 0xFF000000;
+		m_dwDefaultLinkFontColor = 0xFF0000FF;
+		m_dwDefaultLinkHoverFontColor = 0xFFD3215F;
+		m_dwDefaultSelectedBkColor = 0xFFBAE4FF;
 		LOGFONT lf = { 0 };
 		::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
 		lf.lfCharSet = DEFAULT_CHARSET;
@@ -121,6 +131,7 @@ namespace DuiLib {
 	{
 		// Delete the control-tree structures
 		for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
+		for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) delete static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
 		m_mNameHash.Resize(0);
 		delete m_pRoot;
 
@@ -164,7 +175,7 @@ namespace DuiLib {
 		::GetModuleFileName(m_hInstance, tszModule, MAX_PATH);
 		CStdString sInstancePath = tszModule;
 		int pos = sInstancePath.ReverseFind(_T('\\'));
-		sInstancePath = sInstancePath.Left(pos);
+		if( pos >= 0 ) sInstancePath = sInstancePath.Left(pos + 1);
 		return sInstancePath;
 	}
 
@@ -191,6 +202,16 @@ namespace DuiLib {
 		return m_pStrResourceZip;
 	}
 
+	bool CPaintManagerUI::IsCachedResourceZip()
+	{
+		return m_bCachedResourceZip;
+	}
+
+	HANDLE CPaintManagerUI::GetResourceZipHandle()
+	{
+		return m_hResourceZip;
+	}
+
 	void CPaintManagerUI::SetInstance(HINSTANCE hInst)
 	{
 		m_hInstance = hInst;
@@ -214,9 +235,82 @@ namespace DuiLib {
 		if( cEnd != _T('\\') && cEnd != _T('/') ) m_pStrResourcePath += _T('\\');
 	}
 
-	void CPaintManagerUI::SetResourceZip(LPCTSTR pStrPath)
+	void CPaintManagerUI::SetResourceZip(LPVOID pVoid, unsigned int len)
 	{
+		if( m_pStrResourceZip == _T("membuffer") ) return;
+		if( m_bCachedResourceZip && m_hResourceZip != NULL ) {
+			CloseZip((HZIP)m_hResourceZip);
+			m_hResourceZip = NULL;
+		}
+		m_pStrResourceZip = _T("membuffer");
+		m_bCachedResourceZip = true;
+		if( m_bCachedResourceZip ) 
+			m_hResourceZip = (HANDLE)OpenZip(pVoid, len, 3);
+	}
+
+	void CPaintManagerUI::SetResourceZip(LPCTSTR pStrPath, bool bCachedResourceZip)
+	{
+		if( m_pStrResourceZip == pStrPath && m_bCachedResourceZip == bCachedResourceZip ) return;
+		if( m_bCachedResourceZip && m_hResourceZip != NULL ) {
+			CloseZip((HZIP)m_hResourceZip);
+			m_hResourceZip = NULL;
+		}
 		m_pStrResourceZip = pStrPath;
+		m_bCachedResourceZip = bCachedResourceZip;
+		if( m_bCachedResourceZip ) {
+			CStdString sFile = CPaintManagerUI::GetResourcePath();
+			sFile += CPaintManagerUI::GetResourceZip();
+			m_hResourceZip = (HANDLE)OpenZip((void*)sFile.GetData(), 0, 2);
+		}
+	}
+
+	void CPaintManagerUI::GetHSL(short* H, short* S, short* L)
+	{
+		*H = m_H;
+		*S = m_S;
+		*L = m_L;
+	}
+
+	void CPaintManagerUI::SetHSL(bool bUseHSL, short H, short S, short L)
+	{
+		if( H == m_H && S == m_S && L == m_L ) return;
+		m_H = CLAMP(H, 0, 360);
+		m_S = CLAMP(S, 0, 200);
+		m_L = CLAMP(L, 0, 200);
+		for( int i = 0; i < m_aPreMessages.GetSize(); i++ ) {
+			CPaintManagerUI* pManager = static_cast<CPaintManagerUI*>(m_aPreMessages[i]);
+			if( pManager != NULL && pManager->GetRoot() != NULL )
+				pManager->GetRoot()->Invalidate();
+		}
+	}
+
+	void CPaintManagerUI::ReloadSkin()
+	{
+		for( int i = 0; i < m_aPreMessages.GetSize(); i++ ) {
+			CPaintManagerUI* pManager = static_cast<CPaintManagerUI*>(m_aPreMessages[i]);
+			pManager->ReloadAllImages();
+		}
+	}
+
+	bool CPaintManagerUI::LoadPlugin(LPCTSTR pstrModuleName)
+	{
+		ASSERT( !::IsBadStringPtr(pstrModuleName,-1) || pstrModuleName == NULL );
+		if( pstrModuleName == NULL ) return false;
+		HMODULE hModule = ::LoadLibrary(pstrModuleName);
+		if( hModule != NULL ) {
+			LPCREATECONTROL lpCreateControl = (LPCREATECONTROL)::GetProcAddress(hModule, "CreateControl");
+			if( lpCreateControl != NULL ) {
+				if( m_aPlugins.Find(lpCreateControl) >= 0 ) return true;
+				m_aPlugins.Add(lpCreateControl);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	CStdPtrArray* CPaintManagerUI::GetPlugins()
+	{
+		return &m_aPlugins;
 	}
 
 	HWND CPaintManagerUI::GetPaintWindow() const
@@ -364,44 +458,44 @@ namespace DuiLib {
 			}
 		}
 		switch( uMsg ) {
-	case WM_KEYDOWN:
-		{
-			// Tabbing between controls
-			if( wParam == VK_TAB ) {
-				if( m_pFocus && m_pFocus->IsVisible() && m_pFocus->IsEnabled() && _tcsstr(m_pFocus->GetClass(), _T("RichEditUI")) != NULL ) {
-					if( static_cast<CRichEditUI*>(m_pFocus)->IsWantTab() ) return false;
-				}
-				SetNextTabControl(::GetKeyState(VK_SHIFT) >= 0);
-				return true;
-			}
-		}
-		break;
-	case WM_SYSCHAR:
-		{
-			// Handle ALT-shortcut key-combinations
-			FINDSHORTCUT fs = { 0 };
-			fs.ch = toupper((int)wParam);
-			CControlUI* pControl = m_pRoot->FindControl(__FindControlFromShortcut, &fs, UIFIND_ENABLED | UIFIND_ME_FIRST | UIFIND_TOP_FIRST);
-			if( pControl != NULL ) {
-				pControl->SetFocus();
-				pControl->Activate();
-				return true;
-			}
-		}
-		break;
-	case WM_SYSKEYDOWN:
-		{
-			if( m_pFocus != NULL ) {
-				TEventUI event = { 0 };
-				event.Type = UIEVENT_SYSKEY;
-				event.chKey = (TCHAR)wParam;
-				event.ptMouse = m_ptLastMousePos;
-				event.wKeyState = MapKeyState();
-				event.dwTimestamp = ::GetTickCount();
-				m_pFocus->Event(event);
-			}
-		}
-		break;
+    case WM_KEYDOWN:
+	    {
+		    // Tabbing between controls
+		    if( wParam == VK_TAB ) {
+			    if( m_pFocus && m_pFocus->IsVisible() && m_pFocus->IsEnabled() && _tcsstr(m_pFocus->GetClass(), _T("RichEditUI")) != NULL ) {
+				    if( static_cast<CRichEditUI*>(m_pFocus)->IsWantTab() ) return false;
+			    }
+			    SetNextTabControl(::GetKeyState(VK_SHIFT) >= 0);
+			    return true;
+		    }
+	    }
+	    break;
+    case WM_SYSCHAR:
+	    {
+		    // Handle ALT-shortcut key-combinations
+		    FINDSHORTCUT fs = { 0 };
+		    fs.ch = toupper((int)wParam);
+		    CControlUI* pControl = m_pRoot->FindControl(__FindControlFromShortcut, &fs, UIFIND_ENABLED | UIFIND_ME_FIRST | UIFIND_TOP_FIRST);
+		    if( pControl != NULL ) {
+			    pControl->SetFocus();
+			    pControl->Activate();
+			    return true;
+		    }
+	    }
+	    break;
+    case WM_SYSKEYDOWN:
+	    {
+		    if( m_pFocus != NULL ) {
+			    TEventUI event = { 0 };
+			    event.Type = UIEVENT_SYSKEY;
+			    event.chKey = (TCHAR)wParam;
+			    event.ptMouse = m_ptLastMousePos;
+			    event.wKeyState = MapKeyState();
+			    event.dwTimestamp = ::GetTickCount();
+			    m_pFocus->Event(event);
+		    }
+	    }
+	    break;
 		}
 		return false;
 	}
@@ -420,6 +514,19 @@ namespace DuiLib {
 		//#endif
 		// Not ready yet?
 		if( m_hWndPaint == NULL ) return false;
+
+		TNotifyUI* pMsg = NULL;
+		while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
+			m_aAsyncNotify.Remove(0);
+			if( pMsg->pSender != NULL ) {
+				if( pMsg->pSender->OnNotify ) pMsg->pSender->OnNotify(pMsg);
+			}
+			for( int j = 0; j < m_aNotifiers.GetSize(); j++ ) {
+				static_cast<INotifyUI*>(m_aNotifiers[j])->Notify(*pMsg);
+			}
+			delete pMsg;
+		}
+
 		// Cycle through listeners
 		for( int i = 0; i < m_aMessageFilters.GetSize(); i++ ) 
 		{
@@ -432,526 +539,543 @@ namespace DuiLib {
 		}
 		// Custom handling of events
 		switch( uMsg ) {
-	case WM_APP + 1:
-		{
-			// Delayed control-tree cleanup. See AttachDialog() for details.
-			for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
-			m_aDelayedCleanup.Empty();
-		}
-		break;
-	case WM_CLOSE:
-		{
-			// Make sure all matching "closing" events are sent
-			TEventUI event = { 0 };
-			event.ptMouse = m_ptLastMousePos;
-			event.dwTimestamp = ::GetTickCount();
-			if( m_pEventHover != NULL ) {
-				event.Type = UIEVENT_MOUSELEAVE;
-				event.pSender = m_pEventHover;
-				m_pEventHover->Event(event);
-			}
-			if( m_pEventClick != NULL ) {
-				event.Type = UIEVENT_BUTTONUP;
-				event.pSender = m_pEventClick;
-				m_pEventClick->Event(event);
-			}
+    case WM_APP + 1:
+	    {
+		    for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) 
+			    delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
+		    m_aDelayedCleanup.Empty();
+	    }
+	    break;
+    case WM_CLOSE:
+	    {
+		    // Make sure all matching "closing" events are sent
+		    TEventUI event = { 0 };
+		    event.ptMouse = m_ptLastMousePos;
+		    event.dwTimestamp = ::GetTickCount();
+		    if( m_pEventHover != NULL ) {
+			    event.Type = UIEVENT_MOUSELEAVE;
+			    event.pSender = m_pEventHover;
+			    m_pEventHover->Event(event);
+		    }
+		    if( m_pEventClick != NULL ) {
+			    event.Type = UIEVENT_BUTTONUP;
+			    event.pSender = m_pEventClick;
+			    m_pEventClick->Event(event);
+		    }
 
-			SetFocus(NULL);
+		    SetFocus(NULL);
 
-			// Hmmph, the usual Windows tricks to avoid
-			// focus loss...
-			HWND hwndParent = GetWindowOwner(m_hWndPaint);
-			if( hwndParent != NULL ) ::SetFocus(hwndParent);
-		}
-		break;
-	case WM_ERASEBKGND:
-		{
-			// We'll do the painting here...
-			lRes = 1;
-		}
-		return true;
-	case WM_PAINT:
-		{
-			// Should we paint?
-			RECT rcPaint = { 0 };
-			if( !::GetUpdateRect(m_hWndPaint, &rcPaint, FALSE) ) return true;
-			// Do we need to resize anything?
-			// This is the time where we layout the controls on the form.
-			// We delay this even from the WM_SIZE messages since resizing can be
-			// a very expensize operation.
-			if( m_bUpdateNeeded ) {
-				m_bUpdateNeeded = false;
-				RECT rcClient = { 0 };
-				::GetClientRect(m_hWndPaint, &rcClient);
-				if( !::IsRectEmpty(&rcClient) ) {
-					if( m_pRoot->IsUpdateNeeded() ) {
-						m_pRoot->SetPos(rcClient);
-						if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
-						if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
-						if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
-						if( m_hbmpBackground != NULL ) ::DeleteObject(m_hbmpBackground);
-						m_hDcOffscreen = NULL;
-						m_hDcBackground = NULL;
-						m_hbmpOffscreen = NULL;
-						m_hbmpBackground = NULL;
-					}
-					else {
-						CControlUI* pControl = NULL;
-						while( pControl = m_pRoot->FindControl(__FindControlFromUpdate, NULL, UIFIND_VISIBLE | UIFIND_ME_FIRST) ) {
-							pControl->SetPos( pControl->GetPos() );
-						}
-					}
-					// We'll want to notify the window when it is first initialized
-					// with the correct layout. The window form would take the time
-					// to submit swipes/animations.
-					if( m_bFirstLayout ) {
-						m_bFirstLayout = false;
-						SendNotify(m_pRoot, _T("windowinit"));
-					}
-				}
-			}
-			// Set focus to first control?
-			if( m_bFocusNeeded ) {
-				SetNextTabControl();
-			}
-			//
-			// Render screen
-			//
-			// Prepare offscreen bitmap?
-			if( m_bOffscreenPaint && m_hbmpOffscreen == NULL )
-			{
-				RECT rcClient = { 0 };
-				::GetClientRect(m_hWndPaint, &rcClient);
-				m_hDcOffscreen = ::CreateCompatibleDC(m_hDcPaint);
-				m_hbmpOffscreen = ::CreateCompatibleBitmap(m_hDcPaint, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top); 
-				ASSERT(m_hDcOffscreen);
-				ASSERT(m_hbmpOffscreen);
-			}
-			// Begin Windows paint
-			PAINTSTRUCT ps = { 0 };
-			::BeginPaint(m_hWndPaint, &ps);
-			if( m_bOffscreenPaint )
-			{
-				HBITMAP hOldBitmap = (HBITMAP) ::SelectObject(m_hDcOffscreen, m_hbmpOffscreen);
-				int iSaveDC = ::SaveDC(m_hDcOffscreen);
-				if( m_bAlphaBackground ) {
-					if( m_hbmpBackground == NULL ) {
-						RECT rcClient = { 0 };
-						::GetClientRect(m_hWndPaint, &rcClient);
-						m_hDcBackground = ::CreateCompatibleDC(m_hDcPaint);;
-						m_hbmpBackground = ::CreateCompatibleBitmap(m_hDcPaint, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top); 
-						ASSERT(m_hDcBackground);
-						ASSERT(m_hbmpBackground);
-						::SelectObject(m_hDcBackground, m_hbmpBackground);
-						::BitBlt(m_hDcBackground, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
-							ps.rcPaint.bottom - ps.rcPaint.top, ps.hdc, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
-					}
-					else
-						::SelectObject(m_hDcBackground, m_hbmpBackground);
-					::BitBlt(m_hDcOffscreen, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
-						ps.rcPaint.bottom - ps.rcPaint.top, m_hDcBackground, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
-				}
-				m_pRoot->DoPaint(m_hDcOffscreen, ps.rcPaint);
-				for( int i = 0; i < m_aPostPaintControls.GetSize(); i++ ) {
-					CControlUI* pPostPaintControl = static_cast<CControlUI*>(m_aPostPaintControls[i]);
-					pPostPaintControl->DoPostPaint(m_hDcOffscreen, ps.rcPaint);
-				}
-				::RestoreDC(m_hDcOffscreen, iSaveDC);
-				::BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
-					ps.rcPaint.bottom - ps.rcPaint.top, m_hDcOffscreen, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
-				::SelectObject(m_hDcOffscreen, hOldBitmap);
+		    // Hmmph, the usual Windows tricks to avoid
+		    // focus loss...
+		    HWND hwndParent = GetWindowOwner(m_hWndPaint);
+		    if( hwndParent != NULL ) ::SetFocus(hwndParent);
+	    }
+	    break;
+    case WM_ERASEBKGND:
+	    {
+		    // We'll do the painting here...
+		    lRes = 1;
+	    }
+	    return true;
+    case WM_PAINT:
+	    {
+		    // Should we paint?
+		    RECT rcPaint = { 0 };
+		    if( !::GetUpdateRect(m_hWndPaint, &rcPaint, FALSE) ) return true;
+		    if( m_pRoot == NULL ) {
+			    PAINTSTRUCT ps = { 0 };
+			    ::BeginPaint(m_hWndPaint, &ps);
+			    ::EndPaint(m_hWndPaint, &ps);
+			    return true;
+		    }            
+		    // Do we need to resize anything?
+		    // This is the time where we layout the controls on the form.
+		    // We delay this even from the WM_SIZE messages since resizing can be
+		    // a very expensize operation.
+		    if( m_bUpdateNeeded ) {
+			    m_bUpdateNeeded = false;
+			    RECT rcClient = { 0 };
+			    ::GetClientRect(m_hWndPaint, &rcClient);
+			    if( !::IsRectEmpty(&rcClient) ) {
+				    if( m_pRoot->IsUpdateNeeded() ) {
+					    m_pRoot->SetPos(rcClient);
+					    if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
+					    if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
+					    if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
+					    if( m_hbmpBackground != NULL ) ::DeleteObject(m_hbmpBackground);
+					    m_hDcOffscreen = NULL;
+					    m_hDcBackground = NULL;
+					    m_hbmpOffscreen = NULL;
+					    m_hbmpBackground = NULL;
+				    }
+				    else {
+					    CControlUI* pControl = NULL;
+					    while( pControl = m_pRoot->FindControl(__FindControlFromUpdate, NULL, UIFIND_VISIBLE | UIFIND_ME_FIRST) ) {
+						    pControl->SetPos( pControl->GetPos() );
+					    }
+				    }
+				    // We'll want to notify the window when it is first initialized
+				    // with the correct layout. The window form would take the time
+				    // to submit swipes/animations.
+				    if( m_bFirstLayout ) {
+					    m_bFirstLayout = false;
+					    SendNotify(m_pRoot, _T("windowinit"),  0, 0, false);
+				    }
+			    }
+		    }
+		    // Set focus to first control?
+		    if( m_bFocusNeeded ) {
+			    SetNextTabControl();
+		    }
+		    //
+		    // Render screen
+		    //
+		    // Prepare offscreen bitmap?
+		    if( m_bOffscreenPaint && m_hbmpOffscreen == NULL )
+		    {
+			    RECT rcClient = { 0 };
+			    ::GetClientRect(m_hWndPaint, &rcClient);
+			    m_hDcOffscreen = ::CreateCompatibleDC(m_hDcPaint);
+			    m_hbmpOffscreen = ::CreateCompatibleBitmap(m_hDcPaint, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top); 
+			    ASSERT(m_hDcOffscreen);
+			    ASSERT(m_hbmpOffscreen);
+		    }
+		    // Begin Windows paint
+		    PAINTSTRUCT ps = { 0 };
+		    ::BeginPaint(m_hWndPaint, &ps);
+		    if( m_bOffscreenPaint )
+		    {
+			    HBITMAP hOldBitmap = (HBITMAP) ::SelectObject(m_hDcOffscreen, m_hbmpOffscreen);
+			    int iSaveDC = ::SaveDC(m_hDcOffscreen);
+			    if( m_bAlphaBackground ) {
+				    if( m_hbmpBackground == NULL ) {
+					    RECT rcClient = { 0 };
+					    ::GetClientRect(m_hWndPaint, &rcClient);
+					    m_hDcBackground = ::CreateCompatibleDC(m_hDcPaint);;
+					    m_hbmpBackground = ::CreateCompatibleBitmap(m_hDcPaint, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top); 
+					    ASSERT(m_hDcBackground);
+					    ASSERT(m_hbmpBackground);
+					    ::SelectObject(m_hDcBackground, m_hbmpBackground);
+					    ::BitBlt(m_hDcBackground, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
+						    ps.rcPaint.bottom - ps.rcPaint.top, ps.hdc, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
+				    }
+				    else
+					    ::SelectObject(m_hDcBackground, m_hbmpBackground);
+				    ::BitBlt(m_hDcOffscreen, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
+					    ps.rcPaint.bottom - ps.rcPaint.top, m_hDcBackground, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
+			    }
+			    m_pRoot->DoPaint(m_hDcOffscreen, ps.rcPaint);
+			    for( int i = 0; i < m_aPostPaintControls.GetSize(); i++ ) {
+				    CControlUI* pPostPaintControl = static_cast<CControlUI*>(m_aPostPaintControls[i]);
+				    pPostPaintControl->DoPostPaint(m_hDcOffscreen, ps.rcPaint);
+			    }
+			    ::RestoreDC(m_hDcOffscreen, iSaveDC);
+			    ::BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
+				    ps.rcPaint.bottom - ps.rcPaint.top, m_hDcOffscreen, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
+			    ::SelectObject(m_hDcOffscreen, hOldBitmap);
 
-				if( m_bShowUpdateRect ) {
-					HPEN hOldPen = (HPEN)::SelectObject(ps.hdc, m_hUpdateRectPen);
-					::SelectObject(ps.hdc, ::GetStockObject(HOLLOW_BRUSH));
-					::Rectangle(ps.hdc, rcPaint.left, rcPaint.top, rcPaint.right, rcPaint.bottom);
-					::SelectObject(ps.hdc, hOldPen);
-				}
-			}
-			else
-			{
-				// A standard paint job
-				int iSaveDC = ::SaveDC(ps.hdc);
-				m_pRoot->DoPaint(ps.hdc, ps.rcPaint);
-				::RestoreDC(ps.hdc, iSaveDC);
-			}
-			// All Done!
-			::EndPaint(m_hWndPaint, &ps);
-		}
-		// If any of the painting requested a resize again, we'll need
-		// to invalidate the entire window once more.
-		if( m_bUpdateNeeded ) {
-			::InvalidateRect(m_hWndPaint, NULL, FALSE);
-		}
-		return true;
-	case WM_PRINTCLIENT:
-		{
-			RECT rcClient;
-			::GetClientRect(m_hWndPaint, &rcClient);
-			HDC hDC = (HDC) wParam;
-			int save = ::SaveDC(hDC);
-			m_pRoot->DoPaint(hDC, rcClient);
-			// Check for traversing children. The crux is that WM_PRINT will assume
-			// that the DC is positioned at frame coordinates and will paint the child
-			// control at the wrong position. We'll simulate the entire thing instead.
-			if( (lParam & PRF_CHILDREN) != 0 ) {
-				HWND hWndChild = ::GetWindow(m_hWndPaint, GW_CHILD);
-				while( hWndChild != NULL ) {
-					RECT rcPos = { 0 };
-					::GetWindowRect(hWndChild, &rcPos);
-					::MapWindowPoints(HWND_DESKTOP, m_hWndPaint, reinterpret_cast<LPPOINT>(&rcPos), 2);
-					::SetWindowOrgEx(hDC, -rcPos.left, -rcPos.top, NULL);
-					// NOTE: We use WM_PRINT here rather than the expected WM_PRINTCLIENT
-					//       since the latter will not print the nonclient correctly for
-					//       EDIT controls.
-					::SendMessage(hWndChild, WM_PRINT, wParam, lParam | PRF_NONCLIENT);
-					hWndChild = ::GetWindow(hWndChild, GW_HWNDNEXT);
-				}
-			}
-			::RestoreDC(hDC, save);
-		}
-		break;
-	case WM_GETMINMAXINFO:
-		{
-			LPMINMAXINFO lpMMI = (LPMINMAXINFO) lParam;
-			if( m_szMinWindow.cx > 0 ) lpMMI->ptMinTrackSize.x = m_szMinWindow.cx;
-			if( m_szMinWindow.cy > 0 ) lpMMI->ptMinTrackSize.y = m_szMinWindow.cy;
-			if( m_szMaxWindow.cx > 0 ) lpMMI->ptMaxTrackSize.x = m_szMaxWindow.cx;
-			if( m_szMaxWindow.cy > 0 ) lpMMI->ptMaxTrackSize.y = m_szMaxWindow.cy;
-		}
-		break;
-	case WM_SIZE:
-		{
-			if( m_pFocus != NULL ) {
-				TEventUI event = { 0 };
-				event.Type = UIEVENT_WINDOWSIZE;
-				event.dwTimestamp = ::GetTickCount();
-				m_pFocus->Event(event);
-			}
-			if( m_pRoot != NULL ) m_pRoot->NeedUpdate();
-		}
-		return true;
-	case WM_TIMER:
-		{
-			for( int i = 0; i < m_aTimers.GetSize(); i++ ) {
-				const TIMERINFO* pTimer = static_cast<TIMERINFO*>(m_aTimers[i]);
-				if( pTimer->hWnd == m_hWndPaint && pTimer->uWinTimer == LOWORD(wParam) && pTimer->bKilled == false) {
-					TEventUI event = { 0 };
-					event.Type = UIEVENT_TIMER;
-					event.wParam = pTimer->nLocalID;
-					event.dwTimestamp = ::GetTickCount();
-					pTimer->pSender->Event(event);
-					break;
-				}
-			}
-		}
-		break;
-	case WM_MOUSEHOVER:
-		{
-			m_bMouseTracking = false;
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-			CControlUI* pHover = FindControl(pt);
-			if( pHover == NULL ) break;
-			// Generate mouse hover event
-			if( m_pEventHover != NULL ) {
-				TEventUI event = { 0 };
-				event.ptMouse = pt;
-				event.Type = UIEVENT_MOUSEHOVER;
-				event.pSender = pHover;
-				event.dwTimestamp = ::GetTickCount();
-				m_pEventHover->Event(event);
-			}
-			// Create tooltip information
-			CStdString sToolTip = pHover->GetToolTip();
-			if( sToolTip.IsEmpty() ) return true;
-			::ZeroMemory(&m_ToolTip, sizeof(TOOLINFO));
-			m_ToolTip.cbSize = sizeof(TOOLINFO);
-			m_ToolTip.uFlags = TTF_IDISHWND;
-			m_ToolTip.hwnd = m_hWndPaint;
-			m_ToolTip.uId = (UINT_PTR) m_hWndPaint;
-			m_ToolTip.hinst = m_hInstance;
-			m_ToolTip.lpszText = const_cast<LPTSTR>( (LPCTSTR) sToolTip );
-			m_ToolTip.rect = pHover->GetPos();
-			if( m_hwndTooltip == NULL ) {
-				m_hwndTooltip = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, m_hWndPaint, NULL, m_hInstance, NULL);
-				::SendMessage(m_hwndTooltip, TTM_ADDTOOL, 0, (LPARAM) &m_ToolTip);
-			}
-			::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
-			::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
-		}
-		return true;
-	case WM_MOUSELEAVE:
-		{
-			if( m_hwndTooltip != NULL ) ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
-			if( m_bMouseTracking ) ::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) -1);
-			m_bMouseTracking = false;
-		}
-		break;
-	case WM_MOUSEMOVE:
-		{
-			// Start tracking this entire window again...
-			if( !m_bMouseTracking ) {
-				TRACKMOUSEEVENT tme = { 0 };
-				tme.cbSize = sizeof(TRACKMOUSEEVENT);
-				tme.dwFlags = TME_HOVER | TME_LEAVE;
-				tme.hwndTrack = m_hWndPaint;
-				tme.dwHoverTime = m_hwndTooltip == NULL ? 1000UL : (DWORD) ::SendMessage(m_hwndTooltip, TTM_GETDELAYTIME, TTDT_INITIAL, 0L);
-				_TrackMouseEvent(&tme);
-				m_bMouseTracking = true;
-			}
-			// Generate the appropriate mouse messages
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-			m_ptLastMousePos = pt;
-			CControlUI* pNewHover = FindControl(pt);
-			if( pNewHover != NULL && pNewHover->GetManager() != this ) break;
-			TEventUI event = { 0 };
-			event.ptMouse = pt;
-			event.dwTimestamp = ::GetTickCount();
-			if( pNewHover != m_pEventHover && m_pEventHover != NULL ) {
-				event.Type = UIEVENT_MOUSELEAVE;
-				event.pSender = pNewHover;
-				m_pEventHover->Event(event);
-				m_pEventHover = NULL;
-				if( m_hwndTooltip != NULL ) ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
-			}
-			if( pNewHover != m_pEventHover && pNewHover != NULL ) {
-				event.Type = UIEVENT_MOUSEENTER;
-				event.pSender = m_pEventHover;
-				pNewHover->Event(event);
-				m_pEventHover = pNewHover;
-			}
-			if( m_pEventClick != NULL ) {
-				event.Type = UIEVENT_MOUSEMOVE;
-				event.pSender = NULL;
-				m_pEventClick->Event(event);
-			}
-			else if( pNewHover != NULL ) {
-				event.Type = UIEVENT_MOUSEMOVE;
-				event.pSender = NULL;
-				pNewHover->Event(event);
-			}
-		}
-		break;
-	case WM_LBUTTONDOWN:
-		{
-			// We alway set focus back to our app (this helps
-			// when Win32 child windows are placed on the dialog
-			// and we need to remove them on focus change).
-			::SetFocus(m_hWndPaint);
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-			m_ptLastMousePos = pt;
-			CControlUI* pControl = FindControl(pt);
-			if( pControl == NULL ) break;
-			if( pControl->GetManager() != this ) break;
-			m_pEventClick = pControl;
-			pControl->SetFocus();
-			SetCapture();
+			    if( m_bShowUpdateRect ) {
+				    HPEN hOldPen = (HPEN)::SelectObject(ps.hdc, m_hUpdateRectPen);
+				    ::SelectObject(ps.hdc, ::GetStockObject(HOLLOW_BRUSH));
+				    ::Rectangle(ps.hdc, rcPaint.left, rcPaint.top, rcPaint.right, rcPaint.bottom);
+				    ::SelectObject(ps.hdc, hOldPen);
+			    }
+		    }
+		    else
+		    {
+			    // A standard paint job
+			    int iSaveDC = ::SaveDC(ps.hdc);
+			    m_pRoot->DoPaint(ps.hdc, ps.rcPaint);
+			    ::RestoreDC(ps.hdc, iSaveDC);
+		    }
+		    // All Done!
+		    ::EndPaint(m_hWndPaint, &ps);
+	    }
+	    // If any of the painting requested a resize again, we'll need
+	    // to invalidate the entire window once more.
+	    if( m_bUpdateNeeded ) {
+		    ::InvalidateRect(m_hWndPaint, NULL, FALSE);
+	    }
+	    return true;
+    case WM_PRINTCLIENT:
+	    {
+		    RECT rcClient;
+		    ::GetClientRect(m_hWndPaint, &rcClient);
+		    HDC hDC = (HDC) wParam;
+		    int save = ::SaveDC(hDC);
+		    m_pRoot->DoPaint(hDC, rcClient);
+		    // Check for traversing children. The crux is that WM_PRINT will assume
+		    // that the DC is positioned at frame coordinates and will paint the child
+		    // control at the wrong position. We'll simulate the entire thing instead.
+		    if( (lParam & PRF_CHILDREN) != 0 ) {
+			    HWND hWndChild = ::GetWindow(m_hWndPaint, GW_CHILD);
+			    while( hWndChild != NULL ) {
+				    RECT rcPos = { 0 };
+				    ::GetWindowRect(hWndChild, &rcPos);
+				    ::MapWindowPoints(HWND_DESKTOP, m_hWndPaint, reinterpret_cast<LPPOINT>(&rcPos), 2);
+				    ::SetWindowOrgEx(hDC, -rcPos.left, -rcPos.top, NULL);
+				    // NOTE: We use WM_PRINT here rather than the expected WM_PRINTCLIENT
+				    //       since the latter will not print the nonclient correctly for
+				    //       EDIT controls.
+				    ::SendMessage(hWndChild, WM_PRINT, wParam, lParam | PRF_NONCLIENT);
+				    hWndChild = ::GetWindow(hWndChild, GW_HWNDNEXT);
+			    }
+		    }
+		    ::RestoreDC(hDC, save);
+	    }
+	    break;
+    case WM_GETMINMAXINFO:
+	    {
+		    LPMINMAXINFO lpMMI = (LPMINMAXINFO) lParam;
+		    if( m_szMinWindow.cx > 0 ) lpMMI->ptMinTrackSize.x = m_szMinWindow.cx;
+		    if( m_szMinWindow.cy > 0 ) lpMMI->ptMinTrackSize.y = m_szMinWindow.cy;
+		    if( m_szMaxWindow.cx > 0 ) lpMMI->ptMaxTrackSize.x = m_szMaxWindow.cx;
+		    if( m_szMaxWindow.cy > 0 ) lpMMI->ptMaxTrackSize.y = m_szMaxWindow.cy;
+	    }
+	    break;
+    case WM_SIZE:
+	    {
+		    if( m_pFocus != NULL ) {
+			    TEventUI event = { 0 };
+			    event.Type = UIEVENT_WINDOWSIZE;
+			    event.pSender = m_pFocus;
+			    event.dwTimestamp = ::GetTickCount();
+			    m_pFocus->Event(event);
+		    }
+		    if( m_pRoot != NULL ) m_pRoot->NeedUpdate();
+	    }
+	    return true;
+    case WM_TIMER:
+	    {
+		    for( int i = 0; i < m_aTimers.GetSize(); i++ ) {
+			    const TIMERINFO* pTimer = static_cast<TIMERINFO*>(m_aTimers[i]);
+			    if( pTimer->hWnd == m_hWndPaint && pTimer->uWinTimer == LOWORD(wParam) && pTimer->bKilled == false) {
+				    TEventUI event = { 0 };
+				    event.Type = UIEVENT_TIMER;
+				    event.pSender = pTimer->pSender;
+				    event.wParam = pTimer->nLocalID;
+				    event.dwTimestamp = ::GetTickCount();
+				    pTimer->pSender->Event(event);
+				    break;
+			    }
+		    }
+	    }
+	    break;
+    case WM_MOUSEHOVER:
+	    {
+		    m_bMouseTracking = false;
+		    POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		    CControlUI* pHover = FindControl(pt);
+		    if( pHover == NULL ) break;
+		    // Generate mouse hover event
+		    if( m_pEventHover != NULL ) {
+			    TEventUI event = { 0 };
+			    event.ptMouse = pt;
+			    event.Type = UIEVENT_MOUSEHOVER;
+			    event.pSender = m_pEventHover;
+			    event.dwTimestamp = ::GetTickCount();
+			    m_pEventHover->Event(event);
+		    }
+		    // Create tooltip information
+		    CStdString sToolTip = pHover->GetToolTip();
+		    if( sToolTip.IsEmpty() ) return true;
+		    ::ZeroMemory(&m_ToolTip, sizeof(TOOLINFO));
+		    m_ToolTip.cbSize = sizeof(TOOLINFO);
+		    m_ToolTip.uFlags = TTF_IDISHWND;
+		    m_ToolTip.hwnd = m_hWndPaint;
+		    m_ToolTip.uId = (UINT_PTR) m_hWndPaint;
+		    m_ToolTip.hinst = m_hInstance;
+		    m_ToolTip.lpszText = const_cast<LPTSTR>( (LPCTSTR) sToolTip );
+		    m_ToolTip.rect = pHover->GetPos();
+		    if( m_hwndTooltip == NULL ) {
+			    m_hwndTooltip = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, m_hWndPaint, NULL, m_hInstance, NULL);
+			    ::SendMessage(m_hwndTooltip, TTM_ADDTOOL, 0, (LPARAM) &m_ToolTip);
+		    }
+		    ::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
+		    ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
+	    }
+	    return true;
+    case WM_MOUSELEAVE:
+	    {
+		    if( m_hwndTooltip != NULL ) ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
+		    if( m_bMouseTracking ) ::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) -1);
+		    m_bMouseTracking = false;
+	    }
+	    break;
+    case WM_MOUSEMOVE:
+	    {
+		    // Start tracking this entire window again...
+		    if( !m_bMouseTracking ) {
+			    TRACKMOUSEEVENT tme = { 0 };
+			    tme.cbSize = sizeof(TRACKMOUSEEVENT);
+			    tme.dwFlags = TME_HOVER | TME_LEAVE;
+			    tme.hwndTrack = m_hWndPaint;
+			    tme.dwHoverTime = m_hwndTooltip == NULL ? 400UL : (DWORD) ::SendMessage(m_hwndTooltip, TTM_GETDELAYTIME, TTDT_INITIAL, 0L);
+			    _TrackMouseEvent(&tme);
+			    m_bMouseTracking = true;
+		    }
+		    // Generate the appropriate mouse messages
+		    POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		    m_ptLastMousePos = pt;
+		    CControlUI* pNewHover = FindControl(pt);
+		    if( pNewHover != NULL && pNewHover->GetManager() != this ) break;
+		    TEventUI event = { 0 };
+		    event.ptMouse = pt;
+		    event.dwTimestamp = ::GetTickCount();
+		    if( pNewHover != m_pEventHover && m_pEventHover != NULL ) {
+			    event.Type = UIEVENT_MOUSELEAVE;
+			    event.pSender = m_pEventHover;
+			    m_pEventHover->Event(event);
+			    m_pEventHover = NULL;
+			    if( m_hwndTooltip != NULL ) ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
+		    }
+		    if( pNewHover != m_pEventHover && pNewHover != NULL ) {
+			    event.Type = UIEVENT_MOUSEENTER;
+			    event.pSender = pNewHover;
+			    pNewHover->Event(event);
+			    m_pEventHover = pNewHover;
+		    }
+		    if( m_pEventClick != NULL ) {
+			    event.Type = UIEVENT_MOUSEMOVE;
+			    event.pSender = m_pEventClick;
+			    m_pEventClick->Event(event);
+		    }
+		    else if( pNewHover != NULL ) {
+			    event.Type = UIEVENT_MOUSEMOVE;
+			    event.pSender = pNewHover;
+			    pNewHover->Event(event);
+		    }
+	    }
+	    break;
+    case WM_LBUTTONDOWN:
+	    {
+		    // We alway set focus back to our app (this helps
+		    // when Win32 child windows are placed on the dialog
+		    // and we need to remove them on focus change).
+		    ::SetFocus(m_hWndPaint);
+		    POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		    m_ptLastMousePos = pt;
+		    CControlUI* pControl = FindControl(pt);
+		    if( pControl == NULL ) break;
+		    if( pControl->GetManager() != this ) break;
+		    m_pEventClick = pControl;
+		    pControl->SetFocus();
+		    SetCapture();
+		    TEventUI event = { 0 };
+		    event.Type = UIEVENT_BUTTONDOWN;
+		    event.pSender = pControl;
+		    event.wParam = wParam;
+		    event.lParam = lParam;
+		    event.ptMouse = pt;
+		    event.wKeyState = (WORD)wParam;
+		    event.dwTimestamp = ::GetTickCount();
+		    pControl->Event(event);
+	    }
+	    break;
+    case WM_LBUTTONDBLCLK:
+	    {
+		    ::SetFocus(m_hWndPaint);
+		    POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		    m_ptLastMousePos = pt;
+		    CControlUI* pControl = FindControl(pt);
+		    if( pControl == NULL ) break;
+		    if( pControl->GetManager() != this ) break;
+		    SetCapture();
+		    TEventUI event = { 0 };
+		    event.Type = UIEVENT_DBLCLICK;
+		    event.pSender = pControl;
+		    event.ptMouse = pt;
+		    event.wKeyState = (WORD)wParam;
+		    event.dwTimestamp = ::GetTickCount();
+		    pControl->Event(event);
+		    m_pEventClick = pControl;
+	    }
+	    break;
+    case WM_LBUTTONUP:
+	    {
+		    POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		    m_ptLastMousePos = pt;
+		    if( m_pEventClick == NULL ) break;
+		    ReleaseCapture();
 
-			TEventUI event = { 0 };
-			event.Type = UIEVENT_BUTTONDOWN;
-			event.wParam = wParam;
-			event.lParam = lParam;
-			event.ptMouse = pt;
-			event.wKeyState = (WORD)wParam;
-			event.dwTimestamp = ::GetTickCount();
-			pControl->Event(event);
+		    TEventUI event = { 0 };
+		    event.Type = UIEVENT_BUTTONUP;
+		    event.wParam = wParam;
+		    event.lParam = lParam;
+		    event.ptMouse = pt;
+		    event.wKeyState = (WORD)wParam;
+		    event.dwTimestamp = ::GetTickCount();
+
+		    // 得到目标的对象
+		    m_pEventDst = FindControl(pt);
+		    if( m_pEventDst != NULL)
+		    {
+			    m_pEventDst->Event(event);
+			    m_pEventDst = NULL;
+		    }
+	    }
+	    break;
+    case WM_RBUTTONDOWN:
+	    {
+		    ::SetFocus(m_hWndPaint);
+		    POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		    m_ptLastMousePos = pt;
+		    CControlUI* pControl = FindControl(pt);
+		    if( pControl == NULL ) break;
+		    if( pControl->GetManager() != this ) break;
+		    pControl->SetFocus();
+		    SetCapture();
+		    TEventUI event = { 0 };
+		    event.Type = UIEVENT_RBUTTONDOWN;
+		    event.pSender = pControl;
+		    event.wParam = wParam;
+		    event.lParam = lParam;
+		    event.ptMouse = pt;
+		    event.wKeyState = (WORD)wParam;
+		    event.dwTimestamp = ::GetTickCount();
+		    pControl->Event(event);
+		    m_pEventClick = pControl;
+	    }
+	    break;
+    case WM_CONTEXTMENU:
+	    {
+		    POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		    ::ScreenToClient(m_hWndPaint, &pt);
+		    m_ptLastMousePos = pt;
+		    if( m_pEventClick == NULL ) break;
+		    ReleaseCapture();
+		    TEventUI event = { 0 };
+		    event.Type = UIEVENT_CONTEXTMENU;
+		    event.pSender = m_pEventClick;
+		    event.ptMouse = pt;
+		    event.wKeyState = (WORD)wParam;
+		    event.lParam = (LPARAM)m_pEventClick;
+		    event.dwTimestamp = ::GetTickCount();
+		    m_pEventClick->Event(event);
+		    m_pEventClick = NULL;
+	    }
+	    break;
+    case WM_MOUSEWHEEL:
+	    {
+		    POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		    ::ScreenToClient(m_hWndPaint, &pt);
+		    m_ptLastMousePos = pt;
+		    CControlUI* pControl = FindControl(pt);
+		    if( pControl == NULL ) break;
+		    if( pControl->GetManager() != this ) break;
+		    int zDelta = (int) (short) HIWORD(wParam);
+		    TEventUI event = { 0 };
+		    event.Type = UIEVENT_SCROLLWHEEL;
+		    event.pSender = pControl;
+		    event.wParam = MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
+		    event.lParam = lParam;
+		    event.wKeyState = MapKeyState();
+		    event.dwTimestamp = ::GetTickCount();
+		    pControl->Event(event);
+
+		    // Let's make sure that the scroll item below the cursor is the same as before...
+		    ::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) MAKELPARAM(m_ptLastMousePos.x, m_ptLastMousePos.y));
+	    }
+	    break;
+    case WM_CHAR:
+	    {
+		    if( m_pFocus == NULL ) break;
+		    TEventUI event = { 0 };
+		    event.Type = UIEVENT_CHAR;
+		    event.chKey = (TCHAR)wParam;
+		    event.ptMouse = m_ptLastMousePos;
+		    event.wKeyState = MapKeyState();
+		    event.dwTimestamp = ::GetTickCount();
+		    m_pFocus->Event(event);
+	    }
+	    break;
+    case WM_KEYDOWN:
+	    {
+		    if( m_pFocus == NULL ) break;
+		    TEventUI event = { 0 };
+		    event.Type = UIEVENT_KEYDOWN;
+		    event.chKey = (TCHAR)wParam;
+		    event.ptMouse = m_ptLastMousePos;
+		    event.wKeyState = MapKeyState();
+		    event.dwTimestamp = ::GetTickCount();
+		    m_pFocus->Event(event);
+		    m_pEventKey = m_pFocus;
+	    }
+	    break;
+    case WM_KEYUP:
+	    {
+		    if( m_pEventKey == NULL ) break;
+		    TEventUI event = { 0 };
+		    event.Type = UIEVENT_KEYUP;
+		    event.chKey = (TCHAR)wParam;
+		    event.ptMouse = m_ptLastMousePos;
+		    event.wKeyState = MapKeyState();
+		    event.dwTimestamp = ::GetTickCount();
+		    m_pEventKey->Event(event);
+		    m_pEventKey = NULL;
+	    }
+	    break;
+    case WM_SETCURSOR:
+	    {
+		    if( LOWORD(lParam) != HTCLIENT ) break;
+		    if( m_bMouseCapture ) return true;
+
+		    POINT pt = { 0 };
+		    ::GetCursorPos(&pt);
+		    ::ScreenToClient(m_hWndPaint, &pt);
+		    CControlUI* pControl = FindControl(pt);
+		    if( pControl == NULL ) break;
+		    if( (pControl->GetControlFlags() & UIFLAG_SETCURSOR) == 0 ) break;
+		    TEventUI event = { 0 };
+		    event.Type = UIEVENT_SETCURSOR;
+		    event.wParam = wParam;
+		    event.lParam = lParam;
+		    event.ptMouse = pt;
+		    event.wKeyState = MapKeyState();
+		    event.dwTimestamp = ::GetTickCount();
+		    pControl->Event(event);
+	    }
+	    return true;
+    case WM_NOTIFY:
+	    {
+		    LPNMHDR lpNMHDR = (LPNMHDR) lParam;
+		    if( lpNMHDR != NULL ) lRes = ::SendMessage(lpNMHDR->hwndFrom, OCM__BASE + uMsg, wParam, lParam);
+		    return true;
+	    }
+	    break;
+    case WM_COMMAND:
+	    {
+		    if( lParam == 0 ) break;
+		    HWND hWndChild = (HWND) lParam;
+		    lRes = ::SendMessage(hWndChild, OCM__BASE + uMsg, wParam, lParam);
+		    return true;
+	    }
+	    break;
+    case WM_CTLCOLOREDIT:
+    case WM_CTLCOLORSTATIC:
+	    {
+		    // Refer To: http://msdn.microsoft.com/en-us/library/bb761691(v=vs.85).aspx
+		    // Read-only or disabled edit controls do not send the WM_CTLCOLOREDIT message; instead, they send the WM_CTLCOLORSTATIC message.
+		    if( lParam == 0 ) break;
+		    HWND hWndChild = (HWND) lParam;
+		    lRes = ::SendMessage(hWndChild, OCM__BASE + uMsg, wParam, lParam);
+		    return true;
+	    }
+	    break;
+    default:
+	    break;
 		}
-		break;
 
-	case WM_LBUTTONDBLCLK:
-		{
-			::SetFocus(m_hWndPaint);
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-			m_ptLastMousePos = pt;
-			CControlUI* pControl = FindControl(pt);
-			if( pControl == NULL ) break;
-			if( pControl->GetManager() != this ) break;
-			SetCapture();
-
-			TEventUI event = { 0 };
-			event.Type = UIEVENT_DBLCLICK;
-			event.ptMouse = pt;
-			event.wKeyState = (WORD)wParam;
-			event.dwTimestamp = ::GetTickCount();
-			pControl->Event(event);
-			m_pEventClick = pControl;
-		}
-		break;
-
-	case WM_LBUTTONUP:
-		{
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-			m_ptLastMousePos = pt;
-			if( m_pEventClick == NULL ) break;
-			ReleaseCapture();
-
-			TEventUI event = { 0 };
-			event.Type = UIEVENT_BUTTONUP;
-			event.wParam = wParam;
-			event.lParam = lParam;
-			event.ptMouse = pt;
-			event.wKeyState = (WORD)wParam;
-			event.dwTimestamp = ::GetTickCount();
-
-			// 得到目标的对象
-			m_pEventDst = FindControl(pt);
-			if( m_pEventDst != NULL)
-			{
-				m_pEventDst->Event(event);
-				m_pEventDst = NULL;
+		pMsg = NULL;
+		while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
+			m_aAsyncNotify.Remove(0);
+			if( pMsg->pSender != NULL ) {
+				if( pMsg->pSender->OnNotify ) pMsg->pSender->OnNotify(pMsg);
 			}
-		}
-		break;
-	case WM_RBUTTONDOWN:
-		{
-			::SetFocus(m_hWndPaint);
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-			m_ptLastMousePos = pt;
-			CControlUI* pControl = FindControl(pt);
-			if( pControl == NULL ) break;
-			if( pControl->GetManager() != this ) break;
-			pControl->SetFocus();
-			SetCapture();
-
-			TEventUI event = { 0 };
-			event.Type = UIEVENT_RBUTTONDOWN;
-			event.wParam = wParam;
-			event.lParam = lParam;
-			event.ptMouse = pt;
-			event.wKeyState = (WORD)wParam;
-			event.dwTimestamp = ::GetTickCount();
-			pControl->Event(event);
-			m_pEventClick = pControl;
-		}
-		break;
-	case WM_CONTEXTMENU:
-		{
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-			::ScreenToClient(m_hWndPaint, &pt);
-			m_ptLastMousePos = pt;
-			if( m_pEventClick == NULL ) break;
-			ReleaseCapture();
-			TEventUI event = { 0 };
-			event.Type = UIEVENT_CONTEXTMENU;
-			event.ptMouse = pt;
-			event.wKeyState = (WORD)wParam;
-			event.lParam = (LPARAM)m_pEventClick;
-			event.dwTimestamp = ::GetTickCount();
-			m_pEventClick->Event(event);
-			m_pEventClick = NULL;
-		}
-		break;
-	case WM_MOUSEWHEEL:
-		{
-			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-			::ScreenToClient(m_hWndPaint, &pt);
-			m_ptLastMousePos = pt;
-			CControlUI* pControl = FindControl(pt);
-			if( pControl == NULL ) break;
-			if( pControl->GetManager() != this ) break;
-			int zDelta = (int) (short) HIWORD(wParam);
-			TEventUI event = { 0 };
-			event.Type = UIEVENT_SCROLLWHEEL;
-			event.pSender = pControl;
-			event.wParam = MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
-			event.lParam = lParam;
-			event.wKeyState = MapKeyState();
-			event.dwTimestamp = ::GetTickCount();
-			pControl->Event(event);
-
-			// Let's make sure that the scroll item below the cursor is the same as before...
-			::SendMessage(m_hWndPaint, WM_MOUSEMOVE, 0, (LPARAM) MAKELPARAM(m_ptLastMousePos.x, m_ptLastMousePos.y));
-		}
-		break;
-	case WM_CHAR:
-		{
-			if( m_pFocus == NULL ) break;
-			TEventUI event = { 0 };
-			event.Type = UIEVENT_CHAR;
-			event.chKey = (TCHAR)wParam;
-			event.ptMouse = m_ptLastMousePos;
-			event.wKeyState = MapKeyState();
-			event.dwTimestamp = ::GetTickCount();
-			m_pFocus->Event(event);
-		}
-		break;
-	case WM_KEYDOWN:
-		{
-			if( m_pFocus == NULL ) 
-				break;
-
-			TEventUI event = { 0 };
-			event.Type = UIEVENT_KEYDOWN;
-			event.chKey = (TCHAR)wParam;
-			event.ptMouse = m_ptLastMousePos;
-			event.wKeyState = MapKeyState();
-			event.dwTimestamp = ::GetTickCount();
-			m_pFocus->Event(event);
-			m_pEventKey = m_pFocus;
-		}
-		break;
-	case WM_KEYUP:
-		{
-			if( m_pEventKey == NULL ) break;
-			TEventUI event = { 0 };
-			event.Type = UIEVENT_KEYUP;
-			event.chKey = (TCHAR)wParam;
-			event.ptMouse = m_ptLastMousePos;
-			event.wKeyState = MapKeyState();
-			event.dwTimestamp = ::GetTickCount();
-			m_pEventKey->Event(event);
-			m_pEventKey = NULL;
-		}
-		break;
-	case WM_SETCURSOR:
-		{
-			if( LOWORD(lParam) != HTCLIENT ) break;
-			if( m_bMouseCapture ) return true;
-
-			POINT pt = { 0 };
-			::GetCursorPos(&pt);
-			::ScreenToClient(m_hWndPaint, &pt);
-			CControlUI* pControl = FindControl(pt);
-			if( pControl == NULL ) break;
-			if( (pControl->GetControlFlags() & UIFLAG_SETCURSOR) == 0 ) break;
-			TEventUI event = { 0 };
-			event.Type = UIEVENT_SETCURSOR;
-			event.wParam = wParam;
-			event.lParam = lParam;
-			event.ptMouse = pt;
-			event.wKeyState = MapKeyState();
-			event.dwTimestamp = ::GetTickCount();
-			pControl->Event(event);
-		}
-		return true;
-	case WM_NOTIFY:
-		{
-			LPNMHDR lpNMHDR = (LPNMHDR) lParam;
-			if( lpNMHDR != NULL ) lRes = ::SendMessage(lpNMHDR->hwndFrom, OCM__BASE + uMsg, wParam, lParam);
-			return true;
-		}
-		break;
-	case WM_COMMAND:
-		{
-			if( lParam == 0 ) break;
-			HWND hWndChild = (HWND) lParam;
-			lRes = ::SendMessage(hWndChild, OCM__BASE + uMsg, wParam, lParam);
-			return true;
-		}
-		break;
-	case WM_CTLCOLOREDIT:
-	case WM_CTLCOLORSTATIC:
-		{
-			// Refer To: http://msdn.microsoft.com/en-us/library/bb761691(v=vs.85).aspx
-			// Read-only or disabled edit controls do not send the WM_CTLCOLOREDIT message; instead, they send the WM_CTLCOLORSTATIC message.
-			if( lParam == 0 ) break;
-			HWND hWndChild = (HWND) lParam;
-			lRes = ::SendMessage(hWndChild, OCM__BASE + uMsg, wParam, lParam);
-			return true;
-		}
-		break;
-	default:
-		break;
+			for( int j = 0; j < m_aNotifiers.GetSize(); j++ ) {
+				static_cast<INotifyUI*>(m_aNotifiers[j])->Notify(*pMsg);
+			}
+			delete pMsg;
 		}
 
 		return false;
@@ -1007,11 +1131,15 @@ namespace DuiLib {
 		if( pControl == m_pEventHover ) m_pEventHover = NULL;
 		if( pControl == m_pEventClick ) m_pEventClick = NULL;
 		if( pControl == m_pFocus ) m_pFocus = NULL;
-
+		KillTimer(pControl);
 		const CStdString& sName = pControl->GetName();
 		if( !sName.IsEmpty() ) {
 			if( pControl == FindControl(sName) ) m_mNameHash.Remove(sName);
 		}
+		for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) {
+			TNotifyUI* pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
+			if( pMsg->pSender == pControl ) pMsg->pSender = NULL;
+		}    
 	}
 
 	bool CPaintManagerUI::AddOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl)
@@ -1099,6 +1227,14 @@ namespace DuiLib {
 			}
 		}
 		return false;
+	}
+
+	void CPaintManagerUI::Term()
+	{
+		if( m_bCachedResourceZip && m_hResourceZip != NULL ) {
+			CloseZip((HZIP)m_hResourceZip);
+			m_hResourceZip = NULL;
+		}
 	}
 
 	CControlUI* CPaintManagerUI::GetFocus() const
@@ -1214,6 +1350,20 @@ namespace DuiLib {
 			}
 		}
 		return false;
+	}
+
+	void CPaintManagerUI::KillTimer(CControlUI* pControl)
+	{
+		ASSERT(pControl!=NULL);
+		int count = m_aTimers.GetSize();
+		for( int i = 0, j = 0; i < count; i++ ) {
+			TIMERINFO* pTimer = static_cast<TIMERINFO*>(m_aTimers[i - j]);
+			if( pTimer->pSender == pControl && pTimer->hWnd == m_hWndPaint ) {
+				if( pTimer->bKilled == false ) ::KillTimer(pTimer->hWnd, pTimer->uWinTimer);
+				m_aTimers.Remove(i);
+				j++;
+			}
+		}
 	}
 
 	void CPaintManagerUI::RemoveAllTimers()
@@ -1362,23 +1512,38 @@ namespace DuiLib {
 		::PostMessage(m_hWndPaint, WM_APP + 1, 0, 0L);
 	}
 
-	void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0*/)
+	void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0*/, bool bAsync /*= false*/)
 	{
 		TNotifyUI Msg;
 		Msg.pSender = pControl;
 		Msg.sType = pstrMessage;
 		Msg.wParam = wParam;
 		Msg.lParam = lParam;
-		SendNotify(Msg);
+		SendNotify(Msg, bAsync);
 	}
 
-	void CPaintManagerUI::SendNotify(TNotifyUI& Msg)
+	void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
 	{
 		Msg.ptMouse = m_ptLastMousePos;
 		Msg.dwTimestamp = ::GetTickCount();
-		// Send to all listeners
-		for( int i = 0; i < m_aNotifiers.GetSize(); i++ ) {
-			static_cast<INotifyUI*>(m_aNotifiers[i])->Notify(Msg);
+		if( !bAsync ) {
+			// Send to all listeners
+			if( Msg.pSender != NULL ) {
+				if( Msg.pSender->OnNotify ) Msg.pSender->OnNotify(&Msg);
+			}
+			for( int i = 0; i < m_aNotifiers.GetSize(); i++ ) {
+				static_cast<INotifyUI*>(m_aNotifiers[i])->Notify(Msg);
+			}
+		}
+		else {
+			TNotifyUI *pMsg = new TNotifyUI;
+			pMsg->pSender = Msg.pSender;
+			pMsg->sType = Msg.sType;
+			pMsg->wParam = Msg.wParam;
+			pMsg->lParam = Msg.lParam;
+			pMsg->ptMouse = Msg.ptMouse;
+			pMsg->dwTimestamp = Msg.dwTimestamp;
+			m_aAsyncNotify.Add(pMsg);
 		}
 	}
 
@@ -1407,56 +1572,56 @@ namespace DuiLib {
 	DWORD CPaintManagerUI::GetDefaultDisabledColor() const
 	{
 		if( m_pParentResourcePM ) return m_pParentResourcePM->GetDefaultDisabledColor();
-		return m_dwDefalutDisabledColor;
+		return m_dwDefaultDisabledColor;
 	}
 
 	void CPaintManagerUI::SetDefaultDisabledColor(DWORD dwColor)
 	{
-		m_dwDefalutDisabledColor = dwColor;
+		m_dwDefaultDisabledColor = dwColor;
 	}
 
 	DWORD CPaintManagerUI::GetDefaultFontColor() const
 	{
 		if( m_pParentResourcePM ) return m_pParentResourcePM->GetDefaultFontColor();
-		return m_dwDefalutFontColor;
+		return m_dwDefaultFontColor;
 	}
 
 	void CPaintManagerUI::SetDefaultFontColor(DWORD dwColor)
 	{
-		m_dwDefalutFontColor = dwColor;
+		m_dwDefaultFontColor = dwColor;
 	}
 
 	DWORD CPaintManagerUI::GetDefaultLinkFontColor() const
 	{
 		if( m_pParentResourcePM ) return m_pParentResourcePM->GetDefaultLinkFontColor();
-		return m_dwDefalutLinkFontColor;
+		return m_dwDefaultLinkFontColor;
 	}
 
 	void CPaintManagerUI::SetDefaultLinkFontColor(DWORD dwColor)
 	{
-		m_dwDefalutLinkFontColor = dwColor;
+		m_dwDefaultLinkFontColor = dwColor;
 	}
 
 	DWORD CPaintManagerUI::GetDefaultLinkHoverFontColor() const
 	{
 		if( m_pParentResourcePM ) return m_pParentResourcePM->GetDefaultLinkHoverFontColor();
-		return m_dwDefalutLinkHoverFontColor;
+		return m_dwDefaultLinkHoverFontColor;
 	}
 
 	void CPaintManagerUI::SetDefaultLinkHoverFontColor(DWORD dwColor)
 	{
-		m_dwDefalutLinkHoverFontColor = dwColor;
+		m_dwDefaultLinkHoverFontColor = dwColor;
 	}
 
 	DWORD CPaintManagerUI::GetDefaultSelectedBkColor() const
 	{
 		if( m_pParentResourcePM ) return m_pParentResourcePM->GetDefaultSelectedBkColor();
-		return m_dwDefalutSelectedBkColor;
+		return m_dwDefaultSelectedBkColor;
 	}
 
 	void CPaintManagerUI::SetDefaultSelectedBkColor(DWORD dwColor)
 	{
-		m_dwDefalutSelectedBkColor = dwColor;
+		m_dwDefaultSelectedBkColor = dwColor;
 	}
 
 	TFontInfo* CPaintManagerUI::GetDefaultFontInfo()
@@ -1738,10 +1903,12 @@ namespace DuiLib {
 			}
 		}
 		else {
-			data = CRenderEngine::LoadImage(bitmap, type, mask);
+			data = CRenderEngine::LoadImage(bitmap, NULL, mask);
 		}
 
 		if( !data ) return NULL;
+		if( type != NULL ) data->sResType = type;
+		data->dwMask = mask;
 		if( !m_mImageHash.Insert(bitmap, data) ) {
 			::DeleteObject(data->hBitmap);
 			delete data;
@@ -1750,25 +1917,23 @@ namespace DuiLib {
 		return data;
 	}
 
-	const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR szBitmapName, HBITMAP hBitmap, int nWidth, int nHeight)
+	const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha)
 	{
-		TImageInfo *data = NULL;
+		if( hBitmap == NULL || iWidth <= 0 || iHeight <= 0 ) return NULL;
 
-		data = new TImageInfo;
-		data->hBitmap = hBitmap;//csIconInfo.hbmColor;
-		data->hIcon = NULL;
-		data->nX = nWidth;
-		data->nY = nHeight;
-		data->alphaChannel = false;
-
-		if( !m_mImageHash.Insert(szBitmapName, data) ) {
-			DeleteObject(hBitmap);
+		TImageInfo* data = new TImageInfo;
+		data->hBitmap = hBitmap;
+		data->nX = iWidth;
+		data->nY = iHeight;
+		data->alphaChannel = bAlpha;
+		//data->sResType = _T("");
+		data->dwMask = 0;
+		if( !m_mImageHash.Insert(bitmap, data) ) {
+			::DeleteObject(data->hBitmap);
 			delete data;
-			data = NULL;
 		}
 
 		return data;
-
 	}
 
 	// 添加增加Icon借口 [6/3/2011 linjinming]
@@ -1825,20 +1990,13 @@ namespace DuiLib {
 		return data;
 	}
 
+
 	bool CPaintManagerUI::RemoveImage(LPCTSTR bitmap)
 	{
 		const TImageInfo* data = GetImage(bitmap);
 		if( !data ) return false;
 
-		if (data->hBitmap != NULL)
-		{
-			::DeleteObject(data->hBitmap);
-		}
-
-		if (data->hIcon != NULL)
-		{
-			DestroyIcon(data->hIcon);
-		}
+		::DeleteObject(data->hBitmap);
 		delete data;
 
 		return m_mImageHash.Remove(bitmap);
@@ -1850,18 +2008,45 @@ namespace DuiLib {
 		for( int i = 0; i< m_mImageHash.GetSize(); i++ ) {
 			if(LPCTSTR key = m_mImageHash.GetAt(i)) {
 				data = static_cast<TImageInfo*>(m_mImageHash.Find(key));
-				if (data->hBitmap != NULL)
-				{
-					::DeleteObject(data->hBitmap);
-				}
-
-				if (data->hIcon != NULL)
-				{
-					DestroyIcon(data->hIcon);
-				}
+				::DeleteObject(data->hBitmap);
 				delete data;
 			}
 		}
+	}
+
+	void CPaintManagerUI::ReloadAllImages()
+	{
+		bool bRedraw = false;
+		TImageInfo* data;
+		TImageInfo* pNewData;
+		for( int i = 0; i< m_mImageHash.GetSize(); i++ ) {
+			if(LPCTSTR bitmap = m_mImageHash.GetAt(i)) {
+				data = static_cast<TImageInfo*>(m_mImageHash.Find(bitmap));
+				if( data != NULL ) {
+					if( !data->sResType.IsEmpty() ) {
+						if( isdigit(*bitmap) ) {
+							LPTSTR pstr = NULL;
+							int iIndex = _tcstol(bitmap, &pstr, 10);
+							pNewData = CRenderEngine::LoadImage(iIndex, data->sResType.GetData(), data->dwMask);
+						}
+					}
+					else {
+						pNewData = CRenderEngine::LoadImage(bitmap, NULL, data->dwMask);
+					}
+					if( pNewData == NULL ) continue;
+
+					if( data->hBitmap != NULL ) ::DeleteObject(data->hBitmap);
+					data->hBitmap = pNewData->hBitmap;
+					data->nX = pNewData->nX;
+					data->nY = pNewData->nY;
+					data->alphaChannel = pNewData->alphaChannel;
+
+					delete pNewData;
+					bRedraw = true;
+				}
+			}
+		}
+		if( bRedraw && m_pRoot ) m_pRoot->Invalidate();
 	}
 
 	void CPaintManagerUI::AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR pStrControlAttrList)
@@ -1916,47 +2101,62 @@ namespace DuiLib {
 		return m_pRoot;
 	}
 
-	CControlUI* CPaintManagerUI::FindControl(LPCTSTR pstrName)
-	{
-		ASSERT(m_pRoot);
-		return static_cast<CControlUI*>(m_mNameHash.Find(pstrName));
-	}
-
-	CControlUI* CPaintManagerUI::FindControl(CControlUI* pParent, LPCTSTR pstrName)
-	{
-		ASSERT(pParent);
-		return pParent->FindControl(__FindControlFromName, (LPVOID)pstrName, UIFIND_ALL);
-	}
-
 	CControlUI* CPaintManagerUI::FindControl(POINT pt) const
 	{
 		ASSERT(m_pRoot);
 		return m_pRoot->FindControl(__FindControlFromPoint, &pt, UIFIND_VISIBLE | UIFIND_HITTEST | UIFIND_TOP_FIRST);
 	}
-	CControlUI* CPaintManagerUI::FindControl(CControlUI* pParent, POINT pt) const
+
+	CControlUI* CPaintManagerUI::FindControl(LPCTSTR pstrName) const
 	{
+		ASSERT(m_pRoot);
+		return static_cast<CControlUI*>(m_mNameHash.Find(pstrName));
+	}
+
+	CControlUI* CPaintManagerUI::FindSubControlByPoint(CControlUI* pParent, POINT pt) const
+	{
+		if( pParent == NULL ) pParent = GetRoot();
 		ASSERT(pParent);
 		return pParent->FindControl(__FindControlFromPoint, &pt, UIFIND_VISIBLE | UIFIND_HITTEST | UIFIND_TOP_FIRST);
 	}
 
-	void	CPaintManagerUI::SetEventSrcControl(CControlUI* pSrcCtrl)
+	CControlUI* CPaintManagerUI::FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const
 	{
-		m_pEventSrc = pSrcCtrl;
+		if( pParent == NULL ) pParent = GetRoot();
+		ASSERT(pParent);
+		return pParent->FindControl(__FindControlFromName, (LPVOID)pstrName, UIFIND_ALL);
 	}
 
-	CControlUI*	CPaintManagerUI::GetEventSrcControl()
+	CControlUI* CPaintManagerUI::FindSubControlByClass(CControlUI* pParent, LPCTSTR pstrClass, int iIndex)
 	{
-		return m_pEventSrc;
+		if( pParent == NULL ) pParent = GetRoot();
+		ASSERT(pParent);
+		m_aFoundControls.Resize(iIndex + 1);
+		return pParent->FindControl(__FindControlFromClass, (LPVOID)pstrClass, UIFIND_ALL);
 	}
 
-	void	CPaintManagerUI::SetEventDstContro(CControlUI* pDstCtrl)
+	CStdPtrArray* CPaintManagerUI::FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass)
 	{
-		m_pEventDst = pDstCtrl;
+		if( pParent == NULL ) pParent = GetRoot();
+		ASSERT(pParent);
+		m_aFoundControls.Empty();
+		pParent->FindControl(__FindControlsFromClass, (LPVOID)pstrClass, UIFIND_ALL);
+		return &m_aFoundControls;
 	}
 
-	CControlUI*	CPaintManagerUI::GetEventDstControl()
+	CStdPtrArray* CPaintManagerUI::GetSubControlsByClass()
 	{
-		return m_pEventDst;
+		return &m_aFoundControls;
+	}
+
+	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromNameHash(CControlUI* pThis, LPVOID pData)
+	{
+		CPaintManagerUI* pManager = static_cast<CPaintManagerUI*>(pData);
+		const CStdString& sName = pThis->GetName();
+		if( sName.IsEmpty() ) return NULL;
+		// Add this control to the hash list
+		pManager->m_mNameHash.Set(sName, pThis);
+		return NULL; // Attempt to add all controls
 	}
 
 	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromCount(CControlUI* /*pThis*/, LPVOID pData)
@@ -1964,6 +2164,12 @@ namespace DuiLib {
 		int* pnCount = static_cast<int*>(pData);
 		(*pnCount)++;
 		return NULL;  // Count all controls
+	}
+
+	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromPoint(CControlUI* pThis, LPVOID pData)
+	{
+		LPPOINT pPoint = static_cast<LPPOINT>(pData);
+		return ::PtInRect(&pThis->GetPos(), *pPoint) ? pThis : NULL;
 	}
 
 	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromTab(CControlUI* pThis, LPVOID pData)
@@ -1980,14 +2186,18 @@ namespace DuiLib {
 		return NULL;  // Examine all controls
 	}
 
-	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromNameHash(CControlUI* pThis, LPVOID pData)
+	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromShortcut(CControlUI* pThis, LPVOID pData)
 	{
-		CPaintManagerUI* pManager = static_cast<CPaintManagerUI*>(pData);
-		const CStdString& sName = pThis->GetName();
-		if( sName.IsEmpty() ) return NULL;
-		// Add this control to the hash list
-		pManager->m_mNameHash.Insert(sName, pThis);
-		return NULL; // Attempt to add all controls
+		if( !pThis->IsVisible() ) return NULL; 
+		FINDSHORTCUT* pFS = static_cast<FINDSHORTCUT*>(pData);
+		if( pFS->ch == toupper(pThis->GetShortcut()) ) pFS->bPickNext = true;
+		if( _tcsstr(pThis->GetClass(), _T("LabelUI")) != NULL ) return NULL;   // Labels never get focus!
+		return pFS->bPickNext ? pThis : NULL;
+	}
+
+	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromUpdate(CControlUI* pThis, LPVOID pData)
+	{
+		return pThis->IsUpdateNeeded() ? pThis : NULL;
 	}
 
 	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromName(CControlUI* pThis, LPVOID pData)
@@ -1998,25 +2208,47 @@ namespace DuiLib {
 		return (_tcsicmp(sName, pstrName) == 0) ? pThis : NULL;
 	}
 
-	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromShortcut(CControlUI* pThis, LPVOID pData)
+	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromClass(CControlUI* pThis, LPVOID pData)
 	{
-		if( !pThis->IsVisible() ) return NULL; 
-		FINDSHORTCUT* pFS = static_cast<FINDSHORTCUT*>(pData);
-		if( pFS->ch == toupper(pThis->GetShortcut()) ) pFS->bPickNext = true;
-		if( _tcsstr(pThis->GetClass(), _T("LabelUI")) != NULL ) return NULL;   // Labels never get focus!
-		return pFS->bPickNext ? pThis : NULL;
+		LPCTSTR pstrType = static_cast<LPCTSTR>(pData);
+		LPCTSTR pType = pThis->GetClass();
+		CStdPtrArray* pFoundControls = pThis->GetManager()->GetSubControlsByClass();
+		if( _tcscmp(pstrType, _T("*")) == 0 || _tcscmp(pstrType, pType) == 0 ) {
+			int iIndex = -1;
+			while( pFoundControls->GetAt(++iIndex) != NULL ) ;
+			if( iIndex < pFoundControls->GetSize() ) pFoundControls->SetAt(iIndex, pThis);
+		}
+		if( pFoundControls->GetAt(pFoundControls->GetSize() - 1) != NULL ) return pThis; 
+		return NULL;
 	}
 
-	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromPoint(CControlUI* pThis, LPVOID pData)
+	CControlUI* CALLBACK CPaintManagerUI::__FindControlsFromClass(CControlUI* pThis, LPVOID pData)
 	{
-		LPPOINT pPoint = static_cast<LPPOINT>(pData);
-		return ::PtInRect(&pThis->GetPos(), *pPoint) ? pThis : NULL;
+		LPCTSTR pstrType = static_cast<LPCTSTR>(pData);
+		LPCTSTR pType = pThis->GetClass();
+		if( _tcscmp(pstrType, _T("*")) == 0 || _tcscmp(pstrType, pType) == 0 ) 
+			pThis->GetManager()->GetSubControlsByClass()->Add((LPVOID)pThis);
+		return NULL;
 	}
 
-	CControlUI* CALLBACK CPaintManagerUI::__FindControlFromUpdate(CControlUI* pThis, LPVOID pData)
+	CControlUI*	CPaintManagerUI::GetEventSrcControl()
 	{
-		return pThis->IsUpdateNeeded() ? pThis : NULL;
+		return m_pEventSrc;
 	}
 
+	void	CPaintManagerUI::SetEventSrcControl(CControlUI* pSrcCtrl)
+	{
+		m_pEventSrc = pSrcCtrl;
+	}
+
+	CControlUI*	CPaintManagerUI::GetEventDstControl()
+	{
+		return m_pEventDst;
+	}
+
+	void	CPaintManagerUI::SetEventDstControl(CControlUI* pDstCtrl)
+	{
+		m_pEventDst = pDstCtrl;
+	}
 
 } // namespace DuiLib

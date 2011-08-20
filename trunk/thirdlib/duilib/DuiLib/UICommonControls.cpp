@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 
-namespace DuiLib
-{
+namespace DuiLib {
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
@@ -142,6 +141,10 @@ namespace DuiLib
 				m_uTextStyle |= DT_BOTTOM;
 			}
 		}
+		else if( _tcscmp(pstrName, _T("endellipsis")) == 0 ) {
+			if( _tcscmp(pstrValue, _T("true")) == 0 ) m_uTextStyle |= DT_END_ELLIPSIS;
+			else m_uTextStyle &= ~DT_END_ELLIPSIS;
+		}    
 		else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
@@ -439,7 +442,6 @@ namespace DuiLib
 
 	void CButtonUI::PaintText(HDC hDC)
 	{
-
 		if( IsFocused() ) m_uButtonState |= UISTATE_FOCUSED;
 		else m_uButtonState &= ~ UISTATE_FOCUSED;
 		if( !IsEnabled() ) m_uButtonState |= UISTATE_DISABLED;
@@ -516,7 +518,7 @@ namespace DuiLib
 	//
 	//
 
-	COptionUI::COptionUI() : m_bSelected(false)
+	COptionUI::COptionUI() : m_bSelected(false), m_dwSelectedTextColor(0)
 	{
 	}
 
@@ -611,6 +613,15 @@ namespace DuiLib
 		else Selected(!m_bSelected);
 
 		return true;
+	}
+
+	void COptionUI::SetEnabled(bool bEnable)
+	{
+		CControlUI::SetEnabled(bEnable);
+		if( !IsEnabled() ) {
+			if( m_bSelected ) m_uButtonState = UISTATE_SELECTED;
+			else m_uButtonState = 0;
+		}
 	}
 
 	LPCTSTR COptionUI::GetSelectedImage()
@@ -821,24 +832,6 @@ Label_ForeImage:
 		CLabelUI::DoEvent(event);
 	}
 
-	void CTextUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
-	{
-		if( _tcscmp(pstrName, _T("wordbreak")) == 0 ) {
-			if( _tcsstr(pstrValue, _T("breakall")) != NULL ) {
-				m_uTextStyle &= ~DT_SINGLELINE;
-				m_uTextStyle |= DT_WORDBREAK;
-			}
-			else if( _tcsstr(pstrValue, _T("normal")) != NULL ) {
-				m_uTextStyle &= ~DT_WORDBREAK;
-				m_uTextStyle |= DT_SINGLELINE;
-			}
-		}
-		else
-		{
-			CLabelUI::SetAttribute(pstrName, pstrValue);
-		}
-	}
-
 	SIZE CTextUI::EstimateSize(SIZE szAvailable)
 	{
 		RECT rcText = { 0, 0, MAX(szAvailable.cx, m_cxyFixed.cx), 9999 };
@@ -901,8 +894,6 @@ Label_ForeImage:
 
 	CProgressUI::CProgressUI() : m_bHorizontal(true), m_nMin(0), m_nMax(100), m_nValue(0)
 	{
-		m_dwBorderColor = 0xFF4EA0D1;
-		m_nBorderSize = 1;
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
 		SetFixedHeight(12);
 	}
@@ -1133,9 +1124,19 @@ Label_ForeImage:
 		{
 			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
 				m_uButtonState &= ~UISTATE_CAPTURED;
-				m_pManager->SendNotify(this, _T("valuechanged"));
-				Invalidate();
 			}
+			if( m_bHorizontal ) {
+				if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) m_nValue = m_nMax;
+				else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) m_nValue = m_nMin;
+				else m_nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
+			}
+			else {
+				if( event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2 ) m_nValue = m_nMin;
+				else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) m_nValue = m_nMax;
+				else m_nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
+			}
+			m_pManager->SendNotify(this, _T("valuechanged"));
+			Invalidate();
 			return;
 		}
 		if( event.Type == UIEVENT_CONTEXTMENU )
@@ -1147,38 +1148,27 @@ Label_ForeImage:
 			switch( LOWORD(event.wParam) ) {
 	case SB_LINEUP:
 		SetValue(GetValue() + GetChangeStep());
+		m_pManager->SendNotify(this, _T("valuechanged"));
 		return;
 	case SB_LINEDOWN:
 		SetValue(GetValue() - GetChangeStep());
+		m_pManager->SendNotify(this, _T("valuechanged"));
 		return;
 			}
 		}
 		if( event.Type == UIEVENT_MOUSEMOVE )
 		{
 			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
-				if( m_bHorizontal ){
-					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) {
-						m_nValue = m_nMax;
-					}
-					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) {
-						m_nValue = m_nMin;
-					}
-					else {
-						m_nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
-					}
+				if( m_bHorizontal ) {
+					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) m_nValue = m_nMax;
+					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) m_nValue = m_nMin;
+					else m_nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
 				}
 				else {
-					if( event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2 ) {
-						m_nValue = m_nMin;
-					}
-					else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) {
-						m_nValue = m_nMax;
-					}
-					else {
-						m_nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
-					}
+					if( event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2 ) m_nValue = m_nMin;
+					else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) m_nValue = m_nMax;
+					else m_nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
 				}
-
 				Invalidate();
 			}
 			return;
@@ -1286,10 +1276,11 @@ Label_ForeImage:
 	protected:
 		CEditUI* m_pOwner;
 		HBRUSH m_hBkBrush;
+		bool m_bInit;
 	};
 
 
-	CEditWnd::CEditWnd() : m_pOwner(NULL), m_hBkBrush(NULL)
+	CEditWnd::CEditWnd() : m_pOwner(NULL), m_hBkBrush(NULL), m_bInit(false)
 	{
 	}
 
@@ -1310,6 +1301,7 @@ Label_ForeImage:
 		Edit_SetReadOnly(m_hWnd, m_pOwner->IsReadOnly() == true);
 		::ShowWindow(m_hWnd, SW_SHOWNOACTIVATE);
 		::SetFocus(m_hWnd);
+		m_bInit = true;    
 	}
 
 	RECT CEditWnd::CalPos()
@@ -1350,48 +1342,26 @@ Label_ForeImage:
 	{
 		LRESULT lRes = 0;
 		BOOL bHandled = TRUE;
-		if( uMsg == WM_KILLFOCUS ) 
-		{
-			lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
-		}
-		else if( uMsg == OCM_COMMAND )
-		{
-			if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE ) 
-			{
-				lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
-			}
-			else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE ) 
-			{
+		if( uMsg == WM_KILLFOCUS ) lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
+		else if( uMsg == OCM_COMMAND ) {
+			if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE ) lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
+			else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE ) {
 				RECT rcClient;
 				::GetClientRect(m_hWnd, &rcClient);
 				::InvalidateRect(m_hWnd, &rcClient, FALSE);
 			}
 		}
-		else if(uMsg == WM_CHAR)
-		{
-			CWindowWnd::HandleMessage(uMsg, wParam, lParam);
-			lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
-		}
-		else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN )
-		{
+		else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN ) {
 			m_pOwner->GetManager()->SendNotify(m_pOwner, _T("return"));
 		}
-		else if(( uMsg == OCM__BASE + WM_CTLCOLOREDIT ) || ( uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) )
-		{
-			// Refer To: http://msdn.microsoft.com/en-us/library/bb761691(v=vs.85).aspx
-			// Read-only or disabled edit controls do not send the WM_CTLCOLOREDIT message; instead, they send the WM_CTLCOLORSTATIC message.
-			if( m_pOwner->GetNativeEditBkColor() == 0) return NULL;
+		else if( uMsg == OCM__BASE + WM_CTLCOLOREDIT  || uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) {
+			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
-			DWORD dwBkColor = m_pOwner->GetNativeEditBkColor();
-			CRect textPadding = m_pOwner->GetTextPadding();
-			if(( dwBkColor != m_pOwner->GetBkColor() ) && !textPadding.IsNull() )
-				dwBkColor = m_pOwner->GetBkColor();
-
 			DWORD dwTextColor = m_pOwner->GetTextColor();
 			::SetTextColor((HDC)wParam, RGB(GetBValue(dwTextColor),GetGValue(dwTextColor),GetRValue(dwTextColor)));
-
 			if( m_hBkBrush == NULL ) {
-				m_hBkBrush = ::CreateSolidBrush(RGB(GetBValue(dwBkColor), GetGValue(dwBkColor), GetRValue(dwBkColor)));
+				DWORD clrColor = m_pOwner->GetNativeEditBkColor();
+				m_hBkBrush = ::CreateSolidBrush(RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
 			}
 			return (LRESULT)m_hBkBrush;
 		}
@@ -1404,12 +1374,12 @@ Label_ForeImage:
 	{
 		LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 		PostMessage(WM_CLOSE);
-
 		return lRes;
 	}
 
 	LRESULT CEditWnd::OnEditChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
+		if( !m_bInit ) return 0;
 		if( m_pOwner == NULL ) return 0;
 		// Copy text back
 		int cchLen = ::GetWindowTextLength(m_hWnd) + 1;
@@ -1485,11 +1455,9 @@ Label_ForeImage:
 		{
 			Invalidate();
 		}
-		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK 
-			|| event.Type == UIEVENT_RBUTTONDOWN) 
+		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK || event.Type == UIEVENT_RBUTTONDOWN) 
 		{
-			if( IsEnabled() )
-			{
+			if( IsEnabled() ) {
 				GetManager()->ReleaseCapture();
 				if( IsFocused() && m_pWindow == NULL )
 				{
@@ -1538,8 +1506,7 @@ Label_ForeImage:
 		}
 		if( event.Type == UIEVENT_MOUSEENTER )
 		{
-			if( IsEnabled() ) 
-			{
+			if( IsEnabled() ) {
 				m_uButtonState |= UISTATE_HOT;
 				Invalidate();
 			}
@@ -1547,8 +1514,7 @@ Label_ForeImage:
 		}
 		if( event.Type == UIEVENT_MOUSELEAVE )
 		{
-			if( IsEnabled() ) 
-			{
+			if( IsEnabled() ) {
 				m_uButtonState &= ~UISTATE_HOT;
 				Invalidate();
 			}
@@ -2412,6 +2378,7 @@ Label_ForeImage:
 					}
 				}
 			}
+			if( m_pManager != NULL && m_pOwner == NULL ) m_pManager->SendNotify(this, _T("scroll"));
 			return;
 		}
 		if( event.Type == UIEVENT_BUTTONUP )
@@ -2531,6 +2498,7 @@ Label_ForeImage:
 					}
 				}
 			}
+			if( m_pManager != NULL && m_pOwner == NULL ) m_pManager->SendNotify(this, _T("scroll"));
 			return;
 		}
 		if( event.Type == UIEVENT_MOUSEENTER )
@@ -2630,6 +2598,8 @@ Label_ForeImage:
 
 	void CScrollBarUI::PaintButton1(HDC hDC)
 	{
+		if( !m_bShowButton1 ) return;
+
 		if( !IsEnabled() ) m_uButton1State |= UISTATE_DISABLED;
 		else m_uButton1State &= ~ UISTATE_DISABLED;
 
@@ -2662,12 +2632,14 @@ Label_ForeImage:
 		}
 
 		DWORD dwBorderColor = 0xFF85E4FF;
-		int nBorderSize = 1;
+		int nBorderSize = 2;
 		CRenderEngine::DrawRect(hDC, m_rcButton1, nBorderSize, dwBorderColor);
 	}
 
 	void CScrollBarUI::PaintButton2(HDC hDC)
 	{
+		if( !m_bShowButton2 ) return;
+
 		if( !IsEnabled() ) m_uButton2State |= UISTATE_DISABLED;
 		else m_uButton2State &= ~ UISTATE_DISABLED;
 
@@ -2700,7 +2672,7 @@ Label_ForeImage:
 		}
 
 		DWORD dwBorderColor = 0xFF85E4FF;
-		int nBorderSize = 1;
+		int nBorderSize = 2;
 		CRenderEngine::DrawRect(hDC, m_rcButton2, nBorderSize, dwBorderColor);
 	}
 
@@ -2739,7 +2711,7 @@ Label_ForeImage:
 		}
 
 		DWORD dwBorderColor = 0xFF85E4FF;
-		int nBorderSize = 1;
+		int nBorderSize = 2;
 		CRenderEngine::DrawRect(hDC, m_rcThumb, nBorderSize, dwBorderColor);
 	}
 
