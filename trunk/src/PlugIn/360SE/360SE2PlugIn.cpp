@@ -25,7 +25,7 @@ C360SE2PlugIn::~C360SE2PlugIn()
 
 BOOL C360SE2PlugIn::Load()
 {
-	return FALSE;
+	return TRUE;
 }
 
 BOOL C360SE2PlugIn::UnLoad()
@@ -86,13 +86,13 @@ wchar_t* C360SE2PlugIn::GetHistoryDataPath()
 BOOL C360SE2PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	// 由于使用IE收藏夹，因此不需要额外的导入导出，
-	return FALSE;
+	return TRUE;
 }
 
 BOOL C360SE2PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
 {
 	// 由于使用IE收藏夹，因此不需要额外的导入导出，
-	return FALSE;
+	return TRUE;
 }
 
 int32 C360SE2PlugIn::GetFavoriteCount()
