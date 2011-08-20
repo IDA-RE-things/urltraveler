@@ -6,14 +6,22 @@
     <Font name="宋体" size="14" bold="true" italic="false" />
     <Font name="宋体" size="22" bold="true" italic="true" />
     <Font name="SimSun" size="12" bold="true" italic="false" />
-    <HorizontalLayout name="VerticalLayoutUI1" pos="0,0,425,254" width="425" height="254" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,1,0">
-	   <HorizontalLayout name="FavoriteDataLayout">
+    <VerticalLayout name="VerticalLayoutUI1" pos="0,0,425,254" width="425" height="254" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,1,0">
+        <HorizontalLayout name="VerticalLayoutUI2" pos="1,0,425,31" width="424" height="31">
+            <HorizontalLayout name="HorizontalLayoutUI7" pos="0,0,361,30" width="361" height="30">
+                <Text name="TextUI17" text="{b}EverFav 添加收藏记录{/b}" float="true" pos="38,8,218,24" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                <Label name="LabelUI2" float="true" pos="8,4,30,26" bkimage="urltraveler22.png" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" />
+            </HorizontalLayout>
+            <HorizontalLayout name="HorizontalLayoutUI8" pos="361,0,422,29" width="61" height="29">
+                <Button name="closebtn" float="true" pos="16,1,61,18" padding="0,1,0,0" maxheight="23" maxwidth="39" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;sys_dlg_close.png&apos; source=&apos;90,0,135,17&apos;" />
+            </HorizontalLayout>
+        </HorizontalLayout>
+		<HorizontalLayout name="VerticalLayoutUI1" pos="0,0,425,204" width="425" height="204" bkcolor="#FFB9E6F9" bordercolor="#0054676D" inset="1,0,1,0">
 			<TreeList name="testtree" padding="0,0,0,1" bkcolor="#FFF6F9FF" inset="1,1,1,1" bordercolor="#00B4BFB5" bordersize="1" header="hidden" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1' " itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemlinecolor="#FFE4EAF2" itemshowhtml="true" vscrollbar="true" hscrollbar="true" menu="true">
 			</TreeList>
+			<Button name="Hide" text="隐藏" float="true" pos="8,181,80,206"  bordercolor="#00000080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
+			<Button name="Show" text="显示" float="true" pos="98,181,170,206"  bordercolor="#00000080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
 		</HorizontalLayout>
-		<HorizontalLayout>
-			<Button name="Hide" text="隐藏" float="true" pos="8,241,80,266"  bordercolor="#00000080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-			<Button name="Show" text="显示" float="true" pos="98,241,170,266"  bordercolor="#00000080" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" />
-		</HorizontalLayout>
-    </HorizontalLayout>
+    </VerticalLayout>
+
 </Window>
