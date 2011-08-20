@@ -489,9 +489,9 @@ void CFavoriteTreeListUI::DoEvent(TEventUI& event)
 
 	if( event.Type == UIEVENT_BUTTONDOWN )
 	{
-		CListUI::DoEvent(event);
+		CTreeListUI::DoEvent(event);
 		m_pManager->SetEventSrcControl(this);
-		OnEventItemClick(event);
+		//OnEventItemClick(event);
 
 		m_bIsDragging = true;
 

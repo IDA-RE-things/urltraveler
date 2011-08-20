@@ -225,9 +225,6 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 	m_pFavTreeList->m_mapIdNode[0] = pRootNode;
 	m_pFavTreeList->m_mapNodeId[pRootNode] = 0;
 
-	CTreeListUI::Node* pChildNode = m_pFavTreeList->AddNode(L"Child", pRootNode);
-
-	/*
 	for( int i=0; i<nNum; i++)
 	{
 		PFAVORITELINEDATA pData = ppFavoriteData[i];
@@ -253,9 +250,8 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 			}
 		}
 	}
-	*/
 
-	m_pFavTreeList->SetChildVisible(pRootNode, true);
+	//m_pFavTreeList->SetChildVisible(pRootNode, true);
 
 	// 显示根结点下的所有的收藏夹记录
 	m_pFavTreeList->m_nTreeNodeId = 0;
