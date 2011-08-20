@@ -6,6 +6,7 @@
 CTestTreeWnd::CTestTreeWnd()
 {
 	m_pTreeList = NULL;
+	m_bAdd = FALSE;
 }
 
 CTestTreeWnd::~CTestTreeWnd()
@@ -15,14 +16,9 @@ CTestTreeWnd::~CTestTreeWnd()
 void CTestTreeWnd::OnPrepare(TNotifyUI& msg) 
 { 
 	m_pTreeList = static_cast<CTreeListUI*>(m_pm.FindControl(_T("testtree")));
-	if( m_pTreeList)
-	{
-		CTreeListUI::Node* pRootNode = m_pTreeList->AddNode(L"root");
-		CTreeListUI::Node* pChildNode = m_pTreeList->AddNode(L"child", pRootNode);
-		CTreeListUI::Node* pChildChildNode = m_pTreeList->AddNode(L"child", pChildNode);
-	}
-
-	m_pLayout = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(_T("FavoriteDataLayout")));
+	CTreeListUI::Node* pRootNode = m_pTreeList->AddNode(L"root");
+	CTreeListUI::Node* pChildNode = m_pTreeList->AddNode(L"child", pRootNode);
+	m_pTreeList->SetVisible(false);
 }
 
 void CTestTreeWnd::Notify(TNotifyUI& msg)
@@ -39,11 +35,18 @@ void CTestTreeWnd::Notify(TNotifyUI& msg)
 		}
 		else if( msg.pSender->GetName() == L"Hide" ) 
 		{
-			m_pLayout->SetVisible(false);
+			m_pTreeList->SetVisible(false);
 		}
 		else if( msg.pSender->GetName() == L"Show" ) 
 		{
-			m_pLayout->SetVisible(true);
+			if( m_pTreeList)
+			{	   
+				if( m_bAdd == FALSE)
+				{
+					m_bAdd = TRUE;
+				}
+			}
+			m_pTreeList->SetVisible(true);
 		}
 
 	}

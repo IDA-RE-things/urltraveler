@@ -50,4 +50,5 @@ public:
 
 	CTreeListUI*	m_pTreeList;
 	CHorizontalLayoutUI*	m_pLayout;
+	BOOL	m_bAdd;
 };
