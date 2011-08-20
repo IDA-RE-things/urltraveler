@@ -97,7 +97,7 @@ private:
 protected:
 	bool GetWebSiteFavIcon(wstring strUrl, int nRow);
 	void	ShowFavoriteTreeList(int nId);
-	void	SetFavoriteNumText(int nNum);
+	void	SetFavoriteNumText(int nNum, int nTotal);
 
 public:
 	CPaintManagerUI m_pm;
