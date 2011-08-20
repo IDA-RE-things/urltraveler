@@ -1309,7 +1309,7 @@ void CMainFrameWnd::GetAvailableBrowser()
 	if (pFavoriteNumber)
 	{
 		TCHAR szFavoriteNum[MAX_PATH] = {0};
-		_stprintf_s(szFavoriteNum, MAX_PATH - 1, _T("{f 3}{b}您安装了{f 4}{c #F27D30}%d{/c}{/f}种浏览器：{/b}{/f}"), pvPlugIn->size());
+		_stprintf_s(szFavoriteNum, MAX_PATH - 1, _T("{f 微软雅黑 15}{b}您安装了 {c #F27D30}%d{/c} 种浏览器：{/b}{/f}"), pvPlugIn->size());
 		pFavoriteNumber->SetText(szFavoriteNum);
 	}
 
