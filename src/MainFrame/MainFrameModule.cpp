@@ -299,12 +299,12 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 	int nNum = favoriteData.nNum;
 	PFAVORITELINEDATA*	ppFavoriteData = favoriteData.ppFavoriteData;
 
+	m_pMainFrame->ShowProcessLayout(FALSE);
+
 	if( favoriteData.nNum > 0)
 	{
 		m_pMainFrame->LoadFavoriteTree(ppFavoriteData, nNum);
 	}
-
-	m_pMainFrame->ShowProcessLayout(FALSE);
 }
 
 

@@ -24,7 +24,7 @@ TTPlugIn::~TTPlugIn()
 
 BOOL TTPlugIn::Load()
 {
-	return TRUE;
+	return FALSE;
 }
 
 BOOL TTPlugIn::UnLoad()
