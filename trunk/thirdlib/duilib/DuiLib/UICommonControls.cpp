@@ -1424,9 +1424,12 @@ Label_ForeImage:
 
 	void CEditUI::DoEvent(TEventUI& event)
 	{
-		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) {
-			if( m_pParent != NULL ) m_pParent->DoEvent(event);
-			else CLabelUI::DoEvent(event);
+		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) 
+		{
+			if( m_pParent != NULL ) 
+				m_pParent->DoEvent(event);
+			else 
+				CLabelUI::DoEvent(event);
 			return;
 		}
 
@@ -1454,10 +1457,19 @@ Label_ForeImage:
 		if( event.Type == UIEVENT_KILLFOCUS && IsEnabled() ) 
 		{
 			Invalidate();
+
+			if( m_pParent != NULL ) 
+			{
+				TNotifyUI notify;
+				notify.sType = _T("editkillfocus");
+				notify.pSender = this;
+				m_pManager->SendNotify(notify);
+			}
 		}
 		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK || event.Type == UIEVENT_RBUTTONDOWN) 
 		{
-			if( IsEnabled() ) {
+			if( IsEnabled() )
+			{
 				GetManager()->ReleaseCapture();
 				if( IsFocused() && m_pWindow == NULL )
 				{
