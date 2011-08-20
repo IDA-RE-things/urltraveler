@@ -258,8 +258,8 @@ void	CTreeListUI::OnEventItemClick(TEventUI& event)
 	if( pNode == NULL)
 		return;
 
-	if( pNode->get_level() == 0)
-		return;
+	//if( pNode->get_level() == 0)
+	//	return;
 
 	POINT pt = { 0 };
 	::GetCursorPos(&pt);
@@ -611,8 +611,12 @@ CTreeListUI::Node* CTreeListUI::AddNode(LPCTSTR text, CTreeListUI::Node* parent)
 	CListLabelElementUI* pListElement = new CListLabelElementUI;
 	CTreeListUI::Node* node = new CTreeListUI::Node;
 	node->data()._level = parent->data()._level + 1;
-	if( node->data()._level == 0 ) node->data()._child_visible = true;
-	else node->data()._child_visible = false;
+
+	if( node->data()._level == 0 ) 
+		node->data()._child_visible = true;
+	else 
+		node->data()._child_visible = false;
+
 	node->data()._text = text;
 	node->data()._pListElement = pListElement;
 

@@ -71,15 +71,11 @@ void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 		if( pFavoriteLoadingLayout)
 		{
 			pFavoriteLoadingLayout->SetVisible(true);
-			//m_nProcessLayoutWidth = pFavoriteLoadingLayout->GetWidth();
-			//m_nProcessLayoutHeight = pFavoriteLoadingLayout->GetHeight();
 		}
 
 		CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
 		if( pFavoriteDataLayout)
 		{
-			//pFavoriteDataLayout->SetFixedHeight(0);
-			//pFavoriteDataLayout->SetFixedWidth(0);
 			pFavoriteDataLayout->SetVisible(false);
 		}
 
@@ -97,8 +93,6 @@ void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 		CHorizontalLayoutUI*  pFavoriteDataLayout  = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(L"FavoriteDataLayout"));
 		if( pFavoriteDataLayout)
 		{
-			//pFavoriteDataLayout->SetFixedHeight(m_nProcessLayoutHeight);
-			//pFavoriteDataLayout->SetFixedWidth(m_nProcessLayoutWidth);
 			pFavoriteDataLayout->SetVisible(true);
 		}
 
@@ -599,6 +593,24 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			pEvent->srcMId = MODULE_ID_MAINFRAME;
 			g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 		}
+		else if( msg.pSender->GetName() == L"BeginToCombineBtn" ) 
+		{
+			
+			CHorizontalLayoutUI* pLoadingLayout = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(_T("FavoriteLoadingLayout")));
+			CHorizontalLayoutUI* pDataLayout = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(_T("FavoriteDataLayout")));
+			if( pDataLayout->IsVisible())
+			{
+				pLoadingLayout->SetVisible(true);
+				pDataLayout->SetVisible(false);
+			}
+			else
+			{
+				pLoadingLayout->SetVisible(false);	
+				pDataLayout->SetVisible(true);	
+			}
+		}
+
+		
 	}
 	else if(msg.sType==_T("setfocus"))
 	{
