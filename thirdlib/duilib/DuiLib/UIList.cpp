@@ -284,6 +284,8 @@ namespace DuiLib
 
 	bool CListUI::AddAt(CControlUI* pControl, int iIndex)
 	{
+		CListLabelElementUI* pElement = (CListLabelElementUI*)pControl;
+
 		// Override the AddAt() method so we can add items specifically to
 		// the intended widgets. Headers and are assumed to be
 		// answer the correct interface so we can add multiple list headers.

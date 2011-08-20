@@ -220,9 +220,11 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 		m_pDragList->SetTextCallback(this);     
 	}
 
+/*
 	CTreeListUI::Node* pRootNode = m_pFavTreeList->AddNode(wstrText.c_str());
 	m_pFavTreeList->m_mapIdNode[0] = pRootNode;
 	m_pFavTreeList->m_mapNodeId[pRootNode] = 0;
+*/
 
 	for( int i=0; i<nNum; i++)
 	{
@@ -246,14 +248,24 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 					m_pFavTreeList->Invalidate();
 				}
 			}
+			else
+			{
+				wstring wstrText = L"{x 4}";
+				wstrText += pData->szTitle;
+
+				CFavoriteTreeListUI::Node* pNode  = m_pFavTreeList->AddNode(wstrText.c_str());
+				m_pFavTreeList->m_mapIdNode[pData->nId] = pNode;
+				m_pFavTreeList->m_mapNodeId[pNode] = pData->nId;
+				m_pFavTreeList->Invalidate();
+			}
 		}
 	}
 
 	//m_pFavTreeList->SetChildVisible(pRootNode, true);
 
 	// 显示根结点下的所有的收藏夹记录
-	m_pFavTreeList->m_nTreeNodeId = 0;
-	m_pFavTreeList->m_pCurrentTreeNode	=	pRootNode;
+	//m_pFavTreeList->m_nTreeNodeId = 0;
+	//m_pFavTreeList->m_pCurrentTreeNode	=	pRootNode;
 	ShowFavoriteTreeList(0);
 }
 

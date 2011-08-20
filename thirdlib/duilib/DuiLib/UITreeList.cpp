@@ -244,9 +244,12 @@ namespace DuiLib
 		}
 		else 
 		{
-			if( parent == _root ) index = 0;
-			else index = parent->data()._pListElement->GetIndex() + 1;
+			if( parent == _root ) 
+				index = 0;
+			else 
+				index = parent->data()._pListElement->GetIndex() + 1;
 		}
+
 		if( !CListUI::AddAt(pListElement, index) ) 
 		{
 			delete pListElement;
@@ -296,7 +299,9 @@ namespace DuiLib
 		html_text += node->data()._text;
 		node->data()._pListElement->SetText(html_text);
 
-		if( !node->data()._pListElement->IsVisible() ) return;
+		if( !node->data()._pListElement->IsVisible() ) 
+			return;
+
 		if( !node->has_children() ) return;
 
 		CTreeListUI::Node* begin = node->child(0);

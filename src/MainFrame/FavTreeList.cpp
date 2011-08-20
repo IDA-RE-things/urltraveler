@@ -491,7 +491,6 @@ void CFavoriteTreeListUI::DoEvent(TEventUI& event)
 	{
 		CTreeListUI::DoEvent(event);
 		m_pManager->SetEventSrcControl(this);
-		//OnEventItemClick(event);
 
 		m_bIsDragging = true;
 
@@ -511,7 +510,7 @@ void CFavoriteTreeListUI::DoEvent(TEventUI& event)
 			return;
 
 		//Èç¹ûÊÇTreeList
-		if( _tcscmp(pSrcCtrl->GetClass(), _T("CFavoriteTreeListUI")) == 0 ) 
+		if( _tcscmp(pSrcCtrl->GetClass(), _T("FavTreeListUI")) == 0 ) 
 		{
 			if( m_bIsDragging == true )
 			{
