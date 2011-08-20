@@ -79,6 +79,7 @@ private:
 	void	OnFavoriteListItemEditFinished(TNotifyUI& msg);
 	void	OnFavoriteListItemDelete(TNotifyUI& msg);
 	void	OnFavoriteListItemMoved(TNotifyUI& msg);
+	void	OnFavoriteKeyDown(TNotifyUI& msg);
 
 	//	列表菜单项响应函数
 	void	OnFavListAdd();
