@@ -28,7 +28,8 @@ namespace DuiLib {
 	class UILIB_API CRenderEngine
 	{
 	public:
-		static TImageInfo* LoadImage(STRINGorID bitmap, STRINGorID type = (UINT) 0, DWORD mask = 0);
+		static DWORD AdjustColor(DWORD dwColor, short H, short S, short L);
+		static TImageInfo* LoadImage(STRINGorID bitmap, LPCTSTR type = NULL, DWORD mask = 0);
 		static void DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RECT& rcPaint, \
 			const RECT& rcBmpPart, const RECT& rcCorners, bool alphaChannel, BYTE uFade = 255, 
 			bool hole = false, bool xtiled = false, bool ytiled = false);

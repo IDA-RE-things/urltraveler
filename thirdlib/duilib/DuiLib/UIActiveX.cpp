@@ -593,8 +593,7 @@ namespace DuiLib {
 		return S_OK;
 	}
 
-	STDMETHODIMP CActiveXCtrl::GetWindowContext(IOleInPlaceFrame** ppFrame, IOleInPlaceUIWindow** ppDoc, 
-		LPRECT lprcPosRect, LPRECT lprcClipRect, LPOLEINPLACEFRAMEINFO lpFrameInfo)
+	STDMETHODIMP CActiveXCtrl::GetWindowContext(IOleInPlaceFrame** ppFrame, IOleInPlaceUIWindow** ppDoc, LPRECT lprcPosRect, LPRECT lprcClipRect, LPOLEINPLACEFRAMEINFO lpFrameInfo)
 	{
 		TRACE(_T("AX: CActiveXCtrl::GetWindowContext"));
 		if( ppDoc == NULL ) return E_POINTER;
@@ -785,13 +784,13 @@ namespace DuiLib {
 		LRESULT lRes;
 		BOOL bHandled = TRUE;
 		switch( uMsg ) {
-			case WM_PAINT:         lRes = OnPaint(uMsg, wParam, lParam, bHandled); break;
-			case WM_SETFOCUS:      lRes = OnSetFocus(uMsg, wParam, lParam, bHandled); break;
-			case WM_KILLFOCUS:     lRes = OnKillFocus(uMsg, wParam, lParam, bHandled); break;
-			case WM_ERASEBKGND:    lRes = OnEraseBkgnd(uMsg, wParam, lParam, bHandled); break;
-			case WM_MOUSEACTIVATE: lRes = OnMouseActivate(uMsg, wParam, lParam, bHandled); break;
-			default:
-				bHandled = FALSE;
+	case WM_PAINT:         lRes = OnPaint(uMsg, wParam, lParam, bHandled); break;
+	case WM_SETFOCUS:      lRes = OnSetFocus(uMsg, wParam, lParam, bHandled); break;
+	case WM_KILLFOCUS:     lRes = OnKillFocus(uMsg, wParam, lParam, bHandled); break;
+	case WM_ERASEBKGND:    lRes = OnEraseBkgnd(uMsg, wParam, lParam, bHandled); break;
+	case WM_MOUSEACTIVATE: lRes = OnMouseActivate(uMsg, wParam, lParam, bHandled); break;
+	default:
+		bHandled = FALSE;
 		}
 		if( !bHandled ) return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 		return lRes;
@@ -1104,7 +1103,7 @@ namespace DuiLib {
 		if( FAILED(Hr) ) Hr = m_pUnk->QueryInterface(IID_IViewObject, (LPVOID*) &m_pControl->m_pViewObject);
 		// Activate and done...
 		m_pUnk->SetHostNames(OLESTR("UIActiveX"), NULL);
-		if( m_pManager != NULL ) m_pManager->SendNotify((CControlUI*)this, _T("showactivex"));
+		if( m_pManager != NULL ) m_pManager->SendNotify((CControlUI*)this, _T("showactivex"), 0, 0, false);
 		if( (dwMiscStatus & OLEMISC_INVISIBLEATRUNTIME) == 0 ) {
 			Hr = m_pUnk->DoVerb(OLEIVERB_INPLACEACTIVATE, NULL, pOleClientSite, 0, m_pManager->GetPaintWindow(), &m_rcItem);
 			//::RedrawWindow(m_pManager->GetPaintWindow(), &m_rcItem, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_FRAME);

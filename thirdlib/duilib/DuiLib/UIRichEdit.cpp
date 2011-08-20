@@ -484,8 +484,7 @@ err:
 
 	void CTxtWinHost::TxViewChange(BOOL fUpdate) 
 	{
-		if( m_re->OnTxViewChanged() )
-			::UpdateWindow(m_re->GetManager()->GetPaintWindow());
+		if( m_re->OnTxViewChanged() ) m_re->Invalidate();
 	}
 
 	BOOL CTxtWinHost::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight)
@@ -1630,7 +1629,7 @@ err:
 			m_pTwh->SetTransparent(TRUE);
 			LRESULT lResult;
 			m_pTwh->GetTextServices()->TxSendMessage(EM_SETLANGOPTIONS, 0, 0, &lResult);
-			if( m_bReadOnly ) m_pTwh->OnTxInPlaceActivate(NULL);
+			m_pTwh->OnTxInPlaceActivate(NULL);
 			m_pManager->AddMessageFilter(this);
 		}
 	}
@@ -2111,11 +2110,19 @@ err:
 #endif
 			if( !IsFocused() ) return 0;
 		}
+		else if( uMsg == WM_CONTEXTMENU ) {
+			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+			::ScreenToClient(GetManager()->GetPaintWindow(), &pt);
+			CControlUI* pHover = GetManager()->FindControl(pt);
+			if(pHover != this) {
+				bWasHandled = false;
+				return 0;
+			}
+		}
 		else
 		{
 			switch( uMsg ) {
 	case WM_HELP:
-	case WM_CONTEXTMENU:
 		bWasHandled = false;
 		break;
 	default:

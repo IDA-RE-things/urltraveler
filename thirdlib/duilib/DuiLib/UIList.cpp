@@ -489,7 +489,7 @@ namespace DuiLib
 			return;
 
 
- 		// 如果支持多选
+		// 如果支持多选
 		if( IsItemMultiSelect() == true)
 		{
 			// 如果Ctrl键被按下
@@ -526,7 +526,7 @@ namespace DuiLib
 		}
 		else
 		{
- 			// 如果是单选或者如果是多选，但是没有按下Ctrl键
+			// 如果是单选或者如果是多选，但是没有按下Ctrl键
 			// 此时只选中一个 
 			if( m_vCurSel.size() > 0)
 			{
@@ -800,11 +800,11 @@ namespace DuiLib
 
 		if( pListNextToSelectItem != NULL)
 		{
-/*
+			/*
 			pListNextToSelectItem->Select(true);
 			m_pManager->SetFocus(this);
 			m_vCurSel.push_back(pListNextToSelectItem->GetIndex());
-*/
+			*/
 
 			SelectItem(pListNextToSelectItem);
 		}
@@ -893,7 +893,7 @@ namespace DuiLib
 		return true;
 	}
 
-	bool CListUI::SelectItem(int iIndex)
+	bool CListUI::SelectItem(int iIndex,bool bTakeFocus)
 	{
 		if( iIndex < 0 ) return false;
 
@@ -1000,7 +1000,7 @@ namespace DuiLib
 
 	void CListUI::SetItemImage(LPCTSTR pStrImage)
 	{
-		m_ListInfo.sImage = pStrImage;
+		m_ListInfo.sBkImage = pStrImage;
 		Invalidate();
 	}
 
@@ -1021,7 +1021,7 @@ namespace DuiLib
 
 	LPCTSTR CListUI::GetItemImage() const
 	{
-		return m_ListInfo.sImage;
+		return m_ListInfo.sBkImage;
 	}
 
 	void CListUI::SetSelectedItemTextColor(DWORD dwTextColor)
@@ -1556,15 +1556,18 @@ namespace DuiLib
 				rc.right -= nScrollBarWidth;
 			}
 		}
+		m_pEditUI->SetPos(rc);
+		m_pEditUI->SetText(pstrText);
+		m_pEditUI->SetFocus();
+		//m_pEditUI->SetSel();
 
 		if( m_pEditUI)
 		{
 			m_pEditUI->SetPos(rc);
 			m_pEditUI->SetText(pstrText);
 			m_pEditUI->SetFocus();
-			m_pEditUI->SetSel();
+			//m_pEditUI->SetSel();
 		}
-
 	}
 
 	void CListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
@@ -1601,7 +1604,7 @@ namespace DuiLib
 		LPCTSTR pstrText = NULL;
 		if( m_pCallback ) 
 			pstrText = m_pCallback->GetItemText(pItem, nRow, nColumn);
-		
+
 		return pstrText;
 	}
 
@@ -2464,20 +2467,20 @@ namespace DuiLib
 			return;
 		}
 
-/*
+		/*
 		if( event.Type == UIEVENT_MOUSEMOVE )
 		{
-			if( GetAsyncKeyState(VK_LBUTTON) )
-			{
-				event.Type = UIEVENT_DRAGOVER;
-				event.wParam = m_iIndex;
-				event.pSender = this;
-				if( m_pOwner != NULL)
-					m_pOwner->DoEvent(event);
-			}
-			return;
+		if( GetAsyncKeyState(VK_LBUTTON) )
+		{
+		event.Type = UIEVENT_DRAGOVER;
+		event.wParam = m_iIndex;
+		event.pSender = this;
+		if( m_pOwner != NULL)
+		m_pOwner->DoEvent(event);
 		}
-*/
+		return;
+		}
+		*/
 
 		if( event.Type == UIEVENT_BUTTONDOWN 
 			|| event.Type == UIEVENT_BUTTONUP
@@ -2564,8 +2567,8 @@ namespace DuiLib
 		}
 
 		if( m_sBkImage.IsEmpty() ) {
-			if( !pInfo->sImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)pInfo->sImage) ) pInfo->sImage.Empty();
+			if( !pInfo->sBkImage.IsEmpty() ) {
+				if( !DrawImage(hDC, (LPCTSTR)pInfo->sBkImage) ) pInfo->sBkImage.Empty();
 				else return;
 			}
 		}
@@ -2641,7 +2644,7 @@ namespace DuiLib
 			}
 			return;
 		}
-		
+
 
 		CListElementUI::DoEvent(event);
 	}
@@ -3490,9 +3493,9 @@ namespace DuiLib
 	{
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN 
 			&& event.Type < UIEVENT__MOUSEEND ) {
-			if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
-			else CContainerUI::DoEvent(event);
-			return;
+				if( m_pOwner != NULL ) m_pOwner->DoEvent(event);
+				else CContainerUI::DoEvent(event);
+				return;
 		}
 
 		if( event.Type == UIEVENT_DBLCLICK )
@@ -3615,8 +3618,8 @@ namespace DuiLib
 		}
 
 		if( m_sBkImage.IsEmpty() ) {
-			if( !pInfo->sImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)pInfo->sImage) ) pInfo->sImage.Empty();
+			if( !pInfo->sBkImage.IsEmpty() ) {
+				if( !DrawImage(hDC, (LPCTSTR)pInfo->sBkImage) ) pInfo->sBkImage.Empty();
 				else return;
 			}
 		}

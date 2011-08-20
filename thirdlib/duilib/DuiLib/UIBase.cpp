@@ -273,10 +273,17 @@ namespace DuiLib {
 	bool CStdPtrArray::Add(LPVOID pData)
 	{
 		if( ++m_nCount >= m_nAllocated) {
-			m_nAllocated *= 2;
-			if( m_nAllocated == 0 ) m_nAllocated = 11;
-			m_ppVoid = static_cast<LPVOID*>(realloc(m_ppVoid, m_nAllocated * sizeof(LPVOID)));
-			if( m_ppVoid == NULL ) return false;
+			int nAllocated = m_nAllocated * 2;
+			if( nAllocated == 0 ) nAllocated = 11;
+			LPVOID* ppVoid = static_cast<LPVOID*>(realloc(m_ppVoid, nAllocated * sizeof(LPVOID)));
+			if( ppVoid != NULL ) {
+				m_nAllocated = nAllocated;
+				m_ppVoid = ppVoid;
+			}
+			else {
+				--m_nCount;
+				return false;
+			}
 		}
 		m_ppVoid[m_nCount - 1] = pData;
 		return true;
@@ -287,10 +294,17 @@ namespace DuiLib {
 		if( iIndex == m_nCount ) return Add(pData);
 		if( iIndex < 0 || iIndex > m_nCount ) return false;
 		if( ++m_nCount >= m_nAllocated) {
-			m_nAllocated *= 2;
-			if( m_nAllocated == 0 ) m_nAllocated = 11;
-			m_ppVoid = static_cast<LPVOID*>(realloc(m_ppVoid, m_nAllocated * sizeof(LPVOID)));
-			if( m_ppVoid == NULL ) return false;
+			int nAllocated = m_nAllocated * 2;
+			if( nAllocated == 0 ) nAllocated = 11;
+			LPVOID* ppVoid = static_cast<LPVOID*>(realloc(m_ppVoid, nAllocated * sizeof(LPVOID)));
+			if( ppVoid != NULL ) {
+				m_nAllocated = nAllocated;
+				m_ppVoid = ppVoid;
+			}
+			else {
+				--m_nCount;
+				return false;
+			}
 		}
 		memmove(&m_ppVoid[iIndex + 1], &m_ppVoid[iIndex], (m_nCount - iIndex - 1) * sizeof(LPVOID));
 		m_ppVoid[iIndex] = pData;
@@ -373,10 +387,17 @@ namespace DuiLib {
 	bool CStdValArray::Add(LPCVOID pData)
 	{
 		if( ++m_nCount >= m_nAllocated) {
-			m_nAllocated *= 2;
-			if( m_nAllocated == 0 ) m_nAllocated = 11;
-			m_pVoid = static_cast<LPBYTE>(realloc(m_pVoid, m_nAllocated * m_iElementSize));
-			if( m_pVoid == NULL ) return false;
+			int nAllocated = m_nAllocated * 2;
+			if( nAllocated == 0 ) nAllocated = 11;
+			LPBYTE pVoid = static_cast<LPBYTE>(realloc(m_pVoid, nAllocated * m_iElementSize));
+			if( pVoid != NULL ) {
+				m_nAllocated = nAllocated;
+				m_pVoid = pVoid;
+			}
+			else {
+				--m_nCount;
+				return false;
+			}
 		}
 		::CopyMemory(m_pVoid + ((m_nCount - 1) * m_iElementSize), pData, m_iElementSize);
 		return true;
@@ -955,15 +976,17 @@ namespace DuiLib {
 		::ShowWindow(m_hWnd, bShow ? (bTakeFocus ? SW_SHOWNORMAL : SW_SHOWNOACTIVATE) : SW_HIDE);
 	}
 
-	bool CWindowWnd::ShowModal()
+	UINT CWindowWnd::ShowModal()
 	{
 		ASSERT(::IsWindow(m_hWnd));
+		UINT nRet = 0;
 		HWND hWndParent = GetWindowOwner(m_hWnd);
 		::ShowWindow(m_hWnd, SW_SHOWNORMAL);
 		::EnableWindow(hWndParent, FALSE);
 		MSG msg = { 0 };
 		while( ::IsWindow(m_hWnd) && ::GetMessage(&msg, NULL, 0, 0) ) {
 			if( msg.message == WM_CLOSE && msg.hwnd == m_hWnd ) {
+				nRet = msg.wParam;
 				::EnableWindow(hWndParent, TRUE);
 				::SetFocus(hWndParent);
 			}
@@ -976,14 +999,14 @@ namespace DuiLib {
 		::EnableWindow(hWndParent, TRUE);
 		::SetFocus(hWndParent);
 		if( msg.message == WM_QUIT ) ::PostQuitMessage(msg.wParam);
-		return true;
+		return nRet;
 	}
 
-	void CWindowWnd::Close()
+	void CWindowWnd::Close(UINT nRet)
 	{
 		ASSERT(::IsWindow(m_hWnd));
 		if( !::IsWindow(m_hWnd) ) return;
-		PostMessage(WM_CLOSE);
+		PostMessage(WM_CLOSE, (WPARAM)nRet, 0L);
 	}
 
 	void CWindowWnd::CenterWindow()

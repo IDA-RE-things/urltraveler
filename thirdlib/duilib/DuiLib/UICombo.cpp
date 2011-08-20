@@ -130,7 +130,7 @@ namespace DuiLib {
 		else if( uMsg == WM_KEYDOWN ) {
 			switch( wParam ) {
 	case VK_ESCAPE:
-		m_pOwner->SelectItem(m_iOldSel);
+		m_pOwner->SelectItem(m_iOldSel, true);
 		EnsureVisible(m_iOldSel);
 		// FALL THROUGH...
 	case VK_RETURN:
@@ -201,6 +201,7 @@ namespace DuiLib {
 		m_ListInfo.uTextStyle = DT_VCENTER;
 		m_ListInfo.dwTextColor = 0xFF000000;
 		m_ListInfo.dwBkColor = 0;
+		m_ListInfo.bAlternateBk = false;
 		m_ListInfo.dwSelectedTextColor = 0xFF000000;
 		m_ListInfo.dwSelectedBkColor = 0xFFC1E3FF;
 		m_ListInfo.dwHotTextColor = 0xFF000000;
@@ -222,7 +223,7 @@ namespace DuiLib {
 	LPVOID CComboUI::GetInterface(LPCTSTR pstrName)
 	{
 		if( _tcscmp(pstrName, _T("Combo")) == 0 ) return static_cast<CComboUI*>(this);
-		if( _tcscmp(pstrName, _T("ListOwner")) == 0 ) return static_cast<IListOwnerUI*>(this);
+		if( _tcscmp(pstrName, _T("IListOwner")) == 0 ) return static_cast<IListOwnerUI*>(this);
 		return CContainerUI::GetInterface(pstrName);
 	}
 
@@ -233,7 +234,6 @@ namespace DuiLib {
 
 	void CComboUI::DoInit()
 	{
-		if( m_iCurSel < 0 ) SelectItem(0);
 	}
 
 	int CComboUI::GetCurSel() const
@@ -252,10 +252,11 @@ namespace DuiLib {
 		return pInt;
 	}
 
-
-	bool CComboUI::SelectItem(int iIndex)
+	bool CComboUI::SelectItem(int iIndex, bool bTakeFocus)
 	{
+		if( m_pWindow != NULL ) m_pWindow->Close();
 		if( iIndex == m_iCurSel ) return true;
+		int iOldSel = m_iCurSel;
 		if( m_iCurSel >= 0 ) {
 			CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
 			if( !pControl ) return false;
@@ -271,9 +272,9 @@ namespace DuiLib {
 		IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
 		if( pListItem == NULL ) return false;
 		m_iCurSel = iIndex;
-		pControl->SetFocus();
+		if( m_pWindow != NULL || bTakeFocus ) pControl->SetFocus();
 		pListItem->Select(true);
-		if( m_pManager != NULL ) m_pManager->SendNotify(this, _T("itemselect"));
+		if( m_pManager != NULL ) m_pManager->SendNotify(this, _T("itemselect"), m_iCurSel, iOldSel);
 		Invalidate();
 
 		return true;
@@ -282,26 +283,23 @@ namespace DuiLib {
 	bool CComboUI::SetItemIndex(CControlUI* pControl, int iIndex)
 	{
 		int iOrginIndex = GetItemIndex(pControl);
-		if (iOrginIndex == -1) return false;
+		if( iOrginIndex == -1 ) return false;
+		if( iOrginIndex == iIndex ) return true;
 
-		if (!CContainerUI::SetItemIndex(pControl, iIndex)) return false;
-
-		// The list items should know about us
-		IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
-		if( pListItem != NULL ) {
-			pListItem->SetIndex(GetRowCount()); // 本来是GetRowCount() - 1的，不过后面有减一
-		}
-
-		for(int i = iOrginIndex; i < GetRowCount(); ++i)
-		{
+		IListItemUI* pSelectedListItem = NULL;
+		if( m_iCurSel >= 0 ) pSelectedListItem = 
+			static_cast<IListItemUI*>(GetItemAt(m_iCurSel)->GetInterface(_T("ListItem")));
+		if( !CContainerUI::SetItemIndex(pControl, iIndex) ) return false;
+		int iMinIndex = min(iOrginIndex, iIndex);
+		int iMaxIndex = max(iOrginIndex, iIndex);
+		for(int i = iMinIndex; i < iMaxIndex + 1; ++i) {
 			CControlUI* p = GetItemAt(i);
-			pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
+			IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
 			if( pListItem != NULL ) {
-				pListItem->SetIndex(pListItem->GetIndex() - 1);
+				pListItem->SetIndex(i);
 			}
 		}
-
-		SelectItem(FindSelectable(m_iCurSel, false));
+		if( m_iCurSel >= 0 && pSelectedListItem != NULL ) m_iCurSel = pSelectedListItem->GetIndex();
 		return true;
 	}
 
@@ -327,14 +325,14 @@ namespace DuiLib {
 			pListItem->SetIndex(iIndex);
 		}
 
-		for(int i = iIndex + 1; i < GetRowCount(); ++i)
-		{
+		for(int i = iIndex + 1; i < GetRowCount(); ++i) {
 			CControlUI* p = GetItemAt(i);
 			pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
 			if( pListItem != NULL ) {
-				pListItem->SetIndex(pListItem->GetIndex() + 1);
+				pListItem->SetIndex(i);
 			}
 		}
+		if( m_iCurSel >= iIndex ) m_iCurSel += 1;
 		return true;
 	}
 
@@ -345,16 +343,20 @@ namespace DuiLib {
 
 		if (!CContainerUI::RemoveAt(iIndex)) return false;
 
-		for(int i = iIndex; i < GetRowCount(); ++i)
-		{
+		for(int i = iIndex; i < GetRowCount(); ++i) {
 			CControlUI* p = GetItemAt(i);
 			IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
 			if( pListItem != NULL ) {
-				pListItem->SetIndex(pListItem->GetIndex() - 1);
+				pListItem->SetIndex(i);
 			}
 		}
 
-		SelectItem(FindSelectable(m_iCurSel, false));
+		if( iIndex == m_iCurSel && m_iCurSel >= 0 ) {
+			int iSel = m_iCurSel;
+			m_iCurSel = -1;
+			SelectItem(FindSelectable(iSel, false));
+		}
+		else if( iIndex < m_iCurSel ) m_iCurSel -= 1;
 		return true;
 	}
 
@@ -362,16 +364,18 @@ namespace DuiLib {
 	{
 		if (!CContainerUI::RemoveAt(iIndex)) return false;
 
-		for(int i = iIndex; i < GetRowCount(); ++i)
-		{
+		for(int i = iIndex; i < GetRowCount(); ++i) {
 			CControlUI* p = GetItemAt(i);
 			IListItemUI* pListItem = static_cast<IListItemUI*>(p->GetInterface(_T("ListItem")));
-			if( pListItem != NULL ) {
-				pListItem->SetIndex(pListItem->GetIndex() - 1);
-			}
+			if( pListItem != NULL ) pListItem->SetIndex(i);
 		}
 
-		SelectItem(FindSelectable(m_iCurSel, false));
+		if( iIndex == m_iCurSel && m_iCurSel >= 0 ) {
+			int iSel = m_iCurSel;
+			m_iCurSel = -1;
+			SelectItem(FindSelectable(iSel, false));
+		}
+		else if( iIndex < m_iCurSel ) m_iCurSel -= 1;
 		return true;
 	}
 
@@ -629,9 +633,9 @@ namespace DuiLib {
 		m_ListInfo.dwBkColor = dwBkColor;
 	}
 
-	void CComboUI::SetItemImage(LPCTSTR pStrImage)
+	void CComboUI::SetItemBkImage(LPCTSTR pStrImage)
 	{
-		m_ListInfo.sImage = pStrImage;
+		m_ListInfo.sBkImage = pStrImage;
 	}
 
 	DWORD CComboUI::GetItemTextColor() const
@@ -644,9 +648,19 @@ namespace DuiLib {
 		return m_ListInfo.dwBkColor;
 	}
 
-	LPCTSTR CComboUI::GetItemImage() const
+	LPCTSTR CComboUI::GetItemBkImage() const
 	{
-		return m_ListInfo.sImage;
+		return m_ListInfo.sBkImage;
+	}
+
+	bool CComboUI::IsAlternateBk() const
+	{
+		return m_ListInfo.bAlternateBk;
+	}
+
+	void CComboUI::SetAlternateBk(bool bAlternateBk)
+	{
+		m_ListInfo.bAlternateBk = bAlternateBk;
 	}
 
 	void CComboUI::SetSelectedItemTextColor(DWORD dwTextColor)
@@ -823,7 +837,8 @@ namespace DuiLib {
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 			SetItemBkColor(clrColor);
 		}
-		else if( _tcscmp(pstrName, _T("itemimage")) == 0 ) SetItemImage(pstrValue);
+		else if( _tcscmp(pstrName, _T("itembkimage")) == 0 ) SetItemBkImage(pstrValue);
+		else if( _tcscmp(pstrName, _T("itemaltbk")) == 0 ) SetAlternateBk(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("itemselectedtextcolor")) == 0 ) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;

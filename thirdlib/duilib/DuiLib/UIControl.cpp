@@ -13,7 +13,7 @@ m_bFocused(false),
 m_bEnabled(true),
 m_bMouseEnabled(true),
 m_bFloat(false),
-m_bFloatSetPos(false),
+m_bSetPos(false),
 m_chShortcut('\0'),
 m_pTag(NULL),
 m_dwBackColor(0),
@@ -21,6 +21,7 @@ m_dwBackColor2(0),
 m_dwBackColor3(0),
 m_dwBorderColor(0),
 m_dwFocusBorderColor(0),
+m_bColorHSL(false),
 m_nBorderSize(1)
 {
 	m_cXY.cx = m_cXY.cy = 0;
@@ -37,11 +38,7 @@ m_nBorderSize(1)
 
 CControlUI::~CControlUI()
 {
-	TEventUI event = { 0 };
-	event.Type = UIEVENT_DESTROY;
-	event.pSender = this;
-	event.dwTimestamp = ::GetTickCount();
-	OnDestroy(event);
+	if( OnDestroy ) OnDestroy(this);
 	if( m_pManager != NULL ) m_pManager->ReapObjects(this);
 }
 
@@ -87,13 +84,7 @@ void CControlUI::SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool
 {
 	m_pManager = pManager;
 	m_pParent = pParent;
-	if( bInit && m_pParent ) {
-		TEventUI event = { 0 };
-		event.Type = UIEVENT_INIT;
-		event.pSender = this;
-		event.dwTimestamp = ::GetTickCount();
-		Init(event);
-	}
+	if( bInit && m_pParent ) Init();
 }
 
 CControlUI* CControlUI::GetParent() const
@@ -108,8 +99,7 @@ CStdString CControlUI::GetText() const
 
 void CControlUI::SetText(LPCTSTR pstrText)
 {
-	if( m_sText == pstrText ) 
-		return;
+	if( m_sText == pstrText ) return;
 
 	m_sText = pstrText;
 	Invalidate();
@@ -193,6 +183,19 @@ void CControlUI::SetFocusBorderColor(DWORD dwBorderColor)
 	Invalidate();
 }
 
+bool CControlUI::IsColorHSL() const
+{
+	return m_bColorHSL;
+}
+
+void CControlUI::SetColorHSL(bool bColorHSL)
+{
+	if( m_bColorHSL == bColorHSL ) return;
+
+	m_bColorHSL = bColorHSL;
+	Invalidate();
+}
+
 int CControlUI::GetBorderSize() const
 {
 	return m_nBorderSize;
@@ -238,29 +241,26 @@ void CControlUI::SetPos(RECT rc)
 	m_rcItem = rc;
 	if( m_pManager == NULL ) return;
 
-	if( m_bFloat ) {
-		if( !m_bFloatSetPos ) {
-			m_bFloatSetPos = true;
-			m_pManager->SendNotify(this, _T("setpos"));
-			m_bFloatSetPos = false;
-		}
+	if( !m_bSetPos ) {
+		m_bSetPos = true;
+		if( OnSize ) OnSize(this);
+		m_bSetPos = false;
+	}
 
+	if( m_bFloat ) {
 		CControlUI* pParent = GetParent();
 		if( pParent != NULL ) {
 			RECT rcParentPos = pParent->GetPos();
 			if( m_cXY.cx >= 0 ) m_cXY.cx = m_rcItem.left - rcParentPos.left;
 			else m_cXY.cx = m_rcItem.right - rcParentPos.right;
-
 			if( m_cXY.cy >= 0 ) m_cXY.cy = m_rcItem.top - rcParentPos.top;
 			else m_cXY.cy = m_rcItem.bottom - rcParentPos.bottom;
+			m_cxyFixed.cx = m_rcItem.right - m_rcItem.left;
+			m_cxyFixed.cy = m_rcItem.bottom - m_rcItem.top;
 		}
 	}
 
 	m_bUpdateNeeded = false;
-
-	// NOTE: SetPos() is usually called during the WM_PAINT cycle where all controls are
-	//       being laid out. Calling UpdateLayout() again would be wrong. Refreshing the
-	//       window won't hurt (if we're already inside WM_PAINT we'll just validate it out).
 	invalidateRc.Join(m_rcItem);
 
 	CControlUI* pParent = this;
@@ -608,10 +608,18 @@ void CControlUI::NeedParentUpdate()
 	if( m_pManager != NULL ) m_pManager->NeedUpdate();
 }
 
-void CControlUI::Init(TEventUI& event)
+DWORD CControlUI::GetAdjustColor(DWORD dwColor)
+{
+	if( !m_bColorHSL ) return dwColor;
+	short H, S, L;
+	CPaintManagerUI::GetHSL(&H, &S, &L);
+	return CRenderEngine::AdjustColor(dwColor, H, S, L);
+}
+
+void CControlUI::Init()
 {
 	DoInit();
-	OnInit(event);
+	if( OnInit ) OnInit(this);
 }
 
 void CControlUI::DoInit()
@@ -621,7 +629,7 @@ void CControlUI::DoInit()
 
 void CControlUI::Event(TEventUI& event)
 {
-	if( OnEvent(event) ) DoEvent(event);
+	if( OnEvent(&event) ) DoEvent(event);
 }
 
 void CControlUI::DoEvent(TEventUI& event)
@@ -723,6 +731,7 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
 		SetFocusBorderColor(clrColor);
 	}
+	else if( _tcscmp(pstrName, _T("colorhsl")) == 0 ) SetColorHSL(_tcscmp(pstrValue, _T("true")) == 0);
 	else if( _tcscmp(pstrName, _T("bordersize")) == 0 ) SetBorderSize(_ttoi(pstrValue));
 	else if( _tcscmp(pstrName, _T("borderround")) == 0 ) {
 		SIZE cxyRound = { 0 };
@@ -816,16 +825,16 @@ void CControlUI::PaintBkColor(HDC hDC)
 			if( m_dwBackColor3 != 0 ) {
 				RECT rc = m_rcItem;
 				rc.bottom = (rc.bottom + rc.top) / 2;
-				CRenderEngine::DrawGradient(hDC, rc, m_dwBackColor, m_dwBackColor2, true, 8);
+				CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 8);
 				rc.top = rc.bottom;
 				rc.bottom = m_rcItem.bottom;
-				CRenderEngine::DrawGradient(hDC, rc, m_dwBackColor2, m_dwBackColor3, true, 8);
+				CRenderEngine::DrawGradient(hDC, rc, GetAdjustColor(m_dwBackColor2), GetAdjustColor(m_dwBackColor3), true, 8);
 			}
 			else 
-				CRenderEngine::DrawGradient(hDC, m_rcItem, m_dwBackColor, m_dwBackColor2, true, 16);
+				CRenderEngine::DrawGradient(hDC, m_rcItem, GetAdjustColor(m_dwBackColor), GetAdjustColor(m_dwBackColor2), true, 16);
 		}
-		else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, m_dwBackColor);
-		else CRenderEngine::DrawColor(hDC, m_rcItem, m_dwBackColor);
+		else if( m_dwBackColor >= 0xFF000000 ) CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwBackColor));
+		else CRenderEngine::DrawColor(hDC, m_rcItem, GetAdjustColor(m_dwBackColor));
 	}
 }
 
@@ -852,16 +861,16 @@ void CControlUI::PaintBorder(HDC hDC)
 		if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 )
 		{
 			if (IsFocused() && m_dwFocusBorderColor != 0)
-				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, m_dwFocusBorderColor);
+				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwFocusBorderColor));
 			else
-				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, m_dwBorderColor);
+				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwBorderColor));
 		}
 		else
 		{
 			if (IsFocused() && m_dwFocusBorderColor != 0)
-				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, m_dwFocusBorderColor);
+				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(m_dwFocusBorderColor));
 			else if (m_dwBorderColor != 0)
-				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, m_dwBorderColor);
+				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(m_dwBorderColor));
 		}
 	}
 }
