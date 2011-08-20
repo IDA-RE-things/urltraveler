@@ -301,7 +301,7 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 		}
 	}
 
-	SetFavoriteNumText(j);
+	SetFavoriteNumText(j, nFavoriteNum);
 }
 
 void	CMainFrameWnd::OnTabChange(TNotifyUI& msg)
@@ -346,14 +346,15 @@ void	CMainFrameWnd::OnBtnClose(TNotifyUI& msg)
 	}
 }
 
-void	CMainFrameWnd::SetFavoriteNumText(int nNum)
+void	CMainFrameWnd::SetFavoriteNumText(int nNum,  int nTotal)
 {
 	CTextUI* pFavoriteNumber = static_cast<CTextUI*>(m_pm.FindControl(_T("FavoriteNum")));
 	pFavoriteNumber->SetShowHtml();
 	if (pFavoriteNumber)
 	{
 		TCHAR szFavoriteNum[MAX_PATH] = {0};
-		_stprintf_s(szFavoriteNum, MAX_PATH - 1, _T("该文件夹下共有 {b}{c #FF0000}%d{/c}{/b} 个收藏"), nNum);
+		_stprintf_s(szFavoriteNum, MAX_PATH - 1, 
+			_T("该文件夹下共有 {b}{c #FF0000}%d{/c}{/b} 个收藏 / 总共 {b}{c #FF0000}%d{/c}{/b} 个收藏"), nNum, nTotal);
 		pFavoriteNumber->SetText(szFavoriteNum);
 	}
 }
@@ -560,7 +561,9 @@ void	CMainFrameWnd::OnFavoriteListItemMoved(TNotifyUI& msg)
 		}
 	}
 
-	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
+	int nTotalNum = 0;
+	GetFavoriteLineData(nTotalNum);
+	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size(), nTotalNum);
 }
 
 void	CMainFrameWnd::OnFavoriteKeyDown(TNotifyUI& msg)
@@ -1172,7 +1175,10 @@ void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 		return;
 	m_pDragList->Invalidate();
 
-	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
+	int nTotalNum = 0;
+	GetFavoriteLineData(nTotalNum);
+
+	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size(), nTotalNum);
 }
 
 void	CMainFrameWnd::DeleteFavoriteFold(int nIndex)
@@ -1284,8 +1290,11 @@ void	CMainFrameWnd::AddUrlSuccess(PFAVORITELINEDATA pData)
 		m_pDragList->Invalidate();
 	}
 
+
 	int nFavoriteNum = m_vFavoriteNodeAtTreeNode.size();
-	SetFavoriteNumText(nFavoriteNum);
+	int nTotalNum = 0;
+	GetFavoriteLineData(nTotalNum);
+	SetFavoriteNumText(nFavoriteNum, nTotalNum);
 }
 
 void	CMainFrameWnd::AddFavoriteFoldSuccess(int nParentId, PFAVORITELINEDATA pData)

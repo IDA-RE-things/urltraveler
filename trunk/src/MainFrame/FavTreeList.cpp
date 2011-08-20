@@ -589,8 +589,6 @@ void CFavoriteTreeListUI::DoEvent(TEventUI& event)
 
 		case VK_UP:
 		case VK_DOWN:
-		case VK_PRIOR:
-		case VK_NEXT:
 		case VK_HOME:
 		case VK_END:
 			{
@@ -599,6 +597,7 @@ void CFavoriteTreeListUI::DoEvent(TEventUI& event)
 				notify.pSender = this;
 				notify.wParam = GetCurSel();
 				m_pManager->SendNotify(notify);
+
 			}
 			break;
 		}
