@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "CRCHash.h"
 #include "PathHelper.h"
+#include "FileHelper.h"
 
 #include "360ChromePlugIn.h"
 #include "360SEPlugInFactory.h"
@@ -188,7 +189,7 @@ BOOL C360ChromePlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 //名称: ImportFavoriteData
 //描述: 将当前的记录导入到浏览器中
 //参数: 
-//		@param	pData			需要导入的的收藏夹数据数组
+//		@param	ppData			需要导入的的收藏夹数据数组
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
 BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
@@ -201,14 +202,16 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nData
 	wchar_t* pszPath = GetFavoriteDataPath();
 
 	//获取导入文件路径
-	std::string strTmpPath = StringHelper::UnicodeToUtf8(pszPath);
-
-	//导入前先删除之前的收藏夹文件
-	BOOL bResult = ::DeleteFileW(pszPath);
-	free(pszPath);
-	if (!bResult)
+	std::wstring strTmpPath = StringHelper::ANSIToUnicode(StringHelper::UnicodeToUtf8(pszPath));
+	if( FileHelper::IsFileExist(strTmpPath.c_str()) == TRUE)
 	{
-		return FALSE;
+		//导入前先删除之前的收藏夹文件
+		BOOL bResult = FileHelper::DeleteFile(pszPath);
+		free(pszPath);
+		if (!bResult)
+		{
+			return FALSE;
+		}
 	}
 
 	Json::Value root;
@@ -264,7 +267,7 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nData
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
-	for (int k = 0; k <= nDataNum; k++)
+	for (int k = 0; k < nDataNum; k++)
 	{
 		itIdIndex = m_mapIdIndexInfo.find(ppData[k]->nId);
 		if (itIdIndex != m_mapIdIndexInfo.end())

@@ -84,7 +84,7 @@ public:
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum);
+	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum);
 
 	//----------------------------------------------------------------------------------------
 	//名称: ImportFavoriteData
@@ -110,7 +110,7 @@ private:
 	//		@param	nIndex			当前节点索引
 	//      @param	pData           节点数据链表
 	//----------------------------------------------------------------------------------------
-	wchar_t* GetNodeAbsolutePath(int32 nIndex, PFAVORITELINEDATA pData);
+	wchar_t* GetNodeAbsolutePath(int32 nIndex, PFAVORITELINEDATA* ppData);
 
 	BOOL GetFileTimeInfo(void *pFileData, FILETIMEINFO *pstFileTimeInfo);
 

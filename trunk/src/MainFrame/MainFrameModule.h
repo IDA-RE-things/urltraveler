@@ -94,7 +94,11 @@ protected:
 	void	OnMessage_PlugInLoaded(Message* pMessage);
 	void	OnMessage_PlugInBeginExport(Message* pMessage);
 	void	OnMessage_PlugInEndExport(Message* pMessage);
+	void	OnMessage_PlugInBeginImport(Message* pMessage);
+	void	OnMessage_PlugInEndImport(Message* pMessage);
+
 	void	OnMessage_PlugInInExportProcess(Message* pMessage);
+	void	OnMessage_PlugInPreBeginImport(Message* pMessage);
 
 protected:
 

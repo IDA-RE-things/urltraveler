@@ -44,6 +44,7 @@ PlugInModule::~PlugInModule()
 BEGIN_EVENT_MAP(PlugInModule)
 	ON_EVENT(EVENT_VALUE_PLUGIN_LOAD_ALL, OnEvent_LoadAllPlugin)
 	ON_EVENT(EVENT_VALUE_PLUGIN_CHECK_IS_WORKED, OnEvent_CheckPlugInWorked)
+	ON_EVENT(EVENT_VALUE_PLUGIN_BEGIN_TO_SYNC, OnEvent_BeginToSync)
 END_EVENT_MAP()
 
 BEGIN_SERVICE_MAP(PlugInModule)
@@ -286,6 +287,37 @@ void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 	m_pThreadObj->CreateThread(static_cast<IThreadEvent *>(this));
 }
 
+void	PlugInModule::OnEvent_BeginToSync(Event* pEvent)
+{
+	GetModuleManager()->PushMessage(MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_IMPORT_PRE_BEGIN));
+	
+	DataCenter_GetFavoriteVectorService favoriteVectorService;
+	m_pModuleManager->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR, (param)&favoriteVectorService);
+	std::vector<FAVORITELINEDATA*>*	pvFavoriteData = favoriteVectorService.pvFavoriteData;
+	if( pvFavoriteData == NULL)
+		return;
+
+	for( int i=0; i<m_vPlugIns.size(); i++)
+	{
+		IPlugIn* pPlugIn = m_vPlugIns.at(i);
+		if( pPlugIn == NULL)
+			continue;
+
+		// 通知开始进行收藏夹数据导出
+		PlugIn_ImportBeginMessage* pImportBeginMessage = new PlugIn_ImportBeginMessage();
+		pImportBeginMessage->pPlugIn = pPlugIn;
+		GetModuleManager()->PushMessage(*pImportBeginMessage);
+
+		BOOL bRet = pPlugIn->ImportFavoriteData(&(*pvFavoriteData)[0], m_nSumFavorite);
+
+		PlugIn_ImportEndMessage* pImportEndMessage = new PlugIn_ImportEndMessage();
+		pImportEndMessage->pPlugIn = pPlugIn;
+		pImportEndMessage->nFavoriteNum = pvFavoriteData->size();
+		pImportEndMessage->bSuccess = bRet;
+		GetModuleManager()->PushMessage(*pImportEndMessage);
+	}
+}
+
 void	PlugInModule::OnService_GetAvailablePlugIns(ServiceValue lServiceValue, param	lParam)
 {
 	PlugIn_GetAvailablePlugInsService* pService = (PlugIn_GetAvailablePlugInsService*)lParam;
@@ -403,6 +435,9 @@ int PlugInModule::Run()
 
 	if (m_nSumFavorite == 0)
 	{
+		// 发送广播，通知收藏夹已经合并完毕
+		m_pModuleManager->PushMessage(
+			MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED));
 		return 0;
 	}
 
@@ -479,17 +514,6 @@ int PlugInModule::Run()
 	// 发送广播，通知收藏夹已经合并完毕
 	m_pModuleManager->PushMessage(
 		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED));
-
-	/*
-	for( int i=0; i<nNumOfPlugIns; i++)
-	{
-		IPlugIn* pPlugIn = m_vPlugIns.at(i);
-		if( pPlugIn == NULL)
-			continue;
-
-		pPlugIn->ImportFavoriteData(&(*pvFavoriteData)[0], m_nSumFavorite);
-	}
-	*/
 
 	//使线程直接退掉返回0，否则需要自己去Shutdown
 	return 0;

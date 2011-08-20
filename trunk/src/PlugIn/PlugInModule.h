@@ -105,6 +105,7 @@ protected:
 
 	void	OnEvent_LoadAllPlugin(Event* pEvent);
 	void	OnEvent_CheckPlugInWorked(Event* pEvent);
+	void	OnEvent_BeginToSync(Event* pEvent);
 
 protected:
 

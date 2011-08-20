@@ -89,7 +89,7 @@ BOOL C360SE2PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 	return TRUE;
 }
 
-BOOL C360SE2PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+BOOL C360SE2PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataNum )
 {
 	// 由于使用IE收藏夹，因此不需要额外的导入导出，
 	return TRUE;

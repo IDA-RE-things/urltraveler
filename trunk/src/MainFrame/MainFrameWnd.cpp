@@ -153,6 +153,60 @@ void	CMainFrameWnd::NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum,  BOOL bS
 	}
 }
 
+void	CMainFrameWnd::NotifyImportBegin(IPlugIn* pPlugIn)
+{
+	CListTextElementUI* pListElement = new CListTextElementUI;
+	pListElement->SetFixedHeight(40);
+	if( m_pLoadingList)
+		m_pLoadingList->Add(pListElement);
+
+	String	strIconName = String(pPlugIn->GetBrowserName()) + String(L".ico");
+	m_pm.AddIcon32(strIconName, pPlugIn->GetBrowserIcon());
+	strIconName = String(L"<x 4><i ") + strIconName;
+	strIconName += String(L">");
+
+	String	strBrowserName = L"<x 4><x 4>";
+	strBrowserName +=	 pPlugIn->GetBrowserName();
+	strBrowserName +=	 L"<x 4>正在收藏夹数据同步...";
+
+	pListElement->SetText(0,strIconName.GetData());
+	pListElement->SetText(1,strBrowserName.GetData());
+}
+
+void	CMainFrameWnd::NotifyImportEnd(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess)
+{
+	if( m_pLoadingList == NULL)
+		return;
+
+	CListTextElementUI* pListElement = (CListTextElementUI*)m_pLoadingList->GetItemAt(m_pLoadingList->GetRowCount() - 1);
+	if( pListElement)
+	{
+		if( bSuccess == TRUE)
+		{
+			String	strBrowserName = L"<x 4><x 4>";
+			strBrowserName +=	 pPlugIn->GetBrowserName();
+			strBrowserName +=	 L"<x 4>收藏夹同步成功";
+
+			String	strFavoriteNum = L"<x 4><x 4>总共 ";
+			strFavoriteNum += String::ValueOf(nFavoriteNum);
+			strFavoriteNum += L" 记录";
+
+			pListElement->SetText(1,strBrowserName.GetData());
+			pListElement->SetText(2,strFavoriteNum.GetData());
+		}
+		else
+		{
+			String	strBrowserName = L"<x 4><x 4>";
+			strBrowserName +=	 pPlugIn->GetBrowserName();
+			strBrowserName +=	 L"<x 4>收藏夹同步失败";
+
+			String	strFavoriteNum = L"<x 4><x 4>总共 0 条记录";
+			pListElement->SetText(1,strBrowserName.GetData());
+			pListElement->SetText(2,strFavoriteNum.GetData());
+		}
+	}
+}
+
 void	CMainFrameWnd::NotifyInExportProcess(wchar_t* 	szProcess)
 {
 	CTextUI* pText = static_cast<CTextUI*>(m_pm.FindControl(L"ProcessHintText"));
@@ -160,6 +214,11 @@ void	CMainFrameWnd::NotifyInExportProcess(wchar_t* 	szProcess)
 		return;
 
 	pText->SetText(szProcess);
+}
+
+void	CMainFrameWnd::NotifyPreImportBeginProcess()
+{
+	m_pLoadingList->RemoveAllItems();
 }
 
 void CMainFrameWnd::OnPrepare(TNotifyUI& msg) 
@@ -200,7 +259,7 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	ShowProcessLayout(TRUE);
 }
 
-void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum)
+void CMainFrameWnd::LoadFavoriteTree(PPFAVORITELINEDATA ppFavoriteData, int nNum)
 {	 
 	wstring wstrText = L"{x 4}";
 	wstrText += L"收藏夹";
@@ -223,6 +282,15 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 	CTreeListUI::Node* pRootNode = m_pFavTreeList->AddNode(wstrText.c_str());
 	m_pFavTreeList->m_mapIdNode[0] = pRootNode;
 	m_pFavTreeList->m_mapNodeId[pRootNode] = 0;
+
+	// 显示根结点下的所有的收藏夹记录
+	m_pFavTreeList->m_nTreeNodeId = 0;
+	m_pFavTreeList->m_pCurrentTreeNode	=	pRootNode;
+	ShowFavoriteTreeList(0);
+	m_pFavTreeList->SetChildVisible(pRootNode, true);
+
+	if( ppFavoriteData == NULL)
+		return;
 
 	for( int i=0; i<nNum; i++)
 	{
@@ -259,12 +327,6 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 		}
 	}
 
-	// 显示根结点下的所有的收藏夹记录
-	m_pFavTreeList->m_nTreeNodeId = 0;
-	m_pFavTreeList->m_pCurrentTreeNode	=	pRootNode;
-	ShowFavoriteTreeList(0);
-
-	m_pFavTreeList->SetChildVisible(pRootNode, true);
 }
 
 void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
@@ -632,8 +694,12 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			pEvent->srcMId = MODULE_ID_MAINFRAME;
 			g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
 		}
-		else if( msg.pSender->GetName() == L"BeginToCombineBtn" ) 
+		else if( msg.pSender->GetName() == L"BeginToSyncBtn" ) 
 		{
+			ShowProcessLayout(TRUE);
+			g_MainFrameModule->GetModuleManager()->PushEvent(
+				MakeEvent<MODULE_ID_MAINFRAME>()(plugin::EVENT_VALUE_PLUGIN_BEGIN_TO_SYNC, MODULE_ID_PLUGIN));
+			return;
 		}
 	}
 	else if(msg.sType==_T("setfocus"))

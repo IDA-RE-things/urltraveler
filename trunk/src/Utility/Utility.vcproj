@@ -218,10 +218,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\FileHelper.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ImageHelper.cpp"
 				>
 			</File>
@@ -325,10 +321,6 @@
 			</File>
 			<File
 				RelativePath=".\DragDropImpl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FileHelper.h"
 				>
 			</File>
 			<File
@@ -819,6 +811,38 @@
 			</File>
 			<File
 				RelativePath=".\netModule\TCPSocketThread.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="file"
+			>
+			<File
+				RelativePath=".\CmnMacro.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DeleteFileBySection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DeleteFileBySection.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fat.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FileHelper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FileHelper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ntfs.h"
 				>
 			</File>
 		</Filter>
