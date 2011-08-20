@@ -189,7 +189,6 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	{			
 		return;
 	}
-	//m_pLoadingList->SetTextCallback(this);
 	m_pLoadingList->SetItemTextStyle(m_pLoadingList->GetItemTextStyle() 
 		& ~ DT_CENTER | DT_LEFT | DT_END_ELLIPSIS | DT_SINGLELINE);
 	
@@ -228,7 +227,6 @@ void CMainFrameWnd::LoadFavoriteTree(FAVORITELINEDATA** ppFavoriteData, int nNum
 	for( int i=0; i<nNum; i++)
 	{
 		PFAVORITELINEDATA pData = ppFavoriteData[i];
-
 		if( pData != NULL && pData->bFolder == true)
 		{
 			// 找到当前结点的父节点
@@ -432,7 +430,6 @@ void	CMainFrameWnd::OnShowMenu(TNotifyUI& msg)
 	}
 	else 	if( msg.pSender->GetName() == _T("favoritetreelist") ) 
 	{
-		/*
 		CTreeListMenu* pMenu = new CTreeListMenu();
 		pMenu->CreatePopupMenu();
 		if( pMenu == NULL ) { return; }
@@ -448,7 +445,6 @@ void	CMainFrameWnd::OnShowMenu(TNotifyUI& msg)
 
 		pMenu->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, pt.x,
 			pt.y,this->GetHWND());
-		*/
 	}
 }
 
