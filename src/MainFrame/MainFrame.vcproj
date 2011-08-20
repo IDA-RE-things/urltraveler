@@ -318,6 +318,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\FavTreeList.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\FavTreeList.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Menu.cpp"
 					>
 				</File>
@@ -339,14 +347,6 @@
 				</File>
 				<File
 					RelativePath=".\TipWnd.h"
-					>
-				</File>
-				<File
-					RelativePath=".\TreeList.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\TreeList.h"
 					>
 				</File>
 				<File

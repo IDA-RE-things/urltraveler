@@ -14,7 +14,7 @@
 #include <vector>
 #include "UICommonControls.h"
 #include "XString.h"
-#include "TreeList.h"
+#include "FavTreeList.h"
 #include "CallbackEx.h"
 
 using namespace std;
@@ -48,7 +48,7 @@ public:
 public:
 	CPaintManagerUI m_pm;
 
-	CTreeListUI*	m_pTreeList;
+	CFavoriteTreeListUI*	m_pTreeList;
 	CHorizontalLayoutUI*	m_pLayout;
 	BOOL	m_bAdd;
 };

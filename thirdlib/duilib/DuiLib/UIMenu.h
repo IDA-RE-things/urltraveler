@@ -2,7 +2,8 @@
 
 #include "UIlib.h"
 
-namespace DuiLib{
+namespace DuiLib
+{
 
 	class UILIB_API CMenuUI
 	{

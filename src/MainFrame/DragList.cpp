@@ -20,7 +20,7 @@ void CDragListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bo
 	}
 }
 
-void	CDragListUI::OnListItemDragEnd(CDragListUI* pDragList)
+void	CDragListUI::OnEventListItemDragEnd(CDragListUI* pDragList)
 {
 	// 获取到鼠标所在点的位置
 	HCURSOR   hCursor   =   ::LoadCursor(NULL,IDC_ARROW); 
@@ -61,7 +61,7 @@ void	CDragListUI::OnItemDragEnd()
 	if( _tcscmp(pSrcCtrl->GetClass(), _T("ListUI")) == 0 ) 
 	{
 		CDragListUI* pDragList = (CDragListUI*)pSrcCtrl;
-		OnListItemDragEnd(pDragList);
+		OnEventListItemDragEnd(pDragList);
 	}
 */
 }

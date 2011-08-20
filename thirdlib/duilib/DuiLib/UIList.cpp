@@ -2467,21 +2467,6 @@ namespace DuiLib
 			return;
 		}
 
-		/*
-		if( event.Type == UIEVENT_MOUSEMOVE )
-		{
-		if( GetAsyncKeyState(VK_LBUTTON) )
-		{
-		event.Type = UIEVENT_DRAGOVER;
-		event.wParam = m_iIndex;
-		event.pSender = this;
-		if( m_pOwner != NULL)
-		m_pOwner->DoEvent(event);
-		}
-		return;
-		}
-		*/
-
 		if( event.Type == UIEVENT_BUTTONDOWN 
 			|| event.Type == UIEVENT_BUTTONUP
 			|| event.Type == UIEVENT_RBUTTONDOWN)

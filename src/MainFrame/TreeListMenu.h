@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Menu.h"
-#include "TreeList.h"
+#include "FavTreeList.h"
 #include "UIMenu.h"
 
 // Ê÷¿Ø¼þ²Ëµ¥Ïî

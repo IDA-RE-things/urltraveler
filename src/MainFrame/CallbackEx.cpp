@@ -1,12 +1,12 @@
 #include "CallbackEx.h"
-#include "TreeList.h"
+#include "FavTreeList.h"
 #include "DragList.h"
 
 CControlUI* CDialogBuilderCallbackEx::CreateControl(LPCTSTR pstrClass) 
 {
-	if( _tcscmp(pstrClass, _T("TreeList")) == 0 ) 
+	if( _tcscmp(pstrClass, _T("FavTreeList")) == 0 ) 
 	{
-		return new CTreeListUI;
+		return new CFavoriteTreeListUI;
 	}
 	else if( _tcscmp(pstrClass, _T("DragList")) == 0 ) 
 	{

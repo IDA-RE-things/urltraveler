@@ -31,7 +31,7 @@ public:
 	void	OnItemDragEnd();
 
 
-	void	OnListItemDragEnd(CDragListUI* pDragList);
+	void	OnEventListItemDragEnd(CDragListUI* pDragList);
 
 
 	void DoEvent(TEventUI& event) ;

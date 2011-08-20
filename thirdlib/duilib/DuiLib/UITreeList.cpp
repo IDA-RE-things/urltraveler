@@ -3,6 +3,19 @@
 
 namespace DuiLib
 {
+	CTreeListUI::CTreeListUI(): _root(NULL), m_dwDelayDeltaY(0), m_dwDelayNum(0), m_dwDelayLeft(0)
+	{
+		SetItemShowHtml(true);
+
+		m_bAddNotifyer = false;
+		m_ListInfo.bMultiSelect = false;
+
+		_root = new Node;
+		_root->data()._level = -1;
+		_root->data()._child_visible = true;
+		_root->data()._pListElement = NULL;
+	}
+
 
 	LPCTSTR CTreeListUI::GetClass() const
 	{
@@ -16,6 +29,17 @@ namespace DuiLib
 		if( _tcscmp(pstrName, _T("List")) == 0 ) return static_cast<IListUI*>(this);
 		if( _tcscmp(pstrName, _T("ListOwner")) == 0 ) return static_cast<IListOwnerUI*>(this);
 		return CVerticalLayoutUI::GetInterface(pstrName);
+	}
+
+	void CTreeListUI::SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit)
+	{
+		CListUI::SetManager(pManager, pParent, bInit);
+
+		if( m_bAddNotifyer == false)
+		{
+			m_pManager->AddNotifier(this);
+			m_bAddNotifyer = true;
+		}
 	}
 
 	bool CTreeListUI::Add(CControlUI* pControl)
@@ -95,13 +119,6 @@ namespace DuiLib
 			{
 				SetChildVisible(pNode, !pNode->data()._child_visible);
 			}
-
-			/*
-			TNotifyUI notify;
-			notify.sType = _T("itemclick");
-			notify.pSender = this;
-			m_pManager->SendNotify(notify);
-			*/
 		}
 	}
 

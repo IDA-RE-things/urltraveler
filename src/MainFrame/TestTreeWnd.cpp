@@ -15,9 +15,7 @@ CTestTreeWnd::~CTestTreeWnd()
 
 void CTestTreeWnd::OnPrepare(TNotifyUI& msg) 
 { 
-	m_pTreeList = static_cast<CTreeListUI*>(m_pm.FindControl(_T("testtree")));
-	CTreeListUI::Node* pRootNode = m_pTreeList->AddNode(L"root");
-	CTreeListUI::Node* pChildNode = m_pTreeList->AddNode(L"child", pRootNode);
+	m_pTreeList = static_cast<CFavoriteTreeListUI*>(m_pm.FindControl(_T("testtree")));
 	m_pTreeList->SetVisible(false);
 }
 
@@ -44,11 +42,14 @@ void CTestTreeWnd::Notify(TNotifyUI& msg)
 				if( m_bAdd == FALSE)
 				{
 					m_bAdd = TRUE;
+					CFavoriteTreeListUI::Node* pRootNode = m_pTreeList->AddNode(L"root");
+					CFavoriteTreeListUI::Node* pChildNode = m_pTreeList->AddNode(L"child", pRootNode);
+					CFavoriteTreeListUI::Node* pRootNode1 = m_pTreeList->AddNode(L"root1");
+					CFavoriteTreeListUI::Node* pChildNode1 = m_pTreeList->AddNode(L"child1", pRootNode1);
 				}
 			}
 			m_pTreeList->SetVisible(true);
 		}
-
 	}
 }
 
@@ -103,11 +104,11 @@ LRESULT CTestTreeWnd::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	if( pt.x >= rcClient.left + rcCaption.left && pt.x < rcClient.right - rcCaption.right \
 		&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) 
 	{
-			CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(pt));
-			if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
-				_tcscmp(pControl->GetClass(), _T("OptionUI")) != 0// &&
-				/*_tcscmp(pControl->GetClass(), _T("TextUI")) != 0*/ )
-				return HTCAPTION;
+		CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(pt));
+		if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
+			_tcscmp(pControl->GetClass(), _T("OptionUI")) != 0// &&
+			/*_tcscmp(pControl->GetClass(), _T("TextUI")) != 0*/ )
+			return HTCAPTION;
 	}
 
 	return HTCLIENT;
@@ -180,18 +181,18 @@ LRESULT CTestTreeWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	BOOL bHandled = TRUE;
 	switch( uMsg ) 
 	{
-		case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
-		case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
-		case WM_NCACTIVATE:    lRes = OnNcActivate(uMsg, wParam, lParam, bHandled); break;
-		case WM_NCCALCSIZE:    lRes = OnNcCalcSize(uMsg, wParam, lParam, bHandled); break;
-		case WM_NCPAINT:       lRes = OnNcPaint(uMsg, wParam, lParam, bHandled); break;
-		case WM_NCHITTEST:     lRes = OnNcHitTest(uMsg, wParam, lParam, bHandled); break;
-		case WM_SIZE:          lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
-		case WM_GETMINMAXINFO: lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
-		case WM_SYSCOMMAND:    lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
-		case WM_COMMAND:       lRes = OnCommand(uMsg, wParam, lParam, bHandled); break;
-		default:
-			bHandled = FALSE;
+	case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
+	case WM_CLOSE:         lRes = OnClose(uMsg, wParam, lParam, bHandled); break;
+	case WM_NCACTIVATE:    lRes = OnNcActivate(uMsg, wParam, lParam, bHandled); break;
+	case WM_NCCALCSIZE:    lRes = OnNcCalcSize(uMsg, wParam, lParam, bHandled); break;
+	case WM_NCPAINT:       lRes = OnNcPaint(uMsg, wParam, lParam, bHandled); break;
+	case WM_NCHITTEST:     lRes = OnNcHitTest(uMsg, wParam, lParam, bHandled); break;
+	case WM_SIZE:          lRes = OnSize(uMsg, wParam, lParam, bHandled); break;
+	case WM_GETMINMAXINFO: lRes = OnGetMinMaxInfo(uMsg, wParam, lParam, bHandled); break;
+	case WM_SYSCOMMAND:    lRes = OnSysCommand(uMsg, wParam, lParam, bHandled); break;
+	case WM_COMMAND:       lRes = OnCommand(uMsg, wParam, lParam, bHandled); break;
+	default:
+		bHandled = FALSE;
 	}
 	if( bHandled ) return lRes;
 	if( m_pm.MessageHandler(uMsg, wParam, lParam, lRes) ) return lRes;
