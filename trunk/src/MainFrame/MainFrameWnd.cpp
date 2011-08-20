@@ -295,7 +295,10 @@ void CMainFrameWnd::LoadFavoriteTree(PPFAVORITELINEDATA ppFavoriteData, int nNum
 	for( int i=0; i<nNum; i++)
 	{
 		PFAVORITELINEDATA pData = ppFavoriteData[i];
-		if( pData != NULL && pData->bFolder == true)
+		if( pData == NULL)
+			continue;
+
+		if( pData->bFolder == true)
 		{
 			// 找到当前结点的父节点
 			int nPid = pData->nPid;

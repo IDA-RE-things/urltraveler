@@ -227,7 +227,16 @@ BOOL SogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataNum 
 				L"2011-05-11 12:00:00",
 				ppData[i]->nHashId,
 				ppData[i]->nCatId);
-			m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+
+			try
+			{
+				m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+			}
+			catch(CppSQLite3Exception&e )
+			{
+				int i=0;
+				i++;
+			}
 		}
 
 		SaveDatabase();

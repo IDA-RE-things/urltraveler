@@ -486,33 +486,41 @@ void CFavoriteTreeListUI::DoEvent(TEventUI& event)
 
 	if( event.Type == UIEVENT_BUTTONDOWN )
 	{
-		CListLabelElementUI* pLabelElement = (CListLabelElementUI*)event.pSender;
-		if( pLabelElement != NULL)
+		CControlUI* pControl = (CControlUI*)event.pSender;
+		if( pControl->GetClass() == L"ListBody")
 		{
-			int nSelectedIndex = pLabelElement->GetIndex();
-			if(nSelectedIndex == 0)
-			{
-				CListUI::DoEvent(event);
 
-				TNotifyUI notify;
-				notify.sType = _T("treelistitemclick");
-				notify.pSender = this;
-				notify.wParam = event.wParam;
-				m_pManager->SendNotify(notify);
-
-				return;
-			}
 		}
+		else if( pControl->GetClass() == L"ListLabelElementUI")
+		{
+			CListLabelElementUI* pLabelElement = (CListLabelElementUI*)event.pSender;
+			if( pLabelElement != NULL)
+			{
+				int nSelectedIndex = pLabelElement->GetIndex();
+				if(nSelectedIndex == 0)
+				{
+					CListUI::DoEvent(event);
 
-		CTreeListUI::DoEvent(event);
-		m_pManager->SetEventSrcControl(this);
-		m_bIsDragging = true;
+					TNotifyUI notify;
+					notify.sType = _T("treelistitemclick");
+					notify.pSender = this;
+					notify.wParam = event.wParam;
+					m_pManager->SendNotify(notify);
 
-		TNotifyUI notify;
-		notify.sType = _T("treelistitemclick");
-		notify.pSender = this;
-		notify.wParam = event.wParam;
-		m_pManager->SendNotify(notify);
+					return;
+				}
+			}
+
+			CTreeListUI::DoEvent(event);
+			m_pManager->SetEventSrcControl(this);
+			m_bIsDragging = true;
+
+			TNotifyUI notify;
+			notify.sType = _T("treelistitemclick");
+			notify.pSender = this;
+			notify.wParam = event.wParam;
+			m_pManager->SendNotify(notify);
+		}
 
 		return;
 	}

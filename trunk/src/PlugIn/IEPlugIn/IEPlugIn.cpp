@@ -27,7 +27,7 @@ IEPlugIn::~IEPlugIn(void)
 
 BOOL IEPlugIn::Load()
 {
-	return FALSE;
+	return TRUE;
 }
 
 BOOL IEPlugIn::UnLoad()
