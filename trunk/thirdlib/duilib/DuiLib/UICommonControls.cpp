@@ -1342,24 +1342,40 @@ Label_ForeImage:
 	{
 		LRESULT lRes = 0;
 		BOOL bHandled = TRUE;
-		if( uMsg == WM_KILLFOCUS ) lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
-		else if( uMsg == OCM_COMMAND ) {
-			if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE ) lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
-			else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE ) {
+		if( uMsg == WM_KILLFOCUS )
+		{
+			lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
+		}
+		else if( uMsg == OCM_COMMAND ) 
+		{
+			if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE ) 
+			{
+				lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
+			}
+			else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE ) 
+			{
 				RECT rcClient;
 				::GetClientRect(m_hWnd, &rcClient);
 				::InvalidateRect(m_hWnd, &rcClient, FALSE);
 			}
 		}
-		else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN ) {
+		else if(uMsg == WM_CHAR)
+		{
+			CWindowWnd::HandleMessage(uMsg, wParam, lParam);
+			lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
+		}
+		else if( uMsg == WM_KEYDOWN && TCHAR(wParam) == VK_RETURN ) 
+		{
 			m_pOwner->GetManager()->SendNotify(m_pOwner, _T("return"));
 		}
-		else if( uMsg == OCM__BASE + WM_CTLCOLOREDIT  || uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) {
+		else if( uMsg == OCM__BASE + WM_CTLCOLOREDIT  || uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) 
+		{
 			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
 			DWORD dwTextColor = m_pOwner->GetTextColor();
 			::SetTextColor((HDC)wParam, RGB(GetBValue(dwTextColor),GetGValue(dwTextColor),GetRValue(dwTextColor)));
-			if( m_hBkBrush == NULL ) {
+			if( m_hBkBrush == NULL ) 
+			{
 				DWORD clrColor = m_pOwner->GetNativeEditBkColor();
 				m_hBkBrush = ::CreateSolidBrush(RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
 			}
