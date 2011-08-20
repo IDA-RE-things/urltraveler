@@ -72,32 +72,37 @@ namespace DuiLib
 
 	void CTreeListUI::OnEventItemClick(TEventUI& event)
 	{
-		/*
 		if( event.pSender == NULL)
 			return;
 
-		CTreeListUI::Node* pNode = (CTreeListUI::Node*)event.pSender->GetTag();
-		if( pNode == NULL)
-			return;
+		int nIndex =	 GetCurSel();
+		if( nIndex != -1 )
+		{
+			CListLabelElementUI* pElement = (CListLabelElementUI*)GetItemAt(nIndex);
+			if( pElement == NULL)
+				return;
 
-		//if( pNode->get_level() == 0)
-		//	return;
+			CTreeListUI::Node* pNode = (CTreeListUI::Node*)pElement->GetTag();
+			if( pNode == NULL)
+				return;
 
-		POINT pt = { 0 };
-		::GetCursorPos(&pt);
-		::ScreenToClient(m_pManager->GetPaintWindow(), &pt);
-		pt.x -= event.pSender->GetX();
-		pt.y -= event.pSender->GetY();
+			POINT pt = { 0 };
+			::GetCursorPos(&pt);
+			::ScreenToClient(m_pManager->GetPaintWindow(), &pt);
+			pt.x -= pElement->GetX();
+			SIZE sz = GetExpanderSizeX(pNode);
+			if( pt.x >= sz.cx && pt.x < sz.cy ) 
+			{
+				SetChildVisible(pNode, !pNode->data()._child_visible);
+			}
 
-		SIZE sz = GetExpanderSizeX(pNode);
-		if( pt.x >= sz.cx && pt.y < sz.cy )                     
-			SetChildVisible(pNode, !pNode->data()._child_visible);	
-		*/
-
-		TNotifyUI notify;
-		notify.sType = _T("itemclick");
-		notify.pSender = this;
-		m_pManager->SendNotify(notify);
+			/*
+			TNotifyUI notify;
+			notify.sType = _T("itemclick");
+			notify.pSender = this;
+			m_pManager->SendNotify(notify);
+			*/
+		}
 	}
 
 	void CTreeListUI::DoEvent(TEventUI& event) 
