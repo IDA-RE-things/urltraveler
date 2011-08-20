@@ -7,6 +7,7 @@
 #include "PathHelper.h"
 #include "StringHelper.h"
 #include "TimeHelper.h"
+#include "FileHelper.h"
 #include "CRCHash.h"
 #include "ChromePlugInFactory.h"
 #include <string>
@@ -201,14 +202,16 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum
 	wchar_t* pszPath = GetFavoriteDataPath();
 
 	//获取导入文件路径
-	std::string strTmpPath = StringHelper::UnicodeToUtf8(pszPath);
-
-	//导入前先删除之前的收藏夹文件
-	BOOL bResult = ::DeleteFileW(pszPath);
-	free(pszPath);
-	if (!bResult)
+	std::wstring strTmpPath = StringHelper::ANSIToUnicode(StringHelper::UnicodeToUtf8(pszPath));
+	if( FileHelper::IsFileExist(strTmpPath.c_str()) == TRUE)
 	{
-		return FALSE;
+		//导入前先删除之前的收藏夹文件
+		BOOL bResult = FileHelper::DeleteFile(pszPath);
+		free(pszPath);
+		if (!bResult)
+		{
+			return FALSE;
+		}
 	}
 
 	Json::Value root;
@@ -264,7 +267,7 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
-	for (int k = 0; k <= nDataNum; k++)
+	for (int k = 0; k < nDataNum; k++)
 	{
 		itIdIndex = m_mapIdIndexInfo.find(ppData[k]->nId);
 		if (itIdIndex != m_mapIdIndexInfo.end())

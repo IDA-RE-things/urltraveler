@@ -511,6 +511,13 @@ void DataCenterModule::OnService_GetFavoriteData(ServiceValue lServiceValue, par
 	DataCenter_GetFavoriteService* pGetFavoriteDataService = (DataCenter_GetFavoriteService*)lParam;
 	ASSERT( pGetFavoriteDataService != NULL);
 
+	if( m_vFavoriteLineData.size() == 0)
+	{
+		pGetFavoriteDataService->ppFavoriteData = NULL;
+		pGetFavoriteDataService->nNum = 0;
+		return;
+	}
+
 	pGetFavoriteDataService->ppFavoriteData = &m_vFavoriteLineData[0];
 	pGetFavoriteDataService->nNum = m_vFavoriteLineData.size();
 }

@@ -27,7 +27,7 @@ IEPlugIn::~IEPlugIn(void)
 
 BOOL IEPlugIn::Load()
 {
-	return TRUE;
+	return FALSE;
 }
 
 BOOL IEPlugIn::UnLoad()
@@ -43,7 +43,7 @@ BOOL IEPlugIn::UnLoad()
 //----------------------------------------------------------------------------------------
 int32 IEPlugIn::GetPlugInVersion() 
 {
-	wchar_t szVersion[MAX_PATH] = {0};
+	wchar_t szVersion[MAX_PATH_LENGTH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 
 	int32   nVersion = 0;
 
@@ -117,7 +117,7 @@ HICON IEPlugIn::GetBrowserIcon()
 //----------------------------------------------------------------------------------------
 wchar_t* IEPlugIn::GetInstallPath() 
 {
-	wchar_t szPath[MAX_PATH] = {0};
+	wchar_t szPath[MAX_PATH_LENGTH] = {0};
 	DWORD   dwSize = sizeof(szPath); 
 
 	if (ERROR_SUCCESS == ::SHRegGetValue(HKEY_LOCAL_MACHINE, 
@@ -132,7 +132,7 @@ wchar_t* IEPlugIn::GetInstallPath()
 		strPath = strPath.TrimRight(L';');
 		if (::PathRemoveFileSpec(szPath))
 		{
-			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", strPath.GetData(), L"iexplorer.exe");
+			swprintf_s(szPath, MAX_PATH_LENGTH-1, L"%s\\%s", strPath.GetData(), L"iexplorer.exe");
 			return _wcsdup(szPath);
 		}
 	}
@@ -150,13 +150,13 @@ wchar_t* IEPlugIn::GetInstallPath()
 		if (-1 != strPath.Find(L";"))
 		{
 			strPath = strPath.TrimRight(L';');
-			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", strPath.GetData(), L"iexplore.exe");
+			swprintf_s(szPath, MAX_PATH_LENGTH-1, L"%s\\%s", strPath.GetData(), L"iexplore.exe");
 		}
 		else
 		{
 			if (::PathRemoveFileSpec(szPath))
 			{
-				swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", szPath, L"iexplore.exe");
+				swprintf_s(szPath, MAX_PATH_LENGTH-1, L"%s\\%s", szPath, L"iexplore.exe");
 			}
 		}
 
@@ -289,9 +289,9 @@ BOOL IEPlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 //		@param	pData			需要导入的的收藏夹数据数组
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
+BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
 {
-	if ((pData == NULL) || (nDataNum == 0))
+	if (ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -303,14 +303,14 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 
 	for (int i = 0; i < nDataNum; i++)
 	{
-		if (pData[i].bDelete == true)
+		if (ppData[i]->bDelete == true)
 		{//暂时未做处理
 			continue;
 		}
 		
-		wchar_t* pszCurrNodePath = GetNodeAbsolutePath(i, pData);
+		wchar_t* pszCurrNodePath = GetNodeAbsolutePath(i, ppData);
 
-		if (pData[i].bFolder == true)
+		if (ppData[i]->bFolder == true)
 		{
 			int nRet = ::SHCreateDirectory(NULL, pszCurrNodePath);
 			free(pszCurrNodePath);
@@ -323,14 +323,16 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA pData, int32 nDataNum)
 		}
 		else
 		{
-			wchar_t szFileDir[MAX_PATH] = {0};
-			wcscpy_s(szFileDir, MAX_PATH - 1, pszCurrNodePath);
+#define MAX_LENGTH 1024
+
+			wchar_t szFileDir[MAX_PATH_LENGTH] = {0};
+			wcscpy_s(szFileDir, MAX_PATH_LENGTH - 1, pszCurrNodePath);
 
 			PathRemoveFileSpec(szFileDir);
 			PathHelper::CreateMultipleDirectory(szFileDir);
-			wchar_t szCurrFileName[MAX_PATH] = {0};
-			swprintf_s(szCurrFileName, MAX_PATH, L"%s%s", pszCurrNodePath, L".url");
-			WritePrivateProfileStringW(L"InternetShortcut", L"URL", pData[i].szUrl, szCurrFileName);
+			wchar_t szCurrFileName[MAX_PATH_LENGTH] = {0};
+			swprintf_s(szCurrFileName, MAX_PATH_LENGTH, L"%s%s", pszCurrNodePath, L".url");
+			WritePrivateProfileStringW(L"InternetShortcut", L"URL", ppData[i]->szUrl, szCurrFileName);
 		}
 
 		free(pszCurrNodePath);
@@ -351,20 +353,20 @@ BOOL IEPlugIn::ImportFavoriteData(FAVORITELINEDATA stData)
 //		@param	nIndex			当前节点索引
 //      @param	pData           节点数据链表
 //----------------------------------------------------------------------------------------
-wchar_t* IEPlugIn::GetNodeAbsolutePath(int32 nIndex, PFAVORITELINEDATA pData)
+wchar_t* IEPlugIn::GetNodeAbsolutePath(int32 nIndex, PFAVORITELINEDATA* ppData)
 {
 	int nCurrNodeIndex = nIndex;
 	std::vector<wchar_t *> vecNodeTitle;
 
 	std::wstring strNodePath = GetFavoriteDataPath();
-	while (pData[nCurrNodeIndex].nPid != 0)
+	while (ppData[nCurrNodeIndex]->nPid != 0)
 	{
 		//保存当前节点的路径
-		vecNodeTitle.push_back(pData[nCurrNodeIndex].szTitle);
-		nCurrNodeIndex = pData[nCurrNodeIndex].nPid - 1;
+		vecNodeTitle.push_back(ppData[nCurrNodeIndex]->szTitle);
+		nCurrNodeIndex = ppData[nCurrNodeIndex]->nPid - 1;
 	}
 
-	vecNodeTitle.push_back(pData[nCurrNodeIndex].szTitle);
+	vecNodeTitle.push_back(ppData[nCurrNodeIndex]->szTitle);
 
 	std::vector<wchar_t *>::reverse_iterator it;
 	for (it = vecNodeTitle.rbegin(); it != vecNodeTitle.rend(); ++it)
@@ -502,7 +504,7 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 					ppData[nDataNum]->nLastModifyTime = stFileTimeInfo.tLastWriteTime;
 					ppData[nDataNum]->nPid = nPid;
 
-					wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, lpszName);
+					wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH_LENGTH -1, lpszName);
 					ppData[nDataNum]->szUrl[0] = 0;
 					ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, 
 						wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t), 
@@ -532,7 +534,7 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 						ppData[nDataNum]->nAddTimes = stFileTimeInfo.tCreateTime;
 						ppData[nDataNum]->nLastModifyTime = stFileTimeInfo.tLastWriteTime;
 						ppData[nDataNum]->nPid = nPid;
-						wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, lpszName);
+						wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH_LENGTH -1, lpszName);
 						wcscpy_s(ppData[nDataNum]->szUrl, 1024 - 1, lpszURL);
 						ppData[nDataNum]->szUrl[1023] = 0;
 

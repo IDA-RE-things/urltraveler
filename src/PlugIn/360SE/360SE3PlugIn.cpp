@@ -27,7 +27,7 @@ C360SE3PlugIn::~C360SE3PlugIn()
 
 BOOL C360SE3PlugIn::Load()
 {
-	return TRUE;
+	return FALSE;
 }
 
 BOOL C360SE3PlugIn::UnLoad()
@@ -164,9 +164,9 @@ BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 	return TRUE;
 }
 
-BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataNum )
 {
-	if (pData == NULL || nDataNum == 0)
+	if (ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -185,24 +185,24 @@ BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum 
 
 	for (int i = 0; i < nDataNum; i++)
 	{
-		if (pData[i].bDelete == true)
+		if (ppData[i]->bDelete == true)
 		{
 			continue;
 		}
 
-		ReplaceSingleQuoteToDoubleQuote(pData[i].szTitle);
-		ReplaceSingleQuoteToDoubleQuote(pData[i].szUrl);
+		ReplaceSingleQuoteToDoubleQuote(ppData[i]->szTitle);
+		ReplaceSingleQuoteToDoubleQuote(ppData[i]->szUrl);
 
 		swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into tb_fav"
 			L"(id,parent_id,is_folder,title,url,pos,create_time,last_modify_time,is_best,reserved)"
 			L" values(%d,%d,%d,'%s','%s',%d,'%s',"
 			L"'%s',%d,0)", 
-			pData[i].nId,
-			pData[i].nPid,
-			pData[i].bFolder,
-			pData[i].szTitle,
-			pData[i].szUrl,
-			pData[i].nOrder,
+			ppData[i]->nId,
+			ppData[i]->nPid,
+			ppData[i]->bFolder,
+			ppData[i]->szTitle,
+			ppData[i]->szUrl,
+			ppData[i]->nOrder,
 			L"2011-05-11 12:00:00", 
 			L"2011-05-11 12:00:00",
 			0);

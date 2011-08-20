@@ -64,7 +64,12 @@ public:
 	void	ShowProcessLayout(BOOL bShow=TRUE);
 	void	NotifyExportBegin(IPlugIn* pPlugIn);
 	void	NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
+
+	void	NotifyImportBegin(IPlugIn* pPlugIn);
+	void	NotifyImportEnd(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
+
 	void	NotifyInExportProcess(wchar_t* 	szProcess);
+	void	NotifyPreImportBeginProcess();
 
 private:
 

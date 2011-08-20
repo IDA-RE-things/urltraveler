@@ -13,9 +13,10 @@ namespace plugin
 	{
 		EVENT_VALUE_PLUGIN_OPEN = EVENT_VALUE_PLUGIN_BEGIN,		//	打开主界面
 
-		EVENT_VALUE_PLUGIN_LOAD_ALL,												//	加载插件
+		EVENT_VALUE_PLUGIN_LOAD_ALL,													//	加载插件
 		EVENT_VALUE_PLUGIN_CHECK_IS_WORKED,									//	检查当前的插件是否需要工作。如果没有安装对应的浏览器，则当前插件不需要安装
-		EVENT_VALUE_PLUGIN_COMBINE_FAVORITE,								//	通知模块需要获取合并后的收藏夹
+		EVENT_VALUE_PLUGIN_COMBINE_FAVORITE,									//	通知模块需要获取合并后的收藏夹
+		EVENT_VALUE_PLUGIN_BEGIN_TO_SYNC,										// 通知模块开始进行同步
 
 		EVENT_VALUE_PLUGIN_END = EVENT_VALUE_PLUGIN_END ,			//所有的事件结束
 	};
@@ -27,6 +28,7 @@ namespace plugin
 		MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED,					//	通知所有的插件已经加载完毕
 		MESSAGE_VALUE_PLUGIN_EXPORT_BEGIN,								//	通知浏览器开始导出
 		MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED,						//	通知给定的浏览器的数据已经导出完毕
+		MESSAGE_VALUE_PLUGIN_IMPORT_PRE_BEGIN,						//	同步数据之前进行清理的预处理
 		MESSAGE_VALUE_PLUGIN_IMPORT_BEGIN,							//	通知浏览器开始导入
 		MESSAGE_VALUE_PLUGIN_IMPORT_FINISHED,						//	通知给定的浏览器的数据已经导入完毕
 		MESSAGE_VALUE_PLUGIN_EXINPORT_PROCESS,					//	通知上层当前的进度
@@ -60,6 +62,36 @@ namespace plugin
 		PlugIn_ExportEndMessage()
 		{
 			messageValue = MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED;
+			srcMId = MODULE_ID_PLUGIN; 
+
+			pPlugIn = 0;
+			nFavoriteNum = 0;
+			bSuccess = TRUE;
+		}
+
+		IPlugIn*	pPlugIn;
+		int nFavoriteNum;
+		BOOL	bSuccess;
+	};
+
+	struct PlugIn_ImportBeginMessage : MessageExtraInfo
+	{
+		PlugIn_ImportBeginMessage()
+		{
+			messageValue = MESSAGE_VALUE_PLUGIN_IMPORT_BEGIN;
+			srcMId = MODULE_ID_PLUGIN; 
+
+			pPlugIn = 0;
+		}
+
+		IPlugIn*	pPlugIn;
+	};
+
+	struct PlugIn_ImportEndMessage : MessageExtraInfo
+	{
+		PlugIn_ImportEndMessage()
+		{
+			messageValue = MESSAGE_VALUE_PLUGIN_IMPORT_FINISHED;
 			srcMId = MODULE_ID_PLUGIN; 
 
 			pPlugIn = 0;

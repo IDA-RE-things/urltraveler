@@ -65,7 +65,11 @@ BEGIN_MESSAGE_MAP(MainFrameModule)
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED, OnMessage_PlugInLoaded)
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_BEGIN, OnMessage_PlugInBeginExport)
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED, OnMessage_PlugInEndExport)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_BEGIN, OnMessage_PlugInBeginImport)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_FINISHED, OnMessage_PlugInEndImport)
+
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXINPORT_PROCESS, OnMessage_PlugInInExportProcess)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_PRE_BEGIN, OnMessage_PlugInPreBeginImport)
 END_MESSAGE_MAP()
 
 BEGIN_SERVICE_MAP(MainFrameModule)
@@ -301,10 +305,7 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 
 	m_pMainFrame->ShowProcessLayout(FALSE);
 
-	if( favoriteData.nNum > 0)
-	{
-		m_pMainFrame->LoadFavoriteTree(ppFavoriteData, nNum);
-	}
+	m_pMainFrame->LoadFavoriteTree(ppFavoriteData, nNum);
 }
 
 
@@ -333,6 +334,25 @@ void	MainFrameModule::OnMessage_PlugInEndExport(Message* pMessage)
 		pExportEndMessage->nFavoriteNum, pExportEndMessage->bSuccess);
 }
 
+void	MainFrameModule::OnMessage_PlugInBeginImport(Message* pMessage)
+{
+	PlugIn_ImportBeginMessage* pImportBeginMessage = (PlugIn_ImportBeginMessage*)pMessage->m_pstExtraInfo;
+	if( pImportBeginMessage == NULL)
+		return;
+
+	m_pMainFrame->NotifyImportBegin(pImportBeginMessage->pPlugIn);
+}
+
+void	MainFrameModule::OnMessage_PlugInEndImport(Message* pMessage)
+{
+	PlugIn_ImportEndMessage* pImportEndMessage = (PlugIn_ImportEndMessage*)pMessage->m_pstExtraInfo;
+	if( pImportEndMessage == NULL)
+		return;
+
+	m_pMainFrame->NotifyImportEnd(pImportEndMessage->pPlugIn, 
+		pImportEndMessage->nFavoriteNum, pImportEndMessage->bSuccess);
+}
+
 void	MainFrameModule::OnMessage_PlugInInExportProcess(Message* pMessage)
 {
 	PlugIn_InExportEndMessage* pInExportProcessMessage = (PlugIn_InExportEndMessage*)pMessage->m_pstExtraInfo;
@@ -340,6 +360,11 @@ void	MainFrameModule::OnMessage_PlugInInExportProcess(Message* pMessage)
 		return;
 
 	m_pMainFrame->NotifyInExportProcess(pInExportProcessMessage->szProcessText);
+}
+
+void	MainFrameModule::OnMessage_PlugInPreBeginImport(Message* pMessage)
+{
+	m_pMainFrame->NotifyPreImportBeginProcess();
 }
 
 int32 MainFrameModule::OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam)
