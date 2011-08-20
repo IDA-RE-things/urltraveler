@@ -227,9 +227,6 @@ void	CFavoriteTreeListUI::OnEventItemClick(TEventUI& event)
 	if( pNode == NULL)
 		return;
 
-	//if( pNode->get_level() == 0)
-	//	return;
-
 	POINT pt = { 0 };
 	::GetCursorPos(&pt);
 	::ScreenToClient(m_pManager->GetPaintWindow(), &pt);
@@ -509,7 +506,6 @@ void CFavoriteTreeListUI::DoEvent(TEventUI& event)
 
 		CTreeListUI::DoEvent(event);
 		m_pManager->SetEventSrcControl(this);
-
 		m_bIsDragging = true;
 
 		TNotifyUI notify;
@@ -558,32 +554,55 @@ void CFavoriteTreeListUI::DoEvent(TEventUI& event)
 
 	if( event.Type == UIEVENT_KEYDOWN )
 	{
-		if( event.chKey == VK_RETURN)
+		switch(event.chKey)
 		{
-			int nCurSel = GetCurSel();
-			CListLabelElementUI* pItem =  (CListLabelElementUI*)GetItemAt(nCurSel);
-			if( pItem == NULL)
+		case VK_RETURN:
+			{
+				int nCurSel = GetCurSel();
+				CListLabelElementUI* pItem =  (CListLabelElementUI*)GetItemAt(nCurSel);
+				if( pItem == NULL)
+					return;
+
+				CTreeListUI::Node* node = (CTreeListUI::Node*)pItem->GetTag();
+				SetChildVisible(node, !node->data()._child_visible);
+
 				return;
+			}
 
-			CTreeListUI::Node* node = (CTreeListUI::Node*)pItem->GetTag();
-			SetChildVisible(node, !node->data()._child_visible);
+			break;
 
-			return;
-		}
-		else if( event.chKey == VK_DELETE)
-		{
-			int nCurSel = GetCurSel();
-			if( nCurSel < 0)
+		case VK_DELETE:
+			{
+				int nCurSel = GetCurSel();
+				if( nCurSel < 0)
+					return;
+
+				// 通知数据中心删除
+				MainFrame_DeleteFavoriteFoldEvent* pEvent = new MainFrame_DeleteFavoriteFoldEvent();
+				pEvent->desMId = MODULE_ID_MAINFRAME;
+				pEvent->nDeleteIndex = nCurSel;
+				g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
+
 				return;
+			}
+			break;
 
-			// 通知数据中心删除
-			MainFrame_DeleteFavoriteFoldEvent* pEvent = new MainFrame_DeleteFavoriteFoldEvent();
-			pEvent->desMId = MODULE_ID_MAINFRAME;
-			pEvent->nDeleteIndex = nCurSel;
-			g_MainFrameModule->GetModuleManager()->PushEvent(*pEvent);
-
-			return;
+		case VK_UP:
+		case VK_DOWN:
+		case VK_PRIOR:
+		case VK_NEXT:
+		case VK_HOME:
+		case VK_END:
+			{
+				TNotifyUI notify;
+				notify.sType = _T("treelistkeydown");
+				notify.pSender = this;
+				notify.wParam = GetCurSel();
+				m_pManager->SendNotify(notify);
+			}
+			break;
 		}
+
 	}
 
 

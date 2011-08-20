@@ -563,6 +563,33 @@ void	CMainFrameWnd::OnFavoriteListItemMoved(TNotifyUI& msg)
 	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size());
 }
 
+void	CMainFrameWnd::OnFavoriteKeyDown(TNotifyUI& msg)
+{
+	int nIndex = msg.wParam;
+
+	// 点击收藏夹目录的响应代码
+	CListLabelElementUI* pTreeListUIElement = (CListLabelElementUI*)m_pFavTreeList->GetItemAt(nIndex);
+	if( pTreeListUIElement != NULL )
+	{
+		CFavoriteTreeListUI::Node* node = (CFavoriteTreeListUI::Node*)pTreeListUIElement->GetTag();
+
+		// 得到该结点对应的nId
+		std::map<CFavoriteTreeListUI::Node*, int>::iterator itr = m_pFavTreeList->m_mapNodeId.find(node);
+		if( itr != m_pFavTreeList->m_mapNodeId.end())
+		{
+			int nId = itr->second;
+			m_pFavTreeList->m_nTreeNodeId = nId;
+			m_pFavTreeList->m_pCurrentTreeNode	=	itr->first;
+			ShowFavoriteTreeList(nId);
+		}
+	}
+
+	if (m_pTipWnd)
+	{
+		m_pTipWnd->HideTip();
+	}
+}
+
 void CMainFrameWnd::Notify(TNotifyUI& msg)
 {
 	if( msg.sType == _T("windowinit") ) 
@@ -628,7 +655,6 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			OnFavoriteTreeListItemClick(msg);
 			return;
 		}
-
 		return;
 	}
 	else if(msg.sType == L"itemhot")
@@ -665,6 +691,11 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 	else if(msg.sType == L"favlistitemmoved")
 	{
 		OnFavoriteListItemMoved(msg);
+		return;
+	}
+	else if( msg.sType == L"treelistkeydown")
+	{
+		OnFavoriteKeyDown(msg);
 		return;
 	}
 }

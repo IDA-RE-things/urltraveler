@@ -126,8 +126,10 @@ namespace DuiLib
 	{
 		if( !IsMouseEnabled() && event.Type > UIEVENT__MOUSEBEGIN && event.Type < UIEVENT__MOUSEEND ) 
 		{
-			if( m_pParent != NULL ) m_pParent->DoEvent(event);
-			else CVerticalLayoutUI::DoEvent(event);
+			if( m_pParent != NULL ) 
+				m_pParent->DoEvent(event);
+			else 
+				CVerticalLayoutUI::DoEvent(event);
 			return;
 		}
 
@@ -291,7 +293,6 @@ namespace DuiLib
 		{
 			html_text += _T("<x 24>");
 		}
-
 
 		if( node->data()._child_visible ) html_text += _T("<a><i tree_expand.png 2 1></a>");
 		else html_text += _T("<a><i tree_expand.png 2 0></a>");
