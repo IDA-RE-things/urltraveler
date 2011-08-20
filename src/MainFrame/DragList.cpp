@@ -9,6 +9,20 @@
 using namespace datacenter;
 using namespace mainframe;
 
+CDragListUI::CDragListUI() 
+{
+	m_ListInfo.bMultiSelect = true;
+	m_bIsDragging = false;
+}
+
+void CDragListUI::Notify(TNotifyUI& msg)
+{
+	if( msg.sType == _T("editkillfocus") ) 
+	{
+		HideEditText();
+	}
+}
+
 void CDragListUI::SetManager( CPaintManagerUI* pManager, CControlUI* pParent, bool bInit /*= true*/ )
 {
 	CListUI::SetManager(pManager, pParent, bInit);
@@ -50,7 +64,7 @@ void	CDragListUI::OnEventListItemDragEnd(CDragListUI* pDragList)
 	}
 }
 
-void	CDragListUI::OnItemDragEnd()
+void	CDragListUI::OnEventItemDragEnd()
 {
 /*
 	CControlUI* pSrcCtrl = m_pManager->GetEventSrcControl();
@@ -66,7 +80,7 @@ void	CDragListUI::OnItemDragEnd()
 */
 }
 
-void	CDragListUI::OnItemDragOver()
+void	CDragListUI::OnEventItemDragOver()
 {
 	HCURSOR hCursor   =   LoadCursorW((HINSTANCE)g_hModule,MAKEINTRESOURCE(IDC_DRAGCURSOR));
 	::SetCursor(hCursor);
@@ -100,7 +114,7 @@ void CDragListUI::DoEvent(TEventUI& event)
 
 		if( m_bIsDragging == true )
 		{
-			OnItemDragEnd();
+			OnEventItemDragEnd();
 			m_bIsDragging = false;
 		}
 		m_pManager->SetEventSrcControl(NULL);
@@ -111,7 +125,7 @@ void CDragListUI::DoEvent(TEventUI& event)
 	{
 		if( GetAsyncKeyState(VK_LBUTTON) )
 		{
-			OnItemDragOver();
+			OnEventItemDragOver();
 		}
 		return;
 	}

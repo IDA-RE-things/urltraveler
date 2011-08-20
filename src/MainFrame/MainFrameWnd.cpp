@@ -604,22 +604,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		}
 		else if( msg.pSender->GetName() == L"BeginToCombineBtn" ) 
 		{
-			
-			CHorizontalLayoutUI* pLoadingLayout = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(_T("FavoriteLoadingLayout")));
-			CHorizontalLayoutUI* pDataLayout = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(_T("FavoriteDataLayout")));
-			if( pDataLayout->IsVisible())
-			{
-				pLoadingLayout->SetVisible(true);
-				pDataLayout->SetVisible(false);
-			}
-			else
-			{
-				pLoadingLayout->SetVisible(false);	
-				pDataLayout->SetVisible(true);	
-			}
 		}
-
-		
 	}
 	else if(msg.sType==_T("setfocus"))
 	{
