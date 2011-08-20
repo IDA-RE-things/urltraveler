@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #include <exdisp.h>
 #include <comdef.h>
-#include "TreeList.h"
+#include "FavTreeList.h"
 #include "resource.h"
 #include "PlugIn.h"
 #include <map>
@@ -103,10 +103,7 @@ public:
 
 private:
 
-	int m_nProcessLayoutWidth;
-	int m_nProcessLayoutHeight;
-
-	CTreeListUI*	m_pFavoriteTree;
+	CFavoriteTreeListUI*	m_pFavTreeList;
 	CDragListUI*	m_pDragList;
 	CListUI*	m_pLoadingList;
 

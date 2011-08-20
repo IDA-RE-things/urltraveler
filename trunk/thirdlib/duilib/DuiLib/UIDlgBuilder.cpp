@@ -293,6 +293,7 @@ namespace DuiLib {
 		    break;
 	    case 8:
 		    if( _tcscmp(pstrClass, _T("Progress")) == 0 )               pControl = new CProgressUI;
+		    else if( _tcscmp(pstrClass, _T("TreeList")) == 0 )              pControl = new CTreeListUI;
 		    else if(  _tcscmp(pstrClass, _T("RichEdit")) == 0 )         pControl = new CRichEditUI;
 		    break;
 	    case 9:

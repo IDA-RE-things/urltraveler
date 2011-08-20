@@ -81,17 +81,10 @@ namespace DuiLib
 			}
 		};	
 
-		CTreeListUI() : _root(NULL), m_dwDelayDeltaY(0), m_dwDelayNum(0), m_dwDelayLeft(0)
-		{
-			SetItemShowHtml(true);
-
-			_root = new Node;
-			_root->data()._level = -1;
-			_root->data()._child_visible = true;
-			_root->data()._pListElement = NULL;
-		}
-
+		CTreeListUI();
 		~CTreeListUI() { if(_root) delete _root; }
+
+		virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
 
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
@@ -113,7 +106,8 @@ namespace DuiLib
 		void OnEventItemClick(TEventUI& event);
 		void DoEvent(TEventUI& event);
 
-	private:
+	protected:
+
 		Node* _root;
 
 		LONG m_dwDelayDeltaY;
