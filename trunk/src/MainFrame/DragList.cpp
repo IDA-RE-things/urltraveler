@@ -116,20 +116,5 @@ void CDragListUI::DoEvent(TEventUI& event)
 		return;
 	}
 
-/*
-	if( event.Type == UIEVENT_RBUTTONDOWN )
-	{
-		return;
-	}
-*/
-
-/*
-	if( event.Type == UIEVENT_CONTEXTMENU )
-	{
-		return;
-	}
-*/
-
-
 	CListUI::DoEvent(event);
 }

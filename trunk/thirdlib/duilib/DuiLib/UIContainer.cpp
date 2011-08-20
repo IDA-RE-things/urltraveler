@@ -85,11 +85,17 @@ bool CContainerUI::Add(CControlUI* pControl)
 
 bool CContainerUI::AddAt(CControlUI* pControl, int iIndex)
 {
-	if( pControl == NULL) return false;
+	if( pControl == NULL) 
+		return false;
 
-	if( m_pManager != NULL ) m_pManager->InitControls(pControl, this);
-	if( IsVisible() ) NeedUpdate();
-	else pControl->SetInternVisible(false);
+	if( m_pManager != NULL ) 
+		m_pManager->InitControls(pControl, this);
+
+	if( IsVisible() ) 
+		NeedUpdate();
+	else 
+		pControl->SetInternVisible(false);
+
 	return m_items.InsertAt(iIndex, pControl);
 }
 
