@@ -1240,9 +1240,7 @@ int CppSQLite3DB::execDML(const char* szSQL)
 	checkDB();
 
 	char* szError=0;
-
 	int nRet = sqlite3_exec(mpDB, szSQL, 0, 0, &szError);
-
 	if (nRet == SQLITE_OK)
 	{
 		return sqlite3_changes(mpDB);
