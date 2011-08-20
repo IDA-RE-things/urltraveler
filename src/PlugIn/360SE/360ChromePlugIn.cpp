@@ -205,12 +205,16 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nData
 	std::wstring strTmpPath = StringHelper::ANSIToUnicode(StringHelper::UnicodeToUtf8(pszPath));
 	if( FileHelper::IsFileExist(strTmpPath.c_str()) == TRUE)
 	{
-		//导入前先删除之前的收藏夹文件
-		BOOL bResult = FileHelper::DeleteFile(pszPath);
-		free(pszPath);
-		if (!bResult)
+		BOOL bResult = ::DeleteFileW(pszPath);
+		if( bResult == FALSE)
 		{
-			return FALSE;
+			//导入前先删除之前的收藏夹文件
+			bResult = FileHelper::DeleteFile(pszPath);
+			free(pszPath);
+			if (!bResult)
+			{
+				return FALSE;
+			}
 		}
 	}
 

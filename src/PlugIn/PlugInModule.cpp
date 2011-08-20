@@ -297,6 +297,9 @@ void	PlugInModule::OnEvent_BeginToSync(Event* pEvent)
 	if( pvFavoriteData == NULL)
 		return;
 
+	if( pvFavoriteData->size() == 0)
+		return;
+
 	for( int i=0; i<m_vPlugIns.size(); i++)
 	{
 		IPlugIn* pPlugIn = m_vPlugIns.at(i);
