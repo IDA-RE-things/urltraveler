@@ -40,7 +40,7 @@ BOOL Maxthon3PlugIn::Load()
 		bRet = TRUE;
 	}
 
-	return bRet;
+	return FALSE;
 }
 
 BOOL Maxthon3PlugIn::UnLoad()

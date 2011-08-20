@@ -62,7 +62,7 @@ BOOL Maxthon2PlugIn::UnLoad()
 
 BOOL Maxthon2PlugIn::IsWorked()
 {
-	return FALSE;
+	return TRUE;
 }
 
 int32 Maxthon2PlugIn::GetPlugInVersion()
@@ -120,7 +120,7 @@ BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nData
 {
 	CCRCHash ojbCrcHash;
 
-	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
+	if (ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -179,7 +179,6 @@ BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nData
 			}
 
 			ppData[i]->bFolder = Query.getIntField("type", 1) == IT_FOLDER ? true : false;
-
 			ppData[i]->nAddTimes = Query.getIntField("add_date", 0);
 			ppData[i]->nClickTimes = Query.getIntField("visit_count", 0);
 			ppData[i]->nLastModifyTime = Query.getIntField("last_modified", 0);
@@ -318,10 +317,8 @@ BOOL Maxthon2PlugIn::SaveDatabase()
 	}
 
 	strEncode.assign((char *)m_pMemFavoriteDB->pMemPointer, m_pMemFavoriteDB->ulMemSize);
-
 	nRet = encode(strEncode, StringHelper::UnicodeToANSI(pszFavoriteDataPath));
 
 	free(pszFavoriteDataPath);
-
 	return nRet == 0;
 }

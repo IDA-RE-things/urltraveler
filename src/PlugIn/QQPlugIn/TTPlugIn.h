@@ -3,8 +3,10 @@
 
 
 //===========================================================
-//				360SE 3.0 版本
+//				Tencent Traveler 版本
 //===========================================================
+class CppSQLite3DB;
+class CppSQLite3Query;
 
 class TTPlugIn : public PlugInImp
 {
@@ -82,4 +84,23 @@ public:
 	//      回返收藏网址条数
 	//----------------------------------------------------------------------------------------
 	virtual int32 GetFavoriteCount();
+
+protected:
+
+	// 获取父结点为nParentId的所有结点的数目
+	int	GetFavoriteCount(int nParentId);
+
+
+	// 导出所有父结点为nParentId的结点的收藏数据
+	// nCurrentIndex为导出的收藏数据
+	BOOL ExportFavoriteData(int nParentId, PFAVORITELINEDATA* ppData, int32& nCurrentIndex);
+
+	// 将一行查询结果写入到PFAVORITELINEDATA中去
+	BOOL WriteQueryDataIntoData(CppSQLite3Query* pQuery, PFAVORITELINEDATA pData);
+
+	void InsertIntoDB(int nRootId, PFAVORITELINEDATA* ppData, int32 nDataNum);
+
+protected:
+
+		CppSQLite3DB* m_pSqliteDatabase;
 };
