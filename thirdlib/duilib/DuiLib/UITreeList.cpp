@@ -186,7 +186,6 @@ namespace DuiLib
 			return;
 		}
 
-
 		CListUI::DoEvent(event);
 	}
 
