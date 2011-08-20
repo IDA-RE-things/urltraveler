@@ -24,8 +24,8 @@ namespace DuiLib
 		RECT rcTextPadding;
 		DWORD dwTextColor;
 		DWORD dwBkColor;
-    CStdString sBkImage;
-    bool bAlternateBk;
+		CStdString sBkImage;
+		bool bAlternateBk;
 		DWORD dwSelectedTextColor;
 		DWORD dwSelectedBkColor;
 		CStdString sSelectedImage;
@@ -58,7 +58,7 @@ namespace DuiLib
 		virtual TListInfoUI* GetListInfo() = 0;
 		virtual int GetCurSel() const = 0;
 		virtual int* GetCurSel(int& nSelNum) const = 0;
-    virtual bool SelectItem(int iIndex, bool bTakeFocus = false) = 0;
+		virtual bool SelectItem(int iIndex, bool bTakeFocus = false) = 0;
 		virtual void DoEvent(TEventUI& event) = 0;
 	};
 
@@ -114,7 +114,7 @@ namespace DuiLib
 		int	GetHotItem() const;
 
 		bool	IsItemSelected(int iIndex);
-    bool SelectItem(int iIndex, bool bTakeFocus = false);
+		bool SelectItem(int iIndex, bool bTakeFocus = false);
 		bool	SelectItem(CListElementUI* pElement);
 		bool UnSelectItem(int iIndex);
 		bool UnSelectItem(CListElementUI* pElement);

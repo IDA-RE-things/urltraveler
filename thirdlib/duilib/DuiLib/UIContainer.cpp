@@ -652,7 +652,8 @@ void CContainerUI::DoPaint(HDC hDC, const RECT& rcPaint)
 	CRenderClip::GenerateClip(hDC, rcTemp, clip);
 	CControlUI::DoPaint(hDC, rcPaint);
 
-	if( m_items.GetSize() > 0 ) {
+	if( m_items.GetSize() > 0 ) 
+	{
 		RECT rc = m_rcItem;
 		rc.left += m_rcInset.left;
 		rc.top += m_rcInset.top;
