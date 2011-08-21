@@ -35,10 +35,10 @@
                         <HorizontalLayout name="HorizontalLayoutUI10">
                             <Text name="favtip" text="{p}所有浏览器的收藏夹已经自动整理合并，通过一键同步，你可以将它们同步到所有浏览器的收藏夹中{y 20}{/p}" float="true" pos="7,54,400,94" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
 							<Text name="BrowserNum" text="{f 微软雅黑 14}{b}您安装了 {c #F27D30}%d{/c} 种浏览器：{/b}{/f}" float="true" pos="10,15,180,42" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-							<IconBox name="BrowserBox" iconsize="32, 32" iconboldersize="1" iconboldercolor="#ACACB4" distanceoficon="5" button1normalimage="left_normal.png" button2normalimage="right_normal.png" button1hotimage="left_hover.png" button2hotimage="right_hover.png" button1pushedimage="left_down.png" button2pushedimage="right_down.png" float="true" pos="165,5,460,47"/>    
+							<IconBox name="BrowserBox" iconsize="32, 32" iconboldersize="1" iconboldercolor="#ACACB4" distanceoficon="5" button1normalimage="left_normal.png" button2normalimage="right_normal.png" button1hotimage="left_hover.png" button2hotimage="right_hover.png" button1pushedimage="left_down.png" button2pushedimage="right_down.png" float="true" pos="160,5,465,47"/>    
                         </HorizontalLayout>
                         <HorizontalLayout pos="460,0,630,103" width="170" height="103">
-                            <Button name="BeginToCombineBtn" float="true" pos="11,29,155,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button.png" />
+                            <Button name="BeginToSyncBtn" float="true" pos="15,29,159,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button.png" />
                         </HorizontalLayout>
                     </HorizontalLayout>
 
@@ -50,7 +50,6 @@
                             <Text name="ProcessHintText" text="" float="true" pos="46,59,439,79" textpadding="2,0,2,0" textcolor="#00808080" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         </HorizontalLayout>
                     </HorizontalLayout>
-
 
 
                     <HorizontalLayout name="HorizontalLayoutUI3" pos="0,0,0,30" height="30" padding="0,-1,0,0" bkcolor="#FFFFFFFF" bkcolor2="#00EBE9E8" bordercolor="#00B4BFB5">
@@ -84,7 +83,6 @@
                         </VerticalLayout>
                     </HorizontalLayout>
 
-
 					<!--正在加载的时候的界面-->
                     <HorizontalLayout name="FavoriteLoadingLayout">
                         <VerticalLayout name="VerticalLayoutUI7" padding="0,-1,0,0" bordercolor="#00B4BFB5">
@@ -96,11 +94,6 @@
 							</List>    						
                         </VerticalLayout>
                     </HorizontalLayout>
-
-
-
-
-
                 </VerticalLayout>
                 <VerticalLayout name="VerticalLayoutUI9" pos="0,0,200,0" width="200" bordercolor="#00B4BFB5">
                     <VerticalLayout name="VerticalLayoutUI10" pos="0,0,0,120" height="120" padding="-1,0,0,0" bkcolor="#FFFFFFFF" bordercolor="#00C7D0C8">
