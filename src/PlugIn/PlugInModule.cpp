@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <objbase.h>
 #include "FavMonitorDefine.h"
+#include "XString.h"
 
 HMODULE	 g_hModule;
 
@@ -26,7 +27,10 @@ EXPORT_RELEASEMODULEFACTORY(PlugInModule)
 
 PlugInModule::PlugInModule()
 {
-	m_pThreadObj = CreateThreadObject();
+	m_eThreadToDoing = NONE;
+	m_pExportFavThread = CreateThreadObject();
+	m_pImportFavThread = CreateThreadObject();
+
 	m_nSumFavorite = 0;
 
 	m_vPlugInFactory.clear();
@@ -35,11 +39,18 @@ PlugInModule::PlugInModule()
 
 PlugInModule::~PlugInModule()
 {
-	if (m_pThreadObj)
+	if (m_pExportFavThread)
 	{
-		m_pThreadObj->ShutdownThread(0);
-		m_pThreadObj->Release();
+		m_pExportFavThread->ShutdownThread(0);
+		m_pExportFavThread->Release();
 	}
+
+	if (m_pImportFavThread)
+	{
+		m_pImportFavThread->ShutdownThread(0);
+		m_pImportFavThread->Release();
+	}
+
 }
 
 
@@ -286,42 +297,19 @@ void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 	STRNCPY(pMessage->szProcessText, L"正在检查插件是否能正常工作");
 	GetModuleManager()->PushMessage(*pMessage);
 
-	m_pThreadObj->CreateThread(static_cast<IThreadEvent *>(this));
+	// 任何时候只能有一个现成在执行
+	m_ThreadMutex.Lock();
+	m_eThreadToDoing = EXPORT;
+	m_pExportFavThread->CreateThread(static_cast<IThreadEvent *>(this));
+	m_ThreadMutex.Unlock();
 }
 
 void	PlugInModule::OnEvent_BeginToSync(Event* pEvent)
 {
-	GetModuleManager()->PushMessage(MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_IMPORT_PRE_BEGIN));
-	
-	DataCenter_GetFavoriteVectorService favoriteVectorService;
-	m_pModuleManager->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR, (param)&favoriteVectorService);
-	std::vector<FAVORITELINEDATA*>*	pvFavoriteData = favoriteVectorService.pvFavoriteData;
-	if( pvFavoriteData == NULL)
-		return;
-
-	if( pvFavoriteData->size() == 0)
-		return;
-
-	for( int i=0; i<m_vPlugIns.size(); i++)
-	{
-		IPlugIn* pPlugIn = m_vPlugIns.at(i);
-		if( pPlugIn == NULL)
-			continue;
-
-		// 通知开始进行收藏夹数据导出
-		PlugIn_ImportBeginMessage* pImportBeginMessage = new PlugIn_ImportBeginMessage();
-		pImportBeginMessage->pPlugIn = pPlugIn;
-		GetModuleManager()->PushMessage(*pImportBeginMessage);
-
-		int nImportFavNum = pvFavoriteData->size();
-		BOOL bRet = pPlugIn->ImportFavoriteData(&(*pvFavoriteData)[0], nImportFavNum);
-
-		PlugIn_ImportEndMessage* pImportEndMessage = new PlugIn_ImportEndMessage();
-		pImportEndMessage->pPlugIn = pPlugIn;
-		pImportEndMessage->nFavoriteNum = nImportFavNum;
-		pImportEndMessage->bSuccess = bRet;
-		GetModuleManager()->PushMessage(*pImportEndMessage);
-	}
+	m_ThreadMutex.Lock();
+	m_eThreadToDoing = IMPORT;
+	m_pImportFavThread->CreateThread(static_cast<IThreadEvent *>(this));
+	m_ThreadMutex.Unlock();
 }
 
 void	PlugInModule::OnService_GetAvailablePlugIns(ServiceValue lServiceValue, param	lParam)
@@ -402,7 +390,8 @@ bool CompareFavoriteData (const FAVORITELINEDATA* i,  const FAVORITELINEDATA* j)
 	return i->nPid < j->nPid;
 }
 
-int PlugInModule::Run()
+
+void	PlugInModule::DoExportThread()
 {
 	PlugIn_InExportEndMessage* pMessage = new PlugIn_InExportEndMessage();
 	STRNCPY(pMessage->szProcessText, L"正在导出所有浏览器的收藏夹数据");
@@ -429,6 +418,7 @@ int PlugInModule::Run()
 			continue;
 
 		// 将该插件的路径加入监控路径
+/*
 		wchar_t* pFavDataPath = pPlugIn->GetFavoriteDataPath();
 		if( pvFavoriteData != NULL)
 		{
@@ -436,6 +426,7 @@ int PlugInModule::Run()
 			STRNCPY(service.szFile, pFavDataPath);
 			g_PlugInModule->GetModuleManager()->CallService(service.serviceId, (param)&service);
 		}
+*/
 
 		int nFavoriteCount = pPlugIn->GetFavoriteCount();
 		panCount[i] = nFavoriteCount;
@@ -453,7 +444,7 @@ int PlugInModule::Run()
 		// 发送广播，通知收藏夹已经合并完毕
 		m_pModuleManager->PushMessage(
 			MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED));
-		return 0;
+		return;
 	}
 
 	DataCenter_InitFavoriteDataService initService;
@@ -506,7 +497,7 @@ int PlugInModule::Run()
 		if(*itr == NULL)
 			continue;
 
-		if( (*itr)->bDelete == true)
+		if( (*itr)->bDelete == true || String((*itr)->szTitle) == L"")
 			itr =  pvFavoriteData->erase(itr);
 		else
 			itr++;
@@ -529,12 +520,62 @@ int PlugInModule::Run()
 	// 发送广播，通知收藏夹已经合并完毕
 	m_pModuleManager->PushMessage(
 		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED));
+}
 
-	//使线程直接退掉返回0，否则需要自己去Shutdown
+void	PlugInModule::DoImportThread()
+{
+	GetModuleManager()->PushMessage(MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_IMPORT_PRE_BEGIN));
+	
+	DataCenter_GetFavoriteVectorService favoriteVectorService;
+	m_pModuleManager->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_VECTOR, (param)&favoriteVectorService);
+	std::vector<FAVORITELINEDATA*>*	pvFavoriteData = favoriteVectorService.pvFavoriteData;
+	if( pvFavoriteData == NULL)
+		return;
+
+	if( pvFavoriteData->size() == 0)
+		return;
+
+	for( int i=0; i<m_vPlugIns.size(); i++)
+	{
+		IPlugIn* pPlugIn = m_vPlugIns.at(i);
+		if( pPlugIn == NULL)
+			continue;
+
+		// 通知开始进行收藏夹数据导出
+		PlugIn_ImportBeginMessage* pImportBeginMessage = new PlugIn_ImportBeginMessage();
+		pImportBeginMessage->pPlugIn = pPlugIn;
+		GetModuleManager()->PushMessage(*pImportBeginMessage);
+
+		int nImportFavNum = pvFavoriteData->size();
+		BOOL bRet = pPlugIn->ImportFavoriteData(&(*pvFavoriteData)[0], nImportFavNum);
+
+		PlugIn_ImportEndMessage* pImportEndMessage = new PlugIn_ImportEndMessage();
+		pImportEndMessage->pPlugIn = pPlugIn;
+		pImportEndMessage->nFavoriteNum = nImportFavNum;
+		pImportEndMessage->bSuccess = bRet;
+		GetModuleManager()->PushMessage(*pImportEndMessage);
+	}
+}
+
+int PlugInModule::Run()
+{
+	if( m_eThreadToDoing == EXPORT)
+	{
+		DoExportThread();
+		m_eThreadToDoing = NONE;
+		return 0;
+	}
+
+	if( m_eThreadToDoing == IMPORT)
+	{
+		DoImportThread();
+		m_eThreadToDoing = NONE;
+		return 0;
+	}
+
 	return 0;
 }
 
 void PlugInModule::OnThreadExit()
 {
 }
-
