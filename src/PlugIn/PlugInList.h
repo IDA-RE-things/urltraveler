@@ -23,7 +23,7 @@ struct PlugInList
 		//m_stDllPlugInList.push_back(PLUGIN_NAME(360PlugIn));
 		//m_stDllPlugInList.push_back(PLUGIN_NAME(FireFoxPlugIn));
 		m_stDllPlugInList.push_back(PLUGIN_NAME(IEPlugIn));
-		//m_stDllPlugInList.push_back(PLUGIN_NAME(ChromePlugIn));
+		m_stDllPlugInList.push_back(PLUGIN_NAME(ChromePlugIn));
 		//m_stDllPlugInList.push_back(PLUGIN_NAME(QQPlugIn));
 	}
 

@@ -59,7 +59,7 @@ namespace datacenter
 	typedef struct FavoriteLineData
 	{
 		int32       nId;                //  ID
-		wchar_t	    szTitle[MAX_PATH];	//	描述文本，或者为分类名称，或者为URL的title
+		wchar_t	szTitle[MAX_PATH];	//	描述文本，或者为分类名称，或者为URL的title
 		int32		nCatId;				//  分类ID
 		int32		nPid;		        //	父类的ID
 		bool        bFolder;            //  是否是目录结点。如果是true，表示是目录结点，否则是子结点

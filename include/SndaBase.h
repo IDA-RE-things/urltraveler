@@ -45,7 +45,8 @@ typedef unsigned long ulong;
 
 
 #ifndef MAX_PATH
-#define MAX_PATH          260
+#undef MAX_PATH
+#define MAX_PATH          1024
 #endif
 
 #ifndef NULL

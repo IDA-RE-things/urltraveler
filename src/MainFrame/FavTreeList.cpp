@@ -6,6 +6,7 @@
 #include "time.h"
 #include "MainFrameDefine.h"
 #include "DragList.h"
+#include "XString.h"
 
 using namespace datacenter;
 using namespace mainframe;
@@ -487,11 +488,15 @@ void CFavoriteTreeListUI::DoEvent(TEventUI& event)
 	if( event.Type == UIEVENT_BUTTONDOWN )
 	{
 		CControlUI* pControl = (CControlUI*)event.pSender;
-		if( pControl->GetClass() == L"ListBody")
+		if( pControl == NULL)
+			return;
+
+		String strClassName = pControl->GetClass();
+		if( strClassName == L"ListBody")
 		{
 
 		}
-		else if( pControl->GetClass() == L"ListLabelElementUI")
+		else if( strClassName == L"ListLabelElementUI")
 		{
 			CListLabelElementUI* pLabelElement = (CListLabelElementUI*)event.pSender;
 			if( pLabelElement != NULL)
