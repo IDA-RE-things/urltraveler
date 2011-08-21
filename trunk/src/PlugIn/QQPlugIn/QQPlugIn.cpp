@@ -16,6 +16,7 @@
 #include "json/json.h"
 #include "time.h"
 #include "icu/icu_utf.h"
+#include "FileHelper.h"
 
 #pragma comment(lib, "shlwapi.lib")
 
@@ -167,23 +168,31 @@ BOOL QQPlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 //----------------------------------------------------------------------------------------
 BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 {
-	if ((ppData == NULL || *ppData == NULL) || (nDataNum == 0))
+	if (ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
 
 	wchar_t* pszPath = GetFavoriteDataPath();
 
-	//获取导入文件路径
-	std::string strTmpPath = StringHelper::UnicodeToUtf8(pszPath);
-
 	//导入前先删除之前的收藏夹文件
-	BOOL bResult = ::DeleteFileW(pszPath);
-	free(pszPath);
-	if (!bResult)
+	//获取导入文件路径
+	std::wstring strTmpPath = StringHelper::ANSIToUnicode(StringHelper::UnicodeToUtf8(pszPath));
+	if( FileHelper::IsFileExist(strTmpPath.c_str()) == TRUE)
 	{
-		return FALSE;
+		BOOL bResult = ::DeleteFileW(pszPath);
+		if( bResult == FALSE)
+		{
+			//导入前先删除之前的收藏夹文件
+			bResult = FileHelper::DeleteFile(pszPath);
+			free(pszPath);
+			if (!bResult)
+			{
+				return FALSE;
+			}
+		}
 	}
+
 
 	Json::Value root;
 	Json::Value bookmark_bar;
@@ -241,6 +250,9 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
 	for (int k = 0; k < nDataNum; k++)
 	{
+		if( ppData[k] == NULL)
+			continue;
+
 		itIdIndex = m_mapIdIndexInfo.find(ppData[k]->nId);
 		if (itIdIndex != m_mapIdIndexInfo.end())
 		{
@@ -248,30 +260,12 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 			if (ppData[k]->bFolder)
 			{
 				m_mapPidInfo.insert(MAP_PID_INFO::value_type(ppData[k]->nId, nDepth));
-// 				char szId[256] = {0};
-// 				sprintf_s(szId, 255, "%u", nIndex);
-// 				UpdateChecksumWithFolderNode(&szId[0], pData[k].szTitle);
-			}
-			else
-			{
-// 				char szId[256] = {0};
-// 				sprintf_s(szId, 255, "%u", nIndex);
-// 				UpdateChecksumWithUrlNode(&szId[0], pData[k].szTitle, StringHelper::UnicodeToUtf8(pData[k].szUrl));
 			}
 		}
 	}
 
-	//MakeSpecialFolderNode(L"Other bookmarks", m_nIndex, other);
-	//MakeSpecialFolderNode(L"Synced bookmarks", m_nIndex, synced);
-
-	//FinalizeChecksum();
-
-	//root["checksum"] = m_strCheckSum;
 	root["favbar_folder_id"] = -1;
 	root["roots"]["bookmark_bar"] = bookmark_bar;
-	//root["roots"]["other"] = other;
-	//root["roots"]["synced"] = synced;
-	//root["version"] = 1;
 
 	std::ofstream outfile(strTmpPath.c_str());
 	Json::StyledStreamWriter writer;

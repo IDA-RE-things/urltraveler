@@ -213,7 +213,7 @@ BOOL TTPlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 
 BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
-	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
+	if (ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
@@ -224,7 +224,7 @@ BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 
 	for (int i = 0; i < nDataNum; i++)
 	{
-		if (ppData[i]->bDelete == true)
+		if (ppData[i] == NULL || ppData[i]->bDelete == true)
 		{
 			continue;
 		}

@@ -119,7 +119,7 @@ void	CMainFrameWnd::NotifyExportBegin(IPlugIn* pPlugIn)
 	pListElement->SetText(1,strBrowserName.GetData());
 }
 
-void	CMainFrameWnd::NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum,  BOOL bSuccess)
+void	CMainFrameWnd::NotifyExportFinished(IPlugIn* pPlugIn, int nFavoriteNum,  BOOL bSuccess)
 {
 	if( m_pLoadingList == NULL)
 		return;
@@ -155,6 +155,12 @@ void	CMainFrameWnd::NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum,  BOOL bS
 
 void	CMainFrameWnd::NotifyImportBegin(IPlugIn* pPlugIn)
 {
+	CTextUI* pFavTip = (CTextUI*)m_pm.FindControl(L"favtip");
+	if( pFavTip != NULL)
+	{
+		pFavTip->SetText(L"{p}{f 微软雅黑 18}正在同步收藏夹数据，请稍候......{/f}{y 20}{/p}");
+	}
+
 	CListTextElementUI* pListElement = new CListTextElementUI;
 	pListElement->SetFixedHeight(40);
 	if( m_pLoadingList)
@@ -173,7 +179,7 @@ void	CMainFrameWnd::NotifyImportBegin(IPlugIn* pPlugIn)
 	pListElement->SetText(1,strBrowserName.GetData());
 }
 
-void	CMainFrameWnd::NotifyImportEnd(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess)
+void	CMainFrameWnd::NotifyImportFinished(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess)
 {
 	if( m_pLoadingList == NULL)
 		return;
@@ -207,6 +213,21 @@ void	CMainFrameWnd::NotifyImportEnd(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSu
 	}
 }
 
+void	CMainFrameWnd::NotifyImportAllFinished()
+{
+	CTextUI* pFavTip = (CTextUI*)m_pm.FindControl(L"favtip");
+	if( pFavTip != NULL)
+	{
+		pFavTip->SetText(L"{p}{f 微软雅黑 18}所有浏览器的收藏夹已经同步完成{/f}{y 20}{/p}");
+	}
+
+	CTextUI* pText = static_cast<CTextUI*>(m_pm.FindControl(L"ProcessHintText"));
+	if( pText != NULL)
+	{
+		pText->SetText(L"最小化程序，你在任何一个浏览器中增加收藏夹会自动同步到其余的浏览器");
+	}
+}
+
 void	CMainFrameWnd::NotifyInExportProcess(wchar_t* 	szProcess)
 {
 	CTextUI* pText = static_cast<CTextUI*>(m_pm.FindControl(L"ProcessHintText"));
@@ -216,7 +237,7 @@ void	CMainFrameWnd::NotifyInExportProcess(wchar_t* 	szProcess)
 	pText->SetText(szProcess);
 }
 
-void	CMainFrameWnd::NotifyPreImportBeginProcess()
+void	CMainFrameWnd::NotifyImportPreBegin()
 {
 	m_pLoadingList->RemoveAllItems();
 }
@@ -713,6 +734,11 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 			
 			g_MainFrameModule->GetModuleManager()->PushEvent(
 				MakeEvent<MODULE_ID_MAINFRAME>()(plugin::EVENT_VALUE_PLUGIN_BEGIN_TO_SYNC, MODULE_ID_PLUGIN));
+			return;
+		}
+		else if( msg.pSender->GetName() == L"ReturnToMainBtn" ) 
+		{
+			ShowProcessLayout(FALSE);
 			return;
 		}
 	}
@@ -1381,7 +1407,7 @@ void	CMainFrameWnd::AddFavoriteFoldSuccess(int nParentId, PFAVORITELINEDATA pDat
 {
 	if( m_pFavTreeList)
 	{
-		String strFavFoldName =  L"<x 4><x 4>";
+		String strFavFoldName =  L"<x 4>";
 		strFavFoldName += pData->szTitle;
 
 		int nIndex =  m_pFavTreeList->GetIndexFromId(nParentId);
