@@ -289,7 +289,7 @@ BOOL IEPlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 //		@param	pData			需要导入的的收藏夹数据数组
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
+BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 {
 	if (ppData == NULL || nDataNum == 0)
 	{
@@ -479,7 +479,7 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 				GetFileTimeInfo(&fileAttrData, &stFileTimeInfo);
 			}
 
-			::SHGetFileInfo(lpszFileName, NULL, &fileInfo, sizeof(fileInfo), SHGFI_ATTRIBUTES|SHGFI_TYPENAME);
+			int nRet = ::SHGetFileInfo(lpszFileName, NULL, &fileInfo, sizeof(fileInfo), SHGFI_ATTRIBUTES|SHGFI_TYPENAME);
 			if( wcscmp(fileInfo.szTypeName, L"") == 0)
 				continue;
 

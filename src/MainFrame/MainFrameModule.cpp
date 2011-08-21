@@ -7,11 +7,13 @@
 #include "PlugInDefine.h"
 #include "DatabaseDefine.h"
 #include "WebDefine.h"
+#include "FavMonitorDefine.h"
 
 using namespace mainframe;
 using namespace datacenter;
 using namespace plugin;
 using namespace web;
+using namespace favmonitor;
 
 HMODULE	g_hModule = NULL;
 
@@ -70,6 +72,7 @@ BEGIN_MESSAGE_MAP(MainFrameModule)
 
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXINPORT_PROCESS, OnMessage_PlugInInExportProcess)
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_PRE_BEGIN, OnMessage_PlugInPreBeginImport)
+	ON_MESSAGE(MESSAGE_VALUE_FAVMONITOR_FILE_CHANGE, OnMessage_FavChange)
 END_MESSAGE_MAP()
 
 BEGIN_SERVICE_MAP(MainFrameModule)
@@ -304,8 +307,10 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 	PFAVORITELINEDATA*	ppFavoriteData = favoriteData.ppFavoriteData;
 
 	m_pMainFrame->ShowProcessLayout(FALSE);
-
 	m_pMainFrame->LoadFavoriteTree(ppFavoriteData, nNum);
+
+	FavMonitor_StartMonitorService startMonitorService;
+	GetModuleManager()->CallService(startMonitorService.serviceId, (param)&startMonitorService);
 }
 
 
@@ -365,6 +370,13 @@ void	MainFrameModule::OnMessage_PlugInInExportProcess(Message* pMessage)
 void	MainFrameModule::OnMessage_PlugInPreBeginImport(Message* pMessage)
 {
 	m_pMainFrame->NotifyPreImportBeginProcess();
+}
+
+void	MainFrameModule::OnMessage_FavChange(Message* pMessage)
+{
+	FavMonitor_FileChangeMessage* pFileChangeMessage = (FavMonitor_FileChangeMessage*)pMessage->m_pstExtraInfo;
+	if( pFileChangeMessage == NULL)
+		return;
 }
 
 int32 MainFrameModule::OnService_GetMainWnd(ServiceValue lServiceValue, param	lParam)

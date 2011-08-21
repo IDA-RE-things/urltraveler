@@ -67,6 +67,8 @@ BOOL FavMonitorModule::Load(IModuleManager* pManager)
 //----------------------------------------------------------------------------------------
 BOOL FavMonitorModule::Unload()
 {
+	StopMonitor(m_monitorHandle);
+
 	return TRUE;
 }
 

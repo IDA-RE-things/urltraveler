@@ -192,7 +192,7 @@ BOOL C360ChromePlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 //		@param	ppData			需要导入的的收藏夹数据数组
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
+BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 {
 	if (ppData == NULL || nDataNum == 0)
 	{

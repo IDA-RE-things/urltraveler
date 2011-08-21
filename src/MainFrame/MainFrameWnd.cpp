@@ -322,7 +322,7 @@ void CMainFrameWnd::LoadFavoriteTree(PPFAVORITELINEDATA ppFavoriteData, int nNum
 				wstring wstrText = L"{x 4}";
 				wstrText += pData->szTitle;
 
-				CFavoriteTreeListUI::Node* pNode  = m_pFavTreeList->AddNode(wstrText.c_str());
+				CFavoriteTreeListUI::Node* pNode  = m_pFavTreeList->AddNode(wstrText.c_str(), pRootNode);
 				m_pFavTreeList->m_mapIdNode[pData->nId] = pNode;
 				m_pFavTreeList->m_mapNodeId[pNode] = pData->nId;
 				m_pFavTreeList->Invalidate();

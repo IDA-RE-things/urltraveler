@@ -14,8 +14,6 @@ namespace favmonitor
 	// FavMonitor对外公开的事件
 	enum E_FavMonitorEventValue
 	{
-		EVENT_VALUE_FAVMONITOR_START_MONITOR	=	EVENT_VALUE_FAVMONITOR_BEGIN,	//	启动监控
-		EVENT_VALUE_FAVMONITOR_STOP_MONITOR,	//	停止监控
 	};
 
 	// FavMonitor能够可能对外发送的广播消息
@@ -35,6 +33,9 @@ namespace favmonitor
 		SERVICE_VALUE_FAVMONITOR_END = SERVICE_VALUE_FAVMONITOR_END,		//所有的事件结束
 	};
 
+	//=======================================
+	//                             Message
+	//=======================================
 	struct FavMonitor_FileChangeMessage : MessageExtraInfo
 	{
 		FavMonitor_FileChangeMessage()
@@ -50,6 +51,9 @@ namespace favmonitor
 		int iActionType;
 	};
 
+	//=======================================
+	//                             Service
+	//=======================================
 	struct FavMonitor_AddMonitorService	: Service 
 	{
 		FavMonitor_AddMonitorService()
@@ -58,5 +62,29 @@ namespace favmonitor
 		}
 
 		wchar_t	szFile[MAX_PATH];
+	};
+
+	struct FavMonitor_StartMonitorService	: Service 
+	{
+		FavMonitor_StartMonitorService()
+		{
+			serviceId	=	SERVICE_VALUE_FAVMONITOR_START_MONITOR;
+		}
+	};
+
+	struct FavMonitor_StopMonitorService	: Service 
+	{
+		FavMonitor_StopMonitorService()
+		{
+			serviceId	=	SERVICE_VALUE_FAVMONITOR_STOP_MONITOR;
+		}
+	};
+
+	struct FavMonitor_SuspendMonitorService	: Service 
+	{
+		FavMonitor_SuspendMonitorService()
+		{
+			serviceId	=	SERVICE_VALUE_FAVMONITOR_SUSPEND_MONITOR;
+		}
 	};
 };
