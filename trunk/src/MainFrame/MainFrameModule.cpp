@@ -309,8 +309,10 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 	m_pMainFrame->ShowProcessLayout(FALSE);
 	m_pMainFrame->LoadFavoriteTree(ppFavoriteData, nNum);
 
+/*
 	FavMonitor_StartMonitorService startMonitorService;
 	GetModuleManager()->CallService(startMonitorService.serviceId, (param)&startMonitorService);
+*/
 }
 
 

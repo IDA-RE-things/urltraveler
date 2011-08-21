@@ -700,6 +700,17 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		else if( msg.pSender->GetName() == L"BeginToSyncBtn" ) 
 		{
 			ShowProcessLayout(TRUE);
+			m_pLoadingList->RemoveAllItems();
+
+			CListTextElementUI* pListElement = new CListTextElementUI;
+			pListElement->SetFixedHeight(40);
+			if( m_pLoadingList)
+				m_pLoadingList->Add(pListElement);
+
+			String	strBrowserName = L"<x 4><x 4>";
+			strBrowserName +=	 L"开始进行同步，请稍候...";
+			pListElement->SetText(1,strBrowserName.GetData());
+			
 			g_MainFrameModule->GetModuleManager()->PushEvent(
 				MakeEvent<MODULE_ID_MAINFRAME>()(plugin::EVENT_VALUE_PLUGIN_BEGIN_TO_SYNC, MODULE_ID_PLUGIN));
 			return;

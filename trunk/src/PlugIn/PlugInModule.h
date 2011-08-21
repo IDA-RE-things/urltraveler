@@ -8,6 +8,7 @@
 #include "ThreadObject_i.h"
 #include "Guard.h"
 #include "PlugInDefine.h"
+#include "XSync.h"
 
 
 using namespace std;
@@ -116,7 +117,12 @@ private:
 	//	将pFavoriteData进行合并
 	void	Merge(PFAVORITELINEDATA* ppData, int32 nLen, int nParentId);
 
+	void	DoExportThread();
+	void	DoImportThread();
+
 private:
+
+	int                 m_nSumFavorite;
 
 	//	保存所有的插件模块指针
 	std::vector<IPlugInFactory*>	m_vPlugInFactory;
@@ -127,9 +133,19 @@ private:
 	//	保存所有的插件
 	std::vector<IPlugIn*>		m_vPlugIns;	
 
-	IThreadObject*      m_pThreadObj;
+	enum EThreadDoing
+	{
+		NONE,
+		EXPORT,
+		IMPORT,
+	};
 
-	int                 m_nSumFavorite;
+	// 需要执行哪一个现成
+	CXMutex	m_ThreadMutex;
+	EThreadDoing	m_eThreadToDoing;
+
+	IThreadObject*      m_pExportFavThread;
+	IThreadObject*      m_pImportFavThread;
 };
 
 class PlugInModuleFactory : public ModuleFactoryImpl<PlugInModule>{};
