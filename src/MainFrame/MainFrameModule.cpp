@@ -63,15 +63,20 @@ BEGIN_MESSAGE_MAP(MainFrameModule)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_BEGIN_SHOW, OnMessage_Show)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_CYCLE_TRIGGER, OnMessage_CycleTrigged)
 	ON_MESSAGE(MESSAGE_VALUE_CORE_PRE_APP_EXIT, OnMessage_PreExit)
-	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED, OnMessage_FavoriteLoaded)
-	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED, OnMessage_PlugInLoaded)
-	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_BEGIN, OnMessage_PlugInBeginExport)
-	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED, OnMessage_PlugInEndExport)
-	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_BEGIN, OnMessage_PlugInBeginImport)
-	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_FINISHED, OnMessage_PlugInEndImport)
+
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_LOAD_ALL_PLUGIN_FINISHED, OnMessage_PlugInAllLoaded)
+
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_BEGIN, OnMessage_PlugInExportBegin)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED, OnMessage_PlugInExportFinished)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXPORT_ALL_FINISHED, OnMessage_ExportAllFinished)
+
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_PRE_BEGIN, OnMessage_PlugInImportPreBegin)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_BEGIN, OnMessage_PlugInImportBegin)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_FINISHED, OnMessage_PlugInImportFinished)
+	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_ALL_FINISHED, OnMessage_PlugInImportAllFinished)
 
 	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_EXINPORT_PROCESS, OnMessage_PlugInInExportProcess)
-	ON_MESSAGE(MESSAGE_VALUE_PLUGIN_IMPORT_PRE_BEGIN, OnMessage_PlugInPreBeginImport)
+
 	ON_MESSAGE(MESSAGE_VALUE_FAVMONITOR_FILE_CHANGE, OnMessage_FavChange)
 END_MESSAGE_MAP()
 
@@ -297,7 +302,7 @@ void MainFrameModule::OnMessage_CycleTrigged(Message* pMessage)
 {
 }
 
-void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
+void MainFrameModule::OnMessage_ExportAllFinished(Message* pMessage)
 {
 	// 在界面上显示整个收藏夹树
 	DataCenter_GetFavoriteService favoriteData;
@@ -316,13 +321,13 @@ void MainFrameModule::OnMessage_FavoriteLoaded(Message* pMessage)
 }
 
 
-void MainFrameModule::OnMessage_PlugInLoaded( Message* pMessage )
+void MainFrameModule::OnMessage_PlugInAllLoaded( Message* pMessage )
 {
 	// 通知MainFrame读取	
 	m_pMainFrame->GetAvailableBrowser();
 }
 
-void	MainFrameModule::OnMessage_PlugInBeginExport(Message* pMessage)
+void	MainFrameModule::OnMessage_PlugInExportBegin(Message* pMessage)
 {
 	PlugIn_ExportBeginMessage* pExportBeginMessage = (PlugIn_ExportBeginMessage*)pMessage->m_pstExtraInfo;
 	if( pExportBeginMessage == NULL)
@@ -331,17 +336,17 @@ void	MainFrameModule::OnMessage_PlugInBeginExport(Message* pMessage)
 	m_pMainFrame->NotifyExportBegin(pExportBeginMessage->pPlugIn);
 }
 
-void	MainFrameModule::OnMessage_PlugInEndExport(Message* pMessage)
+void	MainFrameModule::OnMessage_PlugInExportFinished(Message* pMessage)
 {
 	PlugIn_ExportEndMessage* pExportEndMessage = (PlugIn_ExportEndMessage*)pMessage->m_pstExtraInfo;
 	if( pExportEndMessage == NULL)
 		return;
 
-	m_pMainFrame->NotifyExportEnd(pExportEndMessage->pPlugIn, 
+	m_pMainFrame->NotifyExportFinished(pExportEndMessage->pPlugIn, 
 		pExportEndMessage->nFavoriteNum, pExportEndMessage->bSuccess);
 }
 
-void	MainFrameModule::OnMessage_PlugInBeginImport(Message* pMessage)
+void	MainFrameModule::OnMessage_PlugInImportBegin(Message* pMessage)
 {
 	PlugIn_ImportBeginMessage* pImportBeginMessage = (PlugIn_ImportBeginMessage*)pMessage->m_pstExtraInfo;
 	if( pImportBeginMessage == NULL)
@@ -350,14 +355,19 @@ void	MainFrameModule::OnMessage_PlugInBeginImport(Message* pMessage)
 	m_pMainFrame->NotifyImportBegin(pImportBeginMessage->pPlugIn);
 }
 
-void	MainFrameModule::OnMessage_PlugInEndImport(Message* pMessage)
+void	MainFrameModule::OnMessage_PlugInImportFinished(Message* pMessage)
 {
 	PlugIn_ImportEndMessage* pImportEndMessage = (PlugIn_ImportEndMessage*)pMessage->m_pstExtraInfo;
 	if( pImportEndMessage == NULL)
 		return;
 
-	m_pMainFrame->NotifyImportEnd(pImportEndMessage->pPlugIn, 
+	m_pMainFrame->NotifyImportFinished(pImportEndMessage->pPlugIn, 
 		pImportEndMessage->nFavoriteNum, pImportEndMessage->bSuccess);
+}
+
+void	MainFrameModule::OnMessage_PlugInImportAllFinished(Message* pMessage)
+{
+	m_pMainFrame->NotifyImportAllFinished();
 }
 
 void	MainFrameModule::OnMessage_PlugInInExportProcess(Message* pMessage)
@@ -369,9 +379,9 @@ void	MainFrameModule::OnMessage_PlugInInExportProcess(Message* pMessage)
 	m_pMainFrame->NotifyInExportProcess(pInExportProcessMessage->szProcessText);
 }
 
-void	MainFrameModule::OnMessage_PlugInPreBeginImport(Message* pMessage)
+void	MainFrameModule::OnMessage_PlugInImportPreBegin(Message* pMessage)
 {
-	m_pMainFrame->NotifyPreImportBeginProcess();
+	m_pMainFrame->NotifyImportPreBegin();
 }
 
 void	MainFrameModule::OnMessage_FavChange(Message* pMessage)

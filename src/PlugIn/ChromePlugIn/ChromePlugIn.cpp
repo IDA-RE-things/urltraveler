@@ -202,15 +202,20 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 	wchar_t* pszPath = GetFavoriteDataPath();
 
 	//获取导入文件路径
+	//获取导入文件路径
 	std::wstring strTmpPath = StringHelper::ANSIToUnicode(StringHelper::UnicodeToUtf8(pszPath));
 	if( FileHelper::IsFileExist(strTmpPath.c_str()) == TRUE)
 	{
-		//导入前先删除之前的收藏夹文件
-		BOOL bResult = FileHelper::DeleteFile(pszPath);
-		free(pszPath);
-		if (!bResult)
+		BOOL bResult = ::DeleteFileW(pszPath);
+		if( bResult == FALSE)
 		{
-			return FALSE;
+			//导入前先删除之前的收藏夹文件
+			bResult = FileHelper::DeleteFile(pszPath);
+			free(pszPath);
+			if (!bResult)
+			{
+				return FALSE;
+			}
 		}
 	}
 

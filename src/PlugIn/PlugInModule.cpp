@@ -291,7 +291,7 @@ void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 
 	// 发送广播消息，通知所有的插件已经加载并检查完毕
 	m_pModuleManager->PushMessage(
-		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED));
+		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_ALL_PLUGIN_FINISHED));
 
 	PlugIn_InExportEndMessage* pMessage = new PlugIn_InExportEndMessage();
 	STRNCPY(pMessage->szProcessText, L"正在检查插件是否能正常工作");
@@ -443,7 +443,7 @@ void	PlugInModule::DoExportThread()
 	{
 		// 发送广播，通知收藏夹已经合并完毕
 		m_pModuleManager->PushMessage(
-			MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED));
+			MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_EXPORT_ALL_FINISHED));
 		return;
 	}
 
@@ -519,7 +519,7 @@ void	PlugInModule::DoExportThread()
 
 	// 发送广播，通知收藏夹已经合并完毕
 	m_pModuleManager->PushMessage(
-		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED));
+		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_EXPORT_ALL_FINISHED));
 }
 
 void	PlugInModule::DoImportThread()
@@ -555,6 +555,9 @@ void	PlugInModule::DoImportThread()
 		pImportEndMessage->bSuccess = bRet;
 		GetModuleManager()->PushMessage(*pImportEndMessage);
 	}
+
+	GetModuleManager()->PushMessage(
+		MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_IMPORT_ALL_FINISHED));
 }
 
 int PlugInModule::Run()

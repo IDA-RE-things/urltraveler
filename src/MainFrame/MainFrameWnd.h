@@ -62,14 +62,16 @@ public:
 
 	// 显示导出进度布局
 	void	ShowProcessLayout(BOOL bShow=TRUE);
-	void	NotifyExportBegin(IPlugIn* pPlugIn);
-	void	NotifyExportEnd(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
 
+	void	NotifyExportBegin(IPlugIn* pPlugIn);
+	void	NotifyExportFinished(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
+
+	void	NotifyImportPreBegin();
 	void	NotifyImportBegin(IPlugIn* pPlugIn);
-	void	NotifyImportEnd(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
+	void	NotifyImportFinished(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
+	void	NotifyImportAllFinished();
 
 	void	NotifyInExportProcess(wchar_t* 	szProcess);
-	void	NotifyPreImportBeginProcess();
 
 private:
 

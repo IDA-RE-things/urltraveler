@@ -24,13 +24,16 @@ namespace plugin
 	// PlugIn能够可能对外发送的广播消息
 	enum E_PlugInMessageValue
 	{
-		MESSAGE_VALUE_PLUGIN_LOAD_FAVORITE_DATA_FINISHED	=	MESSAGE_VALUE_PLUGIN_BEGIN,	//	广播通知收藏夹合并数据已经完成
-		MESSAGE_VALUE_PLUGIN_LOAD_ALL_FINISHED,					//	通知所有的插件已经加载完毕
+		MESSAGE_VALUE_PLUGIN_LOAD_ALL_PLUGIN_FINISHED	=	MESSAGE_VALUE_PLUGIN_BEGIN,	//	通知所有的插件已经加载完毕
 		MESSAGE_VALUE_PLUGIN_EXPORT_BEGIN,								//	通知浏览器开始导出
 		MESSAGE_VALUE_PLUGIN_EXPORT_FINISHED,						//	通知给定的浏览器的数据已经导出完毕
+		MESSAGE_VALUE_PLUGIN_EXPORT_ALL_FINISHED,				//	广播通知收藏夹合并数据已经完成
+
 		MESSAGE_VALUE_PLUGIN_IMPORT_PRE_BEGIN,						//	同步数据之前进行清理的预处理
 		MESSAGE_VALUE_PLUGIN_IMPORT_BEGIN,							//	通知浏览器开始导入
 		MESSAGE_VALUE_PLUGIN_IMPORT_FINISHED,						//	通知给定的浏览器的数据已经导入完毕
+		MESSAGE_VALUE_PLUGIN_IMPORT_ALL_FINISHED,				//	通知所有的浏览器已经同步结束
+
 		MESSAGE_VALUE_PLUGIN_EXINPORT_PROCESS,					//	通知上层当前的进度
 	};
 

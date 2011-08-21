@@ -90,15 +90,16 @@ protected:
 	void	OnMessage_CycleTrigged(Message* pMessage);
 	void	OnMessage_Show(Message* pMessage);
 	void	OnMessage_PreExit(Message* pMessage);	// 程序退出的广播消息，主界面处理该消息，为退出做准备	
-	void	OnMessage_FavoriteLoaded(Message* pMessage);		//	收藏夹已经合并结束
-	void	OnMessage_PlugInLoaded(Message* pMessage);
-	void	OnMessage_PlugInBeginExport(Message* pMessage);
-	void	OnMessage_PlugInEndExport(Message* pMessage);
-	void	OnMessage_PlugInBeginImport(Message* pMessage);
-	void	OnMessage_PlugInEndImport(Message* pMessage);
+	void	OnMessage_ExportAllFinished(Message* pMessage);		//	收藏夹已经合并结束
+	void	OnMessage_PlugInAllLoaded(Message* pMessage);
+	void	OnMessage_PlugInExportBegin(Message* pMessage);
+	void	OnMessage_PlugInExportFinished(Message* pMessage);
+	void	OnMessage_PlugInImportBegin(Message* pMessage);
+	void	OnMessage_PlugInImportFinished(Message* pMessage);
+	void	OnMessage_PlugInImportAllFinished(Message* pMessage);
 
 	void	OnMessage_PlugInInExportProcess(Message* pMessage);
-	void	OnMessage_PlugInPreBeginImport(Message* pMessage);
+	void	OnMessage_PlugInImportPreBegin(Message* pMessage);
 	void	OnMessage_FavChange(Message* pMessage);
 
 protected:
