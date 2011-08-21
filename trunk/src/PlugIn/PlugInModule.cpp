@@ -347,10 +347,10 @@ void PlugInModule::Merge(PFAVORITELINEDATA* ppData, int32 nLen, int nParentId)
 	//把所有相同父结点的节点放到vec中
 	for (int i = 0; i < nLen; i++)
 	{
-		if( ppData[i] == NULL)
+		if( ppData[i] == NULL || ppData[i]->szTitle == L"" || ppData[i]->szUrl == L"" || ppData[i]->nId ==0 )
 			continue;
 
-		if (ppData[i]->nPid == nParentId)
+		if (ppData[i]->nPid == nParentId )
 		{
 			vec.push_back(ppData[i]);
 		}
