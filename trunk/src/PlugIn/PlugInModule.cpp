@@ -6,10 +6,12 @@
 #include "PlugIn.h"
 #include <algorithm>
 #include <objbase.h>
+#include "FavMonitorDefine.h"
 
 HMODULE	 g_hModule;
 
 using namespace plugin;
+using namespace favmonitor;
 
 namespace plugin
 {
@@ -311,11 +313,12 @@ void	PlugInModule::OnEvent_BeginToSync(Event* pEvent)
 		pImportBeginMessage->pPlugIn = pPlugIn;
 		GetModuleManager()->PushMessage(*pImportBeginMessage);
 
-		BOOL bRet = pPlugIn->ImportFavoriteData(&(*pvFavoriteData)[0], m_nSumFavorite);
+		int nImportFavNum = pvFavoriteData->size();
+		BOOL bRet = pPlugIn->ImportFavoriteData(&(*pvFavoriteData)[0], nImportFavNum);
 
 		PlugIn_ImportEndMessage* pImportEndMessage = new PlugIn_ImportEndMessage();
 		pImportEndMessage->pPlugIn = pPlugIn;
-		pImportEndMessage->nFavoriteNum = pvFavoriteData->size();
+		pImportEndMessage->nFavoriteNum = nImportFavNum;
 		pImportEndMessage->bSuccess = bRet;
 		GetModuleManager()->PushMessage(*pImportEndMessage);
 	}
@@ -424,6 +427,15 @@ int PlugInModule::Run()
 		IPlugIn*	pPlugIn = m_vPlugIns.at(i);
 		if( pPlugIn == NULL)
 			continue;
+
+		// 将该插件的路径加入监控路径
+		wchar_t* pFavDataPath = pPlugIn->GetFavoriteDataPath();
+		if( pvFavoriteData != NULL)
+		{
+			FavMonitor_AddMonitorService service;
+			STRNCPY(service.szFile, pFavDataPath);
+			g_PlugInModule->GetModuleManager()->CallService(service.serviceId, (param)&service);
+		}
 
 		int nFavoriteCount = pPlugIn->GetFavoriteCount();
 		panCount[i] = nFavoriteCount;

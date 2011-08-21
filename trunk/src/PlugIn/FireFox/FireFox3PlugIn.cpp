@@ -510,7 +510,7 @@ void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA* ppData, int32 
 	}
 }
 
-BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataNum )
+BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	if (ppData == NULL || nDataNum == 0)
 	{
@@ -529,7 +529,6 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataN
 		strId += L",";
 	}
 	strId.erase( strId.find_last_not_of(L",") + 1, strId.length()-1);
-
 
 	wchar_t szInsert[MAX_BUFFER_LEN] = {0};
 	wchar_t szDelete[MAX_BUFFER_LEN] = {0};

@@ -183,9 +183,9 @@ BOOL SogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum
 	return FALSE;
 }
 
-BOOL SogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataNum )
+BOOL SogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
-	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
+	if (ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}

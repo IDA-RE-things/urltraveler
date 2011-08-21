@@ -164,7 +164,7 @@ BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 	return TRUE;
 }
 
-BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataNum )
+BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	if (ppData == NULL || nDataNum == 0)
 	{

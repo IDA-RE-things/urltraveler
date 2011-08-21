@@ -75,7 +75,7 @@ public:
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum);
+	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum);
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetFavoriteCount
@@ -90,7 +90,6 @@ protected:
 	// 获取父结点为nParentId的所有结点的数目
 	int	GetFavoriteCount(int nParentId);
 
-
 	// 导出所有父结点为nParentId的结点的收藏数据
 	// nCurrentIndex为导出的收藏数据
 	BOOL ExportFavoriteData(int nParentId, PFAVORITELINEDATA* ppData, int32& nCurrentIndex);
@@ -98,7 +97,7 @@ protected:
 	// 将一行查询结果写入到PFAVORITELINEDATA中去
 	BOOL WriteQueryDataIntoData(CppSQLite3Query* pQuery, PFAVORITELINEDATA pData);
 
-	void InsertIntoDB(int nRootId, PFAVORITELINEDATA* ppData, int32 nDataNum);
+	int	GetIndexByUrl(wchar_t* pszTitle, wchar_t* pszUrl);
 
 protected:
 

@@ -259,7 +259,7 @@ BOOL Maxthon3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 	return FALSE;
 }
 
-BOOL Maxthon3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32 nDataNum )
+BOOL Maxthon3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 {
 	if (pData == NULL || nDataNum == 0)
 	{

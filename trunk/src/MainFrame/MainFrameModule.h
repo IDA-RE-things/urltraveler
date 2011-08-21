@@ -99,6 +99,7 @@ protected:
 
 	void	OnMessage_PlugInInExportProcess(Message* pMessage);
 	void	OnMessage_PlugInPreBeginImport(Message* pMessage);
+	void	OnMessage_FavChange(Message* pMessage);
 
 protected:
 

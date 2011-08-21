@@ -165,7 +165,7 @@ BOOL QQPlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 //		@param	ppData			需要导入的的收藏夹数据数组
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
+BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 {
 	if ((ppData == NULL || *ppData == NULL) || (nDataNum == 0))
 	{
@@ -187,21 +187,22 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
 
 	Json::Value root;
 	Json::Value bookmark_bar;
-	//Json::Value other;
-	//Json::Value synced;
 	uint32 nIndex = 0;
 	int32 nDepth = 0;
 
-	//InitializeChecksum();
-
 	MakeSpecialFolderNode(L"收藏夹", m_nIndex, bookmark_bar);
 	SortByDepth(&ppData[0], nDataNum);
+
+	int nRealImportNum = 0;
 	for (int32 i = 0; i < nDataNum; ++i)
 	{
-		if (ppData[i]->bDelete == true)
+
+		if (ppData[i] == NULL || ppData[i]->bDelete == true)
 		{
 			continue;
 		}
+
+		nRealImportNum++;
 
 		MAP_PID_INFO::iterator it;
 		it = m_mapPidInfo.find(ppData[i]->nPid);
@@ -238,7 +239,7 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
-	for (int k = 0; k <= nDataNum; k++)
+	for (int k = 0; k < nDataNum; k++)
 	{
 		itIdIndex = m_mapIdIndexInfo.find(ppData[k]->nId);
 		if (itIdIndex != m_mapIdIndexInfo.end())
@@ -277,6 +278,7 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32 nDataNum)
 	writer.write(outfile, root);	
 	outfile.close();
 
+	nDataNum = nRealImportNum;
 	return TRUE;
 }
 

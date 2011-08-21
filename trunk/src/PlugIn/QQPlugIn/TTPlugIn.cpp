@@ -45,7 +45,7 @@ BOOL TTPlugIn::Load()
 	if( m_pSqliteDatabase->IsOpen() == false)
 	{
 		return FALSE;
-	}
+	}	
 
 	return TRUE;
 }
@@ -190,7 +190,6 @@ BOOL TTPlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 	}
 
 	string strSql = "select fav.* from favtable as fav where fav.iPIndex = 0";
-
 	CppSQLite3Query Query = m_pSqliteDatabase->execQuery(strSql.c_str());
 
 	// 当前插入的位置
@@ -212,16 +211,67 @@ BOOL TTPlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 	return TRUE;
 }
 
-BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32 nDataNum )
+BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
 	{
 		return FALSE;
 	}
 
-
 #define MAX_BUFFER_LEN	4096
+  	wstring wstrDeleteSql =	 L"delete from favtable";
+	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(wstrDeleteSql).c_str());
 
+	for (int i = 0; i < nDataNum; i++)
+	{
+		if (ppData[i]->bDelete == true)
+		{
+			continue;
+		}
+
+		ReplaceSingleQuoteToDoubleQuote(ppData[i]->szTitle);
+		ReplaceSingleQuoteToDoubleQuote(ppData[i]->szUrl);
+
+		wchar_t szInsert[MAX_BUFFER_LEN] = {0};
+		if( ppData[i]->bFolder == true)
+		{
+			swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into favtable"
+				L"(iIndex,iPIndex,iUrlIndex,iPos, strTitle,iCreateTime,iLastModifyTime)"
+				L"values(%d,%d,%d,%d,'%s',%d,%d)", 
+				ppData[i]->nId,
+				ppData[i]->nPid,
+				0,
+				ppData[i]->nOrder,
+				ppData[i]->szTitle,
+				time(NULL), 
+				time(NULL));
+		}
+		else
+		{
+			int iUrlIndex = GetIndexByUrl(ppData[i]->szTitle, ppData[i]->szUrl);
+			if( iUrlIndex != -1)
+			{
+				swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into favtable"
+					L"(iIndex,iPIndex,iUrlIndex,iPos, strTitle,iCreateTime,iLastModifyTime)"
+					L"values(%d,%d,%d,%d,'%s',%d,%d)", 
+					ppData[i]->nId,
+					ppData[i]->nPid,
+					iUrlIndex,
+					ppData[i]->nOrder,
+					ppData[i]->szTitle,
+					time(NULL), 
+					time(NULL));
+			}
+		}
+
+		try
+		{
+			m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+		}
+		catch(CppSQLite3Exception&e )
+		{
+		}		
+	}
 	return TRUE;
 }
 
@@ -269,131 +319,35 @@ int32 TTPlugIn::GetFavoriteCount()
 	return nTotalNumber;
 }
 
-void TTPlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA* ppData, int32 nDataNum)
+int	TTPlugIn::GetIndexByUrl(wchar_t* pszTitle, wchar_t* pszUrl)
 {
-	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
-	{
-		return ;
-	}
+	if( pszUrl == NULL || pszTitle == NULL)
+		return -1;
 
-#define MAX_BUFFER_LEN	4096
-
+	// 检查url是否存在
 	wchar_t szInsert[MAX_BUFFER_LEN] = {0};
+	swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select * from urltable where strUrl ='%s'",pszUrl);
+	CppSQLite3Query urlQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
 
-	// 清空收藏夹数据库
-	int nBeginId = 0;
-	swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"delete from favtable ");
-	CppSQLite3Query selectQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
-
-	for (int i = 0; i < nDataNum; i++)
+	// 该URL不存在，则插入一条新的记录
+	if( urlQuery.eof() == true)
 	{
-		if (ppData[i]->bDelete == true)
-		{
-			nBeginId--;
-			continue;
-		}
+		swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into urltable "
+			L"(strUrl,strTitle,iLastVisitTime,iVisitCount) "
+			L" values('%s','%s', %d, %d)",
+			pszUrl,
+			pszTitle,time(NULL), 1);
+		m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
 
-/*
-				ReplaceSingleQuoteToDoubleQuote(ppData[i]->szTitle);
-				ReplaceSingleQuoteToDoubleQuote(ppData[i]->szUrl);
-		
-				int nFk = -1;
-				if( wcscspn(ppData[i]->szUrl,L"") != 0)
-				{
-					// 检查url是否存在
-					swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select * from urltable where strUrl ='%s'",
-						ppData[i]->szUrl);
-					CppSQLite3Query urlQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
-		
-					// 该URL不存在，则插入一条新的记录
-					if( urlQuery.eof() == true)
-					{
-						swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into urltable "
-							L"(strUrl,strTitle,iLastVisitTime,iVisitCount) "
-							L" values('%s','%s')",
-							ppData[i]->szUrl,
-							ppData[i]->szTitle,time(NULL), 1);
-						m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
-		
-						swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select max(iIndex) from urltable ");
-						CppSQLite3Query selectQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
-						if( selectQuery.eof() == false)
-						{
-							nFk = selectQuery.getIntField(0);
-						}
-					}
-					else
-					{
-						nFk = urlQuery.getIntField(0);
-					}
-				}
-		
-				time_t nowTime;
-				time(&nowTime);
-		
-				if( ppData[i]->nPid == 0)
-				{
-					if( nFk != -1)
-					{
-						// 书签菜单栏目
-						swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
-							L"(parent,type,title,position,dateAdded,lastModified,fk) "
-							L" values(%d,%d,'%s',%d,%d,%d,%d)",
-							nRootId,
-							ppData[i]->bFolder == true ? 2 : 1,
-							ppData[i]->szTitle,
-							ppData[i]->nOrder,
-							(int)nowTime, 
-							(int)nowTime,
-							nFk
-						);
-					}
-					else
-					{
-						// 书签菜单栏目
-						swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks " \
-							L" (parent,type,title,position,lastModified,dateAdded) " \
-							L" values(%d,%d,'%s',%d,%d,%d)",
-							nRootId,
-							ppData[i]->bFolder == true ? 2 : 1,
-							ppData[i]->szTitle,
-							ppData[i]->nOrder,
-							(int)nowTime,
-							(int)nowTime);
-					}
-					
-				}
-				else
-				{
-					if( nFk != -1)
-					{
-						swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
-							L"(parent,type,title,position,dateAdded,lastModified,fk) "
-							L" values(%d,%d,'%s',%d,%d,%d, %d)",
-							ppData[i]->nPid + nBeginId,
-							ppData[i]->bFolder == true ? 2 : 1,
-							ppData[i]->szTitle,
-							ppData[i]->nOrder,
-							(int)nowTime, 
-							(int)nowTime,
-							nFk
-							);
-					}
-					else
-					{
-						swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"insert into moz_bookmarks "
-							L"(parent,type,title,position,dateAdded,lastModified) "
-							L" values(%d,%d,'%s',%d,%d,%d)",
-							ppData[i]->nPid + nBeginId,
-							ppData[i]->bFolder == true ? 2 : 1,
-							ppData[i]->szTitle,
-							ppData[i]->nOrder,
-							(int)nowTime, 
-							(int)nowTime	
-							);
-					}
-				}*/
-		
-		//m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(szInsert).c_str());
+		swprintf_s(szInsert, MAX_BUFFER_LEN-1, L"select max(iIndex) from urltable ");
+		CppSQLite3Query selectQuery = m_pSqliteDatabase->execQuery(StringHelper::UnicodeToUtf8(szInsert).c_str());
+		if( selectQuery.eof() == false)
+		{
+			return selectQuery.getIntField(0);
+		}
+	}
+	else
+	{
+		return urlQuery.getIntField(0);
 	}
 }
