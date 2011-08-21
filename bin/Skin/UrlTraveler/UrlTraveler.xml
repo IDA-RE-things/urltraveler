@@ -49,6 +49,9 @@
                             <Text name="favtip" text="{p}{f 微软雅黑 18}正在导入收藏夹数据，请稍候......{/f}{y 20}{/p}" float="true" pos="46,26,439,66" textpadding="2,0,2,0" textcolor="#00FF0000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                             <Text name="ProcessHintText" text="" float="true" pos="46,59,439,79" textpadding="2,0,2,0" textcolor="#00808080" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         </HorizontalLayout>
+                        <HorizontalLayout pos="460,0,630,103" width="170" height="103">
+                            <Button name="BeginToSyncBtn" float="true" pos="15,29,159,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button.png" />
+                        </HorizontalLayout>
                     </HorizontalLayout>
 
 
