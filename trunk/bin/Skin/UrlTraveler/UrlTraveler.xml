@@ -44,13 +44,13 @@
 
 					<!-- 此处为正在加载的时候显示的内容-->
                     <HorizontalLayout name="ProcessLayout" pos="0,0,0,104" height="104" bkcolor="#FFFFFFFF" bkcolor2="#00E8E9EB" bordercolor="#00B4BFB5">
-                        <HorizontalLayout name="HorizontalLayoutUI10" pos="0,0,140,104" width="140" height="104" />
-                        <HorizontalLayout name="HintText" pos="140,0,628,103" width="488" height="103">
+                        <HorizontalLayout name="HorizontalLayoutUI10" pos="0,0,110,104" width="110" height="104" />
+                        <HorizontalLayout name="HintText" pos="110,0,478,103" width="338" height="103">
                             <Text name="favtip" text="{p}{f 微软雅黑 18}正在导入收藏夹数据，请稍候......{/f}{y 20}{/p}" float="true" pos="46,26,439,66" textpadding="2,0,2,0" textcolor="#00FF0000" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
-                            <Text name="ProcessHintText" text="" float="true" pos="46,59,439,79" textpadding="2,0,2,0" textcolor="#00808080" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
+                            <Text name="ProcessHintText" text="" float="true" pos="46,59,339,99" textpadding="2,0,2,0" textcolor="#00808080" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         </HorizontalLayout>
                         <HorizontalLayout pos="460,0,630,103" width="170" height="103">
-                            <Button name="BeginToSyncBtn" float="true" pos="15,29,159,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="button.png" />
+                            <Button name="ReturnToMainBtn" float="true" pos="15,29,159,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" text="返回主界面" bordercolor="#00B4BFB5"/>
                         </HorizontalLayout>
                     </HorizontalLayout>
 
