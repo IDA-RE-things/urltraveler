@@ -126,8 +126,8 @@ BOOL TTPlugIn::WriteQueryDataIntoData(CppSQLite3Query* pQuery, PFAVORITELINEDATA
 
 	pData->bFolder = pQuery->getIntField("iUrlIndex", 0) == 0 ? true : false;
 
-	wcscpy_s(pData->szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(pQuery->getStringField("strTitle", 0)).c_str());
-	pData->szTitle[MAX_PATH - 1] = 0;
+	wcscpy_s(pData->szTitle, MAX_LENGTH - 1, StringHelper::Utf8ToUnicode(pQuery->getStringField("strTitle", 0)).c_str());
+	pData->szTitle[MAX_LENGTH - 1] = 0;
 
 	pData->nOrder = pQuery->getIntField("iPos", 0);
 	pData->nAddTimes = pQuery->getInt64Field("iCreateTime", 0);
@@ -149,8 +149,8 @@ BOOL TTPlugIn::WriteQueryDataIntoData(CppSQLite3Query* pQuery, PFAVORITELINEDATA
 	CppSQLite3Query urlQuery = m_pSqliteDatabase->execQuery(strUrlQuerySql.c_str());
 	if(!urlQuery.eof())
 	{
-		wcscpy_s(pData->szUrl, 1023, StringHelper::Utf8ToUnicode(urlQuery.getStringField("strUrl", 0)).c_str());
-		pData->szUrl[1023] = 0;
+		wcscpy_s(pData->szUrl, MAX_LENGTH-1, StringHelper::Utf8ToUnicode(urlQuery.getStringField("strUrl", 0)).c_str());
+		pData->szUrl[MAX_LENGTH-1] = 0;
 	}
 
 	return TRUE;

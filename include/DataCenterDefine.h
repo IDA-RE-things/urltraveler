@@ -59,11 +59,11 @@ namespace datacenter
 	typedef struct FavoriteLineData
 	{
 		int32       nId;                //  ID
-		wchar_t	szTitle[MAX_PATH];	//	描述文本，或者为分类名称，或者为URL的title
+		wchar_t	szTitle[MAX_LENGTH];	//	描述文本，或者为分类名称，或者为URL的title
 		int32		nCatId;				//  分类ID
 		int32		nPid;		        //	父类的ID
 		bool        bFolder;            //  是否是目录结点。如果是true，表示是目录结点，否则是子结点
-		wchar_t	    szUrl[MAX_URL_LEN];		//	收藏的URL
+		wchar_t	    szUrl[MAX_LENGTH];		//	收藏的URL
 		time_t		nAddTimes;		    //	增加的时间
 		time_t		nLastModifyTime;	//	最近的更改时间
 		int32		nClickTimes;		//	点击次数
@@ -103,10 +103,10 @@ namespace datacenter
 	// 历史记录中每一个历史记录的数据
 	typedef struct HistoryLineData
 	{
-		wchar_t		szTitle;				//	描述文本，或者为分类名称，或者为URL的title
+		wchar_t		szTitle[MAX_LENGTH];				//	描述文本，或者为分类名称，或者为URL的title
 		int32		nCatId;				//	分类ID
 		int32		nParentCatId;			//	父类的ID，如果nParentCatId=0表示当前ID是目录结点
-		wchar_t		szUrl[MAX_URL_LEN];	//	收藏的URL
+		wchar_t		szUrl[MAX_LENGTH];	//	收藏的URL
 		int32		nAddTimes;			//	增加的时间
 		int32		nLastModifyTime;		//	最近的更改时间
 		int32		nClickTimes;			//	点击次数
@@ -168,8 +168,8 @@ namespace datacenter
 		}
 
 		int nParentFavoriteId;				//	当前收藏所在的收藏目录
-		wchar_t	szTitle[MAX_PATH];			//	收藏的标题
-		wchar_t	szUrl[MAX_PATH];			//	收藏的URL
+		wchar_t	szTitle[MAX_LENGTH];			//	收藏的标题
+		wchar_t	szUrl[MAX_LENGTH];			//	收藏的URL
 	};
 
 	// 由于DataCenter_AddFavoriteEvent是异步消息，在发送后，发送者没法获得结果，因此
@@ -195,7 +195,7 @@ namespace datacenter
 		}
 
 		int nFavoriteId;
-		wchar_t	szUrl[MAX_PATH];
+		wchar_t	szUrl[MAX_LENGTH];
 	};
 
 	struct DataCenter_AddFavoriteFoldEvent	: DataCenterEvent 
@@ -208,7 +208,7 @@ namespace datacenter
 		}
 
 		int nParentFavoriteId;				//	当前收藏家目录的父收藏家目录
-		wchar_t	szTitle[MAX_PATH];			//	收藏夹的标题
+		wchar_t	szTitle[MAX_LENGTH];			//	收藏夹的标题
 	};
 
 	// 由于DataCenter_AddFavoriteFoldEvent是异步消息，在发送后，发送者没法获得结果，因此

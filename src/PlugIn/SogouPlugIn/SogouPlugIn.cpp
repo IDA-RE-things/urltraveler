@@ -152,10 +152,10 @@ BOOL SogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum
 			 }
 
 			  ppData[i]->bFolder = Query.getIntField("folder", 0);
-			 _tcsncpy_s( ppData[i]->szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str(), MAX_PATH - 2);
-			  ppData[i]->szTitle[MAX_PATH - 1] = 0;
-			 _tcsncpy_s( ppData[i]->szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str(), 1022);
-			  ppData[i]->szUrl[1023] = 0;
+			 _tcsncpy_s( ppData[i]->szTitle, MAX_LENGTH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str(), MAX_LENGTH - 2);
+			  ppData[i]->szTitle[MAX_LENGTH - 1] = 0;
+			 _tcsncpy_s( ppData[i]->szUrl, MAX_LENGTH-1, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str(), MAX_LENGTH-2);
+			  ppData[i]->szUrl[MAX_LENGTH-1] = 0;
 			  ppData[i]->nOrder = Query.getIntField("sequenceNO", 0);
 
 			 TimeHelper::SysTime2Time(TimeHelper::GetTimeFromStr2(

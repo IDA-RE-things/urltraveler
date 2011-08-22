@@ -317,8 +317,8 @@ BOOL FireFox3PlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA* ppData
 
 		ppData[nCurrentIndex]->bFolder = Query.getIntField("type", 1) == 2 ? true : false;
 
-		wcscpy_s(ppData[nCurrentIndex]->szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
-		ppData[nCurrentIndex]->szTitle[MAX_PATH - 1] = 0;
+		wcscpy_s(ppData[nCurrentIndex]->szTitle, MAX_LENGTH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
+		ppData[nCurrentIndex]->szTitle[MAX_LENGTH - 1] = 0;
 
 		ppData[nCurrentIndex]->nOrder = Query.getIntField("position", 0);
 		ppData[nCurrentIndex]->nAddTimes = Query.getInt64Field("dateAdded", 0);
@@ -338,8 +338,8 @@ BOOL FireFox3PlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA* ppData
 		CppSQLite3Query urlQuery = m_pSqliteDatabase->execQuery(strUrlQuerySql.c_str());
 		if(!urlQuery.eof())
 		{
-			wcscpy_s(ppData[nCurrentIndex]->szUrl, 1023, StringHelper::Utf8ToUnicode(urlQuery.getStringField("url", 0)).c_str());
-			ppData[nCurrentIndex]->szUrl[1023] = 0;
+			wcscpy_s(ppData[nCurrentIndex]->szUrl, MAX_LENGTH-1, StringHelper::Utf8ToUnicode(urlQuery.getStringField("url", 0)).c_str());
+			ppData[nCurrentIndex]->szUrl[MAX_LENGTH-1] = 0;
 		}
 
 		nCurrentIndex++;

@@ -355,7 +355,7 @@ BOOL QQPlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDA
 
 		ppData[nDataNum]->nPid = nPid;
 
-		wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str());
+		wcscpy_s(ppData[nDataNum]->szTitle, MAX_LENGTH -1, StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str());
 		ppData[nDataNum]->szUrl[0] = 0;
 		ppData[nDataNum]->nCatId = 0;
 
@@ -400,9 +400,9 @@ BOOL QQPlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA* pp
 	ppData[nDataNum]->nPid = nPid;
 	ppData[nDataNum]->nCatId = 0;
 
-	wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, StringHelper::Utf8ToUnicode(url_obj["name"].asString()).c_str());
-	wcscpy_s(ppData[nDataNum]->szUrl, 1024 - 1, StringHelper::Utf8ToUnicode(url_obj["url"].asString()).c_str());
-	ppData[nDataNum]->szUrl[1023] = 0;
+	wcscpy_s(ppData[nDataNum]->szTitle, MAX_LENGTH -1, StringHelper::Utf8ToUnicode(url_obj["name"].asString()).c_str());
+	wcscpy_s(ppData[nDataNum]->szUrl, MAX_LENGTH - 1, StringHelper::Utf8ToUnicode(url_obj["url"].asString()).c_str());
+	ppData[nDataNum]->szUrl[MAX_LENGTH-1] = 0;
 
 	CCRCHash ojbCrcHash;
 	ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t),  \
