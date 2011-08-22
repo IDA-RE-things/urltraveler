@@ -13,10 +13,10 @@ namespace plugin
 	{
 		EVENT_VALUE_PLUGIN_OPEN = EVENT_VALUE_PLUGIN_BEGIN,		//	打开主界面
 
-		EVENT_VALUE_PLUGIN_LOAD_ALL,													//	加载插件
-		EVENT_VALUE_PLUGIN_CHECK_IS_WORKED,									//	检查当前的插件是否需要工作。如果没有安装对应的浏览器，则当前插件不需要安装
-		EVENT_VALUE_PLUGIN_COMBINE_FAVORITE,									//	通知模块需要获取合并后的收藏夹
-		EVENT_VALUE_PLUGIN_BEGIN_TO_SYNC,										// 通知模块开始进行同步
+		EVENT_VALUE_PLUGIN_LOAD_ALL,						//	加载插件
+		EVENT_VALUE_PLUGIN_CHECK_IS_WORKED,				//	检查当前的插件是否需要工作。如果没有安装对应的浏览器，则当前插件不需要安装
+		EVENT_VALUE_PLUGIN_COMBINE_FAVORITE,				//	通知模块需要获取合并后的收藏夹
+		EVENT_VALUE_PLUGIN_BEGIN_TO_SYNC,				// 通知模块开始进行同步
 
 		EVENT_VALUE_PLUGIN_END = EVENT_VALUE_PLUGIN_END ,			//所有的事件结束
 	};

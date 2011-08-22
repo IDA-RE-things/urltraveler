@@ -419,3 +419,5 @@ void Delete(void *&ptr)
 	ptr = NULL;
 }
 #endif
+
+#define MAX_LENGTH	1024

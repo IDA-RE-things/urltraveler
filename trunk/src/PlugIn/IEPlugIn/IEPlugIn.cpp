@@ -504,7 +504,7 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 					ppData[nDataNum]->nLastModifyTime = stFileTimeInfo.tLastWriteTime;
 					ppData[nDataNum]->nPid = nPid;
 
-					wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, lpszName);
+					wcscpy_s(ppData[nDataNum]->szTitle, MAX_LENGTH -1, lpszName);
 					ppData[nDataNum]->szUrl[0] = 0;
 					ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, 
 						wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t), 
@@ -534,15 +534,15 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 						ppData[nDataNum]->nAddTimes = stFileTimeInfo.tCreateTime;
 						ppData[nDataNum]->nLastModifyTime = stFileTimeInfo.tLastWriteTime;
 						ppData[nDataNum]->nPid = nPid;
-						wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, lpszName);
-						wcscpy_s(ppData[nDataNum]->szUrl, 1024 - 1, lpszURL);
-						ppData[nDataNum]->szUrl[1023] = 0;
+						wcscpy_s(ppData[nDataNum]->szTitle, MAX_LENGTH -1, lpszName);
+						wcscpy_s(ppData[nDataNum]->szUrl, MAX_LENGTH - 1, lpszURL);
+						ppData[nDataNum]->szUrl[MAX_LENGTH-1] = 0;
 
 						ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, 
 							wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t),
 							(BYTE *)&ppData[nDataNum]->nHashId, sizeof(int32));
 						ppData[nDataNum]->nCatId = 0;
-						wcscpy_s(ppData[nDataNum]->szUrl, 1024 - 1, lpszURL);
+						wcscpy_s(ppData[nDataNum]->szUrl, MAX_LENGTH - 1, lpszURL);
 					}
 					
 					nDataNum++;

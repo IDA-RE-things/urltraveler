@@ -143,10 +143,10 @@ BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 		 }
 
 		 ppData[i]->bFolder = Query.getIntField("is_folder", 0);
-		 wcscpy_s(ppData[i]->szTitle, MAX_PATH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
-		 ppData[i]->szTitle[MAX_PATH - 1] = 0;
-		 wcscpy_s(ppData[i]->szUrl, 1023, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str());
-		 ppData[i]->szUrl[1023] = 0;
+		 wcscpy_s(ppData[i]->szTitle, MAX_LENGTH - 1, StringHelper::Utf8ToUnicode(Query.getStringField("title", 0)).c_str());
+		 ppData[i]->szTitle[MAX_LENGTH - 1] = 0;
+		 wcscpy_s(ppData[i]->szUrl, MAX_LENGTH-1, StringHelper::Utf8ToUnicode(Query.getStringField("url", 0)).c_str());
+		 ppData[i]->szUrl[MAX_LENGTH-1] = 0;
 		 ppData[i]->nOrder = Query.getIntField("pos", 0);
 		 ppData[i]->nAddTimes = Query.getInt64Field("create_time", 0);
 		 ppData[i]->nLastModifyTime = Query.getInt64Field("last_modify_time",0);
