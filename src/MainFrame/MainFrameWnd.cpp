@@ -7,6 +7,7 @@
 #include "WebDefine.h"
 #include "SettingDefine.h"
 #include "LoginDefine.h"
+#include "PlugInDefine.h"
 
 #include "ImageHelper.h"
 #include "MiscHelper.h"
@@ -31,6 +32,7 @@ using namespace datacenter;
 using namespace mainframe;
 using namespace web;
 using namespace setting;
+using namespace plugin;
 
 
 CMainFrameWnd::CMainFrameWnd()
@@ -103,6 +105,19 @@ void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 			pFavoriteLoadingLayout->SetVisible(false);
 	}
 }
+
+void	CMainFrameWnd::OnNotifyReturnToMain()
+{
+	ShowProcessLayout(FALSE);
+	m_pLoadingList->RemoveAllItems();
+	m_pFavTreeList->RemoveAllItems();
+
+	// 通知加载所有的浏览器插件
+	g_MainFrameModule->GetModuleManager()->PushEvent(
+		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_PLUGIN_LOAD_ALL,
+		MODULE_ID_PLUGIN));
+}
+
 
 void	CMainFrameWnd::NotifyExportBegin(IPlugIn* pPlugIn)
 {
@@ -381,6 +396,8 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 	for( int i=0; i<nFavoriteNum; i++)
 	{
 		FAVORITELINEDATA* pData = ppFavoriteData[i];
+		if( pData == NULL)
+			continue;
 
 		// 叶子结点
 		if( pData->nPid == nId && pData->bFolder == false && pData->bDelete == false)
@@ -749,7 +766,7 @@ void CMainFrameWnd::Notify(TNotifyUI& msg)
 		}
 		else if( msg.pSender->GetName() == L"ReturnToMainBtn" ) 
 		{
-			ShowProcessLayout(FALSE);
+			OnNotifyReturnToMain();
 			return;
 		}
 	}

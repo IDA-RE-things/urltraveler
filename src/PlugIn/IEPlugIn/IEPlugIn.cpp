@@ -325,13 +325,13 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 		{
 #define MAX_LENGTH 1024
 
-			wchar_t szFileDir[MAX_PATH] = {0};
-			wcscpy_s(szFileDir, MAX_PATH - 1, pszCurrNodePath);
+			wchar_t szFileDir[MAX_LENGTH] = {0};
+			wcscpy_s(szFileDir, MAX_LENGTH - 1, pszCurrNodePath);
 
 			PathRemoveFileSpec(szFileDir);
 			PathHelper::CreateMultipleDirectory(szFileDir);
-			wchar_t szCurrFileName[MAX_PATH] = {0};
-			swprintf_s(szCurrFileName, MAX_PATH, L"%s%s", pszCurrNodePath, L".url");
+			wchar_t szCurrFileName[MAX_LENGTH] = {0};
+			swprintf_s(szCurrFileName, MAX_LENGTH, L"%s%s", pszCurrNodePath, L".url");
 			WritePrivateProfileStringW(L"InternetShortcut", L"URL", ppData[i]->szUrl, szCurrFileName);
 		}
 
