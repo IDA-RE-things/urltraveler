@@ -308,6 +308,14 @@ void	PlugInModule::OnEvent_BeginToSync(Event* pEvent)
 {
 	m_ThreadMutex.Lock();
 	m_eThreadToDoing = IMPORT;
+
+	if (m_pImportFavThread)
+	{
+		m_pImportFavThread->ShutdownThread(0);
+		m_pImportFavThread->Release();
+	}
+
+	m_pImportFavThread = CreateThreadObject();
 	m_pImportFavThread->CreateThread(static_cast<IThreadEvent *>(this));
 	m_ThreadMutex.Unlock();
 }
