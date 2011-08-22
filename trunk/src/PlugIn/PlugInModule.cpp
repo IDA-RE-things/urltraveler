@@ -28,8 +28,9 @@ EXPORT_RELEASEMODULEFACTORY(PlugInModule)
 PlugInModule::PlugInModule()
 {
 	m_eThreadToDoing = NONE;
-	m_pExportFavThread = CreateThreadObject();
-	m_pImportFavThread = CreateThreadObject();
+
+	m_pExportFavThread = NULL;
+	m_pImportFavThread = NULL;
 
 	m_nSumFavorite = 0;
 
@@ -300,6 +301,14 @@ void PlugInModule::OnEvent_CheckPlugInWorked(Event* pEvent)
 	// 任何时候只能有一个现成在执行
 	m_ThreadMutex.Lock();
 	m_eThreadToDoing = EXPORT;
+
+	if( m_pExportFavThread != NULL)
+	{
+		m_pExportFavThread->ShutdownThread();
+		m_pExportFavThread->Release();
+	}
+
+	m_pExportFavThread = CreateThreadObject();
 	m_pExportFavThread->CreateThread(static_cast<IThreadEvent *>(this));
 	m_ThreadMutex.Unlock();
 }

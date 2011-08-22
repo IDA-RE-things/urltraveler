@@ -232,7 +232,7 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 	SortByDepth(&ppData[0], nDataNum);
 	for (int32 i = 0; i < nDataNum; ++i)
 	{
-		if (ppData[i]->bDelete == true)
+		if (ppData[i] == NULL || ppData[i]->bDelete == true)
 		{
 			continue;
 		}
@@ -274,6 +274,9 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
 	for (int k = 0; k < nDataNum; k++)
 	{
+		if( ppData[k] == NULL)
+			continue;
+
 		itIdIndex = m_mapIdIndexInfo.find(ppData[k]->nId);
 		if (itIdIndex != m_mapIdIndexInfo.end())
 		{

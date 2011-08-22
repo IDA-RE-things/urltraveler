@@ -65,12 +65,10 @@ public:
 
 	void	NotifyExportBegin(IPlugIn* pPlugIn);
 	void	NotifyExportFinished(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
-
 	void	NotifyImportPreBegin();
 	void	NotifyImportBegin(IPlugIn* pPlugIn);
 	void	NotifyImportFinished(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
 	void	NotifyImportAllFinished();
-
 	void	NotifyInExportProcess(wchar_t* 	szProcess);
 
 private:
@@ -87,6 +85,8 @@ private:
 	void	OnFavoriteListItemDelete(TNotifyUI& msg);
 	void	OnFavoriteListItemMoved(TNotifyUI& msg);
 	void	OnFavoriteKeyDown(TNotifyUI& msg);
+	void	OnNotifyReturnToMain();
+
 
 	//	列表菜单项响应函数
 	void	OnFavListAdd();
