@@ -76,6 +76,11 @@ void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 			pFavoriteDataLayout->SetVisible(false);
 		}
 
+		CButtonUI* pButton = static_cast<CButtonUI*>(m_pm.FindControl(L"ReturnToMainBtn"));
+		if(pButton)
+		{
+			pButton->SetVisible(false);
+		}
 	}
 	else
 	{
@@ -225,6 +230,12 @@ void	CMainFrameWnd::NotifyImportAllFinished()
 	if( pText != NULL)
 	{
 		pText->SetText(L"最小化程序，你在任何一个浏览器中增加收藏夹会自动同步到其余的浏览器");
+	}
+
+	CButtonUI* pButton = static_cast<CButtonUI*>(m_pm.FindControl(L"ReturnToMainBtn"));
+	if(pButton)
+	{
+		pButton->SetVisible(true);
 	}
 }
 
