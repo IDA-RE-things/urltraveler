@@ -44,11 +44,6 @@ typedef unsigned char byte;
 typedef unsigned long ulong;
 
 
-#ifndef MAX_PATH
-#undef MAX_PATH
-#define MAX_PATH          1024
-#endif
-
 #ifndef NULL
 #ifdef __cplusplus
 #define NULL    0
@@ -424,6 +419,3 @@ void Delete(void *&ptr)
 	ptr = NULL;
 }
 #endif
-
-
-#define		MAX_PATH_LENGTH	1024

@@ -43,7 +43,7 @@ BOOL IEPlugIn::UnLoad()
 //----------------------------------------------------------------------------------------
 int32 IEPlugIn::GetPlugInVersion() 
 {
-	wchar_t szVersion[MAX_PATH_LENGTH] = {0};
+	wchar_t szVersion[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szVersion); 
 	int32   nVersion = 0;
 
@@ -117,7 +117,7 @@ HICON IEPlugIn::GetBrowserIcon()
 //----------------------------------------------------------------------------------------
 wchar_t* IEPlugIn::GetInstallPath() 
 {
-	wchar_t szPath[MAX_PATH_LENGTH] = {0};
+	wchar_t szPath[MAX_PATH] = {0};
 	DWORD   dwSize = sizeof(szPath); 
 
 	if (ERROR_SUCCESS == ::SHRegGetValue(HKEY_LOCAL_MACHINE, 
@@ -132,7 +132,7 @@ wchar_t* IEPlugIn::GetInstallPath()
 		strPath = strPath.TrimRight(L';');
 		if (::PathRemoveFileSpec(szPath))
 		{
-			swprintf_s(szPath, MAX_PATH_LENGTH-1, L"%s\\%s", strPath.GetData(), L"iexplorer.exe");
+			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", strPath.GetData(), L"iexplorer.exe");
 			return _wcsdup(szPath);
 		}
 	}
@@ -150,13 +150,13 @@ wchar_t* IEPlugIn::GetInstallPath()
 		if (-1 != strPath.Find(L";"))
 		{
 			strPath = strPath.TrimRight(L';');
-			swprintf_s(szPath, MAX_PATH_LENGTH-1, L"%s\\%s", strPath.GetData(), L"iexplore.exe");
+			swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", strPath.GetData(), L"iexplore.exe");
 		}
 		else
 		{
 			if (::PathRemoveFileSpec(szPath))
 			{
-				swprintf_s(szPath, MAX_PATH_LENGTH-1, L"%s\\%s", szPath, L"iexplore.exe");
+				swprintf_s(szPath, MAX_PATH-1, L"%s\\%s", szPath, L"iexplore.exe");
 			}
 		}
 
@@ -325,13 +325,13 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 		{
 #define MAX_LENGTH 1024
 
-			wchar_t szFileDir[MAX_PATH_LENGTH] = {0};
-			wcscpy_s(szFileDir, MAX_PATH_LENGTH - 1, pszCurrNodePath);
+			wchar_t szFileDir[MAX_PATH] = {0};
+			wcscpy_s(szFileDir, MAX_PATH - 1, pszCurrNodePath);
 
 			PathRemoveFileSpec(szFileDir);
 			PathHelper::CreateMultipleDirectory(szFileDir);
-			wchar_t szCurrFileName[MAX_PATH_LENGTH] = {0};
-			swprintf_s(szCurrFileName, MAX_PATH_LENGTH, L"%s%s", pszCurrNodePath, L".url");
+			wchar_t szCurrFileName[MAX_PATH] = {0};
+			swprintf_s(szCurrFileName, MAX_PATH, L"%s%s", pszCurrNodePath, L".url");
 			WritePrivateProfileStringW(L"InternetShortcut", L"URL", ppData[i]->szUrl, szCurrFileName);
 		}
 
@@ -504,7 +504,7 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 					ppData[nDataNum]->nLastModifyTime = stFileTimeInfo.tLastWriteTime;
 					ppData[nDataNum]->nPid = nPid;
 
-					wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH_LENGTH -1, lpszName);
+					wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, lpszName);
 					ppData[nDataNum]->szUrl[0] = 0;
 					ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, 
 						wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t), 
@@ -534,7 +534,7 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 						ppData[nDataNum]->nAddTimes = stFileTimeInfo.tCreateTime;
 						ppData[nDataNum]->nLastModifyTime = stFileTimeInfo.tLastWriteTime;
 						ppData[nDataNum]->nPid = nPid;
-						wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH_LENGTH -1, lpszName);
+						wcscpy_s(ppData[nDataNum]->szTitle, MAX_PATH -1, lpszName);
 						wcscpy_s(ppData[nDataNum]->szUrl, 1024 - 1, lpszURL);
 						ppData[nDataNum]->szUrl[1023] = 0;
 
