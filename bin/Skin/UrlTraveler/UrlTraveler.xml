@@ -50,7 +50,7 @@
                             <Text name="ProcessHintText" text="" float="true" pos="46,59,339,99" textpadding="2,0,2,0" textcolor="#00808080" disabledtextcolor="#FFA7A6AA" showhtml="true" align="wrap" />
                         </HorizontalLayout>
                         <HorizontalLayout pos="460,0,630,103" width="170" height="103">
-                            <Button name="ReturnToMainBtn" float="true" pos="15,29,159,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" text="返回主界面" bordercolor="#00B4BFB5"/>
+                            <Button name="ReturnToMainBtn" float="true" pos="15,29,159,84" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" text="查看同步结果" bordercolor="#00B4BFB5"/>
                         </HorizontalLayout>
                     </HorizontalLayout>
 
