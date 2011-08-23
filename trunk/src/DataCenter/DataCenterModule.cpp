@@ -175,6 +175,7 @@ BEGIN_SERVICE_MAP(DataCenterModule)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_REARRANGE_FAVORITE,OnService_ReArrangeFavorite)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_GET_FAVORITE_NUM_ATFOLD,OnService_GetFavoriteNumAtFold)
 	ON_SERVICE(SERVICE_VALUE_DATACENTER_INIT_FAVORITE,OnService_InitFavoriteData)
+	ON_SERVICE(SERVICE_VALUE_DATACENTER_CLEAR_DATA,OnService_ClearData)
 	
 END_SERVICE_MAP()
 
@@ -217,6 +218,8 @@ BOOL DataCenterModule::Unload()
 
 		delete pData;
 	}
+
+	m_vFavoriteLineData.clear();
 
 	return TRUE;
 }
@@ -739,6 +742,21 @@ void	DataCenterModule::OnService_InitFavoriteData(ServiceValue lServiceValue, pa
 		m_vFavoriteLineData[i] = new FAVORITELINEDATA();
 	}
 }
+
+void	DataCenterModule::OnService_ClearData(ServiceValue lServiceValue, param lParam)
+{
+	for(size_t i=0; i<m_vFavoriteLineData.size(); i++)
+	{
+		PFAVORITELINEDATA pData = m_vFavoriteLineData[i];
+		if( pData == NULL)
+			continue;
+
+		delete pData;
+	}
+
+	m_vFavoriteLineData.clear();
+}
+
 
 void DataCenterModule::DeleteFavoriteFold( int nId )
 {

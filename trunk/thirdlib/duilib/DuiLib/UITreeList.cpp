@@ -79,7 +79,7 @@ namespace DuiLib
 			return RemoveNode(reinterpret_cast<Node*>(static_cast<CListLabelElementUI*>(pControl->GetInterface(_T("ListLabelElement")))->GetTag()));
 	}
 
-	void CTreeListUI::RemoveAll()
+	void CTreeListUI::RemoveAllItems()
 	{
 		CListUI::RemoveAll();
 		for (int i = 0; i < _root->num_children(); ++i)
@@ -88,6 +88,7 @@ namespace DuiLib
 			RemoveNode(child);
 		}
 		delete _root;
+
 		_root = new Node;
 		_root->data()._level = -1;
 		_root->data()._child_visible = true;

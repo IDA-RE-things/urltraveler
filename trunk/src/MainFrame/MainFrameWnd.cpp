@@ -109,13 +109,22 @@ void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 void	CMainFrameWnd::OnNotifyReturnToMain()
 {
 	ShowProcessLayout(FALSE);
+
 	m_pLoadingList->RemoveAllItems();
 	m_pFavTreeList->RemoveAllItems();
+	m_vFavoriteNodeAtTreeNode.clear();
+	m_nCurrentFavoriteFoldId = 0;
 
+	// 通知数据中心清除数据
+	DataCenter_ClearDataService clearService;
+	g_MainFrameModule->CallDirect(clearService.serviceId,(param)&clearService);
+
+/*
 	// 通知加载所有的浏览器插件
 	g_MainFrameModule->GetModuleManager()->PushEvent(
 		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_PLUGIN_LOAD_ALL,
 		MODULE_ID_PLUGIN));
+*/
 }
 
 

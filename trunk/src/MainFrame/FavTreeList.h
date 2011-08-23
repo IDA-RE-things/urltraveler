@@ -33,6 +33,7 @@ public:
 	// 为第nIndex个结点增加一个子结点，内容为pszTitle
 	bool	Add(int nIndex, int nId,LPCTSTR pszTitle);
 	bool RemoveAt(int nIndex);
+	void	RemoveAllItems();
 
 	void	OnEventItemClick(TEventUI& event);
 	void	OnEventDragOver(TEventUI& event);

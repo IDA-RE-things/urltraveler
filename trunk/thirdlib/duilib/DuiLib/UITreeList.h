@@ -94,7 +94,7 @@ namespace DuiLib
 
 		bool Remove(CControlUI* pControl);
 		bool RemoveAt(int iIndex);
-		void RemoveAll();
+		void RemoveAllItems();
 
 		Node* GetRoot() { return _root; }
 		Node* AddNode(LPCTSTR text, Node* parent = NULL);
