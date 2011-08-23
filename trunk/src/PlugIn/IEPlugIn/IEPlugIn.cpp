@@ -519,7 +519,8 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 			}
 			else
 			{
-				if  (!wcscmp(fileInfo.szTypeName, L"Internet 快捷方式"))
+				if  (!wcscmp(fileInfo.szTypeName, L"Internet 快捷方式")
+					||!wcscmp(fileInfo.szTypeName, L"Internet Shortcut"))
 				{
 					ResolveInternetShortcut(lpszFileName, &lpszURL);
 				}
