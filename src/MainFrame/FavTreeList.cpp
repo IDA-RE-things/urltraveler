@@ -219,6 +219,17 @@ bool CFavoriteTreeListUI::RemoveAt(int nIndex)
 	return true;
 }
 
+void	CFavoriteTreeListUI::RemoveAllItems()
+{
+	CTreeListUI::RemoveAllItems();
+
+	m_nTreeNodeId = -1;
+	m_pCurrentTreeNode = NULL;
+	m_mapIdNode.clear();
+	m_mapNodeId.clear();
+}
+
+
 void	CFavoriteTreeListUI::OnEventItemClick(TEventUI& event)
 {
 	if( event.pSender == NULL)

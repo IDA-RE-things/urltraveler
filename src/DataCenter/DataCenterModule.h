@@ -95,7 +95,6 @@ protected:
 	void	OnEvent_DeleteFavoriteFolder(Event* pEvent);		//	删除指定的收藏夹
 	void	OnEvent_SetAutoUpdate(Event* pEvent);			//	设置自动更新不提示
 
-
 protected:
 
 	void	OnService_GetFavoriteVector(ServiceValue lServiceValue, param	lParam);
@@ -107,6 +106,7 @@ protected:
 	void	OnService_ReArrangeFavorite(ServiceValue lServiceValue, param lParam);
 	void	OnService_GetFavoriteNumAtFold(ServiceValue lServiceValue, param lParam);
 	void	OnService_InitFavoriteData(ServiceValue lServiceValue, param lParam);
+	void	OnService_ClearData(ServiceValue lServiceValue, param lParam);
 
 private:
 
