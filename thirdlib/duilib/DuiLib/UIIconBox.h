@@ -24,6 +24,7 @@ namespace DuiLib {
 		/*iocn box相关属性*/
 		bool AddIcon(HICON hIcon, LPCTSTR lpszTip, BOOL bRepaint);
 		bool DelIcon(HICON hIcon);
+		void	DelAllIcon();
 		int  GetIconCount();
 
 		/*设置icon大小*/

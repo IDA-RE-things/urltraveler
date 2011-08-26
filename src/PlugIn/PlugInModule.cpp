@@ -173,6 +173,10 @@ void	PlugInModule::OnEvent_LoadAllPlugin(Event* pEvent)
 	std::wstring strPath = PathHelper::GetModuleDir(g_hModule);
 	strPath += L"\\PlugIn\\";
 
+	m_vPlugInFactory.clear();
+	m_vPlugIns.clear();
+	m_vPlugInModuleInfo.clear();
+
 	PlugInList::DllPlugInList::iterator itr = g_stPlugInInitList.m_stDllPlugInList.begin();
 	for(; itr != g_stPlugInInitList.m_stDllPlugInList.end(); ++itr)
 	{
