@@ -56,7 +56,7 @@ namespace DuiLib
 		return CListUI::AddAt(pControl, iIndex);
 	}
 
-	bool CTreeListUI::Remove(CControlUI* pControl)
+	bool CTreeListUI::Remove(CListElementUI* pControl)
 	{
 		if( !pControl ) return false;
 		if( _tcscmp(pControl->GetClass(), _T("ListLabelElementUI")) != 0 ) return false;
@@ -71,17 +71,20 @@ namespace DuiLib
 	{
 		CControlUI* pControl = GetItemAt(iIndex);
 		if( !pControl ) return false;
-		if( _tcscmp(pControl->GetClass(), _T("ListLabelElementUI")) != 0 ) return false;
+		if( _tcscmp(pControl->GetClass(), _T("ListLabelElementUI")) != 0 ) 
+			return false;
 
 		if (reinterpret_cast<Node*>(static_cast<CListLabelElementUI*>(pControl->GetInterface(_T("ListLabelElement")))->GetTag()) == NULL)
 			return CListUI::RemoveAt(iIndex);
 		else
-			return RemoveNode(reinterpret_cast<Node*>(static_cast<CListLabelElementUI*>(pControl->GetInterface(_T("ListLabelElement")))->GetTag()));
+			return RemoveNode(reinterpret_cast<Node*>(
+			static_cast<CListLabelElementUI*>(pControl->GetInterface(_T("ListLabelElement")))->GetTag()));
 	}
 
 	void CTreeListUI::RemoveAllItems()
 	{
-		CListUI::RemoveAll();
+		CListUI::RemoveAllItems();
+
 		for (int i = 0; i < _root->num_children(); ++i)
 		{
 			Node* child = _root->child(i);

@@ -134,22 +134,22 @@ namespace DuiLib
 		int GetRowCount() const;
 		int GetColumnCount() const;
 
+		//列表头操作
 		bool Add(CControlUI* pControl);
 		bool AddAt(CControlUI* pControl, int iIndex);
-		bool Remove(CControlUI* pControl);
-		void RemoveAll();
 
-		//列表头操作
 		bool AddHeader(CListHeaderUI* pHeader);
-		bool RemoveHeader();
 		bool	AddHeaderItem(CListHeaderItemUI* pHeaderItem);
 		bool	AddHeaderItemAt(CListHeaderItemUI* pHeaderItem, int iIndex);
-
-		// 增加和删除列表中的Item项
 		bool AddItem(CListElementUI* pItem);
 		bool AddItemAt(CListElementUI* pItem, int iIndex);
+
+		// 增加和删除列表中的Item项
+		bool Remove(CControlUI* pControl);
+		bool RemoveHeader();
 		bool RemoveItem(CListElementUI* pListItem);
 		bool RemoveItemAt(int iIndex);
+		void RemoveAllItems();
 
 		void EnsureVisible(int iIndex);
 		void Scroll(int dx, int dy);
@@ -228,7 +228,6 @@ namespace DuiLib
 		virtual CScrollBarUI* GetHorizontalScrollBar() const;
 
 		// 增加删除所有Item接口 [6/2/2011 linjinming]
-		void RemoveAllItems();
 		CListElementUI* GetSubItem(int nIndex);
 
 		void	ShowEdit(int nRow, int nColumn);

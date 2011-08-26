@@ -40,8 +40,10 @@ namespace DuiLib {
 		int GetItemIndex(CControlUI* pControl) const;
 		bool SetItemIndex(CControlUI* pControl, int iIndex);
 		int GetRowCount() const;
+
 		bool Add(CControlUI* pControl);
 		bool AddAt(CControlUI* pControl, int iIndex);
+
 		bool Remove(CControlUI* pControl);
 		bool RemoveAt(int iIndex);
 		void RemoveAll();

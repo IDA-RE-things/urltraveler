@@ -219,6 +219,104 @@ bool CFavoriteTreeListUI::RemoveAt(int nIndex)
 	return true;
 }
 
+bool CFavoriteTreeListUI::RemoveSilenceAt(int nIndex)
+{
+	CControlUI* pControl = m_pList->GetItemAt(nIndex);
+	if( !pControl ) 
+		return false;
+
+	CListLabelElementUI* pElement = (CListLabelElementUI*)GetSubItem(nIndex);
+	if( pElement == NULL)
+		return false;
+
+	CTreeListUI::Node* pNode  = (CTreeListUI::Node*)pElement->GetTag();
+	std::map<CTreeListUI::Node*, int>::iterator itr = m_mapNodeId.find(pNode);
+	if( itr == m_mapNodeId.end())
+		return false;
+
+	int nId = itr->second;
+
+	// 检查当前收藏夹下是否存在子文件夹，如果存在则提醒。
+	// 向数据中心请求检查是否存在子文件夹
+	DataCenter_CheckExistSubFoldService checkService;
+	checkService.nFoldId = nId;
+	g_MainFrameModule->GetModuleManager()->CallService(checkService.serviceId,(param)&checkService);
+
+	// 存在子文件夹，则提醒是否删除
+	if( checkService.bExistSubFolder == TRUE)
+	{
+		DataCenter_GetSubFolderIdService getSubFolderService;
+		getSubFolderService.nFoldId = nId;
+		g_MainFrameModule->GetModuleManager()->CallService(getSubFolderService.serviceId, (param)&getSubFolderService);
+
+		for( int i=0; i<getSubFolderService.nIdNum; i++)
+		{
+			int nSubFolderId = getSubFolderService.pIdNum[i];
+
+			std::map<int, CTreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
+			if( itr != m_mapIdNode.end())
+			{
+				CTreeListUI::Node* pNode = itr->second;
+				if( pNode)
+					m_mapNodeId.erase(pNode);
+			}
+			m_mapIdNode.erase(nSubFolderId);
+		}
+
+		RemoveNode(pNode);
+		m_mapNodeId.erase(pNode);
+		m_mapIdNode.erase(nId);
+
+		g_MainFrameModule->GetModuleManager()->PushEvent(
+			MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
+			MODULE_ID_DATACENTER,
+			nId));	
+	}
+	else
+	{
+		DataCenter_GetSubFolderIdService getSubFolderService;
+		getSubFolderService.nFoldId = nId;
+		g_MainFrameModule->GetModuleManager()->CallService(getSubFolderService.serviceId, (param)&getSubFolderService);
+
+		for( int i=0; i<getSubFolderService.nIdNum; i++)
+		{
+			int nSubFolderId = getSubFolderService.pIdNum[i];
+
+			std::map<int, CTreeListUI::Node*>::iterator itr  = m_mapIdNode.find(nSubFolderId);
+			if( itr != m_mapIdNode.end())
+			{
+				CTreeListUI::Node* pNode = itr->second;
+				if( pNode)
+					m_mapNodeId.erase(pNode);
+			}
+
+			m_mapIdNode.erase(nSubFolderId);
+		}
+
+		RemoveNode(pNode);
+		m_mapNodeId.erase(pNode);
+		m_mapIdNode.erase(nId);
+
+		g_MainFrameModule->GetModuleManager()->PushEvent(
+			MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_DATACENTER_DELETE_FAVORITE_FOLD,
+			MODULE_ID_DATACENTER,
+			nId));	
+	}
+
+	for(size_t i =0; i< m_vCurSel.size(); i++)
+	{
+		if( m_vCurSel[i] == nIndex)
+		{
+			m_vCurSel.erase(m_vCurSel.begin() + i);
+			break;
+		}
+	}
+
+	ClearSelectedItem();
+	return true;
+}
+
+
 void	CFavoriteTreeListUI::RemoveAllItems()
 {
 	CTreeListUI::RemoveAllItems();

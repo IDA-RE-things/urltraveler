@@ -32,7 +32,9 @@ public:
 
 	// 为第nIndex个结点增加一个子结点，内容为pszTitle
 	bool	Add(int nIndex, int nId,LPCTSTR pszTitle);
+
 	bool RemoveAt(int nIndex);
+	bool RemoveSilenceAt(int nIndex);		//	静默删除，不进行提示
 	void	RemoveAllItems();
 
 	void	OnEventItemClick(TEventUI& event);
