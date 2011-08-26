@@ -345,7 +345,8 @@ namespace DuiLib
 		int iIndex = m_pList->GetItemIndex(pControl);
 		if (iIndex == -1) return false;
 
-		if (!m_pList->RemoveAt(iIndex)) return false;
+		if (!m_pList->RemoveAt(iIndex)) 
+			return false;
 
 		for(int i = iIndex; i < m_pList->GetRowCount(); ++i)
 		{
@@ -380,21 +381,27 @@ namespace DuiLib
 		return true;
 	}
 
-	void CListUI::RemoveAll()
+	void CListUI::RemoveAllItems()
 	{
 		m_iExpandedItem = -1;
-		CVerticalLayoutUI::RemoveAll();
+		
+		int nRow = GetRowCount();
+		while(nRow>0)
+		{
+			RemoveItemAt(nRow-1);
+			nRow--;
+		}
+
+		m_vCurSel.clear();
 	}
 
 	void CListUI::SetPos(RECT rc)
 	{
 		CVerticalLayoutUI::SetPos(rc);
-		if( m_pHeader == NULL ) return;
-		// Determine general list information and the size of header columns
-		m_ListInfo.nColumns = MIN(m_pHeader->GetRowCount(), UILIST_MAX_COLUMNS);
-		// The header/columns may or may not be visible at runtime. In either case
-		// we should determine the correct dimensions...
+		if( m_pHeader == NULL ) 
+			return;
 
+		m_ListInfo.nColumns = MIN(m_pHeader->GetRowCount(), UILIST_MAX_COLUMNS);
 		if( !m_pHeader->IsVisible() ) 
 		{
 			m_pHeader->SetInternVisible(true);
@@ -1480,11 +1487,6 @@ namespace DuiLib
 	CScrollBarUI* CListUI::GetHorizontalScrollBar() const
 	{
 		return m_pList->GetHorizontalScrollBar();
-	}
-
-	void CListUI::RemoveAllItems()
-	{
-		return m_pList->RemoveAll();
 	}
 
 	CListElementUI* CListUI::GetSubItem( int nIndex )

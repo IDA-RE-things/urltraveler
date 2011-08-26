@@ -92,7 +92,7 @@ namespace DuiLib
 		bool Add(CControlUI* pControl);
 		bool AddAt(CControlUI* pControl, int iIndex) ;
 
-		bool Remove(CControlUI* pControl);
+		bool Remove(CListElementUI* pControl);
 		bool RemoveAt(int iIndex);
 		void RemoveAllItems();
 
