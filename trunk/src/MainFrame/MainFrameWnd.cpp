@@ -108,8 +108,7 @@ void	CMainFrameWnd::ShowProcessLayout(BOOL bShow)
 
 void	CMainFrameWnd::OnNotifyReturnToMain()
 {
-	ShowProcessLayout(FALSE);
-
+	//ShowProcessLayout(FALSE);
 
 	m_pLoadingList->RemoveAllItems();
 
@@ -130,7 +129,6 @@ void	CMainFrameWnd::OnNotifyReturnToMain()
 		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_PLUGIN_LOAD_ALL,
 		MODULE_ID_PLUGIN));
 }
-
 
 void	CMainFrameWnd::NotifyExportBegin(IPlugIn* pPlugIn)
 {
@@ -1483,6 +1481,13 @@ void CMainFrameWnd::GetAvailableBrowser()
 		pFavoriteNumber->SetText(szFavoriteNum);
 	}
 
+	CIconBoxUI *pIconBox = (CIconBoxUI *)m_pm.FindControl(L"BrowserBox");
+	if( pIconBox)
+	{
+		pIconBox->DelAllIcon();
+		pIconBox->Invalidate();
+	}
+
 	for( int i=0; i<pvPlugIn->size(); i++)
 	{
 		IPlugIn* pPlugIn = (*pvPlugIn)[i];
@@ -1491,7 +1496,6 @@ void CMainFrameWnd::GetAvailableBrowser()
 
 		HICON hIcon = pPlugIn->GetBrowserIcon();
 		const wchar_t* pPlugInName = pPlugIn->GetBrowserName();
-		CIconBoxUI *pIconBox = (CIconBoxUI *)m_pm.FindControl(L"BrowserBox");
 		if (pIconBox)
 		{
 			pIconBox->AddIcon(hIcon, pPlugInName, FALSE);

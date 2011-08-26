@@ -454,6 +454,15 @@ namespace DuiLib {
 		return false;
 	}
 
+	void	CIconBoxUI::DelAllIcon()
+	{
+		int nSize = m_arrIcons.GetSize();
+		for (int i = 0; i < nSize; i++)
+		{
+			m_arrIcons.Remove(i);
+		}
+	}
+
 	int CIconBoxUI::GetIconCount()
 	{
 		return m_arrIcons.GetSize();

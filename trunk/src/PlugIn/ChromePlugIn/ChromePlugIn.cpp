@@ -596,6 +596,10 @@ BOOL CChromePlugIn::TraverseNode(PFAVORITELINEDATA* ppData, int32 nDepth)
 		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(nDepth); it != m_mapDepthInfo.upper_bound(nDepth); ++it)
 		{
 			NODEINFO stNodeInfo = {0};	
+
+			if( ppData[(*it).second] == NULL )
+				continue;
+
 			if (ppData[(*it).second]->bFolder == true)
 			{
 				Json::Value folder_obj;
