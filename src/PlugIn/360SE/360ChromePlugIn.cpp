@@ -231,10 +231,11 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 	SortByDepth(&ppData[0], nDataNum);
 	for (int32 i = 0; i < nDataNum; ++i)
 	{
-		if (ppData[i]->bDelete == true)
-		{
+		if( ppData[i] == NULL)
 			continue;
-		}
+
+		if (ppData[i]->bDelete == true)
+			continue;
 
 		MAP_PID_INFO::iterator it;
 		it = m_mapPidInfo.find(ppData[i]->nPid);
