@@ -27,7 +27,7 @@ C360SE3PlugIn::~C360SE3PlugIn()
 
 BOOL C360SE3PlugIn::Load()
 {
-	return FALSE;
+	return TRUE;
 }
 
 BOOL C360SE3PlugIn::UnLoad()
@@ -185,7 +185,7 @@ BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 
 	for (int i = 0; i < nDataNum; i++)
 	{
-		if (ppData[i]->bDelete == true)
+		if (ppData[i] == NULL || ppData[i]->bDelete == true)
 		{
 			continue;
 		}

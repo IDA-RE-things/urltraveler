@@ -288,6 +288,8 @@ void MainFrameModule::OnMessage_Show(Message* pMessage)
 	m_pMainFrame->CenterWindow();
 	m_pMainFrame->ShowWindow(true);
 
+	m_pMainFrame->ShowProcessLayout(TRUE);
+
 	//	通知加载所有的浏览器插件
 	m_pModuleManager->PushEvent(
 		MakeEvent<MODULE_ID_MAINFRAME>()(EVENT_VALUE_PLUGIN_LOAD_ALL,
