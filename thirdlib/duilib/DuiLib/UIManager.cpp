@@ -1917,6 +1917,21 @@ namespace DuiLib {
 		return data;
 	}
 
+	const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, const unsigned char *imagedata, unsigned int imagelen, DWORD mask)
+	{
+		TImageInfo* data = NULL;
+
+		data = CRenderEngine::LoadImageFromMemory(imagedata, imagelen, mask);
+		if( !data ) return NULL;
+		if( !m_mImageHash.Insert(bitmap, data) ) {
+			::DeleteObject(data->hBitmap);
+			delete data;
+		}
+
+		return data;
+
+	}
+
 	const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha)
 	{
 		if( hBitmap == NULL || iWidth <= 0 || iHeight <= 0 ) return NULL;
