@@ -299,14 +299,20 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	//写入新数据之前删除原来的所有的数据
 	wchar_t* pszFavDir = GetFavoriteDataPath();
 	BOOL bRet = PathHelper::ForceRemoveDir(pszFavDir);
+
+	if( PathHelper::IsDirExist(pszFavDir) == FALSE)
+	{
+		PathHelper::CreateMultipleDirectory(pszFavDir);
+	}
 	free(pszFavDir);
 
 	for (int i = 0; i < nDataNum; i++)
 	{
-		if (ppData[i]->bDelete == true)
-		{//暂时未做处理
+		if( ppData[i] == NULL)
 			continue;
-		}
+
+		if (ppData[i]->bDelete == true)
+			continue;
 		
 		wchar_t* pszCurrNodePath = GetNodeAbsolutePath(i, ppData);
 
