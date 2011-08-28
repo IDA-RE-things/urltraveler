@@ -314,7 +314,7 @@ void CMainFrameWnd::OnPrepare(TNotifyUI& msg)
 	openTravelerService.srcMId = MODULE_ID_MAINFRAME;
 	g_MainFrameModule->GetModuleManager()->CallService(openTravelerService.serviceId,(param)&openTravelerService);
 
-	ShowProcessLayout(TRUE);
+	//ShowProcessLayout(TRUE);
 }
 
 void CMainFrameWnd::LoadFavoriteTree(PPFAVORITELINEDATA ppFavoriteData, int nNum)
