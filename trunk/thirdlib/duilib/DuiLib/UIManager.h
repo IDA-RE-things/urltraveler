@@ -275,6 +275,7 @@ namespace DuiLib {
 		const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
 		const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
 		const TImageInfo* AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha);
+		const TImageInfo* AddImage(LPCTSTR bitmap, const unsigned char *imagedata, unsigned int imagelen, DWORD mask = 0);
 		const TImageInfo* AddIcon16(LPCTSTR szIconName, HICON hIcon);
 		const TImageInfo* AddIcon32(LPCTSTR szIconName, HICON hIcon);
 		bool RemoveImage(LPCTSTR bitmap);
