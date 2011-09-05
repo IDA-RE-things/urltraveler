@@ -388,7 +388,7 @@ int MiscHelper::GetOsVer()
 // 返回更新文件保存的路径
 wchar_t*	MiscHelper::GetUpdatePath()
 {
-	wstring wstrUpdate = PathHelper::GetAppDataDir() + L"\\urltraveler\\update\\";
+	wstring wstrUpdate = PathHelper::GetAppDataDir() + wstring(L"\\urltraveler\\update\\");
 	PathHelper::CreateMultipleDirectory(wstrUpdate);
 
 	return (wchar_t*)wcsdup(wstrUpdate.c_str());
@@ -396,7 +396,7 @@ wchar_t*	MiscHelper::GetUpdatePath()
 
 wchar_t*	MiscHelper::GetUnpackagePath()
 {
-	wstring wstrUpdate = PathHelper::GetTempDir() + L"\\urltraveler\\unpackage\\";
+	wstring wstrUpdate = PathHelper::GetTempDir() + wstring(L"\\urltraveler\\unpackage\\");
 	PathHelper::CreateMultipleDirectory(wstrUpdate);
 	return (wchar_t*)wcsdup(wstrUpdate.c_str());
 }
@@ -404,7 +404,7 @@ wchar_t*	MiscHelper::GetUnpackagePath()
 void	 MiscHelper::DeleteUnpackagePath()
 {
 	/*C:\Documents and Settings\zhangzhongqing.SNDA\Local Settings\Temp\urltraveler\unpackage*/
-	wstring wstrUpdate = PathHelper::GetTempDir() + L"urltraveler\\unpackage";
+	wstring wstrUpdate = PathHelper::GetTempDir() + wstring(L"urltraveler\\unpackage");
 	PathHelper::RemoveDir(wstrUpdate, TRUE);
 }
 
@@ -507,7 +507,7 @@ BOOL MiscHelper::KillProcess(LPCTSTR pszClassName, LPCTSTR pszWindowTitle)
 wchar_t* MiscHelper::GetConfig()
 {
 	/*C:\Documents and Settings\zhangzhongqing.SNDA\Local Settings\Temp\urltraveler\unpackage*/
-	wstring wstrUpdate = PathHelper::GetAppDataDir() + L"\\urltraveler\\";
+	wstring wstrUpdate = PathHelper::GetAppDataDir() + wstring(L"\\urltraveler\\");
 	if( PathHelper::IsDirExist(wstrUpdate) == FALSE)
 		PathHelper::CreateMultipleDirectory(wstrUpdate);
 

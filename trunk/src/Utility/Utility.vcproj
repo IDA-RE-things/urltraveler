@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="shlwapi.lib sqlite3070603d.lib libcurl_mdd.lib Ws2_32.lib"
+				AdditionalDependencies="shlwapi.lib sqlite3d.lib libcurl_mdd.lib Ws2_32.lib"
 				OutputFile="..\..\bin\Utilityd.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib;..\Utility\HttpClient\lib"

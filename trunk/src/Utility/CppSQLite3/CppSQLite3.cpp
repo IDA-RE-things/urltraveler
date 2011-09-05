@@ -1258,7 +1258,6 @@ CppSQLite3Query CppSQLite3DB::execQuery(const char* szSQL)
 	sqlite3_stmt* pVM = compile(szSQL);
 
 	int nRet = sqlite3_step(pVM);
-
 	if (nRet == SQLITE_DONE)
 	{
 		// no rows
@@ -1343,7 +1342,6 @@ sqlite3_stmt* CppSQLite3DB::compile(const char* szSQL)
 	sqlite3_stmt* pVM;
 
 	int nRet = sqlite3_prepare(mpDB, szSQL, -1, &pVM, &szTail);
-
 	if (nRet != SQLITE_OK)
 	{
 		throw CppSQLite3Exception(nRet, szError);

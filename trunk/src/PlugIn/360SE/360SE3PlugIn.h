@@ -1,6 +1,8 @@
 #pragma once
 #include "PlugIn.h"
 #include <string>
+#include "CppSQLite3.h"
+
 
 using namespace std;
 
@@ -90,4 +92,5 @@ protected:
 
 private:
 	wstring	m_strFavoritePath;
+	CppSQLite3DB	m_SqliteDatabase;
 };

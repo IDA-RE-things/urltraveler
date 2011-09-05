@@ -93,7 +93,7 @@ wchar_t* TTPlugIn::GetInstallPath()
 
 wchar_t* TTPlugIn::GetFavoriteDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Tencent\\TencentTraveler\\100\\navinfo.db";
+	std::wstring strPath = PathHelper::GetAppDataDir() + wstring(L"\\Tencent\\TencentTraveler\\100\\navinfo.db");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
@@ -101,7 +101,7 @@ wchar_t* TTPlugIn::GetFavoriteDataPath()
 
 wchar_t* TTPlugIn::GetHistoryDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Tencent\\TencentTraveler\\100\\navinfo.db";
+	std::wstring strPath = PathHelper::GetAppDataDir() + wstring(L"\\Tencent\\TencentTraveler\\100\\navinfo.db");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
@@ -137,7 +137,6 @@ BOOL TTPlugIn::WriteQueryDataIntoData(CppSQLite3Query* pQuery, PFAVORITELINEDATA
 		wcslen(pData->szTitle) * sizeof(wchar_t),
 		(BYTE *)&pData->nHashId, sizeof(uint32));
 
-	pData->nCatId = 0;
 	pData->bDelete = false;
 
 	// 查找对应的URL
