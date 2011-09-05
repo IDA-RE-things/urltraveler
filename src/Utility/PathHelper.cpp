@@ -15,7 +15,7 @@
 #include "XString.h"
 
 //////////////////////////////////////////////////////////////////////////
-std::wstring PathHelper::GetModuleDir(HINSTANCE hInstance)
+const wchar_t* PathHelper::GetModuleDir(HINSTANCE hInstance)
 {
 	WCHAR szModulePath[MAX_PATH  + 1];
 	::GetModuleFileName(hInstance, szModulePath, MAX_PATH);
@@ -33,109 +33,90 @@ std::wstring PathHelper::GetModuleDir(HINSTANCE hInstance)
 	}
 
 	strPath.Replace((const WCHAR*)L"/",(const WCHAR*)L"\\");
-	return strPath.GetData();
+	return _wcsdup(strPath.GetData());
 }
 
 /**获取当前模块所在的完整路径*/
-std::wstring PathHelper::GetModulePath(HINSTANCE hInstance)
+const wchar_t* PathHelper::GetModulePath(HINSTANCE hInstance)
 {
 	WCHAR szModulePath[MAX_PATH  + 1];
 	::GetModuleFileName(hInstance, szModulePath, MAX_PATH);
 
-	return szModulePath;
+	return _wcsdup(szModulePath);
 }
 
 /** 获取用户Application Data目录
 采用windows api SHGetSpecialFolderPath来获取
 */
-std::wstring PathHelper::GetAppDataDir(void)
+const wchar_t* PathHelper::GetAppDataDir(void)
 {
-	std::wstring strAppDataPath;
-
 	///获取用户对应的 application data 目录,例:C:\Documents and Settings\username\Application Data
-	WCHAR strPath[MAX_PATH] = {0};
-	BOOL bResult = SHGetSpecialFolderPathW(NULL, strPath, CSIDL_APPDATA, FALSE);
+	WCHAR szPath[MAX_PATH] = {0};
+	BOOL bResult = SHGetSpecialFolderPathW(NULL, szPath, CSIDL_APPDATA, FALSE);
 
-	strAppDataPath = strPath;
-	return strAppDataPath;
+	return _wcsdup(szPath);
 }
 
 /** 获取用户Application Data目录
 采用windows api SHGetSpecialFolderPath来获取
 */
-std::wstring PathHelper::GetLocalAppDataDir(void)
+const wchar_t* PathHelper::GetLocalAppDataDir(void)
 {
-	std::wstring strAppDataPath;
-
 	///获取用户对应的 application data 目录,例:C:\Documents and Settings\username\Application Data
-	WCHAR strPath[MAX_PATH] = {0};
-	BOOL bResult = SHGetSpecialFolderPathW(NULL, strPath, CSIDL_LOCAL_APPDATA, FALSE);
+	WCHAR szPath[MAX_PATH] = {0};
+	BOOL bResult = SHGetSpecialFolderPathW(NULL, szPath, CSIDL_LOCAL_APPDATA, FALSE);
 
-	strAppDataPath = strPath;
-	return strAppDataPath;
+	return _wcsdup(szPath);
 }
 
 /** 获取用户MyDocument目录
 采用windows api SHGetSpecialFolderPath来获取
 */
-std::wstring PathHelper::GetMyDocumentDir(void)
+const wchar_t* PathHelper::GetMyDocumentDir(void)
 {
-	std::wstring strMyDocumentPath;
-
 	///获取用户对应的 application data 目录,例:C:\Documents and Settings\wenhm\My Documents
-	WCHAR strPath[MAX_PATH] = {0};
-	BOOL bResult = SHGetSpecialFolderPathW(NULL, strPath,  CSIDL_PERSONAL, FALSE);
+	WCHAR szPath[MAX_PATH] = {0};
+	BOOL bResult = SHGetSpecialFolderPathW(NULL, szPath,  CSIDL_PERSONAL, FALSE);
 
-	strMyDocumentPath = strPath;
-	return strMyDocumentPath;
+	return _wcsdup(szPath);
 }
 
 /** 获取所有用户的Application Data目录
 采用windows api SHGetSpecialFolderPath来获取
 */
-std::wstring PathHelper::GetCommonAppDataDir(void)
+const wchar_t* PathHelper::GetCommonAppDataDir(void)
 {
-	std::wstring strAppDataPath;
-
 	/**获取the file system directory containing application data for all users目录, 
 	例:C:\Documents and Settings\All Users.WINDOWS\Application Data
 	*/
-	WCHAR strPath[MAX_PATH] = {0};
-	BOOL bResult = SHGetSpecialFolderPathW(NULL, strPath, CSIDL_COMMON_APPDATA, FALSE);
+	WCHAR szPath[MAX_PATH] = {0};
+	BOOL bResult = SHGetSpecialFolderPathW(NULL, szPath, CSIDL_COMMON_APPDATA, FALSE);
 
-	strAppDataPath = strPath;
-	return strAppDataPath;
+	return _wcsdup(szPath);
 }
 
 /** 获取用户主目录
 采用Windows Api SHGetSpecialFolderPath来获取用户主目录
 */
-std::wstring PathHelper::GetHomeDir(void)
+const wchar_t* PathHelper::GetHomeDir(void)
 {
-	std::wstring strHomePath;
-
 	///获取用户对应的 CSIDL_PROFILE 目录, 例:C:\Documents and Settings\username
-	WCHAR strPath[MAX_PATH] = {0};
-	BOOL bResult = SHGetSpecialFolderPathW(NULL, strPath, CSIDL_PROFILE, FALSE);
+	WCHAR szPath[MAX_PATH] = {0};
+	BOOL bResult = SHGetSpecialFolderPathW(NULL, szPath, CSIDL_PROFILE, FALSE);
 
-	strHomePath = strPath;
-	return strHomePath;
+	return _wcsdup(szPath);
 }
-
 
 /** 获取用户临时目录
 采用windows api SHGetSpecialFolderPath来获取用户临时目录
 */
-std::wstring PathHelper::GetTempDir(void)
+const wchar_t* PathHelper::GetTempDir(void)
 {
-	std::wstring strTempPath;
-
 	///获取用户对应的 CSIDL_PROFILE 目录, 例:C:\Documents and Settings\username
-	WCHAR strPath[MAX_PATH] = {0};
-	int iPathLen = ::GetTempPathW(MAX_PATH, strPath);
+	WCHAR szPath[MAX_PATH] = {0};
+	int iPathLen = ::GetTempPathW(MAX_PATH, szPath);
 
-	strTempPath = strPath;
-	return strTempPath;
+	return _wcsdup(szPath);
 }
 
 BOOL PathHelper::CreateMultipleDirectory(const std::wstring& strPath)

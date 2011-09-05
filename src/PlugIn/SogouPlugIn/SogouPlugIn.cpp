@@ -109,7 +109,7 @@ wchar_t* SogouPlugIn::GetInstallPath()
 
 wchar_t* SogouPlugIn::GetFavoriteDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer\\Favorite2.dat";
+	std::wstring strPath = PathHelper::GetAppDataDir() + wstring(L"\\SogouExplorer\\Favorite2.dat");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
@@ -117,10 +117,9 @@ wchar_t* SogouPlugIn::GetFavoriteDataPath()
 
 wchar_t* SogouPlugIn::GetHistoryDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\SogouExplorer\\HistoryUrl.db";
+	std::wstring strPath = PathHelper::GetAppDataDir() + std::wstring(L"\\SogouExplorer\\HistoryUrl.db");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
-
 	return _wcsdup(strPath.c_str());
 }
 
@@ -167,7 +166,7 @@ BOOL SogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum
 				 Query.getStringField("lastmodify", "2011-05-11 21:00:00")).c_str()),  ppData[i]->nLastModifyTime);
 
 			 ojbCrcHash.GetHash((BYTE *) ppData[i]->szTitle, wcslen( ppData[i]->szTitle) * sizeof(wchar_t), (BYTE *)& ppData[i]->nHashId, sizeof(uint32));
-			  ppData[i]->nCatId = Query.getIntField("category", 0);
+			  //ppData[i]->nCatId = Query.getIntField("category", 0);
 
 			  ppData[i]->bDelete = false;
 
@@ -226,7 +225,7 @@ BOOL SogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum
 				L"2011-05-11 12:00:00", 
 				L"2011-05-11 12:00:00",
 				ppData[i]->nHashId,
-				ppData[i]->nCatId);
+				0);
 
 			try
 			{

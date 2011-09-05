@@ -556,6 +556,10 @@ void	PlugInModule::DoImportThread()
 	if( pvFavoriteData->size() == 0)
 		return;
 
+	// 先进行整理
+	DataCenter_ReArrangeFavoriteService service;
+	GetModuleManager()->CallService(service.serviceId, (param)&service);
+
 	for( int i=0; i<m_vPlugIns.size(); i++)
 	{
 		IPlugIn* pPlugIn = m_vPlugIns.at(i);

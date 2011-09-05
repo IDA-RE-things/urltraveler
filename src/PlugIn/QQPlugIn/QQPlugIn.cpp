@@ -77,7 +77,7 @@ wchar_t* QQPlugIn::GetInstallPath()
 
 wchar_t* QQPlugIn::GetFavoriteDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Tencent\\QQBrowser\\user_data\\0\\Bookmarks";
+	std::wstring strPath = PathHelper::GetAppDataDir() + std::wstring(L"\\Tencent\\QQBrowser\\user_data\\0\\Bookmarks");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
@@ -85,7 +85,7 @@ wchar_t* QQPlugIn::GetFavoriteDataPath()
 
 wchar_t* QQPlugIn::GetHistoryDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Tencent\\QQBrowser\\user_data\\0\\history.db";
+	std::wstring strPath = PathHelper::GetAppDataDir() + std::wstring(L"\\Tencent\\QQBrowser\\user_data\\0\\history.db");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
@@ -357,7 +357,6 @@ BOOL QQPlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDA
 
 		wcscpy_s(ppData[nDataNum]->szTitle, MAX_LENGTH -1, StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str());
 		ppData[nDataNum]->szUrl[0] = 0;
-		ppData[nDataNum]->nCatId = 0;
 
 		CCRCHash ojbCrcHash;
 		ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t),  \
@@ -398,7 +397,6 @@ BOOL QQPlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA* pp
 	StringToInt64(url_obj["date_added"].asString(), ppData[nDataNum]->nAddTimes);
 	ppData[nDataNum]->nLastModifyTime =  0;
 	ppData[nDataNum]->nPid = nPid;
-	ppData[nDataNum]->nCatId = 0;
 
 	wcscpy_s(ppData[nDataNum]->szTitle, MAX_LENGTH -1, StringHelper::Utf8ToUnicode(url_obj["name"].asString()).c_str());
 	wcscpy_s(ppData[nDataNum]->szUrl, MAX_LENGTH - 1, StringHelper::Utf8ToUnicode(url_obj["url"].asString()).c_str());

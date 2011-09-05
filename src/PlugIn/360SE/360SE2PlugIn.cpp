@@ -71,7 +71,7 @@ wchar_t* C360SE2PlugIn::GetInstallPath()
 
 wchar_t* C360SE2PlugIn::GetFavoriteDataPath()
 {
-	std::wstring strPath = PathHelper::GetHomeDir() + L"\\Favorites";
+	std::wstring strPath = PathHelper::GetHomeDir() + wstring(L"\\Favorites");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return wcsdup(strPath.c_str());
@@ -79,7 +79,7 @@ wchar_t* C360SE2PlugIn::GetFavoriteDataPath()
 
 wchar_t* C360SE2PlugIn::GetHistoryDataPath()
 {
-	std::wstring strPath = PathHelper::GetHomeDir() + L"\\AppData\\Local\\Microsoft\\Windows\\History";
+	std::wstring strPath = PathHelper::GetHomeDir() + wstring(L"\\AppData\\Local\\Microsoft\\Windows\\History");
 	return wcsdup(strPath.c_str());
 }
 

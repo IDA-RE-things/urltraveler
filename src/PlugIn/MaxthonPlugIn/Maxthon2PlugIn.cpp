@@ -100,7 +100,7 @@ wchar_t* Maxthon2PlugIn::GetInstallPath()
 
 wchar_t* Maxthon2PlugIn::GetFavoriteDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Maxthon3\\Users\\guest\\Favorite\\Favorite.dat";
+	std::wstring strPath = PathHelper::GetAppDataDir() + wstring(L"\\Maxthon3\\Users\\guest\\Favorite\\Favorite.dat");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 
@@ -109,7 +109,7 @@ wchar_t* Maxthon2PlugIn::GetFavoriteDataPath()
 
 wchar_t* Maxthon2PlugIn::GetHistoryDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Maxthon3\\Users\\guest\\History\\History.dat";
+	std::wstring strPath = PathHelper::GetAppDataDir() + wstring(L"\\Maxthon3\\Users\\guest\\History\\History.dat");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 
@@ -183,7 +183,6 @@ BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nData
 			ppData[i]->nClickTimes = Query.getIntField("visit_count", 0);
 			ppData[i]->nLastModifyTime = Query.getIntField("last_modified", 0);
 			ppData[i]->bDelete = false;
-			ppData[i]->nCatId = 0;
 			ppData[i]->nOrder = Query.getIntField("norder", 0);
 
 			Query.nextRow();

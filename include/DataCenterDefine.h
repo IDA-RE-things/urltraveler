@@ -62,7 +62,6 @@ namespace datacenter
 	{
 		int32       nId;                //  ID
 		wchar_t	szTitle[MAX_LENGTH];	//	描述文本，或者为分类名称，或者为URL的title
-		int32		nCatId;				//  分类ID
 		int32		nPid;		        //	父类的ID
 		bool        bFolder;            //  是否是目录结点。如果是true，表示是目录结点，否则是子结点
 		wchar_t	    szUrl[MAX_LENGTH];		//	收藏的URL
@@ -76,7 +75,6 @@ namespace datacenter
 		FavoriteLineData()
 		{
 			nId	=	0;
-			nCatId	=	0;
 			nPid	=	0;
 			bFolder	=	false;
 			nAddTimes	=	time(NULL);

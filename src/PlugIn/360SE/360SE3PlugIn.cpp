@@ -27,11 +27,14 @@ C360SE3PlugIn::~C360SE3PlugIn()
 
 BOOL C360SE3PlugIn::Load()
 {
-	return TRUE;
+	return FALSE;
 }
 
 BOOL C360SE3PlugIn::UnLoad()
 {
+	if( m_SqliteDatabase.IsOpen() == TRUE)
+		m_SqliteDatabase.close();
+
 	return TRUE;
 }
 
@@ -72,33 +75,15 @@ wchar_t* C360SE3PlugIn::GetFavoriteDataPath()
 	if( m_strFavoritePath != L"")
 		return (wchar_t*)m_strFavoritePath.c_str();
 
-	wchar_t* pszPath = GetInstallPath();
+	const wchar_t* pszPath = PathHelper::GetAppDataDir();
 	if( pszPath == NULL)
 		return NULL;
 
 	String strPath = pszPath;
-	int nIndex = strPath.ReverseFind(L"\\");
-	if( nIndex == String::NPOS)
-		return NULL;
-
-	strPath = strPath.SubStr(0, nIndex);
-	nIndex = strPath.ReverseFind(L"\\");
-	if( nIndex == String::NPOS)
-		return NULL;
-
-	strPath = strPath.SubStr(0, nIndex);
-	strPath += L"\\data\\360sefav.db";
-
-	if( FileHelper::IsFileExist(strPath.GetData()) == TRUE)
-	{
-		//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
-		m_strFavoritePath = strPath.GetData();
-		return _wcsdup(strPath.GetData());
-	}
-
-	// 找到Application目录
-	strPath = PathHelper::GetAppDataDir().c_str();
 	strPath += L"\\360se\\data\\360sefav.db";
+
+	free((void*)pszPath);
+
 	if( FileHelper::IsFileExist(strPath.GetData()) == TRUE)
 	{
 		//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
@@ -111,7 +96,7 @@ wchar_t* C360SE3PlugIn::GetFavoriteDataPath()
 
 wchar_t* C360SE3PlugIn::GetHistoryDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\data\\history.dat";
+	std::wstring strPath = PathHelper::GetAppDataDir() + std::wstring(L"\\data\\history.dat");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
@@ -126,9 +111,16 @@ BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 		return FALSE;
 	}
 
-	CppSQLite3DB m_SqliteDatabase;
+	const wchar_t* pszPath = GetFavoriteDataPath();
+	if(pszPath == NULL)
+		return FALSE;
 
-	m_SqliteDatabase.open(GetFavoriteDataPath(), "");
+	if( m_SqliteDatabase.IsOpen() == FALSE)
+		m_SqliteDatabase.open(pszPath, "");
+	ASSERT(m_SqliteDatabase.IsOpen() == TRUE);
+
+	m_SqliteDatabase.execDML("delete from tb_fav");
+
 	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from tb_fav");
 	int i = 0;
 
@@ -152,7 +144,6 @@ BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 		 ppData[i]->nLastModifyTime = Query.getInt64Field("last_modify_time",0);
 
 		 ojbCrcHash.GetHash((BYTE *)ppData[i]->szTitle, wcslen(ppData[i]->szTitle) * sizeof(wchar_t), (BYTE *)&ppData[i]->nHashId, sizeof(uint32));
-		 ppData[i]->nCatId = 0;
 		 ppData[i]->bDelete = false;
 
 		 Query.nextRow();
@@ -171,17 +162,19 @@ BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 		return FALSE;
 	}
 
+	const wchar_t* pszPath = GetFavoriteDataPath();
+	if( pszPath == NULL)
+		return FALSE;
+
+	if( m_SqliteDatabase.IsOpen() == FALSE)
+		m_SqliteDatabase.open(pszPath, "");
+	ASSERT(m_SqliteDatabase.IsOpen() == TRUE);
+
+	m_SqliteDatabase.execDML("delete from tb_fav");
 
 #define MAX_BUFFER_LEN	4096
-
-	CppSQLite3DB  m_SqliteDatabase;
 	wchar_t szInsert[MAX_BUFFER_LEN] = {0};
 	wchar_t szDelete[MAX_BUFFER_LEN] = {0};
-
-	m_SqliteDatabase.open(GetFavoriteDataPath(), "");
-	int i = 0;
-
-	m_SqliteDatabase.execDML(StringHelper::UnicodeToUtf8(L"delete from tb_fav").c_str());
 
 	for (int i = 0; i < nDataNum; i++)
 	{
@@ -210,16 +203,23 @@ BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 	}
 
 	SaveDatabase();
+
 	return TRUE;
 }
 
 int32 C360SE3PlugIn::GetFavoriteCount()
 {
-	CppSQLite3DB  m_SqliteDatabase;
-	m_SqliteDatabase.open(GetFavoriteDataPath(), "");
+	const wchar_t* pszPath = GetFavoriteDataPath();
+	if( pszPath == NULL)
+		return 0;
+
+	if( m_SqliteDatabase.IsOpen() == FALSE)
+		m_SqliteDatabase.open(pszPath, "");
+	ASSERT(m_SqliteDatabase.IsOpen() == TRUE);
 	
 	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select count(*) as Total from tb_fav");
-	return  Query.getIntField("Total");
+	int nTotal =   Query.getIntField("Total");
+	return nTotal;
 }
 
 BOOL C360SE3PlugIn::SaveDatabase()

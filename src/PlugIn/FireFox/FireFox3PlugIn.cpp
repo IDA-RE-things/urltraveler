@@ -185,7 +185,7 @@ wchar_t* FireFox3PlugIn::GetInstallPath()
 // 目录下，*为一随即数，因此必须先计算出该目录
 wchar_t*	FireFox3PlugIn::GetAppBasePath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\Mozilla\\Firefox\\Profiles\\";
+	std::wstring strPath = PathHelper::GetAppDataDir() + wstring(L"\\Mozilla\\Firefox\\Profiles\\");
 
 	WIN32_FIND_DATA fd;
 	ZeroMemory(&fd, sizeof(WIN32_FIND_DATA));
@@ -238,7 +238,7 @@ wchar_t* FireFox3PlugIn::GetFavoriteDataPath()
 
 wchar_t* FireFox3PlugIn::GetHistoryDataPath()
 {
-	std::wstring strPath = PathHelper::GetAppDataDir() + L"\\data\\history.dat";
+	std::wstring strPath = PathHelper::GetAppDataDir() + wstring(L"\\data\\history.dat");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
@@ -327,7 +327,6 @@ BOOL FireFox3PlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA* ppData
 		ojbCrcHash.GetHash((BYTE *)ppData[nCurrentIndex]->szTitle, 
 			wcslen(ppData[nCurrentIndex]->szTitle) * sizeof(wchar_t),
 			(BYTE *)&ppData[nCurrentIndex]->nHashId, sizeof(uint32));
-		ppData[nCurrentIndex]->nCatId = 0;
 		ppData[nCurrentIndex]->bDelete = false;
 
 		// 查找对应的URL

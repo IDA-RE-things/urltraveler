@@ -172,7 +172,7 @@ wchar_t* IEPlugIn::GetInstallPath()
 //----------------------------------------------------------------------------------------
 wchar_t* IEPlugIn::GetFavoriteDataPath() 
 {
-	std::wstring strPath = PathHelper::GetHomeDir() + L"\\Favorites";
+	std::wstring strPath = PathHelper::GetHomeDir() + wstring(L"\\Favorites");
 
 	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return wcsdup(strPath.c_str());
@@ -184,7 +184,7 @@ wchar_t* IEPlugIn::GetFavoriteDataPath()
 //----------------------------------------------------------------------------------------
 wchar_t* IEPlugIn::GetHistoryDataPath() 
 {
-	std::wstring strPath = PathHelper::GetHomeDir() + L"\\AppData\\Local\\Microsoft\\Windows\\History";
+	std::wstring strPath = PathHelper::GetHomeDir() + wstring(L"\\AppData\\Local\\Microsoft\\Windows\\History");
 
 	return wcsdup(strPath.c_str());
 }
@@ -515,8 +515,6 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 					ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, 
 						wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t), 
 						(BYTE *)&ppData[nDataNum]->nHashId, sizeof(int32));
-
-					ppData[nDataNum]->nCatId = 0;
 				}
 
 				nDataNum++;
@@ -548,7 +546,6 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 						ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, 
 							wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t),
 							(BYTE *)&ppData[nDataNum]->nHashId, sizeof(int32));
-						ppData[nDataNum]->nCatId = 0;
 						wcscpy_s(ppData[nDataNum]->szUrl, MAX_LENGTH - 1, lpszURL);
 					}
 					

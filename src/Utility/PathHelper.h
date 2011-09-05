@@ -21,40 +21,40 @@ public:
 	typedef std::vector<std::wstring> CStdStringVector;
 
 	/**获取当前模块所在的目录，参数为模块的hInstance，默认为NULL，表示获取主程序的路径*/
-	static std::wstring GetModuleDir(HINSTANCE hInstance = NULL);
+	static const wchar_t* GetModuleDir(HINSTANCE hInstance = NULL);
 
 	/**获取当前模块的完整路径，参数为模块的hInstance，默认为NULL，表示获取主程序的路径*/
-	static std::wstring GetModulePath(HINSTANCE hInstance = NULL);
+	static const wchar_t* GetModulePath(HINSTANCE hInstance = NULL);
 
 	/** 获取用户Application Data目录
 	采用windows api SHGetSpecialFolderPath来获取
 	*/
-	static std::wstring GetAppDataDir(void);
+	static const wchar_t* GetAppDataDir(void);
 
 	/** 获取用户本地Application Data目录
 	采用windows api SHGetSpecialFolderPath来获取
 	*/
-	static std::wstring GetLocalAppDataDir(void);
+	static const wchar_t* GetLocalAppDataDir(void);
 
 	/** 获取用户MyDocument目录
 	采用windows api SHGetSpecialFolderPath来获取
 	*/
-	static std::wstring GetMyDocumentDir(void);
+	static const wchar_t* GetMyDocumentDir(void);
 
 	/** 获取所有用户的Application Data目录
 	采用windows api SHGetSpecialFolderPath来获取
 	*/
-	static std::wstring GetCommonAppDataDir(void);
+	static const wchar_t* GetCommonAppDataDir(void);
 
 	/** 获取用户主目录
 	采用windows api SHGetSpecialFolderPath来获取用户主目录
 	*/
-	static std::wstring GetHomeDir(void);
+	static const wchar_t* GetHomeDir(void);
 
 	/** 获取用户临时目录
 	采用windows api SHGetSpecialFolderPath来获取用户临时目录
 	*/
-	static std::wstring GetTempDir(void);
+	static const wchar_t* GetTempDir(void);
 
 	/** 创建多级目录
 	*/
