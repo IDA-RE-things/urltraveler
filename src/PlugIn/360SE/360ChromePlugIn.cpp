@@ -407,7 +407,7 @@ BOOL C360ChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid,
 		if( nRealDataNum == nDataNum)
 			return TRUE;
 
-		ppData[nRealDataNum]->nId = nRealDataNum + ID_VALUE_CHROME_BEGIN;
+		ppData[nRealDataNum]->nId = nRealDataNum + ID_VALUE_360EXTREME_BEGIN;
 		ppData[nRealDataNum]->bFolder = true;
 		ppData[nRealDataNum]->bDelete = false;
 
@@ -433,11 +433,11 @@ BOOL C360ChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid,
 			Json::Value new_val = children_nodes[i];
 			if (new_val["type"].asString() == std::string("url"))
 			{
-				ExportUrl(new_val, nCurrPid -1 + ID_VALUE_CHROME_BEGIN, ppData, nDataNum,nRealDataNum);
+				ExportUrl(new_val, nCurrPid -1 + ID_VALUE_360EXTREME_BEGIN, ppData, nDataNum,nRealDataNum);
 			}
 			else if(new_val["type"].asString() == std::string("folder"))
 			{
-				ExportFolder(new_val, nCurrPid -1 + ID_VALUE_CHROME_BEGIN, ppData, nDataNum, nRealDataNum);
+				ExportFolder(new_val, nCurrPid -1 + ID_VALUE_360EXTREME_BEGIN, ppData, nDataNum, nRealDataNum);
 			}
 		}
 	}
@@ -455,7 +455,7 @@ BOOL C360ChromePlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINE
 	if( nDataNum == nRealDataNum)
 		return FALSE;
 
-	ppData[nRealDataNum]->nId = nRealDataNum + ID_VALUE_CHROME_BEGIN;
+	ppData[nRealDataNum]->nId = nRealDataNum + ID_VALUE_360EXTREME_BEGIN;
 	ppData[nRealDataNum]->bFolder = false;
 	ppData[nRealDataNum]->bDelete = false;
 	StringToInt64(url_obj["date_added"].asString(), ppData[nRealDataNum]->nAddTimes);

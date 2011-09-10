@@ -47,7 +47,7 @@ BOOL TTPlugIn::Load()
 		return FALSE;
 	}	
 
-	return TRUE;
+	return FALSE;
 }
 
 BOOL TTPlugIn::UnLoad()

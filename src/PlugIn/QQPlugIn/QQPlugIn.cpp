@@ -346,7 +346,7 @@ BOOL QQPlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDA
 	}
 	else
 	{
-		ppData[nDataNum]->nId = nDataNum + ID_VALUE_CHROME_BEGIN;
+		ppData[nDataNum]->nId = nDataNum + ID_VALUE_QQ_BEGIN;
 		ppData[nDataNum]->bFolder = true;
 		ppData[nDataNum]->bDelete = false;
 
@@ -372,11 +372,11 @@ BOOL QQPlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDA
 			Json::Value new_val = children_nodes[i];
 			if (new_val["type"].asString() == std::string("url"))
 			{
-				ExportUrl(new_val, nCurrPid -1 + ID_VALUE_CHROME_BEGIN, ppData, nDataNum);
+				ExportUrl(new_val, nCurrPid -1 + ID_VALUE_QQ_BEGIN, ppData, nDataNum);
 			}
 			else if(new_val["type"].asString() == std::string("folder"))
 			{
-				ExportFolder(new_val, nCurrPid -1 + ID_VALUE_CHROME_BEGIN, ppData, nDataNum);
+				ExportFolder(new_val, nCurrPid -1 + ID_VALUE_QQ_BEGIN, ppData, nDataNum);
 			}
 		}
 	}
@@ -391,7 +391,7 @@ BOOL QQPlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA* pp
 		return FALSE;
 	}
 
-	ppData[nDataNum]->nId = nDataNum + ID_VALUE_CHROME_BEGIN;
+	ppData[nDataNum]->nId = nDataNum + ID_VALUE_QQ_BEGIN;
 	ppData[nDataNum]->bFolder = false;
 	ppData[nDataNum]->bDelete = false;
 	StringToInt64(url_obj["date_added"].asString(), ppData[nDataNum]->nAddTimes);
