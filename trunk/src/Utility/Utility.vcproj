@@ -842,6 +842,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FilePath.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FilePath.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ntfs.h"
 				>
 			</File>

@@ -9,6 +9,8 @@
 #include "TimeHelper.h"
 #include "IEPlugInFactory.h"
 #include "XString.h"
+#include "FilePath.h"
+
 
 #pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "ole32.lib")
@@ -341,7 +343,27 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 			PathHelper::CreateMultipleDirectory(szFileDir);
 			wchar_t szCurrFileName[MAX_LENGTH] = {0};
 			swprintf_s(szCurrFileName, MAX_LENGTH, L"%s%s", pszCurrNodePath, L".url");
-			WritePrivateProfileStringW(L"InternetShortcut", L"URL", ppData[i]->szUrl, szCurrFileName);
+
+			// 检查szCurrentFileName 中的不能在路径中出现的字符去掉
+			CFilePath path(szCurrFileName);
+
+			const wchar_t* pszFileName = path.GetFileName();
+			String strFileName = pszFileName;
+			free((void*)pszFileName);
+
+			strFileName.Replace(L":", L"");
+			strFileName.Replace(L"\\", L"");
+			strFileName.Replace(L"/", L"");
+			strFileName.Replace(L"*", L"");
+			strFileName.Replace(L"?", L"");
+			strFileName.Replace(L"<", L"");
+			strFileName.Replace(L">", L"");
+			strFileName.Replace(L"|", L"");
+
+			const wchar_t* pszFilePath = path.GetFilePath();
+			String strName = String(pszFilePath) + strFileName;
+			free((void*)pszFilePath);
+			WritePrivateProfileStringW(L"InternetShortcut", L"URL", ppData[i]->szUrl, strName.GetData());
 		}
 
 		free(pszCurrNodePath);
@@ -528,11 +550,13 @@ BOOL IEPlugIn::TaverseFavoriteFolder(IShellFolder* pFolder, int32 nPid,
 			}
 			else
 			{
-				if  (!wcscmp(fileInfo.szTypeName, L"Internet 快捷方式")
-					||!wcscmp(fileInfo.szTypeName, L"Internet Shortcut"))
+				if  (wcscmp(fileInfo.szTypeName, L"Internet 快捷方式") != 0 &&
+					wcscmp(fileInfo.szTypeName, L"Internet Shortcut") != 0)
 				{
-					ResolveInternetShortcut(lpszFileName, &lpszURL);
+					continue;
 				}
+
+				ResolveInternetShortcut(lpszFileName, &lpszURL);
 
 				if (NULL != lpszURL)
 				{
