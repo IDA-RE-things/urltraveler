@@ -173,6 +173,9 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 		return FALSE;
 	}
 
+	PFAVORITELINEDATA* ppInnerData = new PFAVORITELINEDATA[nDataNum];
+	memcpy(ppInnerData, ppData, sizeof(PFAVORITELINEDATA)*nDataNum);
+
 	wchar_t* pszPath = GetFavoriteDataPath();
 
 	//导入前先删除之前的收藏夹文件
@@ -188,6 +191,7 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 			free(pszPath);
 			if (!bResult)
 			{
+				delete ppInnerData;
 				return FALSE;
 			}
 		}
@@ -200,13 +204,13 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	int32 nDepth = 0;
 
 	MakeSpecialFolderNode(L"收藏夹", m_nIndex, bookmark_bar);
-	SortByDepth(&ppData[0], nDataNum);
+	SortByDepth(&ppInnerData[0], nDataNum);
 
 	int nRealImportNum = 0;
 	for (int32 i = 0; i < nDataNum; ++i)
 	{
 
-		if (ppData[i] == NULL || ppData[i]->bDelete == true)
+		if (ppInnerData[i] == NULL || ppInnerData[i]->bDelete == true)
 		{
 			continue;
 		}
@@ -214,7 +218,7 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 		nRealImportNum++;
 
 		MAP_PID_INFO::iterator it;
-		it = m_mapPidInfo.find(ppData[i]->nPid);
+		it = m_mapPidInfo.find(ppInnerData[i]->nPid);
 		if (it != m_mapPidInfo.end())
 		{
 			nDepth = (*it).second + 1;
@@ -229,37 +233,38 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 			m_nMaxDepth = nDepth;
 		}
 
-		if (ppData[i]->bFolder)
+		if (ppInnerData[i]->bFolder)
 		{
-			m_mapPidInfo.insert(MAP_PID_INFO::value_type(ppData[i]->nId, nDepth));
+			m_mapPidInfo.insert(MAP_PID_INFO::value_type(ppInnerData[i]->nId, nDepth));
 		}
 
 		m_mapDepthInfo.insert(MAP_DEPTH_INFO::value_type(nDepth, i));
 	}
 
-	TraverseNode(ppData, m_nMaxDepth);
+	TraverseNode(ppInnerData, m_nMaxDepth);
 	if (m_mapPidNodeInfo.size() == 1)
 	{
 		bookmark_bar["children"] = m_mapPidNodeInfo.begin()->second;
 	}
 	else
 	{
+		delete ppInnerData;
 		return FALSE;
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
 	for (int k = 0; k < nDataNum; k++)
 	{
-		if( ppData[k] == NULL)
+		if( ppInnerData[k] == NULL)
 			continue;
 
-		itIdIndex = m_mapIdIndexInfo.find(ppData[k]->nId);
+		itIdIndex = m_mapIdIndexInfo.find(ppInnerData[k]->nId);
 		if (itIdIndex != m_mapIdIndexInfo.end())
 		{
 			int32 nIndex = (*itIdIndex).second; 
-			if (ppData[k]->bFolder)
+			if (ppInnerData[k]->bFolder)
 			{
-				m_mapPidInfo.insert(MAP_PID_INFO::value_type(ppData[k]->nId, nDepth));
+				m_mapPidInfo.insert(MAP_PID_INFO::value_type(ppInnerData[k]->nId, nDepth));
 			}
 		}
 	}
@@ -273,6 +278,8 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	outfile.close();
 
 	nDataNum = nRealImportNum;
+
+	delete ppInnerData;
 	return TRUE;
 }
 
