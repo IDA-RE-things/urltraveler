@@ -47,7 +47,7 @@ BOOL TTPlugIn::Load()
 		return FALSE;
 	}	
 
-	return FALSE;
+	return TRUE;
 }
 
 BOOL TTPlugIn::UnLoad()
@@ -159,6 +159,10 @@ BOOL TTPlugIn::WriteQueryDataIntoData(CppSQLite3Query* pQuery, PFAVORITELINEDATA
 // nDataNum为导出的收藏数据
 BOOL TTPlugIn::ExportFavoriteData(int nParentId, PFAVORITELINEDATA* ppData, int32& nCurrentIndex)
 {
+	// 检查是否存在favtable
+	if( m_pSqliteDatabase->tableExists("favtable") == false)
+		return TRUE;
+
 	wstring strSql = L"select * from favtable where iPIndex = " ;
 	strSql += StringHelper::ANSIToUnicode(StringHelper::ConvertFromInt(nParentId));
 
@@ -217,10 +221,23 @@ BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 		return FALSE;
 	}
 
-#define MAX_BUFFER_LEN	4096
-  	wstring wstrDeleteSql =	 L"delete from favtable";
-	m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(wstrDeleteSql).c_str());
+	// 如果favtable表格不存在，则创建一个表格
+	if( m_pSqliteDatabase->tableExists("favtable") == false)
+	{
+		char* pszCreateSql = "CREATE TABLE favtable(iIndex integer primary key, iPIndex interger,  \
+			iUrlIndex interger, iPos interger, strTitle text, iCreateTime interger, iLastModifyTime interger, \
+			ReserveText1 text, ReserveText2 text, ReserveInt1 interger, ReserveInt2 interger, ReserveInt3 interger)";
+		int nRet = m_pSqliteDatabase->execDML(pszCreateSql);
+		if( nRet != SQLITE_OK)
+			return FALSE;
+	}
+	else
+	{
+		wstring wstrDeleteSql =	 L"delete from favtable";
+		m_pSqliteDatabase->execDML(StringHelper::UnicodeToUtf8(wstrDeleteSql).c_str());
+	}
 
+#define MAX_BUFFER_LEN	4096
 	for (int i = 0; i < nDataNum; i++)
 	{
 		if (ppData[i] == NULL || ppData[i]->bDelete == true)
@@ -304,6 +321,10 @@ int TTPlugIn::GetFavoriteCount(int nParentId)
 int32 TTPlugIn::GetFavoriteCount()
 {
 	int nTotalNumber = 0;
+	if( m_pSqliteDatabase->tableExists("favtable") == false)
+	{
+		return nTotalNumber;
+	}
 
 	CppSQLite3Query Query = m_pSqliteDatabase->execQuery("select * from favtable where iPIndex=0");
 	while(!Query.eof() )

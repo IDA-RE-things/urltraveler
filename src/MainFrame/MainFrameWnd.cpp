@@ -1480,7 +1480,6 @@ int CMainFrameWnd::GetFavoriteLineDataNum()
 	return j;
 }
 
-
 void CMainFrameWnd::GetAvailableBrowser()
 {
 	plugin::PlugIn_GetAvailablePlugInsService	getAvailablePlugInsService;
