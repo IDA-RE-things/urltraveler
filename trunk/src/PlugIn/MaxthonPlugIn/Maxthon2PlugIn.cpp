@@ -40,7 +40,6 @@ BOOL Maxthon2PlugIn::Load()
 	}
 
 	return FALSE;
-
 }
 
 BOOL Maxthon2PlugIn::UnLoad()
