@@ -101,5 +101,5 @@ protected:
 
 protected:
 
-		CppSQLite3DB* m_pSqliteDatabase;
+	CppSQLite3DB* m_pSqliteDatabase;
 };

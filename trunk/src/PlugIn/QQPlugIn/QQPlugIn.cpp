@@ -534,8 +534,12 @@ BOOL QQPlugIn::TraverseNode(PFAVORITELINEDATA* ppData, int32 nDepth)
 	{
 		std::vector<int32> vecPidList;
 		std::multimap<int32, NODEINFO> mapPidObj;
-		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(nDepth); it != m_mapDepthInfo.upper_bound(nDepth); ++it)
+		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(nDepth);
+			it != m_mapDepthInfo.upper_bound(nDepth); ++it)
 		{
+			if( ppData[(*it).second] == NULL)
+				continue;
+
 			NODEINFO stNodeInfo = {0};	
 			if (ppData[(*it).second]->bFolder == true)
 			{
