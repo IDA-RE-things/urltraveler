@@ -160,7 +160,10 @@ bool CFavoriteTreeListUI::RemoveAt(int nIndex)
 				{
 					CTreeListUI::Node* pNode = itr->second;
 					if( pNode)
+					{
+						RemoveNode(pNode);
 						m_mapNodeId.erase(pNode);
+					}
 				}
 				m_mapIdNode.erase(nSubFolderId);
 			}
