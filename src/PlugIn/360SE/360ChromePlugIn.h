@@ -109,7 +109,8 @@ private:
 	void FinalizeChecksum();
 
 	void SortByDepth(PFAVORITELINEDATA*  ppData, int32 nDataNum);
-	void SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum, PFAVORITELINEDATA*& ppSortData, int32 nParentId);
+	void SortNode(PFAVORITELINEDATA*  ppData, int32 nDataNum,
+		PFAVORITELINEDATA* & ppSortData, int32 nParentId, int& k);
 
 private:
 	typedef struct NodeInfo

@@ -47,7 +47,7 @@ BOOL Maxthon3PlugIn::UnLoad()
 {
 	if (m_pMemFavoriteDB)
 	{
-		FILE *fOut = fopen("maxthon_b.db", "wb");
+		FILE *fOut = fopen("c:\\maxthon_b.db", "wb");
 		fwrite(m_pMemFavoriteDB->pMemPointer, 1, m_pMemFavoriteDB->ulMemSize, fOut);
 		fclose(fOut);
 		free(m_pMemFavoriteDB->pMemPointer);

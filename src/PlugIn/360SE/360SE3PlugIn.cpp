@@ -81,7 +81,6 @@ wchar_t* C360SE3PlugIn::GetFavoriteDataPath()
 
 	String strPath = pszPath;
 	strPath += L"\\360se\\data\\360sefav.db";
-
 	free((void*)pszPath);
 
 	if( FileHelper::IsFileExist(strPath.GetData()) == TRUE)

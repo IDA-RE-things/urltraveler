@@ -46,16 +46,29 @@ BOOL QQPlugIn::UnLoad()
 	return TRUE;
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetPlugInVersion
+//描述: 获取当前插件的版本号
+//返回: 插件的版本号，通常为一整数。
+//----------------------------------------------------------------------------------------
 int32 QQPlugIn::GetPlugInVersion()
 {
 	return 1;
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetBrowserName
+//描述: 获取该插件对应的浏览器的名称和版本
+//----------------------------------------------------------------------------------------
 const wchar_t* QQPlugIn::GetBrowserName()
 {
 	return L"QQ浏览器";
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetInstallPath
+//描述: 获取插件对应的浏览器的安装目录
+//----------------------------------------------------------------------------------------
 wchar_t* QQPlugIn::GetInstallPath()
 {
 	wchar_t szPath[MAX_PATH] = {0};
@@ -75,6 +88,10 @@ wchar_t* QQPlugIn::GetInstallPath()
 	return NULL;
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetFavoriteDataPath
+//描述: 获取浏览器收藏夹对应的文件或者文件夹的路径
+//----------------------------------------------------------------------------------------
 wchar_t* QQPlugIn::GetFavoriteDataPath()
 {
 	std::wstring strPath = PathHelper::GetAppDataDir() + std::wstring(L"\\Tencent\\QQBrowser\\user_data\\0\\Bookmarks");
@@ -83,6 +100,10 @@ wchar_t* QQPlugIn::GetFavoriteDataPath()
 	return _wcsdup(strPath.c_str());
 }
 
+//----------------------------------------------------------------------------------------
+//名称: GetHistoryDataPath
+//描述: 获取浏览器收藏夹的历史数据对应的文件或者文件夹
+//----------------------------------------------------------------------------------------
 wchar_t* QQPlugIn::GetHistoryDataPath()
 {
 	std::wstring strPath = PathHelper::GetAppDataDir() + std::wstring(L"\\Tencent\\QQBrowser\\user_data\\0\\history.db");
@@ -144,9 +165,9 @@ BOOL QQPlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	{
 		if (!chrome_bookmarks.empty())
 		{
-			nDataNum = 0;
+			int nRealDataNum = 0;
 			Json::Value roots = chrome_bookmarks["roots"];
-			ExportFolder(roots["bookmark_bar"], 0, ppData, nDataNum);
+			ExportFolder(roots["bookmark_bar"], 0, ppData, nDataNum, nRealDataNum);
 			//ExportFolder(roots["other"], 0, pData, nDataNum);
 			//ExportFolder(roots["synced"], 0, pData, nDataNum);
 		}
@@ -173,16 +194,16 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 		return FALSE;
 	}
 
-	m_mapPidNodeInfo.clear();
 	m_mapPidInfo.clear();
 	m_mapDepthInfo.clear();
+	m_mapPidNodeInfo.clear();
+	m_mapIdIndexInfo.clear();
 
 	PFAVORITELINEDATA* ppInnerData = new PFAVORITELINEDATA[nDataNum];
 	memcpy(ppInnerData, ppData, sizeof(PFAVORITELINEDATA)*nDataNum);
 
 	wchar_t* pszPath = GetFavoriteDataPath();
 
-	//导入前先删除之前的收藏夹文件
 	//获取导入文件路径
 	std::wstring strTmpPath = StringHelper::ANSIToUnicode(StringHelper::UnicodeToUtf8(pszPath));
 	if( FileHelper::IsFileExist(strTmpPath.c_str()) == TRUE)
@@ -209,17 +230,12 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 
 	MakeSpecialFolderNode(L"收藏夹", m_nIndex, bookmark_bar);
 	SortByDepth(&ppInnerData[0], nDataNum);
-
-	int nRealImportNum = 0;
 	for (int32 i = 0; i < nDataNum; ++i)
 	{
-
 		if (ppInnerData[i] == NULL || ppInnerData[i]->bDelete == true)
 		{
 			continue;
 		}
-
-		nRealImportNum++;
 
 		MAP_PID_INFO::iterator it;
 		it = m_mapPidInfo.find(ppInnerData[i]->nPid);
@@ -257,10 +273,13 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
+	int nRealNum  = 0;
 	for (int k = 0; k < nDataNum; k++)
 	{
-		if( ppInnerData[k] == NULL)
+		if( ppInnerData[k] == NULL || ppInnerData[k]->bDelete == true)
 			continue;
+
+		nRealNum ++;
 
 		itIdIndex = m_mapIdIndexInfo.find(ppInnerData[k]->nId);
 		if (itIdIndex != m_mapIdIndexInfo.end())
@@ -281,9 +300,9 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	writer.write(outfile, root);	
 	outfile.close();
 
-	nDataNum = nRealImportNum;
+	delete[] ppInnerData;
 
-	delete ppInnerData;
+	nDataNum = nRealNum;
 	return TRUE;
 }
 
@@ -329,7 +348,8 @@ void QQPlugIn::SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum,
 }
 
 
-BOOL QQPlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32& nDataNum)
+BOOL QQPlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid,
+								 PFAVORITELINEDATA* ppData, int nDataNum,int32& nRealDataNum)
 {
 	if (folder_obj.empty() || (folder_obj["type"].asString() != std::string("folder")))
 	{
@@ -349,47 +369,51 @@ BOOL QQPlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDA
 			Json::Value new_val = children_nodes[i];
 			if (new_val["type"].asString() == std::string("url"))
 			{
-				ExportUrl(new_val, nPid, ppData, nDataNum);
+				ExportUrl(new_val, nPid, ppData, nDataNum, nRealDataNum);
 			}
 			else if(new_val["type"].asString() == std::string("folder"))
 			{
-				ExportFolder(new_val, nPid, ppData, nDataNum);
+				ExportFolder(new_val, nPid, ppData, nDataNum, nRealDataNum);
 			}
 		}
 	}
 	else
 	{
-		ppData[nDataNum]->nId = nDataNum + ID_VALUE_QQ_BEGIN;
-		ppData[nDataNum]->bFolder = true;
-		ppData[nDataNum]->bDelete = false;
+		// 当前的索引超出范围
+		if( nRealDataNum == nDataNum)
+			return TRUE;
 
-		StringToInt64(folder_obj["date_added"].asString(), ppData[nDataNum]->nAddTimes);
-		StringToInt64(folder_obj["date_added"].asString(), ppData[nDataNum]->nLastModifyTime);
+		ppData[nRealDataNum]->nId = nRealDataNum + ID_VALUE_QQ_BEGIN;
+		ppData[nRealDataNum]->bFolder = true;
+		ppData[nRealDataNum]->bDelete = false;
 
-		ppData[nDataNum]->nPid = nPid;
+		StringToInt64(folder_obj["date_added"].asString(), ppData[nRealDataNum]->nAddTimes);
+		StringToInt64(folder_obj["date_added"].asString(), ppData[nRealDataNum]->nLastModifyTime);
 
-		wcscpy_s(ppData[nDataNum]->szTitle, MAX_LENGTH -1, StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str());
-		ppData[nDataNum]->szUrl[0] = 0;
+		ppData[nRealDataNum]->nPid = nPid;
+
+		wcscpy_s(ppData[nRealDataNum]->szTitle, MAX_LENGTH -1, StringHelper::Utf8ToUnicode(folder_obj["name"].asString()).c_str());
+		ppData[nRealDataNum]->szUrl[0] = 0;
 
 		CCRCHash ojbCrcHash;
-		ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t),  \
-			(BYTE *)&ppData[nDataNum]->nHashId, sizeof(int32));
+		ojbCrcHash.GetHash((BYTE *)ppData[nRealDataNum]->szTitle, wcslen(ppData[nRealDataNum]->szTitle) * sizeof(wchar_t),  \
+			(BYTE *)&ppData[nRealDataNum]->nHashId, sizeof(int32));
 
-		nDataNum++;
+		nRealDataNum++;
 
 		Json::Value children_nodes = folder_obj["children"];
 		int32 nNodeCount = children_nodes.size();
-		int32 nCurrPid = nDataNum;
+		int32 nCurrPid = nRealDataNum;
 		for (int32 i = 0; i < nNodeCount; ++i)
 		{
 			Json::Value new_val = children_nodes[i];
 			if (new_val["type"].asString() == std::string("url"))
 			{
-				ExportUrl(new_val, nCurrPid -1 + ID_VALUE_QQ_BEGIN, ppData, nDataNum);
+				ExportUrl(new_val, nCurrPid -1 + ID_VALUE_QQ_BEGIN, ppData, nDataNum,nRealDataNum);
 			}
 			else if(new_val["type"].asString() == std::string("folder"))
 			{
-				ExportFolder(new_val, nCurrPid -1 + ID_VALUE_QQ_BEGIN, ppData, nDataNum);
+				ExportFolder(new_val, nCurrPid -1 + ID_VALUE_QQ_BEGIN, ppData, nDataNum, nRealDataNum);
 			}
 		}
 	}
@@ -397,31 +421,34 @@ BOOL QQPlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid, PFAVORITELINEDA
 	return TRUE;
 }
 
-BOOL QQPlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32& nDataNum)
+BOOL QQPlugIn::ExportUrl(Json::Value& url_obj, int32 nPid, PFAVORITELINEDATA* ppData, int32 nDataNum, int32& nRealDataNum)
 {
 	if (url_obj.empty() || url_obj["type"].asString() != std::string("url"))
 	{
 		return FALSE;
 	}
 
-	ppData[nDataNum]->nId = nDataNum + ID_VALUE_QQ_BEGIN;
-	ppData[nDataNum]->bFolder = false;
-	ppData[nDataNum]->bDelete = false;
-	StringToInt64(url_obj["date_added"].asString(), ppData[nDataNum]->nAddTimes);
-	ppData[nDataNum]->nLastModifyTime =  0;
-	ppData[nDataNum]->nPid = nPid;
+	if( nDataNum == nRealDataNum)
+		return FALSE;
 
-	wcscpy_s(ppData[nDataNum]->szTitle, MAX_LENGTH -1, StringHelper::Utf8ToUnicode(url_obj["name"].asString()).c_str());
-	wcscpy_s(ppData[nDataNum]->szUrl, MAX_LENGTH - 1, StringHelper::Utf8ToUnicode(url_obj["url"].asString()).c_str());
-	ppData[nDataNum]->szUrl[MAX_LENGTH-1] = 0;
+	ppData[nRealDataNum]->nId = nRealDataNum + ID_VALUE_CHROME_BEGIN;
+	ppData[nRealDataNum]->bFolder = false;
+	ppData[nRealDataNum]->bDelete = false;
+	StringToInt64(url_obj["date_added"].asString(), ppData[nRealDataNum]->nAddTimes);
+	ppData[nRealDataNum]->nLastModifyTime =  0;
+	ppData[nRealDataNum]->nPid = nPid;
+
+	wcscpy_s(ppData[nRealDataNum]->szTitle, MAX_LENGTH -1, StringHelper::Utf8ToUnicode(url_obj["name"].asString()).c_str());
+	wcscpy_s(ppData[nRealDataNum]->szUrl, MAX_LENGTH - 1, StringHelper::Utf8ToUnicode(url_obj["url"].asString()).c_str());
+	ppData[nRealDataNum]->szUrl[MAX_LENGTH-1] = 0;
 
 	CCRCHash ojbCrcHash;
-	ojbCrcHash.GetHash((BYTE *)ppData[nDataNum]->szTitle, wcslen(ppData[nDataNum]->szTitle) * sizeof(wchar_t),  \
-		(BYTE *)&ppData[nDataNum]->nHashId, sizeof(int32));
+	ojbCrcHash.GetHash((BYTE *)ppData[nRealDataNum]->szTitle, wcslen(ppData[nRealDataNum]->szTitle) * sizeof(wchar_t),  \
+		(BYTE *)&ppData[nRealDataNum]->nHashId, sizeof(int32));
 
-	nDataNum++;
+	nRealDataNum++;
 
-	return TRUE;
+    return TRUE;
 }
 
 
