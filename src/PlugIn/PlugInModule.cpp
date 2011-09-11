@@ -525,6 +525,22 @@ void	PlugInModule::DoExportThread()
 	}
 	m_nSumFavorite =  pvFavoriteData->size();
 
+	if( m_nSumFavorite == 0)
+	{
+		// 将合并后的数据导入到各个浏览器中
+		if (panCount)
+		{
+			delete []panCount;
+			panCount = NULL;
+		}
+
+		// 发送广播，通知收藏夹已经合并完毕
+		m_pModuleManager->PushMessage(
+			MakeMessage<MODULE_ID_PLUGIN>()(MESSAGE_VALUE_PLUGIN_EXPORT_ALL_FINISHED));
+
+		return;
+	}
+
 	// 进行广度遍历排序
 	sort(pvFavoriteData->begin(), pvFavoriteData->end(), CompareFavoriteData);
 
