@@ -114,6 +114,7 @@ wchar_t* CChromePlugIn::GetHistoryDataPath()
 {
 	std::wstring strPath = PathHelper::GetAppDataDir() + wstring(L"\\Local\\Google\\Chrome\\User Data\\Default\\History");
 
+	//需要复制一份,不然strPath被析构时,返回野指针,由调用者进行释放,否则会造成内存泄漏
 	return _wcsdup(strPath.c_str());
 }
 
@@ -199,9 +200,10 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 		return FALSE;
 	}
 
-	m_mapPidNodeInfo.clear();
 	m_mapPidInfo.clear();
 	m_mapDepthInfo.clear();
+	m_mapPidNodeInfo.clear();
+	m_mapIdIndexInfo.clear();
 
 	PFAVORITELINEDATA* ppInnerData = new PFAVORITELINEDATA[nDataNum];
 	memcpy(ppInnerData, ppData, sizeof(PFAVORITELINEDATA)*nDataNum);
@@ -325,7 +327,7 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 	writer.write(outfile, root);	
 	outfile.close();
 
-	delete ppInnerData;
+	delete[] ppInnerData;
 
 	nDataNum = nRealNum;
 
@@ -352,8 +354,6 @@ void CChromePlugIn::SortByDepth(PFAVORITELINEDATA* ppData, int32 nDataNum)
 void CChromePlugIn::SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum, 
 				PFAVORITELINEDATA*& ppSortData, int32 nParentId, int& k)
 {
-	//static int k = 0;
-
 	for (int i = 0; i < nDataNum; i++)
 	{
 		if (ppData[i]->nPid == nParentId)
@@ -392,10 +392,16 @@ BOOL CChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid,
 
 	if (wstrName == L"Bookmarks bar" 
 		|| wstrName == L"书签栏"
+		|| wstrName == L"收藏栏"
 		|| wstrName == L"Other bookmarks"
 		|| wstrName == L"其他书签"
+		|| wstrName == L"其它书签"
+		|| wstrName == L"其它收藏"
+		|| wstrName == L"其它收藏"
 		|| wstrName == L"Synced bookmarks"
-		|| wstrName == L"已同步书签")
+		|| wstrName == L"已同步书签"
+		|| wstrName == L"已同步收藏"
+		)
 	{
 		Json::Value children_nodes = folder_obj["children"];
 		int32 nNodeCount = children_nodes.size();
@@ -779,4 +785,3 @@ bool CChromePlugIn::IsStringUTF8(const std::string& str)
 	}
 	return true;
 }
-

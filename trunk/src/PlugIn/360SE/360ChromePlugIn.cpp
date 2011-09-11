@@ -137,9 +137,24 @@ int32 C360ChromePlugIn::GetFavoriteCount()
 	Json::Reader reader;
 	if (reader.parse(infile, chrome_bookmarks))
 	{
- 		EnumNode(chrome_bookmarks["roots"]["bookmark_bar"]["children"], nFavoriteCount);
- 		EnumNode(chrome_bookmarks["roots"]["other"]["children"], nFavoriteCount);
-		EnumNode(chrome_bookmarks["roots"]["synced"]["children"], nFavoriteCount);
+		// 检查是否存在bookmark_bar
+		if( chrome_bookmarks["roots"].isMember("bookmark_bar") == true)
+		{
+			EnumNode(chrome_bookmarks["roots"]["bookmark_bar"]["children"], nFavoriteCount);
+			nFavoriteCount ++;
+		}
+
+		if( chrome_bookmarks["roots"].isMember("other") == true)
+		{
+			EnumNode(chrome_bookmarks["roots"]["other"]["children"], nFavoriteCount);
+			nFavoriteCount ++;
+		}
+
+		if( chrome_bookmarks["roots"].isMember("other") == true)
+		{
+			EnumNode(chrome_bookmarks["roots"]["synced"]["children"], nFavoriteCount);
+			nFavoriteCount ++;
+		}
 	}
 
 	infile.close();
@@ -199,9 +214,13 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 		return FALSE;
 	}
 
+	m_mapPidInfo.clear();
+	m_mapDepthInfo.clear();
+	m_mapPidNodeInfo.clear();
+	m_mapIdIndexInfo.clear();
 
-	PFAVORITELINEDATA* ppDataCopy = new PFAVORITELINEDATA[nDataNum];
-	memcpy(ppDataCopy, ppData, nDataNum*sizeof(PFAVORITELINEDATA));
+	PFAVORITELINEDATA* ppInnerData = new PFAVORITELINEDATA[nDataNum];
+	memcpy(ppInnerData, ppData, sizeof(PFAVORITELINEDATA)*nDataNum);
 
 	wchar_t* pszPath = GetFavoriteDataPath();
 
@@ -217,15 +236,11 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 			free(pszPath);
 			if (!bResult)
 			{
+				delete ppInnerData;
 				return FALSE;
 			}
 		}
 	}
-
-	m_mapPidInfo.clear();
-	m_mapDepthInfo.clear();
-	m_mapPidNodeInfo.clear();
-	m_mapIdIndexInfo.clear();
 
 	Json::Value root;
 	Json::Value bookmark_bar;
@@ -237,17 +252,16 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 	InitializeChecksum();
 
 	MakeSpecialFolderNode(L"Bookmarks bar", m_nIndex, bookmark_bar);
-	SortByDepth(&ppDataCopy[0], nDataNum);
+	SortByDepth(&ppInnerData[0], nDataNum);
 	for (int32 i = 0; i < nDataNum; ++i)
 	{
-		if( ppDataCopy[i] == NULL)
+		if (ppInnerData[i] == NULL || ppInnerData[i]->bDelete == true)
+		{
 			continue;
-
-		if (ppDataCopy[i]->bDelete == true)
-			continue;
+		}
 
 		MAP_PID_INFO::iterator it;
-		it = m_mapPidInfo.find(ppDataCopy[i]->nPid);
+		it = m_mapPidInfo.find(ppInnerData[i]->nPid);
 		if (it != m_mapPidInfo.end())
 		{
 			nDepth = (*it).second + 1;
@@ -262,51 +276,51 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 			m_nMaxDepth = nDepth;
 		}
 
-		if (ppDataCopy[i]->bFolder)
+		if (ppInnerData[i]->bFolder)
 		{
-			m_mapPidInfo.insert(MAP_PID_INFO::value_type(ppDataCopy[i]->nId, nDepth));
+			m_mapPidInfo.insert(MAP_PID_INFO::value_type(ppInnerData[i]->nId, nDepth));
 		}
 		
 		m_mapDepthInfo.insert(MAP_DEPTH_INFO::value_type(nDepth, i));
 	}
 
-	TraverseNode(ppDataCopy, m_nMaxDepth);
+	TraverseNode(ppInnerData, m_nMaxDepth);
 	if (m_mapPidNodeInfo.size() == 1)
 	{
 		bookmark_bar["children"] = m_mapPidNodeInfo.begin()->second;
 	}
 	else
 	{
+		delete ppInnerData;
 		return FALSE;
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
 
-	int nRealNum = 0;
+	int nRealNum  = 0;
 	for (int k = 0; k < nDataNum; k++)
 	{
-		if( ppDataCopy[k] == NULL || ppDataCopy[k]->bDelete == true)
+		if( ppInnerData[k] == NULL || ppInnerData[k]->bDelete == true)
 			continue;
 
-		nRealNum++;
+		nRealNum ++;
 
-		itIdIndex = m_mapIdIndexInfo.find(ppDataCopy[k]->nId);
+		itIdIndex = m_mapIdIndexInfo.find(ppInnerData[k]->nId);
 		if (itIdIndex != m_mapIdIndexInfo.end())
 		{
-
 			int32 nIndex = (*itIdIndex).second; 
-			if (ppDataCopy[k]->bFolder)
+			if (ppInnerData[k]->bFolder)
 			{
-				m_mapPidInfo.insert(MAP_PID_INFO::value_type(ppDataCopy[k]->nId, nDepth));
+				m_mapPidInfo.insert(MAP_PID_INFO::value_type(ppInnerData[k]->nId, nDepth));
 				char szId[256] = {0};
 				sprintf_s(szId, 255, "%u", nIndex);
-				UpdateChecksumWithFolderNode(&szId[0], ppDataCopy[k]->szTitle);
+				UpdateChecksumWithFolderNode(&szId[0], ppInnerData[k]->szTitle);
 			}
 			else
 			{
 				char szId[256] = {0};
 				sprintf_s(szId, 255, "%u", nIndex);
-				UpdateChecksumWithUrlNode(&szId[0], ppDataCopy[k]->szTitle, StringHelper::UnicodeToUtf8(ppDataCopy[k]->szUrl));
+				UpdateChecksumWithUrlNode(&szId[0], ppInnerData[k]->szTitle, StringHelper::UnicodeToUtf8(ppInnerData[k]->szUrl));
 			}
 		}
 	}
@@ -327,9 +341,10 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 	writer.write(outfile, root);	
 	outfile.close();
 
-	delete[] ppDataCopy;
+	delete[] ppInnerData;
 
 	nDataNum = nRealNum;
+
 	return TRUE;
 }
 
@@ -341,7 +356,8 @@ void C360ChromePlugIn::SortByDepth(PFAVORITELINEDATA* ppData, int32 nDataNum)
 	PFAVORITELINEDATA* ppSortLineDataPos = ppSortLineData;
 
 	// 逐一找到合适的数据，并插入到ppSortLineData中去
-	SortNode(ppData, nDataNum, ppSortLineDataPos, 0);
+	int k = 0;
+	SortNode(ppData, nDataNum, ppSortLineDataPos, 0, k);
 
 	// 排序后的数据拷贝
 	memcpy(ppData, ppSortLineData, nDataNum * sizeof(PFAVORITELINEDATA));
@@ -350,9 +366,9 @@ void C360ChromePlugIn::SortByDepth(PFAVORITELINEDATA* ppData, int32 nDataNum)
 }
 
 void C360ChromePlugIn::SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum, 
-				PFAVORITELINEDATA*& ppSortData, int32 nParentId)
+				PFAVORITELINEDATA*& ppSortData, int32 nParentId, int& k)
 {
-	static int k = 0;
+	//static int k = 0;
 
 	for (int i = 0; i < nDataNum; i++)
 	{
@@ -360,13 +376,14 @@ void C360ChromePlugIn::SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum,
 		{
 			memcpy(ppSortData++, &ppData[i], sizeof(PFAVORITELINEDATA));
 			if (++k >= nDataNum)
-			{//排序完所有数据，则直接退出循环，以提高效率
+			{
+				//排序完所有数据，则直接退出循环，以提高效率
 				break;
 			}
 
 			if (ppData[i]->bFolder)
 			{
-				SortNode(ppData, nDataNum, ppSortData, ppData[i]->nId);
+				SortNode(ppData, nDataNum, ppSortData, ppData[i]->nId, k);
 			}
 
 		}
@@ -386,10 +403,16 @@ BOOL C360ChromePlugIn::ExportFolder(Json::Value& folder_obj, int32 nPid,
 
 	if (wstrName == L"Bookmarks bar" 
 		|| wstrName == L"书签栏"
+		|| wstrName == L"收藏栏"
 		|| wstrName == L"Other bookmarks"
 		|| wstrName == L"其他书签"
+		|| wstrName == L"其它书签"
+		|| wstrName == L"其它收藏"
+		|| wstrName == L"其它收藏"
 		|| wstrName == L"Synced bookmarks"
-		|| wstrName == L"已同步书签")
+		|| wstrName == L"已同步书签"
+		|| wstrName == L"已同步收藏"
+		)
 	{
 		Json::Value children_nodes = folder_obj["children"];
 		int32 nNodeCount = children_nodes.size();
@@ -557,40 +580,39 @@ BOOL C360ChromePlugIn::MakeSpecialFolderNode(wchar_t *pszName, uint32& nIndex, J
 	return TRUE;
 }
 
-
 BOOL C360ChromePlugIn::EnumNode(Json::Value& folder_obj, int32& nCount)
 {
 	switch (folder_obj.type())
 	{
-	case Json::nullValue:
-	case Json::intValue:
-	case Json::uintValue:
-	case Json::realValue:
-	case Json::stringValue:
-	case Json::booleanValue:
-		break;
-	case Json::arrayValue:
-		{
-			int32 nSize = folder_obj.size();
-			for (int32 index = 0; index < nSize; ++index)
+		case Json::nullValue:
+		case Json::intValue:
+		case Json::uintValue:
+		case Json::realValue:
+		case Json::stringValue:
+		case Json::booleanValue:
+			break;
+		case Json::arrayValue:
 			{
-				EnumNode(folder_obj[index], nCount);
+				int32 nSize = folder_obj.size();
+				for (int32 index = 0; index < nSize; ++index)
+				{
+					EnumNode(folder_obj[index], nCount);
+				}
 			}
-		}
-		break;
-	case Json::objectValue:
-		{
-			nCount++;
-			Json::Value::Members members(folder_obj.getMemberNames());
-			for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
+			break;
+		case Json::objectValue:
 			{
-				const std::string &name = *it;
-				EnumNode(folder_obj[name], nCount);
+				nCount++;
+				Json::Value::Members members(folder_obj.getMemberNames());
+				for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)
+				{
+					const std::string &name = *it;
+					EnumNode(folder_obj[name], nCount);
+				}
 			}
-		}
-		break;
-	default:
-		break;
+			break;
+		default:
+			break;
 	}
 
 	return TRUE;
@@ -603,12 +625,14 @@ BOOL C360ChromePlugIn::TraverseNode(PFAVORITELINEDATA* ppData, int32 nDepth)
 	{
 		std::vector<int32> vecPidList;
 		std::multimap<int32, NODEINFO> mapPidObj;
-		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(nDepth); it != m_mapDepthInfo.upper_bound(nDepth); ++it)
+		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(nDepth);
+			it != m_mapDepthInfo.upper_bound(nDepth); ++it)
 		{
-			if( ppData[(*it).second] == NULL)
+			NODEINFO stNodeInfo = {0};	
+
+			if( ppData[(*it).second] == NULL )
 				continue;
 
-			NODEINFO stNodeInfo = {0};	
 			if (ppData[(*it).second]->bFolder == true)
 			{
 				Json::Value folder_obj;

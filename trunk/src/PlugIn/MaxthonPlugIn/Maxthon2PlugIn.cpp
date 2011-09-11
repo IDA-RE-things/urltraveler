@@ -36,7 +36,7 @@ BOOL Maxthon2PlugIn::Load()
 		m_pMemFavoriteDB->pMemPointer = (unsigned char *)malloc(strDecodeContent.length());
 		memcpy(m_pMemFavoriteDB->pMemPointer, strDecodeContent.c_str(), m_pMemFavoriteDB->ulMemSize);
 
-		return TRUE;
+		return FALSE;
 	}
 
 	return FALSE;
