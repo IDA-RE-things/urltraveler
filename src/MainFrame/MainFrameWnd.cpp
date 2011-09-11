@@ -120,7 +120,6 @@ void	CMainFrameWnd::OnNotifyReturnToMain()
 	g_MainFrameModule->GetModuleManager()->CallService(clearService.serviceId,
 		(param)&clearService); 
 
-
 	m_pFavTreeList->RemoveAllItems();
 	m_pFavTreeList->Invalidate();
 
@@ -426,7 +425,8 @@ void	CMainFrameWnd::ShowFavoriteTreeList(int nId)
 		}
 	}
 
-	SetFavoriteNumText(j, nFavoriteNum);
+	int nTotalNum = GetFavoriteLineDataNum();
+	SetFavoriteNumText(j, nTotalNum);
 }
 
 void	CMainFrameWnd::OnTabChange(TNotifyUI& msg)
@@ -686,8 +686,7 @@ void	CMainFrameWnd::OnFavoriteListItemMoved(TNotifyUI& msg)
 		}
 	}
 
-	int nTotalNum = 0;
-	GetFavoriteLineData(nTotalNum);
+	int nTotalNum = GetFavoriteLineDataNum();
 	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size(), nTotalNum);
 }
 
@@ -1320,9 +1319,7 @@ void	CMainFrameWnd::DeleteFavorite(int nDeleteNodeId)
 		return;
 	m_pDragList->Invalidate();
 
-	int nTotalNum = 0;
-	GetFavoriteLineData(nTotalNum);
-
+	int nTotalNum = GetFavoriteLineDataNum();
 	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size(), nTotalNum);
 }
 
@@ -1416,6 +1413,9 @@ void	CMainFrameWnd::SelectTreeList(int nId)
 			break;
 		}
 	}
+
+	int nTotalNum = GetFavoriteLineDataNum();
+	SetFavoriteNumText(m_vFavoriteNodeAtTreeNode.size(), nTotalNum);
 }
 
 void	CMainFrameWnd::AddUrlSuccess(PFAVORITELINEDATA pData)
@@ -1437,8 +1437,7 @@ void	CMainFrameWnd::AddUrlSuccess(PFAVORITELINEDATA pData)
 
 
 	int nFavoriteNum = m_vFavoriteNodeAtTreeNode.size();
-	int nTotalNum = 0;
-	GetFavoriteLineData(nTotalNum);
+	int nTotalNum = GetFavoriteLineDataNum();
 	SetFavoriteNumText(nFavoriteNum, nTotalNum);
 }
 
@@ -1464,6 +1463,23 @@ PFAVORITELINEDATA*	CMainFrameWnd::GetFavoriteLineData(int& nFavoriteNum)
 	nFavoriteNum = favoriteData.nNum;
 	return favoriteData.ppFavoriteData;
 }
+
+int CMainFrameWnd::GetFavoriteLineDataNum()
+{
+	DataCenter_GetFavoriteService favoriteData;
+	g_MainFrameModule->GetModuleManager()->CallService(SERVICE_VALUE_DATACENTER_GET_FAVORITE_DATA,
+		(param)&favoriteData); 
+
+	int j = 0;
+	for(int i=0; i<favoriteData.nNum; i++)
+	{
+		if( favoriteData.ppFavoriteData[i]->bDelete == false 
+			&& favoriteData.ppFavoriteData[i]->bFolder == false)
+			j++;
+	}
+	return j;
+}
+
 
 void CMainFrameWnd::GetAvailableBrowser()
 {

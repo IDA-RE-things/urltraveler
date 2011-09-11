@@ -59,6 +59,7 @@ public:
 	void	AddUrlSuccess(PFAVORITELINEDATA pData);
 	void	AddFavoriteFoldSuccess(int nParentId, PFAVORITELINEDATA pData);
 	PFAVORITELINEDATA*	GetFavoriteLineData(int& nFavoriteNum);
+	int GetFavoriteLineDataNum();
 
 	// 显示导出进度布局
 	void	ShowProcessLayout(BOOL bShow=TRUE);
