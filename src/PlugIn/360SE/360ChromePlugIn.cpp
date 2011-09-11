@@ -281,10 +281,14 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
+
+	int nRealNum = 0;
 	for (int k = 0; k < nDataNum; k++)
 	{
-		if( ppDataCopy[k] == NULL)
+		if( ppDataCopy[k] == NULL || ppDataCopy[k]->bDelete == true)
 			continue;
+
+		nRealNum++;
 
 		itIdIndex = m_mapIdIndexInfo.find(ppDataCopy[k]->nId);
 		if (itIdIndex != m_mapIdIndexInfo.end())
@@ -325,6 +329,7 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 
 	delete[] ppDataCopy;
 
+	nDataNum = nRealNum;
 	return TRUE;
 }
 

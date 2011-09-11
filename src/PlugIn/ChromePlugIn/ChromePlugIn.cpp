@@ -199,12 +199,15 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 		return FALSE;
 	}
 
+	m_mapPidNodeInfo.clear();
+	m_mapPidInfo.clear();
+	m_mapDepthInfo.clear();
+
 	PFAVORITELINEDATA* ppInnerData = new PFAVORITELINEDATA[nDataNum];
 	memcpy(ppInnerData, ppData, sizeof(PFAVORITELINEDATA)*nDataNum);
 
 	wchar_t* pszPath = GetFavoriteDataPath();
 
-	//获取导入文件路径
 	//获取导入文件路径
 	std::wstring strTmpPath = StringHelper::ANSIToUnicode(StringHelper::UnicodeToUtf8(pszPath));
 	if( FileHelper::IsFileExist(strTmpPath.c_str()) == TRUE)
@@ -277,10 +280,14 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
+
+	int nRealNum  = 0;
 	for (int k = 0; k < nDataNum; k++)
 	{
-		if( ppInnerData[k] == NULL)
+		if( ppInnerData[k] == NULL || ppInnerData[k]->bDelete == true)
 			continue;
+
+		nRealNum ++;
 
 		itIdIndex = m_mapIdIndexInfo.find(ppInnerData[k]->nId);
 		if (itIdIndex != m_mapIdIndexInfo.end())
@@ -319,6 +326,9 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 	outfile.close();
 
 	delete ppInnerData;
+
+	nDataNum = nRealNum;
+
 	return TRUE;
 }
 
@@ -330,7 +340,8 @@ void CChromePlugIn::SortByDepth(PFAVORITELINEDATA* ppData, int32 nDataNum)
 	PFAVORITELINEDATA* ppSortLineDataPos = ppSortLineData;
 
 	// 逐一找到合适的数据，并插入到ppSortLineData中去
-	SortNode(ppData, nDataNum, ppSortLineDataPos, 0);
+	int k = 0;
+	SortNode(ppData, nDataNum, ppSortLineDataPos, 0, k);
 
 	// 排序后的数据拷贝
 	memcpy(ppData, ppSortLineData, nDataNum * sizeof(PFAVORITELINEDATA));
@@ -339,9 +350,9 @@ void CChromePlugIn::SortByDepth(PFAVORITELINEDATA* ppData, int32 nDataNum)
 }
 
 void CChromePlugIn::SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum, 
-				PFAVORITELINEDATA*& ppSortData, int32 nParentId)
+				PFAVORITELINEDATA*& ppSortData, int32 nParentId, int& k)
 {
-	static int k = 0;
+	//static int k = 0;
 
 	for (int i = 0; i < nDataNum; i++)
 	{
@@ -349,13 +360,14 @@ void CChromePlugIn::SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum,
 		{
 			memcpy(ppSortData++, &ppData[i], sizeof(PFAVORITELINEDATA));
 			if (++k >= nDataNum)
-			{//排序完所有数据，则直接退出循环，以提高效率
+			{
+				//排序完所有数据，则直接退出循环，以提高效率
 				break;
 			}
 
 			if (ppData[i]->bFolder)
 			{
-				SortNode(ppData, nDataNum, ppSortData, ppData[i]->nId);
+				SortNode(ppData, nDataNum, ppSortData, ppData[i]->nId, k);
 			}
 
 		}
@@ -597,7 +609,8 @@ BOOL CChromePlugIn::TraverseNode(PFAVORITELINEDATA* ppData, int32 nDepth)
 	{
 		std::vector<int32> vecPidList;
 		std::multimap<int32, NODEINFO> mapPidObj;
-		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(nDepth); it != m_mapDepthInfo.upper_bound(nDepth); ++it)
+		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(nDepth);
+			it != m_mapDepthInfo.upper_bound(nDepth); ++it)
 		{
 			NODEINFO stNodeInfo = {0};	
 
