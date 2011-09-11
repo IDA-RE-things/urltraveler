@@ -238,12 +238,16 @@ BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 	}
 
 #define MAX_BUFFER_LEN	4096
+
+	int nRealNum = 0;
 	for (int i = 0; i < nDataNum; i++)
 	{
 		if (ppData[i] == NULL || ppData[i]->bDelete == true)
 		{
 			continue;
 		}
+
+		nRealNum++;
 
 		ReplaceSingleQuoteToDoubleQuote(ppData[i]->szTitle);
 		ReplaceSingleQuoteToDoubleQuote(ppData[i]->szUrl);
@@ -288,6 +292,9 @@ BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 		{
 		}		
 	}
+
+	nDataNum = nRealNum;
+
 	return TRUE;
 }
 

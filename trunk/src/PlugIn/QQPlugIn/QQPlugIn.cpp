@@ -173,6 +173,10 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 		return FALSE;
 	}
 
+	m_mapPidNodeInfo.clear();
+	m_mapPidInfo.clear();
+	m_mapDepthInfo.clear();
+
 	PFAVORITELINEDATA* ppInnerData = new PFAVORITELINEDATA[nDataNum];
 	memcpy(ppInnerData, ppData, sizeof(PFAVORITELINEDATA)*nDataNum);
 
@@ -291,31 +295,33 @@ void QQPlugIn::SortByDepth(PFAVORITELINEDATA* ppData, int32 nDataNum)
 	PFAVORITELINEDATA* ppSortLineDataPos = ppSortLineData;
 
 	// 逐一找到合适的数据，并插入到pSortLineData中去
-	SortNode(ppData, nDataNum, ppSortLineDataPos, 0);
+	int k = 0;
+	SortNode(ppData, nDataNum, ppSortLineDataPos, 0, k);
 
 	// 排序后的数据拷贝
 	memcpy(ppData, ppSortLineData, nDataNum * sizeof(PFAVORITELINEDATA));
+
 	delete[] ppSortLineData;
 	ppSortLineData = NULL;
 }
 
-void QQPlugIn::SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum, PFAVORITELINEDATA*& ppSortData, int32 nParentId)
+void QQPlugIn::SortNode(PFAVORITELINEDATA* ppData, int32 nDataNum, 
+			PFAVORITELINEDATA*& ppSortData, int32 nParentId, int& k)
 {
-	static int k = 0;
-
 	for (int i = 0; i < nDataNum; i++)
 	{
 		if (ppData[i]->nPid == nParentId)
 		{
 			memcpy(ppSortData++, &ppData[i], sizeof(PFAVORITELINEDATA));
 			if (++k >= nDataNum)
-			{//排序完所有数据，则直接退出循环，以提高效率
+			{
+				//排序完所有数据，则直接退出循环，以提高效率
 				break;
 			}
 
 			if (ppData[i]->bFolder)
 			{
-				SortNode(ppData, nDataNum, ppSortData, ppData[i]->nId);
+				SortNode(ppData, nDataNum, ppSortData, ppData[i]->nId, k);
 			}
 
 		}
@@ -544,10 +550,11 @@ BOOL QQPlugIn::TraverseNode(PFAVORITELINEDATA* ppData, int32 nDepth)
 		for (MAP_DEPTH_INFO ::iterator it = m_mapDepthInfo.lower_bound(nDepth);
 			it != m_mapDepthInfo.upper_bound(nDepth); ++it)
 		{
-			if( ppData[(*it).second] == NULL)
+			NODEINFO stNodeInfo = {0};	
+
+			if( ppData[(*it).second] == NULL )
 				continue;
 
-			NODEINFO stNodeInfo = {0};	
 			if (ppData[(*it).second]->bFolder == true)
 			{
 				Json::Value folder_obj;

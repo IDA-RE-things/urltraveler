@@ -306,6 +306,7 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	}
 	free(pszFavDir);
 
+	int nRealNum  = 0;
 	for (int i = 0; i < nDataNum; i++)
 	{
 		if( ppData[i] == NULL)
@@ -313,6 +314,8 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 
 		if (ppData[i]->bDelete == true)
 			continue;
+
+		nRealNum ++;
 		
 		wchar_t* pszCurrNodePath = GetNodeAbsolutePath(i, ppData);
 
@@ -343,6 +346,8 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 
 		free(pszCurrNodePath);
 	}
+
+	nDataNum = nRealNum;
 
 	return TRUE;
 }
