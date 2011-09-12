@@ -588,12 +588,12 @@ void	PlugInModule::DoImportThread()
 		GetModuleManager()->PushMessage(*pImportBeginMessage);
 
 		int nImportFavNum = pvFavoriteData->size();
-		BOOL bRet = pPlugIn->ImportFavoriteData(&(*pvFavoriteData)[0], nImportFavNum);
+		int nRet = pPlugIn->ImportFavoriteData(&(*pvFavoriteData)[0], nImportFavNum);
 
 		PlugIn_ImportEndMessage* pImportEndMessage = new PlugIn_ImportEndMessage();
 		pImportEndMessage->pPlugIn = pPlugIn;
 		pImportEndMessage->nFavoriteNum = nImportFavNum;
-		pImportEndMessage->bSuccess = bRet;
+		pImportEndMessage->nErrorCode = nRet;
 		GetModuleManager()->PushMessage(*pImportEndMessage);
 	}
 

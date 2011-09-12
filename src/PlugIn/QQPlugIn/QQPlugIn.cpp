@@ -187,11 +187,11 @@ BOOL QQPlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 //		@param	ppData			需要导入的的收藏夹数据数组
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
+int QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 {
 	if (ppData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ERROR_INVALID_PARAM;
 	}
 
 	m_mapPidInfo.clear();
@@ -217,7 +217,7 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 			if (!bResult)
 			{
 				delete ppInnerData;
-				return FALSE;
+				return ERROR_CLEAR_FAVORITE_DATA;
 			}
 		}
 	}
@@ -269,7 +269,7 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	else
 	{
 		delete ppInnerData;
-		return FALSE;
+		return ERROR_INTERNAL_ERROR;
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
@@ -303,7 +303,7 @@ BOOL QQPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	delete[] ppInnerData;
 
 	nDataNum = nRealNum;
-	return TRUE;
+	return ERROR_OK;
 }
 
 void QQPlugIn::SortByDepth(PFAVORITELINEDATA* ppData, int32 nDataNum)

@@ -207,11 +207,11 @@ BOOL C360ChromePlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 //		@param	ppData			需要导入的的收藏夹数据数组
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
+int C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 {
 	if (ppData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ERROR_INVALID_PARAM;
 	}
 
 	m_mapPidInfo.clear();
@@ -237,7 +237,7 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 			if (!bResult)
 			{
 				delete ppInnerData;
-				return FALSE;
+				return ERROR_CLEAR_FAVORITE_DATA;
 			}
 		}
 	}
@@ -292,7 +292,7 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 	else
 	{
 		delete ppInnerData;
-		return FALSE;
+		return ERROR_INTERNAL_ERROR;
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
@@ -345,7 +345,7 @@ BOOL C360ChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDat
 
 	nDataNum = nRealNum;
 
-	return TRUE;
+	return ERROR_OK;
 }
 
 void C360ChromePlugIn::SortByDepth(PFAVORITELINEDATA* ppData, int32 nDataNum)

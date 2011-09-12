@@ -27,7 +27,7 @@ C360SE3PlugIn::~C360SE3PlugIn()
 
 BOOL C360SE3PlugIn::Load()
 {
-	return FALSE;
+	return TRUE;
 }
 
 BOOL C360SE3PlugIn::UnLoad()
@@ -118,8 +118,6 @@ BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 		m_SqliteDatabase.open(pszPath, "");
 	ASSERT(m_SqliteDatabase.IsOpen() == TRUE);
 
-	m_SqliteDatabase.execDML("delete from tb_fav");
-
 	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select * from tb_fav");
 	int i = 0;
 
@@ -154,22 +152,29 @@ BOOL C360SE3PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 	return TRUE;
 }
 
-BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
+int C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	if (ppData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ERROR_INVALID_PARAM;
 	}
 
 	const wchar_t* pszPath = GetFavoriteDataPath();
 	if( pszPath == NULL)
-		return FALSE;
+		return ERROR_FAVORITE_PATH_NOT_EXIST;
 
 	if( m_SqliteDatabase.IsOpen() == FALSE)
 		m_SqliteDatabase.open(pszPath, "");
 	ASSERT(m_SqliteDatabase.IsOpen() == TRUE);
 
-	m_SqliteDatabase.execDML("delete from tb_fav");
+
+	int nRet = m_SqliteDatabase.execDML("delete from tb_fav");
+
+	// 表格被占用
+	if( nRet == SQLITE_BUSY || nRet == SQLITE_LOCKED)
+	{
+		return ERROR_SQLITE_BUSY;
+	}
 
 #define MAX_BUFFER_LEN	4096
 	wchar_t szInsert[MAX_BUFFER_LEN] = {0};
@@ -203,7 +208,7 @@ BOOL C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataN
 
 	SaveDatabase();
 
-	return TRUE;
+	return ERROR_OK;
 }
 
 int32 C360SE3PlugIn::GetFavoriteCount()
@@ -242,8 +247,4 @@ void C360SE3PlugIn::ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri)
 			pszOri[i] = '\"';
 		}
 	}
-
 }
-
-
-

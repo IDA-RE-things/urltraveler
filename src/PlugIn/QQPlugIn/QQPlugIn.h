@@ -76,7 +76,7 @@ public:
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum);
+	virtual int ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum);
 
 	//----------------------------------------------------------------------------------------
 	//名称: GetFavoriteCount
