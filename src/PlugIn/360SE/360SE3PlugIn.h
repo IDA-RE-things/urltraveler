@@ -90,6 +90,8 @@ protected:
 	void ReplaceSingleQuoteToDoubleQuote(wchar_t *pszOri);
 	BOOL SaveDatabase();
 
+	void	CreateFavoriteTable();
+
 private:
 	wstring	m_strFavoritePath;
 	CppSQLite3DB	m_SqliteDatabase;

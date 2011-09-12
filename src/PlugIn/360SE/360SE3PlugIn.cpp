@@ -160,20 +160,21 @@ int C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNu
 	}
 
 	const wchar_t* pszPath = GetFavoriteDataPath();
-	if( pszPath == NULL)
-		return ERROR_FAVORITE_PATH_NOT_EXIST;
 
 	if( m_SqliteDatabase.IsOpen() == FALSE)
 		m_SqliteDatabase.open(pszPath, "");
 	ASSERT(m_SqliteDatabase.IsOpen() == TRUE);
 
-
-	int nRet = m_SqliteDatabase.execDML("delete from tb_fav");
-
-	// 表格被占用
-	if( nRet == SQLITE_BUSY || nRet == SQLITE_LOCKED)
+	if( m_SqliteDatabase.tableExists("tb_fav") == false)
 	{
-		return ERROR_SQLITE_BUSY;
+		CreateFavoriteTable();
+	}
+	else
+	{
+		// 表格被占用
+		int nRet = m_SqliteDatabase.execDML("delete from tb_fav");
+		if( nRet == SQLITE_BUSY || nRet == SQLITE_LOCKED)
+			return ERROR_SQLITE_BUSY;
 	}
 
 #define MAX_BUFFER_LEN	4096
@@ -220,10 +221,25 @@ int32 C360SE3PlugIn::GetFavoriteCount()
 	if( m_SqliteDatabase.IsOpen() == FALSE)
 		m_SqliteDatabase.open(pszPath, "");
 	ASSERT(m_SqliteDatabase.IsOpen() == TRUE);
-	
+
+	// 如果tb_fav不存在，则创建
+	if( m_SqliteDatabase.tableExists("tb_fav") == false)
+		return 0;
+
 	CppSQLite3Query Query = m_SqliteDatabase.execQuery("select count(*) as Total from tb_fav");
 	int nTotal =   Query.getIntField("Total");
 	return nTotal;
+}
+
+void	C360SE3PlugIn::CreateFavoriteTable()
+{
+	ASSERT(m_SqliteDatabase.IsOpen() == TRUE);
+
+	int nRet = m_SqliteDatabase.execDML("CREATE TABLE [tb_fav] ([id] INTEGER PRIMARY KEY AUTOINCREMENT, \
+					    [parent_id] int default 0,[is_folder] tinyint check(is_folder in (0,1)),[title] varchar(256), \
+					    [url] varchar(1024),[pos] int default 0,[create_time] bigint,[last_modify_time] bigint default 0, \
+					    [is_best] tinyint default 0,[reserved] int default 0);");	
+	m_SqliteDatabase.execDML("CREATE INDEX parent_id_index ON tb_fav(parent_id ASC);");
 }
 
 BOOL C360SE3PlugIn::SaveDatabase()
