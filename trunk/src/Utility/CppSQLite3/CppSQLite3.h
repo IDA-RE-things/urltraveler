@@ -145,9 +145,7 @@ public:
 	bool fieldIsNull(const char* szField);
 
 	bool eof();
-
 	void nextRow();
-
 	void finalize();
 
 private:

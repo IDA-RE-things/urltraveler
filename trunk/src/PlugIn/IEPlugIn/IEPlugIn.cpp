@@ -291,11 +291,11 @@ BOOL IEPlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 //		@param	pData			需要导入的的收藏夹数据数组
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
+int IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 {
 	if (ppData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ERROR_INVALID_PARAM;
 	}
 
 	//写入新数据之前删除原来的所有的数据
@@ -327,7 +327,7 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 			free(pszCurrNodePath);
 			if ((nRet != ERROR_SUCCESS) && (nRet != ERROR_ALREADY_EXISTS))
 			{
-				return FALSE;
+				return ERROR_CREATE_FAVORITE_FOLD;
 			}
 			
 			continue;
@@ -371,7 +371,7 @@ BOOL IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 
 	nDataNum = nRealNum;
 
-	return TRUE;
+	return ERROR_OK;
 }
 
 BOOL IEPlugIn::ImportFavoriteData(FAVORITELINEDATA stData)

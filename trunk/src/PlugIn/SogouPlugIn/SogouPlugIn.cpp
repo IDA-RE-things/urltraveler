@@ -182,11 +182,11 @@ BOOL SogouPlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum
 	return FALSE;
 }
 
-BOOL SogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
+int SogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	if (ppData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ERROR_INVALID_PARAM;
 	}
 
 	if (m_pMemFavoriteDB != NULL)
@@ -240,10 +240,10 @@ BOOL SogouPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum
 
 		SaveDatabase();
 
-		return TRUE;
+		return ERROR_OK;
 	}
 
-	return FALSE;
+	return ERROR_SQLITE_ERROR;
 }
 
 int32 SogouPlugIn::GetFavoriteCount()

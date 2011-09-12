@@ -364,7 +364,7 @@ void	MainFrameModule::OnMessage_PlugInImportFinished(Message* pMessage)
 		return;
 
 	m_pMainFrame->NotifyImportFinished(pImportEndMessage->pPlugIn, 
-		pImportEndMessage->nFavoriteNum, pImportEndMessage->bSuccess);
+		pImportEndMessage->nFavoriteNum, pImportEndMessage->nErrorCode);
 }
 
 void	MainFrameModule::OnMessage_PlugInImportAllFinished(Message* pMessage)

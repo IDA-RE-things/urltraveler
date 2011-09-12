@@ -509,11 +509,11 @@ void FireFox3PlugIn::InsertIntoDB(int nRootId, PFAVORITELINEDATA* ppData, int32 
 	}
 }
 
-BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
+int FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	if (ppData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ERROR_INVALID_PARAM;
 	}
 
 #define MAX_BUFFER_LEN	4096
@@ -543,7 +543,7 @@ BOOL FireFox3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nData
 	InsertIntoDB(2, ppData, nDataNum);
 	InsertIntoDB(3, ppData, nDataNum);
 
-	return TRUE;
+	return ERROR_OK;
 }
 
 // 获取父结点为nParentId的所有结点的数目

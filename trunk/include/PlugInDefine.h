@@ -99,12 +99,12 @@ namespace plugin
 
 			pPlugIn = 0;
 			nFavoriteNum = 0;
-			bSuccess = TRUE;
+			nErrorCode = ERROR_OK;
 		}
 
 		IPlugIn*	pPlugIn;
 		int nFavoriteNum;
-		BOOL	bSuccess;
+		int	nErrorCode;
 	};
 
  	struct PlugIn_InExportEndMessage : MessageExtraInfo

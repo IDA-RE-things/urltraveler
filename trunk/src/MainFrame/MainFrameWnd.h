@@ -68,7 +68,7 @@ public:
 	void	NotifyExportFinished(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
 	void	NotifyImportPreBegin();
 	void	NotifyImportBegin(IPlugIn* pPlugIn);
-	void	NotifyImportFinished(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess = TRUE);
+	void	NotifyImportFinished(IPlugIn* pPlugIn, int nFavoriteNum, int nErrorCode = ERROR_OK);
 	void	NotifyImportAllFinished();
 	void	NotifyInExportProcess(wchar_t* 	szProcess);
 

@@ -193,11 +193,11 @@ BOOL CChromePlugIn::ExportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 //		@param	ppData			需要导入的的收藏夹数据数组
 //		@param	nDataNum		需要导入的收藏夹条目的条数
 //----------------------------------------------------------------------------------------
-BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
+int CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 {
 	if (ppData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ERROR_INVALID_PARAM;
 	}
 
 	m_mapPidInfo.clear();
@@ -223,7 +223,7 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 			if (!bResult)
 			{
 				delete ppInnerData;
-				return FALSE;
+				return ERROR_CLEAR_FAVORITE_DATA;
 			}
 		}
 	}
@@ -278,7 +278,7 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 	else
 	{
 		delete ppInnerData;
-		return FALSE;
+		return ERROR_INTERNAL_ERROR;
 	}
 
 	MAP_ID_INDEX_INFO::iterator itIdIndex;
@@ -331,7 +331,7 @@ BOOL CChromePlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNu
 
 	nDataNum = nRealNum;
 
-	return TRUE;
+	return ERROR_OK;
 }
 
 void CChromePlugIn::SortByDepth(PFAVORITELINEDATA* ppData, int32 nDataNum)

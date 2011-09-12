@@ -209,7 +209,7 @@ void	CMainFrameWnd::NotifyImportBegin(IPlugIn* pPlugIn)
 	pListElement->SetText(1,strBrowserName.GetData());
 }
 
-void	CMainFrameWnd::NotifyImportFinished(IPlugIn* pPlugIn, int nFavoriteNum, BOOL bSuccess)
+void	CMainFrameWnd::NotifyImportFinished(IPlugIn* pPlugIn, int nFavoriteNum, int nErrorCode)
 {
 	if( m_pLoadingList == NULL)
 		return;
@@ -217,7 +217,7 @@ void	CMainFrameWnd::NotifyImportFinished(IPlugIn* pPlugIn, int nFavoriteNum, BOO
 	CListTextElementUI* pListElement = (CListTextElementUI*)m_pLoadingList->GetItemAt(m_pLoadingList->GetRowCount() - 1);
 	if( pListElement)
 	{
-		if( bSuccess == TRUE)
+		if( nErrorCode == ERROR_OK)
 		{
 			String	strBrowserName = L"<x 4><x 4>";
 			strBrowserName +=	 pPlugIn->GetBrowserName();
@@ -235,9 +235,10 @@ void	CMainFrameWnd::NotifyImportFinished(IPlugIn* pPlugIn, int nFavoriteNum, BOO
 			String	strBrowserName = L"<x 4><x 4>";
 			strBrowserName +=	 pPlugIn->GetBrowserName();
 			strBrowserName +=	 L"<x 4>收藏夹同步失败";
-
-			String	strFavoriteNum = L"<x 4><x 4>总共 0 条记录";
 			pListElement->SetText(1,strBrowserName.GetData());
+
+			String strErrorMsg = GetErrorMsg(nErrorCode);
+			String	strFavoriteNum = String(L"<x 4><x 4>") + strErrorMsg;
 			pListElement->SetText(2,strFavoriteNum.GetData());
 		}
 	}

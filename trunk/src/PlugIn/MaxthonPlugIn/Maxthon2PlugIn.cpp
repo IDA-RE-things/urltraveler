@@ -214,11 +214,11 @@ BOOL Maxthon2PlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nData
 	return FALSE;
 }
 
-BOOL Maxthon2PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
+int Maxthon2PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	if (ppData == NULL || *ppData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ERROR_INVALID_PARAM;
 	}
 
 	#define MAX_BUFFER_LEN	4096
@@ -253,7 +253,8 @@ BOOL Maxthon2PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nData
 
 			CppSQLite3Statement sqliteStatement = m_SqliteDatabase.compileStatement(StringHelper::UnicodeToANSI(szInsert).c_str());
 
-			std::string strTemp1 = StringHelper::StringToHex(StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&ppData[i]->nId, sizeof(int32))));
+			std::string strTemp1 = StringHelper::StringToHex(
+				StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&ppData[i]->nId, sizeof(int32))));
 			sqliteStatement.bind(1, (unsigned char *)strTemp1.c_str(), strTemp1.length());
 
 			if (ppData[i]->nPid == 0)
@@ -279,10 +280,10 @@ BOOL Maxthon2PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nData
 		m_SqliteDatabase.execDML("commit transaction");
 
 		SaveDatabase();
-		return TRUE;
+		return ERROR_OK;
 	}
 
-	return FALSE;
+	return ERROR_SQLITE_ERROR;
 }
 
 int32 Maxthon2PlugIn::GetFavoriteCount()

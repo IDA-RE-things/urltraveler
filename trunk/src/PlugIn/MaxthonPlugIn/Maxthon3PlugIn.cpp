@@ -258,11 +258,11 @@ BOOL Maxthon3PlugIn::ExportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 	return FALSE;
 }
 
-BOOL Maxthon3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
+int Maxthon3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNum )
 {
 	if (pData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ERROR_INVALID_PARAM;
 	}
 
 	#define MAX_BUFFER_LEN	4096
@@ -297,7 +297,8 @@ BOOL Maxthon3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 
 			CppSQLite3Statement sqliteStatement = m_SqliteDatabase.compileStatement(StringHelper::UnicodeToANSI(szInsert).c_str());
 
-			std::string strTemp1 = StringHelper::StringToHex(StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&pData[i].nId, sizeof(int32))));
+			std::string strTemp1 = StringHelper::StringToHex(
+				StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&pData[i].nId, sizeof(int32))));
 			sqliteStatement.bind(1, (unsigned char *)strTemp1.c_str(), strTemp1.length());
 
 			if (pData[i].nPid == 0)
@@ -308,7 +309,8 @@ BOOL Maxthon3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 			}
 			else
 			{
-				strTemp1 = StringHelper::StringToHex(StringHelper::ANSIToUnicode(CMD5Checksum::GetMD5((BYTE *)&pData[i].nPid, sizeof(int32))).c_str());
+				strTemp1 = StringHelper::StringToHex(StringHelper::ANSIToUnicode(
+					CMD5Checksum::GetMD5((BYTE *)&pData[i].nPid, sizeof(int32))).c_str());
 				sqliteStatement.bind(2, (unsigned char *)strTemp1.c_str(), strTemp1.length());
 			}
 
@@ -321,10 +323,10 @@ BOOL Maxthon3PlugIn::ImportFavoriteData( PFAVORITELINEDATA pData, int32& nDataNu
 		m_SqliteDatabase.execDML("commit transaction");
 
 		SaveDatabase();
-		return TRUE;
+		return ERROR_OK;
 	}
 
-	return FALSE;
+	return ERROR_SQLITE_ERROR;
 }
 
 int32 Maxthon3PlugIn::GetFavoriteCount()

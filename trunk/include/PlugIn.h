@@ -8,6 +8,7 @@
 #include <vector>
 #include "shlwapi.h"
 #include "DataCenterDefine.h"
+#include "CppSqlite3/sqlite3.h"
 
 using namespace std;
 using namespace datacenter;
@@ -30,7 +31,6 @@ enum PlugId
 
 	PLUG_ID_END,//最后一个，边界判断
 };
-
 
 // 定义系统中所使用到的各种常量
 enum 
@@ -94,6 +94,98 @@ typedef struct _winFileMem
 	unsigned char *pMemPointer;
 	unsigned long  ulMemSize;
 }winFileMem;
+
+
+// 导入导出过程中常用的错误码
+#define ERROR_OK		0
+
+//Sqlite3相关错误
+#define ERROR_SQLITE_ERROR			SQLITE_ERROR  /* SQL error or missing database */
+#define ERROR_SQLITE_INTERNAL		SQLITE_INTERNAL       /* Internal logic error in SQLite */
+#define ERROR_SQLITE_PERM			SQLITE_PERM          /* Access permission denied */
+#define ERROR_SQLITE_ABORT			SQLITE_ABORT           /* Callback routine requested an abort */
+#define ERROR_SQLITE_BUSY			SQLITE_BUSY            /* The database file is locked */
+#define ERROR_SQLITE_LOCKED		SQLITE_LOCKED          /* A table in the database is locked */
+#define ERROR_SQLITE_NOMEM		SQLITE_NOMEM   /* A malloc() failed */
+#define ERROR_SQLITE_READONLY		SQLITE_READONLY   /* Attempt to write a readonly database */
+#define ERROR_SQLITE_INTERRUPT		SQLITE_INTERRUPT   /* Operation terminated by sqlite3_interrupt()*/
+#define ERROR_SQLITE_IOERR			SQLITE_IOERR   /* Some kind of disk I/O error occurred */
+#define ERROR_SQLITE_CORRUPT		SQLITE_CORRUPT   /* The database disk image is malformed */
+#define ERROR_SQLITE_NOTFOUND	SQLITE_NOTFOUND   /* Unknown opcode in sqlite3_file_control() */
+#define ERROR_SQLITE_FULL			SQLITE_FULL   /* Insertion failed because database is full */
+#define ERROR_SQLITE_CANTOPEN		SQLITE_CANTOPEN   /* Unable to open the database file */
+#define ERROR_SQLITE_PROTOCOL		SQLITE_PROTOCOL   /* Database lock protocol error */
+#define ERROR_SQLITE_EMPTY			SQLITE_EMPTY   /* Database is empty */
+#define ERROR_SQLITE_SCHEMA		SQLITE_SCHEMA   /* The database schema changed */
+#define ERROR_SQLITE_TOOBIG		SQLITE_TOOBIG   /* String or BLOB exceeds size limit */
+#define ERROR_SQLITE_CONSTRAINT	SQLITE_CONSTRAINT   /* Abort due to constraint violation */
+#define ERROR_SQLITE_MISMATCH		SQLITE_MISMATCH   /* Data type mismatch */
+#define ERROR_SQLITE_MISUSE		SQLITE_MISUSE  /* Library used incorrectly */
+#define ERROR_SQLITE_NOLFS		SQLITE_NOLFS   /* Uses OS features not supported on host */
+#define ERROR_SQLITE_AUTH			SQLITE_AUTH   /* Authorization denied */
+#define ERROR_SQLITE_FORMAT		SQLITE_FORMAT   /* Auxiliary database format error */
+#define ERROR_SQLITE_RANGE		SQLITE_RANGE   /* 2nd parameter to sqlite3_bind out of range */
+#define ERROR_SQLITE_NOTADB		SQLITE_NOTADB   /* File opened that is not a database file */
+#define ERROR_SQLITE_ROW			SQLITE_ROW  /* sqlite3_step() has another row ready */
+#define ERROR_SQLITE_DONE			SQLITE_DONE  /* sqlite3_step() has finished executing */
+
+// 其余的错误码
+#define ERROR_INVALID_PARAM		ERROR_SQLITE_DONE + 1
+#define ERROR_CLEAR_FAVORITE_DATA	ERROR_SQLITE_DONE + 2
+#define ERROR_FAVORITE_PATH_NOT_EXIST		ERROR_SQLITE_DONE + 3
+#define ERROR_CREATE_FAVORITE_FOLD			ERROR_SQLITE_DONE + 4
+#define ERROR_CANNOT_CREATE_DB			ERROR_SQLITE_DONE + 5  /* sqlite3_step() has another row ready */
+#define ERROR_INTERNAL_ERROR		ERROR_SQLITE_DONE + 100
+
+typedef struct  STErrorDesc
+{
+	int nErrorCode;
+	wchar_t*	szErrorMsg;
+
+}STErrorDesc, *PSTErrorDesc;
+
+static STErrorDesc stErrorDesc[] = 
+{
+	ERROR_SQLITE_ERROR,		L"SQLite语法错误",
+	ERROR_SQLITE_INTERNAL,	L"数据库内部错误",
+	ERROR_SQLITE_PERM,		L"访问数据库权限不够",
+	ERROR_SQLITE_ABORT,		L"",           /* Callback routine requested an abort */
+	ERROR_SQLITE_BUSY,		L"数据库正被使用",            /* The database file is locked */
+	ERROR_SQLITE_LOCKED,		L"表格被锁定" ,         /* A table in the database is locked */
+	ERROR_SQLITE_NOMEM	,	L"内存分配失败" ,  /* A malloc() failed */
+	ERROR_SQLITE_READONLY,	L"数据库只读，无法写入数据",   /* Attempt to write a readonly database */
+	ERROR_SQLITE_INTERRUPT,	L"" ,  /* Operation terminated by sqlite3_interrupt()*/
+	ERROR_SQLITE_IOERR,		L"数据库 IO失败" ,  /* Some kind of disk I/O error occurred */
+	ERROR_SQLITE_CORRUPT	,	L"数据库文件已经损坏",   /* The database disk image is malformed */
+	ERROR_SQLITE_NOTFOUND,	L"不支持的数据库操作码"  , /* Unknown opcode in sqlite3_file_control() */
+	ERROR_SQLITE_FULL,		L"数据库已满",   /* Insertion failed because database is full */
+	ERROR_SQLITE_CANTOPEN,	L"无法打开数据库文件" ,  /* Unable to open the database file */
+	ERROR_SQLITE_PROTOCOL,	L"数据库因协议错误被锁定" ,  /* Database lock protocol error */
+	ERROR_SQLITE_EMPTY,		L"数据库为空",   /* Database is empty */
+	ERROR_SQLITE_SCHEMA,		L"数据库的schema发生变化" ,  /* The database schema changed */
+	ERROR_SQLITE_TOOBIG,		L"字符或者二进制数据超过了规定的大小"  , /* String or BLOB exceeds size limit */
+	ERROR_SQLITE_CONSTRAINT,	L"" ,  /* Abort due to constraint violation */
+	ERROR_SQLITE_MISMATCH,	L"数据类型不匹配",   /* Data type mismatch */
+	ERROR_SQLITE_MISUSE,		L"数据库底层Library没有被正确的使用",  /* Library used incorrectly */
+	ERROR_SQLITE_NOLFS,		L"" ,  /* Uses OS features not supported on host */ 
+	ERROR_SQLITE_AUTH,		L"",   /* Authorization denied */
+	ERROR_SQLITE_FORMAT,		L"" ,  /* Auxiliary database format error */
+	ERROR_SQLITE_RANGE,		L"" ,  /* 2nd parameter to sqlite3_bind out of range */
+	ERROR_SQLITE_NOTADB	,	L"",   /* File opened that is not a database file */
+	ERROR_SQLITE_ROW,		L"",  /* sqlite3_step() has another row ready */
+	ERROR_SQLITE_DONE,		L"",  /* sqlite3_step() has finished executing */
+};
+
+inline const wchar_t*	GetErrorMsg(int nErrorCode)
+{
+	for( int i=0; i< sizeof(stErrorDesc)/sizeof(STErrorDesc); i++)
+	{
+		if( stErrorDesc[i].nErrorCode == nErrorCode)
+			return stErrorDesc[i].szErrorMsg;
+	}
+
+	return L"";
+}
 
 // 浏览器插件接口，每一个浏览器都必须实现该接口
 // 上层应用程序通过该插件了解对应的浏览器的相关信息
@@ -367,9 +459,9 @@ public:
 	//		@param	pData			需要导入的的收藏夹数据数组
 	//		@param	nDataNum		需要导入的收藏夹条目的条数
 	//----------------------------------------------------------------------------------------
-	virtual BOOL ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
+	virtual int ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 	{
-		return FALSE;
+		return ERROR_OK;
 	}
 
 	//----------------------------------------------------------------------------------------

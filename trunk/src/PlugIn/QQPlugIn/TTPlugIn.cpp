@@ -214,11 +214,11 @@ BOOL TTPlugIn::ExportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 	return TRUE;
 }
 
-BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
+int TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 {
 	if (ppData == NULL || nDataNum == 0)
 	{
-		return FALSE;
+		return ERROR_INVALID_PARAM;
 	}
 
 	// 如果favtable表格不存在，则创建一个表格
@@ -229,7 +229,7 @@ BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 			ReserveText1 text, ReserveText2 text, ReserveInt1 interger, ReserveInt2 interger, ReserveInt3 interger)";
 		int nRet = m_pSqliteDatabase->execDML(pszCreateSql);
 		if( nRet != SQLITE_OK)
-			return FALSE;
+			return ERROR_CANNOT_CREATE_DB;
 	}
 	else
 	{
@@ -295,7 +295,7 @@ BOOL TTPlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNum )
 
 	nDataNum = nRealNum;
 
-	return TRUE;
+	return ERROR_OK;
 }
 
 // 获取父结点为nParentId的所有结点的数目
