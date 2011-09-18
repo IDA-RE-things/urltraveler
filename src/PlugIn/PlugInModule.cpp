@@ -547,6 +547,8 @@ void	PlugInModule::DoExportThread()
 	DataCenter_ReArrangeFavoriteService service;
 	GetModuleManager()->CallService(service.serviceId, (param)&service);
 	
+	sort(pvFavoriteData->begin(), pvFavoriteData->end(), CompareFavoriteData);
+
 	// 将合并后的数据导入到各个浏览器中
 	if (panCount)
 	{

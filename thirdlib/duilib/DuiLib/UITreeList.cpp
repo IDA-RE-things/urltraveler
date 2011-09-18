@@ -230,10 +230,17 @@ namespace DuiLib
 		{
 			html_text += _T("<x 24>");
 		}
+
+		/*
 		if( node->data()._level < 3 ) {
 			if( node->data()._child_visible ) html_text += _T("<a><i tree_expand.png 2 1></a>");
 			else html_text += _T("<a><i tree_expand.png 2 0></a>");
 		}
+		*/
+
+		if( node->data()._child_visible ) html_text += _T("<a><i tree_expand.png 2 1></a>");
+		else html_text += _T("<a><i tree_expand.png 2 0></a>");
+
 		html_text += node->data()._text;
 		pListElement->SetText(html_text);
 		pListElement->SetTag((UINT_PTR)node);

@@ -324,7 +324,7 @@ int IEPlugIn::ImportFavoriteData(PFAVORITELINEDATA* ppData, int32& nDataNum)
 		if (ppData[i]->bFolder == true)
 		{
 			int nRet = ::SHCreateDirectory(NULL, pszCurrNodePath);
-			free(pszCurrNodePath);
+			//free(pszCurrNodePath);
 			if ((nRet != ERROR_SUCCESS) && (nRet != ERROR_ALREADY_EXISTS))
 			{
 				return ERROR_CREATE_FAVORITE_FOLD;

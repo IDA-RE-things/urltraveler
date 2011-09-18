@@ -330,7 +330,7 @@ int32 TTPlugIn::GetFavoriteCount()
 	int nTotalNumber = 0;
 	if( m_pSqliteDatabase->tableExists("favtable") == false)
 	{
-		return nTotalNumber;
+		return 0;
 	}
 
 	CppSQLite3Query Query = m_pSqliteDatabase->execQuery("select * from favtable where iPIndex=0");
