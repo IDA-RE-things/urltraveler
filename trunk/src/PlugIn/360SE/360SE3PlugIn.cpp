@@ -19,14 +19,24 @@ C360SE3PlugIn::C360SE3PlugIn()
 	m_strFavoritePath = L"";
 }
 
-
 C360SE3PlugIn::~C360SE3PlugIn()
 {
-	
 }
 
 BOOL C360SE3PlugIn::Load()
 {
+	wchar_t* pszPath = GetFavoriteDataPath();
+	if( pszPath != NULL)
+	{
+		String strPath = String(pszPath) + String(L"-journal");
+		if( FileHelper::IsFileExist(strPath.GetData()) == true)
+		{
+			BOOL bRet = FileHelper::DeleteFile(strPath.GetData());
+			if( bRet == FALSE)
+				return FALSE;
+		}
+	}
+
 	return TRUE;
 }
 
@@ -160,6 +170,10 @@ int C360SE3PlugIn::ImportFavoriteData( PFAVORITELINEDATA* ppData, int32& nDataNu
 	}
 
 	const wchar_t* pszPath = GetFavoriteDataPath();
+	if( pszPath == NULL)
+	{
+		return ERROR_FAVORITE_PATH_NOT_EXIST;
+	}
 
 	if( m_SqliteDatabase.IsOpen() == FALSE)
 		m_SqliteDatabase.open(pszPath, "");
@@ -217,6 +231,7 @@ int32 C360SE3PlugIn::GetFavoriteCount()
 	const wchar_t* pszPath = GetFavoriteDataPath();
 	if( pszPath == NULL)
 		return 0;
+
 
 	if( m_SqliteDatabase.IsOpen() == FALSE)
 		m_SqliteDatabase.open(pszPath, "");

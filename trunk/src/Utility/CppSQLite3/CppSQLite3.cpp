@@ -1340,7 +1340,7 @@ sqlite3_stmt* CppSQLite3DB::compile(const char* szSQL)
 	int nRet = sqlite3_prepare(mpDB, szSQL, -1, &pVM, &szTail);
 	if (nRet != SQLITE_OK)
 	{
-		throw CppSQLite3Exception(nRet, szError);
+		//throw CppSQLite3Exception(nRet, szError);
 	}
 
 	return pVM;
